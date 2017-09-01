@@ -14,6 +14,8 @@
 
 import click
 from pyvcloud.vcd.cluster import Cluster
+from subprocess import call
+import traceback
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
@@ -139,3 +141,66 @@ def config(ctx, name):
         click.secho(cluster.get_config(name))
     except Exception as e:
         stderr(e, ctx)
+
+
+@cluster.command(short_help='script to initialize helm')
+@click.pass_context
+def helm_init(ctx):
+  try:
+    client = ctx.obj['client']
+    cluster = Cluster(client)
+    click.secho(cluster.get_helm_script())
+  except Exception as e:
+    stderr(e, ctx)
+
+@cluster.command(short_help='chart list')
+@click.pass_context
+def helm_help(ctx):
+  text =  """stable and incubator chart list
+incubator/
+cassandra         check-mk     docker-registry
+elasticsearch     etcd         gogs
+istio             kafka        kube-registry-proxy
+patroni           redis-cache  spring-cloud-data-flow
+tensorflow-inception           zookeeper
+
+stable/
+acs-engine-autoscaler artifactory        aws-cluster-autoscaler centrifugo 
+chaoskube             chronograf         cluster-autoscaler     cockroachdb
+concourse             consul             coredns                coscale
+dask-distributed      datadog            dokuwiki               drupal
+etcd-operator         external-dns       factorio               fluent-bit
+g2                    gcloud-endpoints   gcloud-sqlproxy        ghost
+gitlab-ce             gitlab-ee          grafana                heapster
+influxdb              ipfs               jasperreports          jenkins
+joomla                kapacitor          keel                   kube-lego
+kube-ops-view         kube-state-metrics kube2iam               kubernetes-dashboard
+linkerd               locust             magento                mailhog
+mariadb               mediawiki          memcached              metabase
+minecraft             minio              mongodb-replicaset     mongodb
+moodle                mysql              namerd                 nginx-ingress
+nginx-lego            odoo               opencart               openvpn
+orangehrm             osclass            owncloud               parse
+percona               phabricator        phpbb                  postgresql
+prestashop            prometheus         rabbitmq               redis
+redmine               rethinkdb          risk-advisor           rocketchat
+sapho                 selenium           sensu                  sentry
+spark                 spartakus          spinnaker              spotify-docker-gc
+stash                 sugarcrm           suitecrm               sumokube
+sumologic-fluentd     sysdig             telegraf               testlink
+traefik               uchiwa             voyager                weave-cloud
+wordpress             zetcd
+
+Example: vcd cluster helm_create zetcd 
+
+    """  
+  print(text)
+  
+@cluster.command(short_help='create chart')
+@click.pass_context
+@click.argument('name',
+                metavar='<name>',
+                required=True)
+def helm_create(ctx, name):
+  chart = 'stable/%s' % (name)
+  call('helm install %s' % (chart), shell=True)

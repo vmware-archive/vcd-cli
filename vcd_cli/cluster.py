@@ -153,6 +153,7 @@ def helm_init(ctx):
   except Exception as e:
     stderr(e, ctx)
 
+
 @cluster.command(short_help='chart list')
 @click.pass_context
 def helm_help(ctx):
@@ -195,6 +196,7 @@ Example: vcd cluster helm_create zetcd
 
     """  
   print(text)
+
   
 @cluster.command(short_help='create chart')
 @click.pass_context

@@ -205,3 +205,18 @@ Example: vcd cluster helm_create zetcd
 def helm_create(ctx, name):
   chart = 'stable/%s' % (name)
   call('helm install %s' % (chart), shell=True)
+
+
+@cluster.command(short_help='list deployments')
+@click.pass_context
+def helm_list(ctx):
+  call('helm list', shell=True)
+
+
+@cluster.command(short_help='delete chart from kubernetes')
+@click.pass_context
+@click.argument('name',
+                metavar='<name>',
+                required=True)
+def helm_delete(ctx, name):
+  call('helm delete %s' % name , shell=True)

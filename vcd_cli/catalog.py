@@ -73,6 +73,9 @@ def catalog(ctx):
 \b
         vcd catalog unshare my-catalog
             Stop sharing a catalog.
+\b
+        vcd catalog update my-catalog -n 'new name' -d 'new description'
+            Update the name and/or description of a catalog.
     """  # NOQA
     if ctx.invoked_subcommand not in [None, 'item']:
         try:

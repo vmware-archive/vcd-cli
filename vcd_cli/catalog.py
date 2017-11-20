@@ -114,6 +114,7 @@ def info(ctx, catalog_name, item_name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @catalog.command(short_help='catalog control access details')
 @click.pass_context
 @click.argument('catalog-name',
@@ -132,6 +133,7 @@ def control_access(ctx, catalog_name):
         stdout(control_access, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @catalog.command(short_help='rename catalog and/or change catalog description')
 @click.pass_context

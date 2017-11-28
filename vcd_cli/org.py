@@ -165,15 +165,18 @@ def create(ctx, name, full_name):
               is_flag=True,
               callback=abort_if_false,
               expose_value=False,
-              prompt='Are you sure you want to delete the org?')
+              prompt='Are you sure you want to delete the Org?')
 def delete(ctx, name, recursive, force):
     try:
         client = ctx.obj['client']
         system = System(client)
         if force and recursive:
-            click.confirm('Do you want to force delete org \'%s\' and all '
-                          'its objects?' % name, abort=True)
-        system.delete_org(name, force, recursive)
-        stdout("Org deleted.", ctx)
+            click.confirm('Do you want to force delete \'%s\' and all '
+                          'its objects recursively?' % name, abort=True)
+        elif force:
+            click.confirm('Do you want to force delete \'%s\'' % name,
+                          abort=True)
+        task = system.delete_org(name, force, recursive)
+        stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

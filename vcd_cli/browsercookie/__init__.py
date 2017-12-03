@@ -22,7 +22,8 @@ except ImportError:
 
 try:
     # should use pysqlite2 to read the cookies.sqlite on Windows
-    # otherwise will raise the "sqlite3.DatabaseError: file is encrypted or is not a database" exception
+    # otherwise will raise the "sqlite3.DatabaseError: file is
+    # encrypted or is not a database" exception
     from pysqlite2 import dbapi2 as sqlite3
 except ImportError:
     import sqlite3
@@ -30,6 +31,7 @@ except ImportError:
 import keyring
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Cipher import AES
+
 
 class BrowserCookieError(Exception):
     pass
@@ -40,7 +42,7 @@ def create_local_copy(cookie_file):
     """Make a local copy of the sqlite cookie database and return the new filename.
     This is necessary in case this database is still being written to while the user browses
     to avoid sqlite locking errors.
-    """
+    """  # NOQA
     # check if cookie file exists
     if os.path.exists(cookie_file):
         # copy to random name in tmp folder
@@ -63,7 +65,7 @@ class BrowserCookieLoader(object):
         raise NotImplementedError
 
     def get_cookies(self):
-        '''Return all cookies (May include duplicates from different sources)'''
+        '''Return all cookies (May include duplicates from different sources)'''  # NOQA
         raise NotImplementedError
 
     def load(self):
@@ -80,12 +82,14 @@ class Chrome(BrowserCookieLoader):
 
     def find_cookie_files(self):
         for pattern in [
-            os.path.expanduser('~/Library/Application Support/Google/Chrome/Default/Cookies'),
+            os.path.expanduser(
+                '~/Library/Application Support/Google/Chrome/Default/Cookies'),
             os.path.expanduser('~/.config/chromium/Default/Cookies'),
             os.path.expanduser('~/.config/chromium/Profile */Cookies'),
             os.path.expanduser('~/.config/google-chrome/Default/Cookies'),
             os.path.expanduser('~/.config/google-chrome/Profile */Cookies'),
-            os.path.join(os.getenv('APPDATA', ''), r'..\Local\Google\Chrome\User Data\Default\Cookies'),
+            os.path.join(os.getenv('APPDATA', ''),
+                         r'..\Local\Google\Chrome\User Data\Default\Cookies'),
         ]:
             for result in glob.glob(pattern):
                 yield result
@@ -109,18 +113,21 @@ class Chrome(BrowserCookieLoader):
         elif sys.platform == 'win32':
             key = None
         else:
-            raise BrowserCookieError('Unsupported operating system: ' + sys.platform)
+            raise BrowserCookieError('Unsupported operating system: '
+                                     + sys.platform)
 
         for cookie_file in self.cookie_files:
             with create_local_copy(cookie_file) as tmp_cookie_file:
                 con = sqlite3.connect(tmp_cookie_file)
                 cur = con.cursor()
-                cur.execute('SELECT host_key, path, secure, expires_utc, name, value, encrypted_value FROM cookies;')
+                cur.execute('SELECT host_key, path, secure, expires_utc, name,'
+                            'value, encrypted_value FROM cookies;')
                 for item in cur.fetchall():
                     host, path, secure, expires, name = item[:5]
                     try:
                         value = self._decrypt(item[5], item[6], key=key)
-                        yield create_cookie(host, path, secure, expires, name, value)
+                        yield create_cookie(host, path, secure, expires, name,
+                                            value)
                     except:
                         pass
                 con.close()
@@ -150,12 +157,15 @@ class Chrome(BrowserCookieLoader):
             decrypted = cipher.decrypt(encrypted_value)
             return clean(decrypted)
         else:
-            #Must be win32 (on win32, all chrome cookies are encrypted)
+            # Must be win32 (on win32, all chrome cookies are encrypted)
             try:
                 import win32crypt
             except ImportError:
-                raise BrowserCookieError('win32crypt must be available to decrypt Chrome cookie on Windows')
-            return win32crypt.CryptUnprotectData(encrypted_value, None, None, None, 0)[1].decode("utf-8")
+                raise BrowserCookieError('win32crypt must be available '
+                                         'to decrypt Chrome cookie on Windows')
+            return win32crypt \
+                .CryptUnprotectData(encrypted_value, None, None, None, 0)[1] \
+                .decode("utf-8")
 
 
 class Firefox(BrowserCookieLoader):
@@ -169,7 +179,8 @@ class Firefox(BrowserCookieLoader):
             if cp.has_option(section, 'Default'):
                 try:
                     if cp.getboolean(section, 'IsRelative'):
-                        path = os.path.dirname(profile) + '/' + cp.get(section, 'Path')
+                        path = os.path.dirname(profile) \
+                            + '/' + cp.get(section, 'Path')
                     else:
                         path = cp.get(section, 'Path')
                     return os.path.abspath(os.path.expanduser(path))
@@ -179,13 +190,19 @@ class Firefox(BrowserCookieLoader):
 
     def find_default_profile(self):
         if sys.platform == 'darwin':
-            return glob.glob(os.path.expanduser('~/Library/Application Support/Firefox/profiles.ini'))
+            return glob.glob(
+                os.path.expanduser('~/Library/Application'
+                                   ' Support/Firefox/profiles.ini'))
         elif sys.platform.startswith('linux'):
-            return glob.glob(os.path.expanduser('~/.mozilla/firefox/profiles.ini'))
+            return glob.glob(os.path.expanduser(
+                '~/.mozilla/firefox/profiles.ini'))
         elif sys.platform == 'win32':
-            return glob.glob(os.path.join(os.getenv('APPDATA', ''), 'Mozilla/Firefox/profiles.ini'))
+            return glob.glob(
+                os.path.join(os.getenv('APPDATA', ''),
+                             'Mozilla/Firefox/profiles.ini'))
         else:
-            raise BrowserCookieError('Unsupported operating system: ' + sys.platform)
+            raise BrowserCookieError(
+                'Unsupported operating system: ' + sys.platform)
 
     def find_cookie_files(self):
         profile = self.find_default_profile()
@@ -193,7 +210,8 @@ class Firefox(BrowserCookieLoader):
             raise BrowserCookieError('Could not find default Firefox profile')
         path = self.parse_profile(profile[0])
         if not path:
-            raise BrowserCookieError('Could not find path to default Firefox profile')
+            raise BrowserCookieError(
+                'Could not find path to default Firefox profile')
         cookie_files = glob.glob(os.path.expanduser(path + '/cookies.sqlite'))
         if cookie_files:
             return cookie_files
@@ -205,32 +223,43 @@ class Firefox(BrowserCookieLoader):
             with create_local_copy(cookie_file) as tmp_cookie_file:
                 con = sqlite3.connect(tmp_cookie_file)
                 cur = con.cursor()
-                cur.execute('select host, path, isSecure, expiry, name, value from moz_cookies')
+                cur.execute('select host, path, isSecure,'
+                            ' expiry, name, value from moz_cookies')
 
                 for item in cur.fetchall():
                     yield create_cookie(*item)
                 con.close()
 
                 # current sessions are saved in sessionstore.js
-                session_file = os.path.join(os.path.dirname(cookie_file), 'sessionstore.js')
+                session_file = os.path.join(os.path.dirname(cookie_file),
+                                            'sessionstore.js')
                 if os.path.exists(session_file):
                     try:
-                        json_data = json.loads(open(session_file, 'rb').read().decode('utf-8'))
+                        json_data = json.loads(
+                            open(session_file, 'rb').read().decode('utf-8'))
                     except ValueError as e:
                         print('Error parsing firefox session JSON:', str(e))
                     else:
                         expires = str(int(time.time()) + 3600 * 24 * 7)
                         for window in json_data.get('windows', []):
                             for cookie in window.get('cookies', []):
-                                yield create_cookie(cookie.get('host', ''), cookie.get('path', ''), False, expires, cookie.get('name', ''), cookie.get('value', ''))
+                                yield create_cookie(cookie.get('host', ''),
+                                                    cookie.get('path', ''),
+                                                    False,
+                                                    expires,
+                                                    cookie.get('name', ''),
+                                                    cookie.get('value', ''))
                 else:
-                    print('Firefox session filename does not exist:', session_file)
+                    print('Firefox session filename does not exist:',
+                          session_file)
 
 
 def create_cookie(host, path, secure, expires, name, value):
     """Shortcut function to create a cookie
     """
-    return cookielib.Cookie(0, name, value, None, False, host, host.startswith('.'), host.startswith('.'), path, True, secure, expires, False, None, None, {})
+    return cookielib.Cookie(0, name, value, None, False, host,
+                            host.startswith('.'), host.startswith('.'),
+                            path, True, secure, expires, False, None, None, {})
 
 
 def chrome(cookie_file=None):
@@ -257,7 +286,7 @@ def _get_cookies():
 
 def load():
     """Try to load cookies from all supported browsers and return combined cookiejar
-    """
+    """  # NOQA
     cookie_jar = cookielib.CookieJar()
 
     for cookie in sorted(_get_cookies(), key=lambda cookie: cookie.expires):

@@ -189,7 +189,7 @@ def update(ctx, user_name, is_enabled):
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
-        result = org.update_user(user_name, is_enabled)
+        result = org.update_user(user_name=user_name, is_enabled=is_enabled)
         stdout('User \'%s\' is successfully updated.' % result.get('name'),
                ctx)
     except Exception as e:

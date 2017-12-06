@@ -25,8 +25,8 @@ def user(ctx):
         vcd user delete 'my user'
            deletes user with username "my user" from the current organization. Will also delete vApps owned by the user. If user has running vApps, this command will result in error.
 \b
-        vcd user update 'my user' 
-           update user in the current organization
+        vcd user update 'my user' --enable
+           update user in the current organization, e.g enable the user
 
     """  # NOQA
     if ctx.invoked_subcommand is not None:
@@ -182,7 +182,9 @@ def delete(ctx, user_name):
 @click.argument('user_name',
                 metavar='<user_name>',
                 required=True)
-@click.option('--enable/--disable', 'is_enabled', default=None,
+@click.option('--enable/--disable',
+              'is_enabled',
+              default=None,
               help='enable/disable the user')
 def update(ctx, user_name, is_enabled):
     try:

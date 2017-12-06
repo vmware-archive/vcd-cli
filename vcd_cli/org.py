@@ -46,8 +46,8 @@ def org(ctx):
         vcd org delete my-org-name
             Delete organization 'my-org-name'
 \b
-        vcd org update my-org-name
-            Update organization 'my-org-name'
+        vcd org update my-org-name --enable
+            Update organization 'my-org-name', e.g. enable the organization
     """  # NOQA
     if ctx.invoked_subcommand is not None:
         try:
@@ -197,7 +197,9 @@ def delete(ctx, name, recursive, force):
 @click.argument('name',
                 metavar='<name>',
                 required=True)
-@click.option('--enable/--disable', 'is_enabled', default=None,
+@click.option('--enable/--disable',
+              'is_enabled',
+              default=None,
               help='enable/disable the org')
 def update(ctx, name, is_enabled):
     try:

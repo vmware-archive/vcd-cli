@@ -133,8 +133,10 @@ def control_access(ctx, catalog_name):
         org = Org(client, in_use_org_href)
         control_access = org.get_catalog_access_control_settings(catalog_name)
         stdout('Access Settings for catalog :' + catalog_name)
-        access_settings = control_access.get('AccessSettings')
-        del control_access['AccessSettings']
+        access_settings = None
+        if 'AccessSettings' in control_access:
+            access_settings = control_access.get('AccessSettings')
+            del control_access['AccessSettings']
         stdout(control_access, ctx)
         stdout('')
         if access_settings is not None:

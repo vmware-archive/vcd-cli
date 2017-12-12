@@ -15,7 +15,9 @@
 import click
 from pyvcloud.vcd.client import EntityType
 from pyvcloud.vcd.client import get_links
+from pyvcloud.vcd.org import Org
 from pyvcloud.vcd.utils import vdc_to_dict
+from pyvcloud.vcd.vdc import VDC
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
@@ -55,22 +57,25 @@ def info(ctx, name):
         client = ctx.obj['client']
         in_use_org_name = ctx.obj['profiles'].get('org_in_use')
         in_use_vdc = ctx.obj['profiles'].get('vdc_in_use')
-        orgs = client.get_org_list()
-        result = {}
-        vdc_resource = None
-        for org in [o for o in orgs.Org if hasattr(orgs, 'Org')]:
-            if org.get('name') == in_use_org_name:
-                resource = client.get_resource(org.get('href'))
-                for v in get_links(resource, media_type=EntityType.VDC.value):
-                    if v.name == name:
-                        vdc_resource = client.get_resource(v.href)
-                        result = vdc_to_dict(vdc_resource)
-                        result['in_use'] = in_use_vdc == name
-                        result['org'] = in_use_org_name
-                        break
+        org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, org_href)
+        vdc_resource = org.get_vdc(name)
         if vdc_resource is None:
-            raise Exception('not found')
+            raise Exception('vdc not found')
+        vdc = VDC(client, resource=vdc_resource)
+        vdc_access_control = vdc.get_access_control_settings()
+        result = vdc_to_dict(vdc_resource)
+        result['in_use'] = in_use_vdc == name
+        result['org'] = in_use_org_name
+        access_settings = None
+        if 'AccessSettings' in vdc_access_control:
+            access_settings = vdc_access_control.get('AccessSettings')
+            del vdc_access_control['AccessSettings']
+        result.update(vdc_access_control)
         stdout(result, ctx)
+        if access_settings is not None:
+            stdout('\nAccess control settings:\n')
+            stdout(access_settings)
     except Exception as e:
         stderr(e, ctx)
 

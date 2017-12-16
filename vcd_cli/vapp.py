@@ -105,18 +105,10 @@ def info(ctx, name):
         vdc = VDC(client, href=vdc_href)
         vapp_resource = vdc.get_vapp(name)
         vapp = VApp(client, resource=vapp_resource)
-        vapp_access_control = vapp.get_access_control_settings()
         md = vapp.get_metadata()
-        result = vapp_to_dict(vapp_resource, md)
-        access_settings = None
-        if 'AccessSettings' in vapp_access_control:
-            access_settings = vapp_access_control.get('AccessSettings')
-            del vapp_access_control['AccessSettings']
-        result.update(vapp_access_control)
+        access_control_settings = vapp.get_access_control_settings()
+        result = vapp_to_dict(vapp_resource, md, access_control_settings)
         stdout(result, ctx)
-        if access_settings is not None:
-            stdout('\nAccess control settings:\n')
-            stdout(access_settings)
     except Exception as e:
         stderr(e, ctx)
 

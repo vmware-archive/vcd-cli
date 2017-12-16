@@ -60,22 +60,12 @@ def info(ctx, name):
         org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, org_href)
         vdc_resource = org.get_vdc(name)
-        if vdc_resource is None:
-            raise Exception('vdc not found')
         vdc = VDC(client, resource=vdc_resource)
-        vdc_access_control = vdc.get_access_control_settings()
-        result = vdc_to_dict(vdc_resource)
+        access_control_settings = vdc.get_access_control_settings()
+        result = vdc_to_dict(vdc_resource, access_control_settings)
         result['in_use'] = in_use_vdc == name
         result['org'] = in_use_org_name
-        access_settings = None
-        if 'AccessSettings' in vdc_access_control:
-            access_settings = vdc_access_control.get('AccessSettings')
-            del vdc_access_control['AccessSettings']
-        result.update(vdc_access_control)
         stdout(result, ctx)
-        if access_settings is not None:
-            stdout('\nAccess control settings:\n')
-            stdout(access_settings)
     except Exception as e:
         stderr(e, ctx)
 

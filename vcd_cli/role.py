@@ -18,14 +18,14 @@ def role(ctx):
     Examples
         vcd role list
             Get list of roles in the current organization.
-            
+
         vcd role list-rights myRole
             Get list of rights associated with a given role.
-        
+
         vcd role create myRole myDescription 'Disk: View Properties' 'Provider vDC: Edit' --org myOrg
             Create a role with zero or more rights in the specified Organization(defaults to current
              Organization in use)
-        
+
         vcd role delete myRole -o myOrg
             Deletes a role from the specified Organization
             (defaults to current organization in use)

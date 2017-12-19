@@ -19,12 +19,16 @@ def role(ctx):
         vcd role list
             Get list of roles in the current organization.
             
-        vcd role list_rights myRole
+        vcd role list-rights myRole
             Get list of rights associated with a given role.
         
         vcd role create myRole myDescription 'Disk: View Properties' 'Provider vDC: Edit' --org myOrg
             Create a role with zero or more rights in the specified Organization(defaults to current
              Organization in use)
+        
+        vcd role delete myRole -o myOrg
+            Deletes a role from the specified Organization
+            (defaults to current organization in use)
     """  # NOQA
     if ctx.invoked_subcommand is not None:
         try:
@@ -98,6 +102,32 @@ def create(ctx, role_name, description, rights, org_name):
         org = Org(client, resource=client.get_org_by_name(org_name))
         role = org.create_role(role_name, description, rights)
         stdout(to_dict(role, exclude=['Link', 'RightReferences']), ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@role.command('delete', short_help='Deletes role in the specified Organization (defaults to the '
+                                   'current organization in use')
+@click.pass_context
+@click.argument('role-name',
+                metavar='<role-name>',
+                required=True)
+@click.option('-o',
+              '--org',
+              'org_name',
+              required=False,
+              metavar='[org-name]',
+              help='name of the org',
+              )
+def delete(ctx, role_name, org_name):
+    try:
+        client = ctx.obj['client']
+        if org_name is not None:
+            org = Org(client, resource=client.get_org_by_name(org_name))
+        else:
+            org_href = ctx.obj['profiles'].get('org_href')
+            org = Org(client, org_href)
+        org.delete_role(role_name)
+        stdout('Role \'%s\' has been successfully deleted.' % role_name, ctx)
     except Exception as e:
         stderr(e, ctx)
 

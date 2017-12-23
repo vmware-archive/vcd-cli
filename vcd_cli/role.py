@@ -6,6 +6,7 @@ from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
 from vcd_cli.utils import to_dict
+from vcd_cli.vcd import abort_if_false
 from vcd_cli.vcd import vcd
 
 
@@ -39,11 +40,21 @@ def role(ctx):
 
 @role.command('list', short_help='list roles')
 @click.pass_context
-def list_roles(ctx):
+@click.option('-o',
+              '--org',
+              'org_name',
+              required=False,
+              metavar='[org-name]',
+              help='name of the org',
+              )
+def list_roles(ctx, org_name):
     try:
         client = ctx.obj['client']
-        in_use_org_href = ctx.obj['profiles'].get('org_href')
-        org = Org(client, in_use_org_href)
+        if org_name is not None:
+            org = Org(client, resource=client.get_org_by_name(org_name))
+        else:
+            org_href = ctx.obj['profiles'].get('org_href')
+            org = Org(client, org_href)
         result = org.list_roles()
         stdout(result, ctx)
     except Exception as e:
@@ -64,9 +75,11 @@ def list_roles(ctx):
 def list_rights(ctx, role_name, org_name):
     try:
         client = ctx.obj['client']
-        if org_name is None:
-            org_name = ctx.obj['profiles'].get('org_in_use')
-        org = Org(client, resource=client.get_org_by_name(org_name))
+        if org_name is not None:
+            org = Org(client, resource=client.get_org_by_name(org_name))
+        else:
+            org_href = ctx.obj['profiles'].get('org_href')
+            org = Org(client, org_href)
         role_record = org.get_role(role_name)
         role = Role(client, href=role_record.get('href'))
         rights = role.list_rights()
@@ -97,9 +110,11 @@ def list_rights(ctx, role_name, org_name):
 def create(ctx, role_name, description, rights, org_name):
     try:
         client = ctx.obj['client']
-        if org_name is None:
-            org_name = ctx.obj['profiles'].get('org_in_use')
-        org = Org(client, resource=client.get_org_by_name(org_name))
+        if org_name is not None:
+            org = Org(client, resource=client.get_org_by_name(org_name))
+        else:
+            org_href = ctx.obj['profiles'].get('org_href')
+            org = Org(client, org_href)
         role = org.create_role(role_name, description, rights)
         stdout(to_dict(role, exclude=['Link', 'RightReferences']), ctx)
     except Exception as e:
@@ -126,6 +141,8 @@ def delete(ctx, role_name, org_name):
         else:
             org_href = ctx.obj['profiles'].get('org_href')
             org = Org(client, org_href)
+            org_name = ctx.obj['profiles'].get('org_in_use')
+        click.confirm('Do you want to delete \'%s\' in the org \'%s\'' % (role_name, org_name), abort=True)
         org.delete_role(role_name)
         stdout('Role \'%s\' has been successfully deleted.' % role_name, ctx)
     except Exception as e:

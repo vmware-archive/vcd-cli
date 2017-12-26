@@ -133,6 +133,12 @@ def create(ctx, role_name, description, rights, org_name):
               metavar='[org-name]',
               help='name of the org',
               )
+@click.option('-y',
+              '--yes',
+              is_flag=True,
+              callback=abort_if_false,
+              expose_value=False,
+              prompt='Are you sure you want to delete the role?')
 def delete(ctx, role_name, org_name):
     try:
         client = ctx.obj['client']
@@ -141,8 +147,6 @@ def delete(ctx, role_name, org_name):
         else:
             org_href = ctx.obj['profiles'].get('org_href')
             org = Org(client, org_href)
-            org_name = ctx.obj['profiles'].get('org_in_use')
-        click.confirm('Do you want to delete \'%s\' in the org \'%s\'' % (role_name, org_name), abort=True)
         org.delete_role(role_name)
         stdout('Role \'%s\' has been successfully deleted.' % role_name, ctx)
     except Exception as e:

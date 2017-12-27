@@ -134,8 +134,7 @@ def create(ctx, role_name, description, rights, org_name):
               'org_name',
               required=False,
               metavar='[org-name]',
-              help='name of the org',
-              )
+              help='name of the org')
 @click.option('-y',
               '--yes',
               is_flag=True,
@@ -154,3 +153,31 @@ def delete(ctx, role_name, org_name):
         stdout('Role \'%s\' has been successfully deleted.' % role_name, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+@role.command('unlink', short_help='Unlink the role of a given org from its template')
+@click.pass_context
+@click.argument('role-name',
+                metavar='<role-name>',
+                required=True)
+@click.option('-o',
+              '--org',
+              'org_name',
+              required=False,
+              metavar='[org-name]',
+              help='name of the org')
+def unlink(ctx, role_name, org_name):
+    try:
+        client = ctx.obj['client']
+        if org_name is not None:
+            org = Org(client, resource=client.get_org_by_name(org_name))
+        else:
+            org_href = ctx.obj['profiles'].get('org_href')
+            org = Org(client, org_href)
+            role_record = org.get_role(role_name)
+        role = Role(client, href=role_record.get('href'))
+        role.unlink_role(role_name)
+        stdout('Role \'%s\' has been successfully unlinked from it\'s template.' % role_name, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+

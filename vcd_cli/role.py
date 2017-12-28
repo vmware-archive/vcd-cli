@@ -14,7 +14,11 @@ from vcd_cli.vcd import vcd
 @vcd.group(short_help='work with roles')
 @click.pass_context
 def role(ctx):
-    """Work with roles and rights
+    """Work with roles.
+\b
+    Description
+       All sub-commands execute in the context of specified organization;
+       it defaults to current organization-in-use if --org option is not specified.
 
 \b
     Examples
@@ -26,12 +30,16 @@ def role(ctx):
 \b
         vcd role create myRole myDescription 'Disk: View Properties' \\
             'Provider vDC: Edit' --org myOrg
-            Create a role with zero or more rights in the specified
-            Organization (defaults to current Organization in use)
+            Creates a role with zero or more rights.
 \b
         vcd role delete myRole -o myOrg
-            Deletes a role from the specified Organization
-            (defaults to current organization in use)
+            Deletes a role from the organization.
+\b
+        vcd role link myRole -o myOrg
+            Links the role to it's original template.
+\b
+        vcd role unlink myRole -o myOrg
+            Unlinks the role from its template.
     """
 
     if ctx.invoked_subcommand is not None:
@@ -58,8 +66,10 @@ def list_roles(ctx, org_name):
         else:
             org_href = ctx.obj['profiles'].get('org_href')
             org = Org(client, org_href)
-        result = org.list_roles()
-        stdout(result, ctx)
+        roles = org.list_roles()
+        for role in roles:
+            del role['href']
+        stdout(roles, ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -173,10 +183,36 @@ def unlink(ctx, role_name, org_name):
         else:
             org_href = ctx.obj['profiles'].get('org_href')
             org = Org(client, org_href)
-            role_record = org.get_role(role_name)
+        role_record = org.get_role(role_name)
         role = Role(client, href=role_record.get('href'))
-        role.unlink_role(role_name)
+        role.unlink()
         stdout('Role \'%s\' has been successfully unlinked from it\'s template.' % role_name, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@role.command('link', short_help='Link the role of a given org to its template')
+@click.pass_context
+@click.argument('role-name',
+                metavar='<role-name>',
+                required=True)
+@click.option('-o',
+              '--org',
+              'org_name',
+              required=False,
+              metavar='[org-name]',
+              help='name of the org')
+def link(ctx, role_name, org_name):
+    try:
+        client = ctx.obj['client']
+        if org_name is not None:
+            org = Org(client, resource=client.get_org_by_name(org_name))
+        else:
+            org_href = ctx.obj['profiles'].get('org_href')
+            org = Org(client, org_href)
+        role_record = org.get_role(role_name)
+        role = Role(client, href=role_record.get('href'))
+        role.link()
+        stdout('Role \'%s\' has been successfully linked to it\'s template.' % role_name, ctx)
     except Exception as e:
         stderr(e, ctx)
 

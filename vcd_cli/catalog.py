@@ -18,11 +18,14 @@ import click
 
 from pyvcloud.vcd.client import QueryResultFormat
 from pyvcloud.vcd.org import Org
+from pyvcloud.vcd.utils import access_control_settings_to_dict
 from pyvcloud.vcd.utils import to_dict
 from pyvcloud.vcd.utils import vapp_to_dict
 from pyvcloud.vcd.vapp import VApp
 
 from vcd_cli.utils import is_sysadmin
+from vcd_cli.utils import acl_str_to_list_of_dict
+from vcd_cli.utils import access_settings_to_result_list
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
@@ -79,10 +82,10 @@ def catalog(ctx):
             Delete media file from catalog.
 \b
         vcd catalog share my-catalog
-            Publish and share catalog accross all organizations.
+            Publish and share catalog across all organizations.
 \b
         vcd catalog unshare my-catalog
-            Stop sharing a catalog.
+            Stop sharing a catalog with all organization.
 \b
         vcd catalog update my-catalog -n 'new name' -d 'new description'
             Update the name and/or description of a catalog.
@@ -112,8 +115,8 @@ def info(ctx, catalog_name, item_name):
         if item_name is None:
             catalog = org.get_catalog(catalog_name)
             result = to_dict(catalog)
-            access_control_settings = org.get_catalog_access_control_settings(
-                catalog_name)
+            access_control_settings = access_control_settings_to_dict(
+                org.get_catalog_access_control_settings(catalog_name))
             result.update(access_control_settings)
         else:
             catalog_item = org.get_catalog_item(catalog_name, item_name)
@@ -235,7 +238,7 @@ def delete_catalog_or_item(ctx, catalog_name, item_name):
         stderr(e, ctx)
 
 
-@catalog.command(short_help='share a catalog')
+@catalog.command(short_help='share a catalog to all organization')
 @click.pass_context
 @click.argument('catalog-name',
                 metavar='<catalog-name>',
@@ -251,7 +254,7 @@ def share(ctx, catalog_name):
         stderr(e, ctx)
 
 
-@catalog.command(short_help='unshare a catalog')
+@catalog.command(short_help='unshare a catalog from all organization')
 @click.pass_context
 @click.argument('catalog-name',
                 metavar='<catalog-name>',
@@ -386,5 +389,198 @@ def change_owner(ctx, catalog_name, user_name):
         org = Org(client, in_use_org_href)
         org.change_catalog_owner(catalog_name, user_name)
         stdout('catalog owner changed', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@catalog.group(short_help='work with catalog acl')
+@click.pass_context
+def acl(ctx):
+    """Work with catalogs access settings in the current Organization.
+
+    \b
+        Examples
+            vcd catalog acl add my-catalog 'org:TestOrg1:ReadOnly'  \\
+                'user:TestUser1:ReadOnly'
+                Add one or more acl to the specified catalog. access-list is
+                specified in the format
+                '<subject-type>:<subject-name>:<access-level>'
+                subject-name is either username or org name
+                access-level is one 'ReadOnly', 'Change', 'FullControl'
+                subject-type is one of 'org' ,'user'
+    \b
+            vcd catalog acl remove my-catalog 'org:TestOrg1' 'user:TestUser1'
+                Remove one or more acl from the specified catalog. access-list is
+                specified in the format '<subject-type>:<subject-name>'
+                subject-name is either username or org name
+                subject-type is one of 'org' ,'user'
+    \b
+            vcd catalog acl share my-catalog --access-level ReadOnly
+                Share catalog access to all members of the current organization
+    \b
+            vcd catalog acl unshare my-catalog
+                Unshare  catalog access from  all members of the current
+                organization
+    \b
+            vcd catalog acl list my-catalog
+                List access settings of a catalog
+
+    \b
+            vcd catalog acl info my-catalog
+                Get details of catalog access settings
+
+        """
+    if ctx.invoked_subcommand is not None:
+        try:
+            restore_session(ctx)
+        except Exception as e:
+            stderr(e, ctx)
+
+
+@acl.command(short_help='add access settings to a particular catalog')
+@click.pass_context
+@click.argument('catalog-name',
+                metavar='<catalog-name>')
+@click.argument('access-list',
+                nargs=-1,
+                required=False,
+                metavar='<access-list>')
+def add(ctx, catalog_name, access_list):
+    try:
+        if len(access_list) == 0:
+            click.echo("Should provide at least 1 acl")
+        client = ctx.obj['client']
+        in_use_org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, in_use_org_href)
+
+        updated_access = \
+            org.add_catalog_access_settings(
+                catalog_name=catalog_name,
+                access_settings_list=acl_str_to_list_of_dict(
+                    access_list))
+        stdout(access_settings_to_result_list(updated_access, ctx.obj[
+            'profiles'].get('org_in_use')), ctx,
+               sort_headers=False)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@acl.command(short_help='remove access settings from a particular catalog')
+@click.pass_context
+@click.argument('catalog-name',
+                metavar='<catalog-name>')
+@click.argument('access-list',
+                nargs=-1,
+                required=False,
+                metavar='<access-list>')
+@click.option('--all',
+              is_flag=True,
+              required=False,
+              default=False,
+              metavar='[all]',
+              help='remove all the acl in the catalog')
+def remove(ctx, catalog_name, access_list, all):
+    try:
+        client = ctx.obj['client']
+        in_use_org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, in_use_org_href)
+
+        if all:
+            click.confirm('Do you want to remove all acl from the catalog '
+                          '\'%s\'' % catalog_name, abort=True)
+        updated_access = \
+            org.remove_catalog_access_settings(
+                catalog_name=catalog_name,
+                access_settings_list=acl_str_to_list_of_dict(
+                    access_list),
+                remove_all=all)
+        stdout(access_settings_to_result_list(updated_access, ctx.obj[
+            'profiles'].get('org_in_use')), ctx,
+               sort_headers=False)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@acl.command(short_help='share catalog access to all members of the current '
+                        'organization')
+@click.pass_context
+@click.argument('catalog-name',
+                metavar='<catalog-name>')
+@click.option('access_level',
+              '--access-level',
+              type=click.Choice(
+                  ['ReadOnly', 'Change', 'FullControl']),
+              required=False,
+              default='ReadOnly',
+              metavar='<access-level>',
+              help='access level at which the catalog is shared')
+def share(ctx, catalog_name, access_level):
+    try:
+        client = ctx.obj['client']
+        in_use_org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, in_use_org_href)
+
+        updated_access = \
+            org.share_catalog_access(catalog_name=catalog_name,
+                                     everyone_access_level=access_level)
+        stdout(access_settings_to_result_list(updated_access, ctx.obj[
+            'profiles'].get('org_in_use')), ctx,
+               sort_headers=False)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@acl.command(short_help='unshare catalog access from members of the '
+                        'current organization')
+@click.pass_context
+@click.argument('catalog-name',
+                metavar='<catalog-name>')
+def unshare(ctx, catalog_name):
+    try:
+        client = ctx.obj['client']
+        in_use_org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, in_use_org_href)
+
+        updated_access = \
+            org.unshare_catalog_access(catalog_name=catalog_name)
+        stdout(access_settings_to_result_list(updated_access, ctx.obj[
+            'profiles'].get('org_in_use')), ctx,
+               sort_headers=False)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@acl.command('list', short_help='list catalog access settings')
+@click.pass_context
+@click.argument('catalog-name',
+                metavar='<catalog-name>')
+def list_acl(ctx, catalog_name):
+    try:
+        client = ctx.obj['client']
+        in_use_org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, in_use_org_href)
+
+        control_access = \
+            org.get_catalog_access_control_settings(catalog_name=catalog_name)
+        stdout(access_settings_to_result_list(control_access, ctx.obj[
+            'profiles'].get('org_in_use')), ctx,
+               sort_headers=False)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@acl.command(short_help='info about the catalog control access')
+@click.pass_context
+@click.argument('catalog-name',
+                metavar='<catalog-name>')
+def info(ctx, catalog_name):
+    try:
+        client = ctx.obj['client']
+        in_use_org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, in_use_org_href)
+
+        control_access = \
+            org.get_catalog_access_control_settings(catalog_name=catalog_name)
+        stdout(access_control_settings_to_dict(control_access), ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -85,7 +85,7 @@ def catalog(ctx):
             Publish and share catalog across all organizations.
 \b
         vcd catalog unshare my-catalog
-            Stop sharing a catalog with all organization.
+            Stop sharing a catalog across all organizations.
 \b
         vcd catalog update my-catalog -n 'new name' -d 'new description'
             Update the name and/or description of a catalog.
@@ -398,38 +398,38 @@ def change_owner(ctx, catalog_name, user_name):
 def acl(ctx):
     """Work with catalogs access settings in the current Organization.
 
-    \b
-        Examples
-            vcd catalog acl add my-catalog 'org:TestOrg1:ReadOnly'  \\
-                'user:TestUser1:ReadOnly'
-                Add one or more acl to the specified catalog. access-list is
-                specified in the format
-                '<subject-type>:<subject-name>:<access-level>'
-                subject-name is either username or org name
-                access-level is one 'ReadOnly', 'Change', 'FullControl'
-                subject-type is one of 'org' ,'user'
-    \b
-            vcd catalog acl remove my-catalog 'org:TestOrg1' 'user:TestUser1'
-                Remove one or more acl from the specified catalog. access-list is
-                specified in the format '<subject-type>:<subject-name>'
-                subject-name is either username or org name
-                subject-type is one of 'org' ,'user'
-    \b
-            vcd catalog acl share my-catalog --access-level ReadOnly
-                Share catalog access to all members of the current organization
-    \b
-            vcd catalog acl unshare my-catalog
-                Unshare  catalog access from  all members of the current
-                organization
-    \b
-            vcd catalog acl list my-catalog
-                List access settings of a catalog
+\b
+    Examples
+        vcd catalog acl add my-catalog 'org:TestOrg1:ReadOnly'  \\
+            'user:TestUser1:ReadOnly'
+            Add one or more acl to the specified catalog. access-list is
+            specified in the format
+            '<subject-type>:<subject-name>:<access-level>'
+            subject-name is either username or org name
+            access-level is one 'ReadOnly', 'Change', 'FullControl'
+            subject-type is one of 'org' ,'user'
+\b
+        vcd catalog acl remove my-catalog 'org:TestOrg1' 'user:TestUser1'
+            Remove one or more acl from the specified catalog. access-list is
+            specified in the format '<subject-type>:<subject-name>'
+            subject-name is either username or org name
+            subject-type is one of 'org' ,'user'
+\b
+        vcd catalog acl share my-catalog --access-level ReadOnly
+            Share catalog access to all members of the current organization
+\b
+        vcd catalog acl unshare my-catalog
+            Unshare  catalog access from  all members of the current
+            organization
+\b
+        vcd catalog acl list my-catalog
+            List access settings of a catalog
 
-    \b
-            vcd catalog acl info my-catalog
-                Get details of catalog access settings
+\b
+        vcd catalog acl info my-catalog
+            Get details of catalog access control settings
 
-        """
+    """
     if ctx.invoked_subcommand is not None:
         try:
             restore_session(ctx)
@@ -443,12 +443,10 @@ def acl(ctx):
                 metavar='<catalog-name>')
 @click.argument('access-list',
                 nargs=-1,
-                required=False,
+                required=True,
                 metavar='<access-list>')
 def add(ctx, catalog_name, access_list):
     try:
-        if len(access_list) == 0:
-            click.echo("Should provide at least 1 acl")
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -501,7 +499,7 @@ def remove(ctx, catalog_name, access_list, all):
         stderr(e, ctx)
 
 
-@acl.command(short_help='share catalog access to all members of the current '
+@acl.command(short_help='share catalog access to all members of the current'
                         'organization')
 @click.pass_context
 @click.argument('catalog-name',
@@ -513,7 +511,8 @@ def remove(ctx, catalog_name, access_list, all):
               required=False,
               default='ReadOnly',
               metavar='<access-level>',
-              help='access level at which the catalog is shared')
+              help='access level at which the catalog is shared. ReadOnly by'
+                   ' default')
 def share(ctx, catalog_name, access_level):
     try:
         client = ctx.obj['client']

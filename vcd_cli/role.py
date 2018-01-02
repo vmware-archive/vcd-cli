@@ -3,6 +3,7 @@ import click
 from pyvcloud.vcd.org import Org
 from pyvcloud.vcd.role import Role
 
+from vcd_cli.utils import is_sysadmin
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
@@ -40,6 +41,9 @@ def role(ctx):
 \b
         vcd role unlink myRole -o myOrg
             Unlinks the role from its template.
+\b
+        vcd role add-right myRole myRight1 myRight2  -o myOrg
+            Adds one or more rights to a given role.
     """
 
     if ctx.invoked_subcommand is not None:
@@ -216,4 +220,73 @@ def link(ctx, role_name, org_name):
     except Exception as e:
         stderr(e, ctx)
 
+@role.command('add-right', short_help='Add one or more rights to the role')
+@click.pass_context
+@click.argument('role-name',
+                metavar='<role-name>',
+                required=True)
+@click.argument('rights',
+                nargs=-1,
+                metavar='<rights>')
+@click.option('-o',
+              '--org',
+              'org_name',
+              required=False,
+              metavar='[org-name]',
+              help='name of the org')
+def add_right(ctx, role_name, rights, org_name):
+    try:
+        if not is_sysadmin(ctx):
+            raise Exception("Only System administrator can execute this command")
+        if len(rights) < 1:
+            click.secho('Pass one or more rights to be added', fg='yellow', err=False)
+            return
+        client = ctx.obj['client']
+        if org_name is not None:
+            org = Org(client, resource=client.get_org_by_name(org_name))
+        else:
+            org_href = ctx.obj['profiles'].get('org_href')
+            org = Org(client, org_href)
+        role_record = org.get_role(role_name)
+        role = Role(client, href=role_record.get('href'))
+        right_records = []
+        for right in rights:
+            record = org.get_right(right)
+            right_records.append(record)
+        role.add_rights(right_records)
+    except Exception as e:
+        stderr(e, ctx)
+
+@role.command('remove-right', short_help='Remove one or more rights from the role')
+@click.pass_context
+@click.argument('role-name',
+                metavar='<role-name>',
+                required=True)
+@click.argument('rights',
+                nargs=-1,
+                metavar='<rights>')
+@click.option('-o',
+              '--org',
+              'org_name',
+              required=False,
+              metavar='[org-name]',
+              help='name of the org')
+def remove_right(ctx, role_name, rights, org_name):
+    try:
+        if not is_sysadmin(ctx):
+            raise Exception("Only System administrator can execute this command")
+        if len(rights) < 1:
+            click.secho('Pass one or more rights to be removed', fg='yellow', err=False)
+            return
+        client = ctx.obj['client']
+        if org_name is not None:
+            org = Org(client, resource=client.get_org_by_name(org_name))
+        else:
+            org_href = ctx.obj['profiles'].get('org_href')
+            org = Org(client, org_href)
+        role_record = org.get_role(role_name)
+        role = Role(client, href=role_record.get('href'))
+        role.remove_rights(list(rights))
+    except Exception as e:
+        stderr(e, ctx)
 

@@ -62,10 +62,10 @@ def list_roles(ctx, org_name):
     try:
         client = ctx.obj['client']
         if org_name is not None:
-            org = Org(client, resource=client.get_org_by_name(org_name))
+            org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
-            org = Org(client, org_href)
+        org = Org(client, org_href)
         roles = org.list_roles()
         for role in roles:
             del role['href']
@@ -89,10 +89,10 @@ def list_rights(ctx, role_name, org_name):
     try:
         client = ctx.obj['client']
         if org_name is not None:
-            org = Org(client, resource=client.get_org_by_name(org_name))
+            org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
-            org = Org(client, org_href)
+        org = Org(client, org_href)
         role_record = org.get_role(role_name)
         role = Role(client, href=role_record.get('href'))
         rights = role.list_rights()
@@ -124,10 +124,10 @@ def create(ctx, role_name, description, rights, org_name):
     try:
         client = ctx.obj['client']
         if org_name is not None:
-            org = Org(client, resource=client.get_org_by_name(org_name))
+            org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
-            org = Org(client, org_href)
+        org = Org(client, org_href)
         role = org.create_role(role_name, description, rights)
         stdout(to_dict(role, exclude=['Link', 'RightReferences']), ctx)
     except Exception as e:
@@ -155,10 +155,10 @@ def delete(ctx, role_name, org_name):
     try:
         client = ctx.obj['client']
         if org_name is not None:
-            org = Org(client, resource=client.get_org_by_name(org_name))
+            org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
-            org = Org(client, org_href)
+        org = Org(client, org_href)
         org.delete_role(role_name)
         stdout('Role \'%s\' has been successfully deleted.' % role_name, ctx)
     except Exception as e:
@@ -179,10 +179,10 @@ def unlink(ctx, role_name, org_name):
     try:
         client = ctx.obj['client']
         if org_name is not None:
-            org = Org(client, resource=client.get_org_by_name(org_name))
+            org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
-            org = Org(client, org_href)
+        org = Org(client, org_href)
         role_record = org.get_role(role_name)
         role = Role(client, href=role_record.get('href'))
         role.unlink()
@@ -205,10 +205,10 @@ def link(ctx, role_name, org_name):
     try:
         client = ctx.obj['client']
         if org_name is not None:
-            org = Org(client, resource=client.get_org_by_name(org_name))
+            org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
-            org = Org(client, org_href)
+        org = Org(client, org_href)
         role_record = org.get_role(role_name)
         role = Role(client, href=role_record.get('href'))
         role.link()

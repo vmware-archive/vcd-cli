@@ -134,7 +134,7 @@ def list_disks(ctx):
               'iops',
               required=False,
               metavar='<iops>',
-              help='Iops')
+              help='Iops of the independent disk')
 @click.option('storage_profile',
               '-s',
               '--storage-profile',

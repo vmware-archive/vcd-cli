@@ -128,8 +128,8 @@ def list_disks(ctx):
               'description',
               required=False,
               metavar='<description>',
-              help='Description')
-@click.option('-i',
+              help='Description of the independent disk')
+@click.option('-io',
               '--iops',
               'iops',
               required=False,

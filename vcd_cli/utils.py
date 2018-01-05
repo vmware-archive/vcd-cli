@@ -257,38 +257,61 @@ def tabulate_names(names, columns=4):
 
 def acl_str_to_list_of_dict(access_settings_tuple):
     access_settings_list = []
-    for access_str in tuple(access_settings_tuple):
-        access_str = access_str.strip("'")
-        access_setting = access_str.split(":")
-        access_dict = {'type': access_setting[0], 'name': access_setting[1]}
+    for access_str in access_settings_tuple:
+        validate_access_str(access_str)
+        access_setting = access_str.strip("'").split(":")
 
+        access_dict = {'type': access_setting[0], 'name': access_setting[1]}
         if len(access_setting) > 2:
             access_dict['access_level'] = access_setting[2]
         access_settings_list.append(access_dict)
     return access_settings_list
 
 
-def access_settings_to_result_list(access_control_settings, org_in_use=''):
+def validate_access_str(access_str):
+    access_setting = access_str.strip("'").split(":")
+
+    valid_access_setting_format = \
+        ['<subject-type>:<subject-name>:<access-level>',
+         '<subject-type>:<subject-name>']
+    valid_subject_type = ['org', 'user']
+    valid_access_level = ['ReadOnly', 'Change', 'FullControl']
+
+    if any(val == '' for val in access_setting):
+        raise Exception("format of access setting %s should be one of "
+                        "%s" % (access_str, valid_access_setting_format))
+
+    if access_setting[0] not in valid_subject_type:
+        raise Exception('subject-type in %s is not valid. Should be one of '
+                        '%s,' % (access_str, valid_subject_type))
+    if len(access_setting) > 2:
+        if access_setting[2] not in valid_access_level:
+            raise Exception(
+                'access-level in %s is not valid. Should be one of '
+                '%s' % (access_str, valid_access_level))
+
+
+def access_settings_to_list(control_access_params, org_in_use=''):
     result = []
     entity_to_subject_type_dict = {EntityType.USER.value: 'user',
                                    EntityType.ADMIN_ORG.value: 'org'}
     current_org_access = {}
-    if hasattr(access_control_settings, 'IsSharedToEveryone'):
+    if hasattr(control_access_params, 'IsSharedToEveryone'):
         current_org_access['subject_name'] = '%s (org_in_use)' % org_in_use
         current_org_access['subject_type'] = 'org'
-    if hasattr(access_control_settings, 'EveryoneAccessLevel'):
-        current_org_access['access_level'] = access_control_settings[
+    if hasattr(control_access_params, 'EveryoneAccessLevel'):
+        current_org_access['access_level'] = control_access_params[
             'EveryoneAccessLevel']
     else:
         current_org_access['access_level'] = 'None'
     result.append(current_org_access)
 
-    if hasattr(access_control_settings, 'AccessSettings') and \
-            hasattr(access_control_settings.AccessSettings,
+    if hasattr(control_access_params, 'AccessSettings') and \
+            hasattr(control_access_params.AccessSettings,
                     'AccessSetting') and \
-            len(access_control_settings.AccessSettings.AccessSetting) > 0:
+            len(control_access_params.AccessSettings.AccessSetting) > 0:
         for access_setting in list(
-                access_control_settings.AccessSettings.AccessSetting):
+                control_access_params.AccessSettings.AccessSetting):
 
             result.append({'subject_name': access_setting.Subject.get('name'),
                            'subject_type': entity_to_subject_type_dict[

@@ -475,7 +475,7 @@ def add(ctx, catalog_name, access_list):
               required=False,
               default=False,
               metavar='[all]',
-              help='remove all the access settings in the catalog')
+              help='remove all the access settings from the catalog')
 def remove(ctx, catalog_name, access_list, all):
     try:
         client = ctx.obj['client']
@@ -484,7 +484,7 @@ def remove(ctx, catalog_name, access_list, all):
 
         if all:
             click.confirm(
-                'Do you want to remove all acl from the catalog '
+                'Do you want to remove all access settings from the catalog '
                 '\'%s\'' % catalog_name,
                 abort=True)
         updated_acl = org.remove_catalog_access_settings(

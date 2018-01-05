@@ -469,8 +469,7 @@ def add(ctx, catalog_name, access_list):
                 metavar='<catalog-name>')
 @click.argument('access-list',
                 nargs=-1,
-                required=False,
-                metavar='<access-list>')
+                required=False)
 @click.option('--all',
               is_flag=True,
               required=False,

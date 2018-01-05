@@ -16,34 +16,47 @@ from vcd_cli.vcd import vcd
 @click.pass_context
 def role(ctx):
     """Work with roles.
+
 \b
     Description
        All sub-commands execute in the context of specified organization;
-       it defaults to current organization-in-use if --org option is not specified.
+       it defaults to current organization-in-use
+       if --org option is not specified.
 
 \b
     Examples
         vcd role list
             Get list of roles in the current organization.
+
 \b
         vcd role list-rights myRole
             Get list of rights associated with a given role.
+
 \b
         vcd role create myRole myDescription 'Disk: View Properties' \\
             'Provider vDC: Edit' --org myOrg
             Creates a role with zero or more rights.
+
 \b
         vcd role delete myRole -o myOrg
             Deletes a role from the organization.
+
 \b
         vcd role link myRole -o myOrg
             Links the role to it's original template.
+
 \b
         vcd role unlink myRole -o myOrg
             Unlinks the role from its template.
+
 \b
         vcd role add-right myRole myRight1 myRight2  -o myOrg
             Adds one or more rights to a given role.
+
+\b
+        vcd role remove-right myRole myRight1 myRight2  -o myOrg
+            Removes one or more rights from a given role.
+
     """
 
     if ctx.invoked_subcommand is not None:
@@ -137,8 +150,9 @@ def create(ctx, role_name, description, rights, org_name):
     except Exception as e:
         stderr(e, ctx)
 
-@role.command('delete', short_help='Deletes role in the specified Organization (defaults to the '
-                                   'current organization in use')
+
+@role.command('delete', short_help='Deletes role in the specified Organization'
+                                   '(defaults to the current org in use')
 @click.pass_context
 @click.argument('role-name',
                 metavar='<role-name>',
@@ -168,7 +182,9 @@ def delete(ctx, role_name, org_name):
     except Exception as e:
         stderr(e, ctx)
 
-@role.command('unlink', short_help='Unlink the role of a given org from its template')
+
+@role.command('unlink', short_help='Unlink the role of a given org'
+                                   ' from its template')
 @click.pass_context
 @click.argument('role-name',
                 metavar='<role-name>',
@@ -190,11 +206,14 @@ def unlink(ctx, role_name, org_name):
         role_record = org.get_role(role_name)
         role = Role(client, href=role_record.get('href'))
         role.unlink()
-        stdout('Role \'%s\' has been successfully unlinked from it\'s template.' % role_name, ctx)
+        stdout('Role \'%s\' has been successfully unlinked'
+               ' from it\'s template.' % role_name, ctx)
     except Exception as e:
         stderr(e, ctx)
 
-@role.command('link', short_help='Link the role of a given org to its template')
+
+@role.command('link', short_help='Link the role of a given org'
+                                 ' to its template')
 @click.pass_context
 @click.argument('role-name',
                 metavar='<role-name>',
@@ -216,11 +235,13 @@ def link(ctx, role_name, org_name):
         role_record = org.get_role(role_name)
         role = Role(client, href=role_record.get('href'))
         role.link()
-        stdout('Role \'%s\' has been successfully linked to it\'s template.' % role_name, ctx)
+        stdout('Role \'%s\' has been successfully linked'
+               ' to it\'s template.' % role_name, ctx)
     except Exception as e:
         stderr(e, ctx)
 
-@role.command('add-right', short_help='Add one or more rights to the role')
+
+@role.command('add-right', short_help='Adds one or more rights to the role')
 @click.pass_context
 @click.argument('role-name',
                 metavar='<role-name>',
@@ -237,27 +258,34 @@ def link(ctx, role_name, org_name):
 def add_right(ctx, role_name, rights, org_name):
     try:
         if not is_sysadmin(ctx):
-            raise Exception("Only System administrator can execute this command")
+            raise Exception("Only System administrator can"
+                            " execute this command")
         if len(rights) < 1:
-            click.secho('Pass one or more rights to be added', fg='yellow', err=False)
+            click.secho('Pass one or more rights to be added',
+                        fg='yellow', err=False)
             return
         client = ctx.obj['client']
         if org_name is not None:
-            org = Org(client, resource=client.get_org_by_name(org_name))
+            org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
-            org = Org(client, org_href)
+        org = Org(client, org_href)
         role_record = org.get_role(role_name)
         role = Role(client, href=role_record.get('href'))
         right_records = []
         for right in rights:
             record = org.get_right(right)
             right_records.append(record)
-        role.add_rights(right_records)
+        updated_role_resource = role.add_rights(right_records)
+        updated_role = Role(client, resource=updated_role_resource)
+        stdout('List of rights in the role \'%s\':' % role_name, ctx)
+        stdout(updated_role.list_rights(), ctx)
     except Exception as e:
         stderr(e, ctx)
 
-@role.command('remove-right', short_help='Remove one or more rights from the role')
+
+@role.command('remove-right', short_help='Removes one or more rights'
+                                         ' from the role')
 @click.pass_context
 @click.argument('role-name',
                 metavar='<role-name>',
@@ -274,19 +302,23 @@ def add_right(ctx, role_name, rights, org_name):
 def remove_right(ctx, role_name, rights, org_name):
     try:
         if not is_sysadmin(ctx):
-            raise Exception("Only System administrator can execute this command")
+            raise Exception("Only System administrator can"
+                            " execute this command")
         if len(rights) < 1:
-            click.secho('Pass one or more rights to be removed', fg='yellow', err=False)
+            click.secho('Pass one or more rights to be removed',
+                        fg='yellow', err=False)
             return
         client = ctx.obj['client']
         if org_name is not None:
-            org = Org(client, resource=client.get_org_by_name(org_name))
+            org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
-            org = Org(client, org_href)
+        org = Org(client, org_href)
         role_record = org.get_role(role_name)
         role = Role(client, href=role_record.get('href'))
-        role.remove_rights(list(rights))
+        updated_role_resource = role.remove_rights(rights)
+        updated_role = Role(client, resource=updated_role_resource)
+        stdout('List of rights in the role \'%s\':' % role_name, ctx)
+        stdout(updated_role.list_rights(), ctx)
     except Exception as e:
         stderr(e, ctx)
-

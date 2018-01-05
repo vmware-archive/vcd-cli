@@ -444,6 +444,7 @@ def acl(ctx):
                 metavar='<catalog-name>')
 @click.argument('access-list',
                 nargs=-1,
+                required=True,
                 metavar='<access-list>')
 def add(ctx, catalog_name, access_list):
     try:

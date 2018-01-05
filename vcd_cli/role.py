@@ -248,6 +248,7 @@ def link(ctx, role_name, org_name):
                 required=True)
 @click.argument('rights',
                 nargs=-1,
+                required=True,
                 metavar='<rights>')
 @click.option('-o',
               '--org',
@@ -260,10 +261,6 @@ def add_right(ctx, role_name, rights, org_name):
         if not is_sysadmin(ctx):
             raise Exception("Only System administrator can"
                             " execute this command")
-        if len(rights) < 1:
-            click.secho('Pass one or more rights to be added',
-                        fg='yellow', err=False)
-            return
         client = ctx.obj['client']
         if org_name is not None:
             org_href = client.get_org_by_name(org_name).get('href')
@@ -292,6 +289,7 @@ def add_right(ctx, role_name, rights, org_name):
                 required=True)
 @click.argument('rights',
                 nargs=-1,
+                required=True,
                 metavar='<rights>')
 @click.option('-o',
               '--org',
@@ -304,10 +302,6 @@ def remove_right(ctx, role_name, rights, org_name):
         if not is_sysadmin(ctx):
             raise Exception("Only System administrator can"
                             " execute this command")
-        if len(rights) < 1:
-            click.secho('Pass one or more rights to be removed',
-                        fg='yellow', err=False)
-            return
         client = ctx.obj['client']
         if org_name is not None:
             org_href = client.get_org_by_name(org_name).get('href')

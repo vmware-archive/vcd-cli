@@ -165,7 +165,7 @@ def attach(ctx, vapp_name, vm_name, disk_name):
         if disk_name.startswith('uuid:'):
             disk_id = disk_name[5:]
             disk_name = None
-        disk = vdc.get_disk(disk_name, disk_id)
+        disk = vdc.get_disk(name=disk_name, disk_id=disk_id)
 
         vapp_resource = vdc.get_vapp(vapp_name)
         vapp = VApp(client, resource=vapp_resource)
@@ -199,7 +199,7 @@ def detach(ctx, vapp_name, vm_name, disk_name):
         if disk_name.startswith('uuid:'):
             disk_id = disk_name[5:]
             disk_name = None
-        disk = vdc.get_disk(disk_name, disk_id)
+        disk = vdc.get_disk(name=disk_name, disk_id=disk_id)
 
         vapp_resource = vdc.get_vapp(vapp_name)
         vapp = VApp(client, resource=vapp_resource)

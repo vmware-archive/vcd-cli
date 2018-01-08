@@ -18,9 +18,9 @@ def role(ctx):
     """Work with roles.
 
 \b
-    Description
-       All sub-commands execute in the context of specified organization;
-       it defaults to current organization-in-use
+    Note
+       All sub-commands execute in the context of organization specified
+       via --org option; it defaults to current organization-in-use
        if --org option is not specified.
 
 \b
@@ -82,7 +82,7 @@ def list_roles(ctx, org_name):
             org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
-        org = Org(client, org_href)
+        org = Org(client, href=org_href)
         roles = org.list_roles()
         for role in roles:
             del role['href']
@@ -109,7 +109,7 @@ def list_rights(ctx, role_name, org_name):
             org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
-        org = Org(client, org_href)
+        org = Org(client, href=org_href)
         role_record = org.get_role(role_name)
         role = Role(client, href=role_record.get('href'))
         rights = role.list_rights()
@@ -144,7 +144,7 @@ def create(ctx, role_name, description, rights, org_name):
             org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
-        org = Org(client, org_href)
+        org = Org(client, href=org_href)
         role = org.create_role(role_name, description, rights)
         stdout(to_dict(role, exclude=['Link', 'RightReferences']), ctx)
     except Exception as e:
@@ -176,7 +176,7 @@ def delete(ctx, role_name, org_name):
             org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
-        org = Org(client, org_href)
+        org = Org(client, href=org_href)
         org.delete_role(role_name)
         stdout('Role \'%s\' has been successfully deleted.' % role_name, ctx)
     except Exception as e:
@@ -202,7 +202,7 @@ def unlink(ctx, role_name, org_name):
             org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
-        org = Org(client, org_href)
+        org = Org(client, href=org_href)
         role_record = org.get_role(role_name)
         role = Role(client, href=role_record.get('href'))
         role.unlink()
@@ -231,7 +231,7 @@ def link(ctx, role_name, org_name):
             org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
-        org = Org(client, org_href)
+        org = Org(client, href=org_href)
         role_record = org.get_role(role_name)
         role = Role(client, href=role_record.get('href'))
         role.link()
@@ -248,8 +248,7 @@ def link(ctx, role_name, org_name):
                 required=True)
 @click.argument('rights',
                 nargs=-1,
-                required=True,
-                metavar='<rights>')
+                required=True)
 @click.option('-o',
               '--org',
               'org_name',
@@ -266,17 +265,11 @@ def add_right(ctx, role_name, rights, org_name):
             org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
-        org = Org(client, org_href)
+        org = Org(client, href=org_href)
         role_record = org.get_role(role_name)
         role = Role(client, href=role_record.get('href'))
-        right_records = []
-        for right in rights:
-            record = org.get_right(right)
-            right_records.append(record)
-        updated_role_resource = role.add_rights(right_records)
-        updated_role = Role(client, resource=updated_role_resource)
-        stdout('List of rights in the role \'%s\':' % role_name, ctx)
-        stdout(updated_role.list_rights(), ctx)
+        role.add_rights(list(rights), org)
+        stdout('Rights added successfully to the role \'%s\'' % role_name, ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -289,8 +282,7 @@ def add_right(ctx, role_name, rights, org_name):
                 required=True)
 @click.argument('rights',
                 nargs=-1,
-                required=True,
-                metavar='<rights>')
+                required=True)
 @click.option('-o',
               '--org',
               'org_name',
@@ -299,20 +291,15 @@ def add_right(ctx, role_name, rights, org_name):
               help='name of the org')
 def remove_right(ctx, role_name, rights, org_name):
     try:
-        if not is_sysadmin(ctx):
-            raise Exception("Only System administrator can"
-                            " execute this command")
         client = ctx.obj['client']
         if org_name is not None:
             org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
-        org = Org(client, org_href)
+        org = Org(client, href=org_href)
         role_record = org.get_role(role_name)
         role = Role(client, href=role_record.get('href'))
-        updated_role_resource = role.remove_rights(rights)
-        updated_role = Role(client, resource=updated_role_resource)
-        stdout('List of rights in the role \'%s\':' % role_name, ctx)
-        stdout(updated_role.list_rights(), ctx)
+        role.remove_rights(rights)
+        stdout('Removed rights successfully from the role \'%s\'' % role_name, ctx)
     except Exception as e:
         stderr(e, ctx)

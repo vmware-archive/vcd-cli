@@ -19,6 +19,7 @@ from pyvcloud.vcd.org import Org
 from pyvcloud.vcd.utils import disk_to_dict
 from pyvcloud.vcd.utils import extract_id
 from pyvcloud.vcd.vdc import VDC
+
 from vcd_cli.utils import convert_disk_name_user_input_to_name_and_id
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr

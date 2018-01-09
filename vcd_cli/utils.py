@@ -19,24 +19,18 @@ import traceback
 from os import environ # NOQA
 
 import click
-
 from colorama import Fore
-
 from lxml.objectify import ObjectifiedElement
-
 from pygments import formatters
 from pygments import highlight
 from pygments import lexers
-
 from pyvcloud.vcd.client import Client
 from pyvcloud.vcd.client import EntityType
 from pyvcloud.vcd.client import TaskStatus
 from pyvcloud.vcd.client import VcdErrorResponseException
 from pyvcloud.vcd.utils import extract_id
 from pyvcloud.vcd.utils import to_dict
-
 import requests
-
 from tabulate import tabulate
 
 from vcd_cli.profiles import Profiles

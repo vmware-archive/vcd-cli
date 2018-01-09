@@ -151,8 +151,7 @@ def create(ctx, role_name, description, rights, org_name):
         stderr(e, ctx)
 
 
-@role.command('delete', short_help='Deletes role in the specified Organization'
-                                   '(defaults to the current org in use')
+@role.command('delete', short_help='Deletes role in the specified Organization')
 @click.pass_context
 @click.argument('role-name',
                 metavar='<role-name>',
@@ -299,7 +298,7 @@ def remove_right(ctx, role_name, rights, org_name):
         org = Org(client, href=org_href)
         role_record = org.get_role(role_name)
         role = Role(client, href=role_record.get('href'))
-        role.remove_rights(rights)
+        role.remove_rights(list(rights))
         stdout('Removed rights successfully from the role \'%s\'' % role_name, ctx)
     except Exception as e:
         stderr(e, ctx)

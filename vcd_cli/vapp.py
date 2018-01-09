@@ -19,6 +19,7 @@ from pyvcloud.vcd.utils import to_dict
 from pyvcloud.vcd.utils import vapp_to_dict
 from pyvcloud.vcd.vapp import VApp
 from pyvcloud.vcd.vdc import VDC
+from vcd_cli.utils import convert_disk_name_user_input_to_name_and_id
 from vcd_cli.utils import is_sysadmin
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
@@ -161,10 +162,8 @@ def attach(ctx, vapp_name, vm_name, disk_name):
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
 
-        disk_id = None
-        if disk_name.startswith('uuid:'):
-            disk_id = disk_name[5:]
-            disk_name = None
+        disk_name, disk_id = \
+            convert_disk_name_user_input_to_name_and_id(disk_name)
         disk = vdc.get_disk(name=disk_name, disk_id=disk_id)
 
         vapp_resource = vdc.get_vapp(vapp_name)
@@ -195,10 +194,8 @@ def detach(ctx, vapp_name, vm_name, disk_name):
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
 
-        disk_id = None
-        if disk_name.startswith('uuid:'):
-            disk_id = disk_name[5:]
-            disk_name = None
+        disk_name, disk_id = \
+            convert_disk_name_user_input_to_name_and_id(disk_name)
         disk = vdc.get_disk(name=disk_name, disk_id=disk_id)
 
         vapp_resource = vdc.get_vapp(vapp_name)

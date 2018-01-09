@@ -318,3 +318,10 @@ def access_settings_to_list(control_access_params, org_in_use=''):
                                access_setting.Subject.get('type')],
                            'access_level': access_setting.AccessLevel})
     return result
+
+
+def convert_disk_name_user_input_to_name_and_id(str):
+    if str.lower().startswith('id:'):
+        return None, str[3:]
+    else:
+        return str, None

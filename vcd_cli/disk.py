@@ -20,7 +20,7 @@ from pyvcloud.vcd.utils import disk_to_dict
 from pyvcloud.vcd.utils import extract_id
 from pyvcloud.vcd.vdc import VDC
 
-from vcd_cli.utils import convert_disk_name_user_input_to_name_and_id
+from vcd_cli.utils import extract_name_and_id
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
@@ -73,7 +73,7 @@ def info(ctx, name):
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
 
-        name, id = convert_disk_name_user_input_to_name_and_id(name)
+        name, id = extract_name_and_id(name)
         disk = vdc.get_disk(name=name, disk_id=id)
 
         stdout(disk_to_dict(disk), ctx)
@@ -162,7 +162,7 @@ def delete(ctx, name):
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
 
-        name, id = convert_disk_name_user_input_to_name_and_id(name)
+        name, id = extract_name_and_id(name)
         task = vdc.delete_disk(name=name, disk_id=id)
 
         stdout(task, ctx)
@@ -216,7 +216,7 @@ def update(ctx, name, new_name, size, description, storage_profile, iops):
         if size is not None:
             new_size = humanfriendly.parse_size(size)
 
-        name, id = convert_disk_name_user_input_to_name_and_id(name)
+        name, id = extract_name_and_id(name)
         task = vdc.update_disk(name=name,
                                disk_id=id,
                                new_name=new_name,
@@ -243,8 +243,7 @@ def change_disk_owner(ctx, disk_name, user_name):
         org = Org(client, in_use_org_href)
         user_resource = org.get_user(user_name)
 
-        disk_name, disk_id = \
-            convert_disk_name_user_input_to_name_and_id(disk_name)
+        disk_name, disk_id = extract_name_and_id(disk_name)
         vdc.change_disk_owner(user_href=user_resource.get('href'),
                               name=disk_name,
                               disk_id=disk_id)

@@ -19,23 +19,18 @@ import traceback
 from os import environ # NOQA
 
 import click
-
 from colorama import Fore
-
 from lxml.objectify import ObjectifiedElement
-
 from pygments import formatters
 from pygments import highlight
 from pygments import lexers
-
 from pyvcloud.vcd.client import Client
+from pyvcloud.vcd.client import EntityType
 from pyvcloud.vcd.client import TaskStatus
 from pyvcloud.vcd.client import VcdErrorResponseException
 from pyvcloud.vcd.utils import extract_id
 from pyvcloud.vcd.utils import to_dict
-
 import requests
-
 from tabulate import tabulate
 
 from vcd_cli.profiles import Profiles
@@ -50,11 +45,14 @@ def is_sysadmin(ctx):
     return org_name == 'System'
 
 
-def as_table(obj_list, header=None, show_id=False):
+def as_table(obj_list, show_id=False, sort_headers=True):
     if len(obj_list) == 0:
         return ''
     else:
-        headers = sorted(obj_list[0].keys())
+        if sort_headers:
+            headers = sorted(obj_list[0].keys())
+        else:
+            headers = obj_list[0].keys()
         if not show_id and 'id' in headers:
             headers.remove('id')
         table = []
@@ -131,7 +129,7 @@ def task_callback(task):
     click.secho(message, nl=False)
 
 
-def stdout(obj, ctx=None, alt_text=None, show_id=False):
+def stdout(obj, ctx=None, alt_text=None, show_id=False, sort_headers=True):
     global last_message
     last_message = ''
     o = obj
@@ -168,16 +166,16 @@ def stdout(obj, ctx=None, alt_text=None, show_id=False):
                     else:
                         client = ctx.obj['client']
                         task = client.get_task_monitor().wait_for_status(
-                                            task=obj,
-                                            timeout=60,
-                                            poll_frequency=2,
-                                            fail_on_status=None,
-                                            expected_target_statuses=[
-                                                TaskStatus.SUCCESS,
-                                                TaskStatus.ABORTED,
-                                                TaskStatus.ERROR,
-                                                TaskStatus.CANCELED],
-                                            callback=task_callback)
+                            task=obj,
+                            timeout=60,
+                            poll_frequency=2,
+                            fail_on_statuses=None,
+                            expected_target_statuses=[
+                                TaskStatus.SUCCESS,
+                                TaskStatus.ABORTED,
+                                TaskStatus.ERROR,
+                                TaskStatus.CANCELED],
+                            callback=task_callback)
                         if task.get('status') == TaskStatus.ERROR.value:
                             text = 'task: %s, result: %s, message: %s' % \
                                    (extract_id(task.get('id')),
@@ -195,7 +193,8 @@ def stdout(obj, ctx=None, alt_text=None, show_id=False):
                 text = as_table([{'property': k, 'value': v} for k, v in
                                 sorted(obj.items())], show_id=show_id)
             else:
-                text = as_table(obj, show_id=show_id)
+                text = as_table(obj, show_id=show_id,
+                                sort_headers=sort_headers)
         click.echo('\x1b[2K\r' + text)
 
 
@@ -248,3 +247,82 @@ def tabulate_names(names, columns=4):
             result.append(row)
         row[n % columns] = names[n]
     return result
+
+
+def acl_str_to_list_of_dict(access_settings_tuple):
+    access_settings_list = []
+    for access_str in access_settings_tuple:
+        validate_access_str(access_str)
+        access_setting = access_str.strip("'").split(":")
+
+        access_dict = {'type': access_setting[0], 'name': access_setting[1]}
+        if len(access_setting) > 2:
+            access_dict['access_level'] = access_setting[2]
+        access_settings_list.append(access_dict)
+    return access_settings_list
+
+
+def validate_access_str(access_str):
+    access_setting = access_str.strip("'").split(":")
+
+    valid_access_setting_format = \
+        ['<subject-type>:<subject-name>:<access-level>',
+         '<subject-type>:<subject-name>']
+    valid_subject_type = ['org', 'user']
+    valid_access_level = ['ReadOnly', 'Change', 'FullControl']
+
+    if any(val == '' for val in access_setting):
+        raise Exception("format of access setting %s should be one of "
+                        "%s" % (access_str, valid_access_setting_format))
+
+    if access_setting[0] not in valid_subject_type:
+        raise Exception('subject-type in %s is not valid. Should be one of '
+                        '%s,' % (access_str, valid_subject_type))
+    if len(access_setting) > 2:
+        if access_setting[2] not in valid_access_level:
+            raise Exception(
+                'access-level in %s is not valid. Should be one of '
+                '%s' % (access_str, valid_access_level))
+
+
+def access_settings_to_list(control_access_params, org_in_use=''):
+    result = []
+    entity_to_subject_type_dict = {EntityType.USER.value: 'user',
+                                   EntityType.ADMIN_ORG.value: 'org'}
+    current_org_access = {}
+    if hasattr(control_access_params, 'IsSharedToEveryone'):
+        current_org_access['subject_name'] = '%s (org_in_use)' % org_in_use
+        current_org_access['subject_type'] = 'org'
+    if hasattr(control_access_params, 'EveryoneAccessLevel'):
+        current_org_access['access_level'] = control_access_params[
+            'EveryoneAccessLevel']
+    else:
+        current_org_access['access_level'] = 'None'
+    result.append(current_org_access)
+
+    if hasattr(control_access_params, 'AccessSettings') and \
+            hasattr(control_access_params.AccessSettings,
+                    'AccessSetting') and \
+            len(control_access_params.AccessSettings.AccessSetting) > 0:
+        for access_setting in list(
+                control_access_params.AccessSettings.AccessSetting):
+
+            result.append({'subject_name': access_setting.Subject.get('name'),
+                           'subject_type': entity_to_subject_type_dict[
+                               access_setting.Subject.get('type')],
+                           'access_level': access_setting.AccessLevel})
+    return result
+
+
+def extract_name_and_id(user_input):
+    """
+    Determines if the string user_input is a name or an id.
+    :param user_input: (str): input string from user
+    :return: (name, id) pair
+    """
+    name = id = None
+    if user_input.lower().startswith('id:'):
+        id = user_input[3:]
+    else:
+        name = user_input
+    return name, id

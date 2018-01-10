@@ -88,11 +88,11 @@ def version(ctx):
 
 
 def print_command(cmd, level=0):
-    click.echo(' '+(' '*level*2)+' ', nl=False)
+    click.echo(' ' + (' ' * level * 2) + ' ', nl=False)
     click.echo(cmd.name)
     if type(cmd) == click.core.Group:
         for k in sorted(cmd.commands.keys()):
-            print_command(cmd.commands[k], level+1)
+            print_command(cmd.commands[k], level + 1)
 
 
 @vcd.command(short_help='show help')
@@ -116,6 +116,7 @@ else:
     load_user_plugins()
     from vcd_cli import catalog  # NOQA
     from vcd_cli import disk  # NOQA
+    from vcd_cli import gateway  # NOQA
     from vcd_cli import info  # NOQA
     from vcd_cli import login  # NOQA
     from vcd_cli import org  # NOQA

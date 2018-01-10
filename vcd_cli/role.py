@@ -3,7 +3,6 @@ import click
 from pyvcloud.vcd.org import Org
 from pyvcloud.vcd.role import Role
 
-from vcd_cli.utils import is_sysadmin
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
@@ -256,9 +255,6 @@ def link(ctx, role_name, org_name):
               help='name of the org')
 def add_right(ctx, role_name, rights, org_name):
     try:
-        if not is_sysadmin(ctx):
-            raise Exception("Only System administrator can"
-                            " execute this command")
         client = ctx.obj['client']
         if org_name is not None:
             org_href = client.get_org_by_name(org_name).get('href')

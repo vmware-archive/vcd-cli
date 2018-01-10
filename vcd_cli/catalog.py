@@ -18,7 +18,7 @@ import click
 
 from pyvcloud.vcd.client import QueryResultFormat
 from pyvcloud.vcd.org import Org
-from pyvcloud.vcd.utils import access_control_settings_to_dict
+from pyvcloud.vcd.utils import access_settings_to_dict
 from pyvcloud.vcd.utils import to_dict
 from pyvcloud.vcd.utils import vapp_to_dict
 from pyvcloud.vcd.vapp import VApp
@@ -115,8 +115,8 @@ def info(ctx, catalog_name, item_name):
         if item_name is None:
             catalog = org.get_catalog(catalog_name)
             result = to_dict(catalog)
-            access_control_settings = access_control_settings_to_dict(
-                org.get_catalog_access_control_settings(catalog_name))
+            access_control_settings = access_settings_to_dict(
+                org.get_catalog_access_settings(catalog_name))
             result.update(access_control_settings)
         else:
             catalog_item = org.get_catalog_item(catalog_name, item_name)
@@ -426,10 +426,6 @@ def acl(ctx):
         vcd catalog acl list my-catalog
             List acl of a catalog
 
-\b
-        vcd catalog acl info my-catalog
-            Get details of catalog access control settings
-
     """
     if ctx.invoked_subcommand is not None:
         try:
@@ -562,8 +558,7 @@ def list_acl(ctx, catalog_name):
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
 
-        acl = org.get_catalog_access_control_settings(
-            catalog_name=catalog_name)
+        acl = org.get_catalog_access_settings(catalog_name=catalog_name)
         stdout(
             access_settings_to_list(
                 acl, ctx.obj['profiles'].get('org_in_use')),

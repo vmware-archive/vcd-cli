@@ -26,10 +26,24 @@ def right(ctx):
     """Work with rights
 
 \b
+    Note
+       All sub-commands execute in the context of organization specified
+       via --org option; it defaults to current organization-in-use
+       if --org option is not specified.
+
+\b
     Examples
         vcd right list -o myOrg
             Get list of rights in the specified organization
             (defaults to current organization in use).
+
+\b
+        vcd right add 'vApp: Copy' 'General: View Error Details' -o myOrg
+            Adds list of rights to the organization
+
+\b
+        vcd rights remove 'vApp: Copy' 'Disk: Create' -o myOrg
+            Removes list of rights from the organization
     """
 
     if ctx.invoked_subcommand is not None:
@@ -39,24 +53,75 @@ def right(ctx):
             stderr(e, ctx)
 
 
-@right.command('list',
-               short_help='list rights in the specified or current org')
+@right.command('list', short_help='list rights in the organization')
 @click.pass_context
 @click.option('-o',
               '--org',
               'org_name',
               required=False,
-              metavar='<org-name>',
+              metavar='[org-name]',
               help='name of the org')
 def list_rights(ctx, org_name):
     try:
         client = ctx.obj['client']
-        if org_name is None:
-            org_name = ctx.obj['profiles'].get('org_in_use')
-        org = Org(client, resource=client.get_org_by_name(org_name))
+        if org_name is not None:
+            org_href = client.get_org_by_name(org_name).get('href')
+        else:
+            org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, href=org_href)
         right_records = org.list_rights()
         for right in right_records:
             del right['href']
         stdout(right_records, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+@right.command('add', short_help='Add rights to the organization')
+@click.pass_context
+@click.argument('rights',
+                nargs=-1,
+                required=True)
+@click.option('-o',
+              '--org',
+              'org_name',
+              required=False,
+              metavar='[org-name]',
+              help='name of the org')
+def add(ctx, rights, org_name):
+    try:
+        client = ctx.obj['client']
+        if org_name is not None:
+            org_href = client.get_org_by_name(org_name).get('href')
+        else:
+            org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, href=org_href)
+        org.add_rights(rights)
+        stdout("Rights added to the Org \'%s\'" % org_name, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@right.command('remove', short_help='remove rights from the organization')
+@click.pass_context
+@click.argument('rights',
+                nargs=-1,
+                required=True)
+@click.option('-o',
+              '--org',
+              'org_name',
+              required=False,
+              metavar='[org-name]',
+              help='name of the org')
+def remove(ctx, rights, org_name):
+    try:
+        client = ctx.obj['client']
+        if org_name is not None:
+            org_href = client.get_org_by_name(org_name).get('href')
+        else:
+            org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, href=org_href)
+        org.remove_rights(rights)
+        stdout("Rights removed from the Org \'%s\'" % org_name, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+

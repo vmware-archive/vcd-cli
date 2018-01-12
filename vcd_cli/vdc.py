@@ -74,7 +74,11 @@ def info(ctx, name):
         org = Org(client, href=org_href)
         vdc_resource = org.get_vdc(name)
         vdc = VDC(client, resource=vdc_resource)
-        access_control_settings = vdc.get_access_control_settings()
+        access_control_settings = None
+        try:
+            access_control_settings = vdc.get_access_control_settings()
+        except:
+            pass
         result = vdc_to_dict(vdc_resource, access_control_settings)
         result['in_use'] = in_use_vdc == name
         result['org'] = in_use_org_name

@@ -14,6 +14,7 @@
 
 import click
 from pyvcloud.vcd.client import EntityType
+from pyvcloud.vcd.client import MissingLinkException
 from pyvcloud.vcd.client import get_links
 from pyvcloud.vcd.org import Org
 from pyvcloud.vcd.utils import access_settings_to_dict
@@ -77,7 +78,11 @@ def info(ctx, name):
         org = Org(client, href=org_href)
         vdc_resource = org.get_vdc(name)
         vdc = VDC(client, resource=vdc_resource)
-        access_settings = vdc.get_access_settings()
+        access_settings = None
+        try:
+            access_settings = vdc.get_access_settings()
+        except MissingLinkException:
+            pass
         result = vdc_to_dict(vdc_resource,
                              access_settings_to_dict(access_settings))
         result['in_use'] = in_use_vdc == name
@@ -354,13 +359,9 @@ def add(ctx, vdc_name, access_list):
         vdc_resource = org.get_vdc(vdc_name)
         vdc = VDC(client, resource=vdc_resource)
 
-        updated_acl = vdc.add_access_settings(
+        vdc.add_access_settings(
             access_settings_list=acl_str_to_list_of_dict(access_list))
-        stdout(
-            access_settings_to_list(
-                updated_acl, ctx.obj['profiles'].get('org_in_use')),
-            ctx,
-            sort_headers=False)
+        stdout('Access settings added to vdc.', ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -393,14 +394,10 @@ def remove(ctx, vdc_name, access_list, all):
         vdc_resource = org.get_vdc(vdc_name)
         vdc = VDC(client, resource=vdc_resource)
 
-        updated_acl = vdc.remove_access_settings(
+        vdc.remove_access_settings(
             access_settings_list=acl_str_to_list_of_dict(access_list),
             remove_all=all)
-        stdout(
-            access_settings_to_list(
-                updated_acl, ctx.obj['profiles'].get('org_in_use')),
-            ctx,
-            sort_headers=False)
+        stdout('Access settings removed from vdc.', ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -418,12 +415,8 @@ def share(ctx, vdc_name):
         vdc_resource = org.get_vdc(vdc_name)
         vdc = VDC(client, resource=vdc_resource)
 
-        updated_acl = vdc.share_access()
-        stdout(
-            access_settings_to_list(
-                updated_acl, ctx.obj['profiles'].get('org_in_use')),
-            ctx,
-            sort_headers=False)
+        vdc.share_access()
+        stdout('Vdc shared to all members of the org', ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -441,12 +434,8 @@ def unshare(ctx, vdc_name):
         vdc_resource = org.get_vdc(vdc_name)
         vdc = VDC(client, resource=vdc_resource)
 
-        updated_acl = vdc.unshare_access()
-        stdout(
-            access_settings_to_list(
-                updated_acl, ctx.obj['profiles'].get('org_in_use')),
-            ctx,
-            sort_headers=False)
+        vdc.unshare_access()
+        stdout('Vdc unshared from all members of the org', ctx)
     except Exception as e:
         stderr(e, ctx)
 

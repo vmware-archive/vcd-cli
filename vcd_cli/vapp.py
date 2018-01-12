@@ -805,13 +805,9 @@ def add(ctx, vapp_name, access_list):
         vdc = VDC(client, href=vdc_href)
         vapp = VApp(client, resource=vdc.get_vapp(vapp_name))
 
-        updated_acl = vapp.add_access_settings(
+        vapp.add_access_settings(
             access_settings_list=acl_str_to_list_of_dict(access_list))
-        stdout(
-            access_settings_to_list(
-                updated_acl, ctx.obj['profiles'].get('org_in_use')),
-            ctx,
-            sort_headers=False)
+        stdout('Access settings added to vapp.', ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -842,14 +838,10 @@ def remove(ctx, vapp_name, access_list, all):
         vdc = VDC(client, href=vdc_href)
         vapp = VApp(client, resource=vdc.get_vapp(vapp_name))
 
-        updated_acl = vapp.remove_access_settings(
+        vapp.remove_access_settings(
             access_settings_list=acl_str_to_list_of_dict(access_list),
             remove_all=all)
-        stdout(
-            access_settings_to_list(
-                updated_acl, ctx.obj['profiles'].get('org_in_use')),
-            ctx,
-            sort_headers=False)
+        stdout('Access settings removed from vapp.', ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -875,12 +867,8 @@ def share(ctx, vapp_name, access_level):
         vdc = VDC(client, href=vdc_href)
         vapp = VApp(client, resource=vdc.get_vapp(vapp_name))
 
-        updated_acl = vapp.share_access(everyone_access_level=access_level)
-        stdout(
-            access_settings_to_list(
-                updated_acl, ctx.obj['profiles'].get('org_in_use')),
-            ctx,
-            sort_headers=False)
+        vapp.share_access(everyone_access_level=access_level)
+        stdout('Vapp shared to all members of the org', ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -897,12 +885,8 @@ def unshare(ctx, vapp_name):
         vdc = VDC(client, href=vdc_href)
         vapp = VApp(client, resource=vdc.get_vapp(vapp_name))
 
-        updated_acl = vapp.unshare_access()
-        stdout(
-            access_settings_to_list(
-                updated_acl, ctx.obj['profiles'].get('org_in_use')),
-            ctx,
-            sort_headers=False)
+        vapp.unshare_access()
+        stdout('Vapp unshared from all members of the org', ctx)
     except Exception as e:
         stderr(e, ctx)
 

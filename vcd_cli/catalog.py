@@ -447,14 +447,10 @@ def add(ctx, catalog_name, access_list):
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
 
-        updated_acl = org.add_catalog_access_settings(
+        org.add_catalog_access_settings(
             catalog_name=catalog_name,
             access_settings_list=acl_str_to_list_of_dict(access_list))
-        stdout(
-            access_settings_to_list(
-                updated_acl, ctx.obj['profiles'].get('org_in_use')),
-            ctx,
-            sort_headers=False)
+        stdout('Access settings added to catalog.', ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -483,20 +479,16 @@ def remove(ctx, catalog_name, access_list, all):
                 'Do you want to remove all access settings from the catalog '
                 '\'%s\'' % catalog_name,
                 abort=True)
-        updated_acl = org.remove_catalog_access_settings(
+        org.remove_catalog_access_settings(
             catalog_name=catalog_name,
             access_settings_list=acl_str_to_list_of_dict(access_list),
             remove_all=all)
-        stdout(
-            access_settings_to_list(
-                updated_acl, ctx.obj['profiles'].get('org_in_use')),
-            ctx,
-            sort_headers=False)
+        stdout('Access settings removed from catalog.', ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
-@acl.command(short_help='share catalog access to all members of the current'
+@acl.command(short_help='share catalog access to all members of the current '
              'organization')
 @click.pass_context
 @click.argument('catalog-name',
@@ -516,13 +508,9 @@ def share(ctx, catalog_name, access_level):
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
 
-        updated_acl = org.share_catalog_access(
+        org.share_catalog_access(
             catalog_name=catalog_name, everyone_access_level=access_level)
-        stdout(
-            access_settings_to_list(
-                updated_acl, ctx.obj['profiles'].get('org_in_use')),
-            ctx,
-            sort_headers=False)
+        stdout('Catalog shared to all members of the org', ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -538,12 +526,8 @@ def unshare(ctx, catalog_name):
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
 
-        updated_acl = org.unshare_catalog_access(catalog_name=catalog_name)
-        stdout(
-            access_settings_to_list(
-                updated_acl, ctx.obj['profiles'].get('org_in_use')),
-            ctx,
-            sort_headers=False)
+        org.unshare_catalog_access(catalog_name=catalog_name)
+        stdout('Catalog unshared from all members of the org', ctx)
     except Exception as e:
         stderr(e, ctx)
 

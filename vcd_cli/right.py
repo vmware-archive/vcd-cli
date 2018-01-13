@@ -17,6 +17,7 @@ from pyvcloud.vcd.org import Org
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
+from vcd_cli.vcd import abort_if_false
 from vcd_cli.vcd import vcd
 
 
@@ -34,8 +35,11 @@ def right(ctx):
 \b
     Examples
         vcd right list -o myOrg
-            Get list of rights in the specified organization
-            (defaults to current organization in use).
+            Gets list of rights associated with the organization
+
+\b
+        vcd right list --all
+            Gets list of all rights available in the System
 
 \b
         vcd right add 'vApp: Copy' 'General: View Error Details' -o myOrg
@@ -53,7 +57,7 @@ def right(ctx):
             stderr(e, ctx)
 
 
-@right.command('list', short_help='list rights in the organization')
+@right.command('list', short_help='lists rights in the current organization or System')
 @click.pass_context
 @click.option('-o',
               '--org',
@@ -61,7 +65,13 @@ def right(ctx):
               required=False,
               metavar='[org-name]',
               help='name of the org')
-def list_rights(ctx, org_name):
+@click.option('--all',
+              is_flag=True,
+              required=False,
+              default=False,
+              metavar='[all]',
+              help='list all rights available in the System')
+def list_rights(ctx, org_name, all):
     try:
         client = ctx.obj['client']
         if org_name is not None:
@@ -69,7 +79,10 @@ def list_rights(ctx, org_name):
         else:
             org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, href=org_href)
-        right_records = org.list_rights()
+        if all:
+            right_records = org.list_all_rights()
+        else:
+            right_records = org.list_my_rights()
         for right in right_records:
             del right['href']
         stdout(right_records, ctx)
@@ -112,6 +125,12 @@ def add(ctx, rights, org_name):
               required=False,
               metavar='[org-name]',
               help='name of the org')
+@click.option('-y',
+              '--yes',
+              is_flag=True,
+              callback=abort_if_false,
+              expose_value=False,
+              prompt='Are you sure you want to remove rights from the organization?')
 def remove(ctx, rights, org_name):
     try:
         client = ctx.obj['client']

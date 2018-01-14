@@ -13,6 +13,7 @@
 import click
 
 from pyvcloud.vcd.org import Org
+from pyvcloud.vcd.utils import to_dict
 
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
@@ -41,6 +42,9 @@ def right(ctx):
         vcd right list --all
             Gets list of all rights available in the System
 
+\b
+        vcd right info 'vCenter: View'
+            Shows details of a given right
 \b
         vcd right add 'vApp: Copy' 'General: View Error Details' -o myOrg
             Adds list of rights to the organization
@@ -86,6 +90,20 @@ def list_rights(ctx, org_name, all):
         for right in right_records:
             del right['href']
         stdout(right_records, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@right.command('info', short_help='show details of a right')
+@click.pass_context
+@click.argument('right-name',
+                metavar='<right-name>',
+                required=True)
+def info(ctx, right_name):
+    try:
+        client = ctx.obj['client']
+        org = Org(client, href=ctx.obj['profiles'].get('org_href'))
+        right_resource = org.get_right_resource(right_name)
+        stdout(to_dict(right_resource), ctx)
     except Exception as e:
         stderr(e, ctx)
 

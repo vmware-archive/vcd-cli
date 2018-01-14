@@ -24,6 +24,10 @@ def role(ctx):
 
 \b
     Examples
+        vcd role info myRole -o myOrg
+            Show details of a given role
+
+\b
         vcd role list
             Get list of roles in the current organization.
 
@@ -88,6 +92,32 @@ def list_roles(ctx, org_name):
         stdout(roles, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+@role.command('info', short_help='show details of a role')
+@click.pass_context
+@click.argument('role-name',
+                metavar='<role-name>',
+                required=True)
+@click.option('-o',
+              '--org',
+              'org_name',
+              required=False,
+              metavar='[org-name]',
+              help='name of the org',
+              )
+def info(ctx, role_name, org_name):
+    try:
+        client = ctx.obj['client']
+        if org_name is not None:
+            org_href = client.get_org_by_name(org_name).get('href')
+        else:
+            org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, href=org_href)
+        role_resource = org.get_role_resource(role_name)
+        stdout(to_dict(role_resource, exclude=['Link', 'RightReferences']), ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
 
 
 @role.command('list-rights', short_help='list rights of a role')

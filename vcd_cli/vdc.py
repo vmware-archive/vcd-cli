@@ -304,13 +304,14 @@ def disable(ctx, name):
 @vdc.group(short_help='work with vdc acl')
 @click.pass_context
 def acl(ctx):
-    """Work with vdc access control list in the current Organization.
+    """Work with vdc access control list.
 
-    Note:
+\b
+   Description
+        Work with vapp access control list in the current Organization.
         Access should be present to at least 1 user in the org all the time.
 
 \b
-    Examples
         vcd vdc acl add my-vdc 'user:TestUser1:ReadOnly'  \\
             'user:TestUser2' 'user:TestUser3'
             Add one or more access setting to the specified vdc.
@@ -333,7 +334,7 @@ def acl(ctx):
             before this operation.
 \b
         vcd vdc acl list my-vdc
-            List acl of a vdc
+            List acl of a vdc.
 
 
     """
@@ -361,7 +362,7 @@ def add(ctx, vdc_name, access_list):
 
         vdc.add_access_settings(
             access_settings_list=acl_str_to_list_of_dict(access_list))
-        stdout('Access settings added to vdc.', ctx)
+        stdout('Access settings added to vdc \'%s\'.' % vdc_name, ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -397,12 +398,12 @@ def remove(ctx, vdc_name, access_list, all):
         vdc.remove_access_settings(
             access_settings_list=acl_str_to_list_of_dict(access_list),
             remove_all=all)
-        stdout('Access settings removed from vdc.', ctx)
+        stdout('Access settings removed from vdc \'%s\'.' % vdc_name, ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
-@acl.command(short_help='share vdc access to all members of the current'
+@acl.command(short_help='share vdc access to all members of the current '
                         'organization')
 @click.pass_context
 @click.argument('vdc-name',
@@ -415,8 +416,9 @@ def share(ctx, vdc_name):
         vdc_resource = org.get_vdc(vdc_name)
         vdc = VDC(client, resource=vdc_resource)
 
-        vdc.share_access()
-        stdout('Vdc shared to all members of the org', ctx)
+        vdc.share_with_org_members()
+        stdout('Vdc \'%s\' shared to all members of the org \'%s\'.'
+               % (vdc_name, ctx.obj['profiles'].get('org_in_use')), ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -434,8 +436,9 @@ def unshare(ctx, vdc_name):
         vdc_resource = org.get_vdc(vdc_name)
         vdc = VDC(client, resource=vdc_resource)
 
-        vdc.unshare_access()
-        stdout('Vdc unshared from all members of the org', ctx)
+        vdc.unshare_from_org_members()
+        stdout('Vdc \'%s\' unshared from all members of the org \'%s\'.'
+               % (vdc_name, ctx.obj['profiles'].get('org_in_use')), ctx)
     except Exception as e:
         stderr(e, ctx)
 

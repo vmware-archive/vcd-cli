@@ -756,10 +756,12 @@ def add_vm(ctx, name, source_vapp, source_vm, catalog, target_vm, hostname,
 @vapp.group(short_help='work with vapp acl')
 @click.pass_context
 def acl(ctx):
-    """Work with vapp access control list in the current Organization.
+    """Work with vapp access control list.
 
 \b
-    Examples
+   Description
+        Work with vapp access control list in the current Organization.
+\b
         vcd vapp acl add my-vapp 'user:TestUser1:Change'  \\
             'user:TestUser2:FullControl' 'user:TestUser3'
             Add one or more access setting to the specified vapp.
@@ -773,14 +775,16 @@ def acl(ctx):
             specified in the format 'user:username'
 \b
         vcd vapp acl share my-vapp --access-level ReadOnly
-            Share vapp access to all members of the current organization
+            Share vapp access to all members of the current organization.
+            access-level is one of 'ReadOnly', 'Change', 'FullControl'.
+            'ReadOnly' by default.
 \b
         vcd vapp acl unshare my-vapp
             Unshare  vapp access from  all members of the current
-            organization
+            organization.
 \b
         vcd vapp acl list my-vapp
-            List acl of a vapp
+            List acl of a vapp.
 
 
     """
@@ -807,7 +811,7 @@ def add(ctx, vapp_name, access_list):
 
         vapp.add_access_settings(
             access_settings_list=acl_str_to_list_of_dict(access_list))
-        stdout('Access settings added to vapp.', ctx)
+        stdout('Access settings added to vapp \'%s\'.' % vapp_name, ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -841,12 +845,12 @@ def remove(ctx, vapp_name, access_list, all):
         vapp.remove_access_settings(
             access_settings_list=acl_str_to_list_of_dict(access_list),
             remove_all=all)
-        stdout('Access settings removed from vapp.', ctx)
+        stdout('Access settings removed from vapp \'%s\'.' % vapp_name, ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
-@acl.command(short_help='share vapp access to all members of the current'
+@acl.command(short_help='share vapp access to all members of the current v'
              'organization')
 @click.pass_context
 @click.argument('vapp-name',
@@ -867,8 +871,9 @@ def share(ctx, vapp_name, access_level):
         vdc = VDC(client, href=vdc_href)
         vapp = VApp(client, resource=vdc.get_vapp(vapp_name))
 
-        vapp.share_access(everyone_access_level=access_level)
-        stdout('Vapp shared to all members of the org', ctx)
+        vapp.share_with_org_members(everyone_access_level=access_level)
+        stdout('Vapp \'%s\' shared to all members of the org \'%s\'.'
+               % (vapp_name, ctx.obj['profiles'].get('org_in_use')), ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -885,8 +890,9 @@ def unshare(ctx, vapp_name):
         vdc = VDC(client, href=vdc_href)
         vapp = VApp(client, resource=vdc.get_vapp(vapp_name))
 
-        vapp.unshare_access()
-        stdout('Vapp unshared from all members of the org', ctx)
+        vapp.unshare_from_org_members()
+        stdout('Vapp \'%s\' unshared from all members of the org \'%s\'.'
+               % (vapp_name, ctx.obj['profiles'].get('org_in_use')), ctx)
     except Exception as e:
         stderr(e, ctx)
 

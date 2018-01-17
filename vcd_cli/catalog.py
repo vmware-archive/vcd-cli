@@ -450,7 +450,7 @@ def add(ctx, catalog_name, access_list):
         org.add_catalog_access_settings(
             catalog_name=catalog_name,
             access_settings_list=acl_str_to_list_of_dict(access_list))
-        stdout('Access settings added to catalog.', ctx)
+        stdout('Access settings added to catalog \'%s\'.' % catalog_name, ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -483,7 +483,8 @@ def remove(ctx, catalog_name, access_list, all):
             catalog_name=catalog_name,
             access_settings_list=acl_str_to_list_of_dict(access_list),
             remove_all=all)
-        stdout('Access settings removed from catalog.', ctx)
+        stdout('Access settings removed from catalog \'%s\'.'
+               % catalog_name, ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -508,9 +509,10 @@ def share(ctx, catalog_name, access_level):
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
 
-        org.share_catalog_access(
+        org.share_catalog_with_org_members(
             catalog_name=catalog_name, everyone_access_level=access_level)
-        stdout('Catalog shared to all members of the org', ctx)
+        stdout('Catalog shared to all members of the org \'%s\'.' %
+               ctx.obj['profiles'].get('org_in_use'), ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -526,8 +528,9 @@ def unshare(ctx, catalog_name):
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
 
-        org.unshare_catalog_access(catalog_name=catalog_name)
-        stdout('Catalog unshared from all members of the org', ctx)
+        org.unshare_catalog_with_org_members(catalog_name=catalog_name)
+        stdout('Catalog unshared to all members of the org \'%s\'.' %
+               ctx.obj['profiles'].get('org_in_use'), ctx)
     except Exception as e:
         stderr(e, ctx)
 

@@ -468,6 +468,12 @@ def add(ctx, catalog_name, access_list):
               default=False,
               metavar='[all]',
               help='remove all the access settings from the catalog')
+@click.option('-y',
+              '--yes',
+              is_flag=True,
+              callback=abort_if_false,
+              expose_value=False,
+              prompt='Are you sure you want to remove access settings?')
 def remove(ctx, catalog_name, access_list, all):
     try:
         client = ctx.obj['client']

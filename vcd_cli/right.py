@@ -80,9 +80,9 @@ def list_rights(ctx, org_name, all):
             org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, href=org_href)
         if all:
-            right_records = org.list_all_rights()
+            right_records = org.list_rights_available_in_system()
         else:
-            right_records = org.list_my_rights()
+            right_records = org.list_rights_of_org()
         for right in right_records:
             del right['href']
         stdout(right_records, ctx)

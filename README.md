@@ -4,6 +4,17 @@
 
 `vcd-cli` is the Command Line Interface for VMware vCloud Director.
 
+## Installation
+
+In general `vcd-cli` can be installed with the following command:
+
+```shell
+$ pip install --user vcd-cli
+```
+Depending on your operating system and distribution you may need 
+additional packages to install successfully.   See [install.md](docs/install.md)
+for full details. 
+
 ## Quick Start
 
 Below is a sample `vcd-cli` interaction with vCloud Director to create a virtual machine and start using it.

@@ -14,6 +14,7 @@
 
 import click
 from pyvcloud.vcd.vdc import VDC
+from pyvcloud.vcd.platform import Platform
 
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
@@ -27,6 +28,23 @@ def network(ctx):
     """Work with networks in vCloud Director.
     """
 
+    if ctx.invoked_subcommand is not None:
+        try:
+            restore_session(ctx)
+        except Exception as e:
+            stderr(e, ctx)
+
+
+@network.group(short_help='work with external networks')
+@click.pass_context
+def external(ctx):
+    """Work with external networks.
+
+\b
+    Examples
+        vcd network external list
+            List all external networks available in the system
+    """
     if ctx.invoked_subcommand is not None:
         try:
             restore_session(ctx)
@@ -233,5 +251,23 @@ def create_isolated_network(ctx, name, gateway_ip, netmask, description,
             is_shared=is_shared)
 
         stdout(result.Tasks.Task[0], ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@external.command(
+    'list',
+    short_help='list all external networks in the system')
+@click.pass_context
+def list_external_networks(ctx):
+    try:
+        client = ctx.obj['client']
+
+        platform = Platform(client)
+        ext_nets = platform.list_external_networks()
+
+        result = []
+        for ext_net in ext_nets:
+            result.append({'name': ext_net.get('name')})
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

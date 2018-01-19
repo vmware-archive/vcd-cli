@@ -1,6 +1,6 @@
 ```
-Usage: vcd task list [OPTIONS] [queued|pending|pre-
-                     running|running|success|aborted|error|canceled]
+Usage: vcd task list [OPTIONS] [queued|preRunning|running|success|error|cancel
+                     ed|aborted]
 
 Options:
   -h, --help  Show this message and exit.

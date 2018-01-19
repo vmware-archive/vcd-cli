@@ -30,9 +30,6 @@ Usage: vcd catalog acl [OPTIONS] COMMAND [ARGS]...
           vcd catalog acl list my-catalog
               List acl of a catalog
 
-          vcd catalog acl info my-catalog
-              Get details of catalog access control settings
-
 
 
 Options:
@@ -42,7 +39,7 @@ Commands:
   add      add access settings to a particular catalog
   list     list catalog access control list
   remove   remove access settings from a particular catalog
-  share    share catalog access to all members of the currentorganization
+  share    share catalog access to all members of the current organization
   unshare  unshare catalog access from members of the current organization
 
 ```

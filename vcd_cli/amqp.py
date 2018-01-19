@@ -12,12 +12,10 @@
 # conditions of the subcomponent's license, as noted in the LICENSE file.
 #
 
-
 import json
 import sys
 
 import click
-
 from pyvcloud.vcd.amqp import AmqpService
 from pyvcloud.vcd.utils import to_dict
 
@@ -68,15 +66,22 @@ def info(ctx):
 
 @amqp.command(short_help='test AMQP settings')
 @click.pass_context
-@click.option('-p', '--password', prompt=True, hide_input=True,
-              confirmation_prompt=False)
-@click.argument('config-file', type=click.File('rb'), metavar='<config-file>',
-                required=True)
+@click.option(
+    '-p',
+    '--password',
+    prompt=True,
+    hide_input=True,
+    confirmation_prompt=False)
+@click.argument(
+    'config-file',
+    type=click.File('rb'),
+    metavar='<config-file>',
+    required=True)
 def test(ctx, password, config_file):
     try:
         client = ctx.obj['client']
-        config = json.loads(config_file.read(1024).decode(
-            sys.getfilesystemencoding()))
+        config = json.loads(
+            config_file.read(1024).decode(sys.getfilesystemencoding()))
         amqp = AmqpService(client)
         result = amqp.test_config(config, password)
         if result['Valid'].text == 'true':
@@ -90,15 +95,22 @@ def test(ctx, password, config_file):
 
 @amqp.command('set', short_help='configure AMQP settings')
 @click.pass_context
-@click.option('-p', '--password', prompt=True, hide_input=True,
-              confirmation_prompt=False)
-@click.argument('config-file', type=click.File('rb'), metavar='<config-file>',
-                required=True)
+@click.option(
+    '-p',
+    '--password',
+    prompt=True,
+    hide_input=True,
+    confirmation_prompt=False)
+@click.argument(
+    'config-file',
+    type=click.File('rb'),
+    metavar='<config-file>',
+    required=True)
 def set_config(ctx, password, config_file):
     try:
         client = ctx.obj['client']
-        config = json.loads(config_file.read(1024).decode(
-            sys.getfilesystemencoding()))
+        config = json.loads(
+            config_file.read(1024).decode(sys.getfilesystemencoding()))
         amqp = AmqpService(client)
         amqp.set_config(config, password)
         stdout('Updated AMQP configuration.', ctx)

@@ -13,7 +13,6 @@
 #
 
 import click
-
 from pyvcloud.vcd.api_extension import APIExtension
 
 from vcd_cli.system import system
@@ -64,9 +63,7 @@ def list(ctx):
 
 @extension.command(short_help='show extension details')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
+@click.argument('name', metavar='<name>', required=True)
 def info(ctx, name):
     try:
         ext = ctx.obj['ext']
@@ -77,21 +74,11 @@ def info(ctx, name):
 
 @extension.command(short_help='register new extension')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
-@click.argument('namespace',
-                metavar='<namespace>',
-                required=True)
-@click.argument('routing-key',
-                metavar='<routing-key>',
-                required=True)
-@click.argument('exchange',
-                metavar='<exchange>',
-                required=True)
-@click.argument('patterns',
-                metavar='<patterns>',
-                required=True)
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('namespace', metavar='<namespace>', required=True)
+@click.argument('routing-key', metavar='<routing-key>', required=True)
+@click.argument('exchange', metavar='<exchange>', required=True)
+@click.argument('patterns', metavar='<patterns>', required=True)
 def create(ctx, name, namespace, routing_key, exchange, patterns):
     try:
         ext = ctx.obj['ext']
@@ -106,15 +93,14 @@ def create(ctx, name, namespace, routing_key, exchange, patterns):
 
 @extension.command(short_help='unregister extension')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
-@click.option('-y',
-              '--yes',
-              is_flag=True,
-              callback=abort_if_false,
-              expose_value=False,
-              prompt='Are you sure you want to unregister it?')
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-y',
+    '--yes',
+    is_flag=True,
+    callback=abort_if_false,
+    expose_value=False,
+    prompt='Are you sure you want to unregister it?')
 def delete(ctx, name):
     try:
         ext = ctx.obj['ext']

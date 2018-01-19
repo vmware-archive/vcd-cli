@@ -21,7 +21,6 @@ PROFILE_PATH = VCD_CLI_USER_PATH + '/profiles.yaml'
 
 
 class Profiles(object):
-
     def __init__(self):
         self.path = None
         self.data = None
@@ -50,9 +49,23 @@ class Profiles(object):
             import traceback
             traceback.print_exc()
 
-    def update(self, host, org, user, token, api_version, wkep, verify,
-               disable_warnings, vdc, org_href, vdc_href,
-               log_request, log_header, log_body, vapp, vapp_href,
+    def update(self,
+               host,
+               org,
+               user,
+               token,
+               api_version,
+               wkep,
+               verify,
+               disable_warnings,
+               vdc,
+               org_href,
+               vdc_href,
+               log_request,
+               log_header,
+               log_body,
+               vapp,
+               vapp_href,
                name='default'):
         if self.data is None:
             self.data = {}

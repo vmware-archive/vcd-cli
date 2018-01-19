@@ -1,3 +1,4 @@
+# VMware vCloud Director CLI
 #
 # Copyright (c) 2017 VMware, Inc. All Rights Reserved.
 #
@@ -10,8 +11,8 @@
 # code for the these subcomponents is subject to the terms and
 # conditions of the subcomponent's license, as noted in the LICENSE file.
 #
-import click
 
+import click
 from pyvcloud.vcd.org import Org
 from pyvcloud.vcd.utils import to_dict
 
@@ -61,20 +62,23 @@ def right(ctx):
             stderr(e, ctx)
 
 
-@right.command('list', short_help='lists rights in the current organization or System')
+@right.command(
+    'list', short_help='lists rights in the current organization or System')
 @click.pass_context
-@click.option('-o',
-              '--org',
-              'org_name',
-              required=False,
-              metavar='[org-name]',
-              help='name of the org')
-@click.option('--all',
-              is_flag=True,
-              required=False,
-              default=False,
-              metavar='[all]',
-              help='list all rights available in the System')
+@click.option(
+    '-o',
+    '--org',
+    'org_name',
+    required=False,
+    metavar='[org-name]',
+    help='name of the org')
+@click.option(
+    '--all',
+    is_flag=True,
+    required=False,
+    default=False,
+    metavar='[all]',
+    help='list all rights available in the System')
 def list_rights(ctx, org_name, all):
     try:
         client = ctx.obj['client']
@@ -93,11 +97,10 @@ def list_rights(ctx, org_name, all):
     except Exception as e:
         stderr(e, ctx)
 
+
 @right.command('info', short_help='show details of a right')
 @click.pass_context
-@click.argument('right-name',
-                metavar='<right-name>',
-                required=True)
+@click.argument('right-name', metavar='<right-name>', required=True)
 def info(ctx, right_name):
     try:
         client = ctx.obj['client']
@@ -107,17 +110,17 @@ def info(ctx, right_name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @right.command('add', short_help='Add rights to the organization')
 @click.pass_context
-@click.argument('rights',
-                nargs=-1,
-                required=True)
-@click.option('-o',
-              '--org',
-              'org_name',
-              required=False,
-              metavar='[org-name]',
-              help='name of the org')
+@click.argument('rights', nargs=-1, required=True)
+@click.option(
+    '-o',
+    '--org',
+    'org_name',
+    required=False,
+    metavar='[org-name]',
+    help='name of the org')
 def add(ctx, rights, org_name):
     try:
         client = ctx.obj['client']
@@ -134,21 +137,22 @@ def add(ctx, rights, org_name):
 
 @right.command('remove', short_help='remove rights from the organization')
 @click.pass_context
-@click.argument('rights',
-                nargs=-1,
-                required=True)
-@click.option('-o',
-              '--org',
-              'org_name',
-              required=False,
-              metavar='[org-name]',
-              help='name of the org')
-@click.option('-y',
-              '--yes',
-              is_flag=True,
-              callback=abort_if_false,
-              expose_value=False,
-              prompt='Are you sure you want to remove rights from the organization?')
+@click.argument('rights', nargs=-1, required=True)
+@click.option(
+    '-o',
+    '--org',
+    'org_name',
+    required=False,
+    metavar='[org-name]',
+    help='name of the org')
+@click.option(
+    '-y',
+    '--yes',
+    is_flag=True,
+    callback=abort_if_false,
+    expose_value=False,
+    prompt='Are you sure you want to remove rights from the '
+    'organization?')
 def remove(ctx, rights, org_name):
     try:
         client = ctx.obj['client']
@@ -161,4 +165,3 @@ def remove(ctx, rights, org_name):
         stdout("Rights removed from the Org \'%s\'" % org_name, ctx)
     except Exception as e:
         stderr(e, ctx)
-

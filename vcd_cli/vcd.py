@@ -17,6 +17,7 @@ import platform
 import click
 from colorama import init
 import pkg_resources
+
 from vcd_cli.plugin import load_user_plugins
 from vcd_cli.utils import stdout
 
@@ -28,35 +29,30 @@ def abort_if_false(ctx, param, value):
         ctx.abort()
 
 
-@click.group(context_settings=CONTEXT_SETTINGS,
-             invoke_without_command=True)
+@click.group(context_settings=CONTEXT_SETTINGS, invoke_without_command=True)
 @click.pass_context
-@click.option('-d',
-              '--debug',
-              is_flag=True,
-              default=False,
-              help='Enable debug')
-@click.option('-j',
-              '--json',
-              'json_output',
-              is_flag=True,
-              default=False,
-              help='Results as JSON object')
-@click.option('-n',
-              '--no-wait',
-              is_flag=True,
-              default=False,
-              help='Don\'t wait for task')
-@click.option('--colorized/--no-colorized',
-              'is_colorized',
-              default=True,
-              envvar='VCD_USE_COLORED_OUTPUT',
-              help='print info in color or monochrome')
-def vcd(ctx,
-        debug,
-        json_output,
-        no_wait,
-        is_colorized):
+@click.option(
+    '-d', '--debug', is_flag=True, default=False, help='Enable debug')
+@click.option(
+    '-j',
+    '--json',
+    'json_output',
+    is_flag=True,
+    default=False,
+    help='Results as JSON object')
+@click.option(
+    '-n',
+    '--no-wait',
+    is_flag=True,
+    default=False,
+    help='Don\'t wait for task')
+@click.option(
+    '--colorized/--no-colorized',
+    'is_colorized',
+    default=True,
+    envvar='VCD_USE_COLORED_OUTPUT',
+    help='print info in color or monochrome')
+def vcd(ctx, debug, json_output, no_wait, is_colorized):
     """VMware vCloud Director Command Line Interface.
 
 \b
@@ -77,12 +73,13 @@ def vcd(ctx,
 def version(ctx):
     """Show vcd-cli version"""
     ver = pkg_resources.require("vcd-cli")[0].version
-    ver_obj = {'product': 'vcd-cli',
-               'description': 'VMware vCloud Director Command Line Interface',
-               'version': ver,
-               'python': platform.python_version()}
-    ver_str = '%s, %s, %s' % (ver_obj['product'],
-                              ver_obj['description'],
+    ver_obj = {
+        'product': 'vcd-cli',
+        'description': 'VMware vCloud Director Command Line Interface',
+        'version': ver,
+        'python': platform.python_version()
+    }
+    ver_str = '%s, %s, %s' % (ver_obj['product'], ver_obj['description'],
                               ver_obj['version'])
     stdout(ver_obj, ctx, ver_str)
 
@@ -97,11 +94,8 @@ def print_command(cmd, level=0):
 
 @vcd.command(short_help='show help')
 @click.pass_context
-@click.option('-t',
-              '--tree',
-              is_flag=True,
-              default=False,
-              help='show commands tree')
+@click.option(
+    '-t', '--tree', is_flag=True, default=False, help='show commands tree')
 def help(ctx, tree):
     """Show vcd-cli help"""
     if tree:
@@ -125,7 +119,7 @@ else:
     from vcd_cli import profile  # NOQA
     from vcd_cli import pvdc  # NOQA
     from vcd_cli import role  # NOQA
-    from vcd_cli import right # NOQA
+    from vcd_cli import right  # NOQA
     from vcd_cli import search  # NOQA
     from vcd_cli import system  # NOQA
     from vcd_cli import task  # NOQA

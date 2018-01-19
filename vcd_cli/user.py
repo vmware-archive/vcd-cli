@@ -158,7 +158,7 @@ def create(ctx, user_name, password, role_name, full_name, description, email,
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
-        role = org.get_role(role_name)
+        role = org.get_role_record(role_name)
         role_href = role.get('href')
         result = org.create_user(user_name=user_name, password=password,
                                  role_href=role_href, full_name=full_name,

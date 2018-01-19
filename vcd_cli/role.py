@@ -139,7 +139,7 @@ def list_rights(ctx, role_name, org_name):
         else:
             org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, href=org_href)
-        role_record = org.get_role(role_name)
+        role_record = org.get_role_record(role_name)
         role = Role(client, href=role_record.get('href'))
         rights = role.list_rights()
         stdout(rights, ctx)
@@ -231,7 +231,7 @@ def unlink(ctx, role_name, org_name):
         else:
             org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, href=org_href)
-        role_record = org.get_role(role_name)
+        role_record = org.get_role_record(role_name)
         role = Role(client, href=role_record.get('href'))
         role.unlink()
         stdout('Role \'%s\' has been successfully unlinked'
@@ -260,7 +260,7 @@ def link(ctx, role_name, org_name):
         else:
             org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, href=org_href)
-        role_record = org.get_role(role_name)
+        role_record = org.get_role_record(role_name)
         role = Role(client, href=role_record.get('href'))
         role.link()
         stdout('Role \'%s\' has been successfully linked'
@@ -291,7 +291,7 @@ def add_right(ctx, role_name, rights, org_name):
         else:
             org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, href=org_href)
-        role_record = org.get_role(role_name)
+        role_record = org.get_role_record(role_name)
         role = Role(client, href=role_record.get('href'))
         role.add_rights(list(rights), org)
         stdout('Rights added successfully to the role \'%s\'' % role_name, ctx)
@@ -328,7 +328,7 @@ def remove_right(ctx, role_name, rights, org_name):
         else:
             org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, href=org_href)
-        role_record = org.get_role(role_name)
+        role_record = org.get_role_record(role_name)
         role = Role(client, href=role_record.get('href'))
         role.remove_rights(list(rights))
         stdout('Removed rights successfully from the role \'%s\'' % role_name, ctx)

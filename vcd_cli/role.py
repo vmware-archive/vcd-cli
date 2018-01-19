@@ -24,6 +24,10 @@ def role(ctx):
 
 \b
     Examples
+        vcd role info myRole -o myOrg
+            Show details of a given role
+
+\b
         vcd role list
             Get list of roles in the current organization.
 
@@ -89,6 +93,32 @@ def list_roles(ctx, org_name):
     except Exception as e:
         stderr(e, ctx)
 
+@role.command('info', short_help='show details of a role')
+@click.pass_context
+@click.argument('role-name',
+                metavar='<role-name>',
+                required=True)
+@click.option('-o',
+              '--org',
+              'org_name',
+              required=False,
+              metavar='[org-name]',
+              help='name of the org',
+              )
+def info(ctx, role_name, org_name):
+    try:
+        client = ctx.obj['client']
+        if org_name is not None:
+            org_href = client.get_org_by_name(org_name).get('href')
+        else:
+            org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, href=org_href)
+        role_resource = org.get_role_resource(role_name)
+        stdout(to_dict(role_resource, exclude=['Link', 'RightReferences']), ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
 
 @role.command('list-rights', short_help='list rights of a role')
 @click.pass_context
@@ -109,7 +139,7 @@ def list_rights(ctx, role_name, org_name):
         else:
             org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, href=org_href)
-        role_record = org.get_role(role_name)
+        role_record = org.get_role_record(role_name)
         role = Role(client, href=role_record.get('href'))
         rights = role.list_rights()
         stdout(rights, ctx)
@@ -201,7 +231,7 @@ def unlink(ctx, role_name, org_name):
         else:
             org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, href=org_href)
-        role_record = org.get_role(role_name)
+        role_record = org.get_role_record(role_name)
         role = Role(client, href=role_record.get('href'))
         role.unlink()
         stdout('Role \'%s\' has been successfully unlinked'
@@ -230,7 +260,7 @@ def link(ctx, role_name, org_name):
         else:
             org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, href=org_href)
-        role_record = org.get_role(role_name)
+        role_record = org.get_role_record(role_name)
         role = Role(client, href=role_record.get('href'))
         role.link()
         stdout('Role \'%s\' has been successfully linked'
@@ -261,7 +291,7 @@ def add_right(ctx, role_name, rights, org_name):
         else:
             org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, href=org_href)
-        role_record = org.get_role(role_name)
+        role_record = org.get_role_record(role_name)
         role = Role(client, href=role_record.get('href'))
         role.add_rights(list(rights), org)
         stdout('Rights added successfully to the role \'%s\'' % role_name, ctx)
@@ -298,7 +328,7 @@ def remove_right(ctx, role_name, rights, org_name):
         else:
             org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, href=org_href)
-        role_record = org.get_role(role_name)
+        role_record = org.get_role_record(role_name)
         role = Role(client, href=role_record.get('href'))
         role.remove_rights(list(rights))
         stdout('Removed rights successfully from the role \'%s\'' % role_name, ctx)

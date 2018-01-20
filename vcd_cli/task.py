@@ -12,7 +12,6 @@
 #
 
 import click
-
 from pyvcloud.vcd.client import EntityType
 from pyvcloud.vcd.client import RelationType
 from pyvcloud.vcd.client import TaskStatus
@@ -56,9 +55,7 @@ def task(ctx):
 
 @task.command(short_help='show task details')
 @click.pass_context
-@click.argument('task_id',
-                metavar='<id>',
-                required=True)
+@click.argument('task_id', metavar='<id>', required=True)
 def info(ctx, task_id):
     try:
         client = ctx.obj['client']
@@ -70,11 +67,12 @@ def info(ctx, task_id):
 
 @task.command('list', short_help='list tasks')
 @click.pass_context
-@click.argument('status',
-                type=click.Choice(TaskStatus._enums.keys()),
-                metavar=as_metavar(TaskStatus._enums.keys()),
-                required=False,
-                nargs=-1)
+@click.argument(
+    'status',
+    type=click.Choice(TaskStatus._enums.keys()),
+    metavar=as_metavar(TaskStatus._enums.keys()),
+    required=False,
+    nargs=-1)
 def list_tasks(ctx, status):
     try:
         client = ctx.obj['client']
@@ -82,10 +80,13 @@ def list_tasks(ctx, status):
         records = task_obj.list_tasks(filter_status_list=status)
         result = []
         for r in records:
-            result.append(to_dict(r, attributes=['name', 'status',
-                                                 'objectName', 'ownerName',
-                                                 'orgName', 'startDate',
-                                                 'serviceNamespace', 'id']))
+            result.append(
+                to_dict(
+                    r,
+                    attributes=[
+                        'name', 'status', 'objectName', 'ownerName', 'orgName',
+                        'startDate', 'serviceNamespace', 'id'
+                    ]))
         stdout(result, ctx, show_id=True)
     except Exception as e:
         stderr(e, ctx)
@@ -93,9 +94,7 @@ def list_tasks(ctx, status):
 
 @task.command(short_help='wait until task is complete')
 @click.pass_context
-@click.argument('task_id',
-                metavar='<id>',
-                required=True)
+@click.argument('task_id', metavar='<id>', required=True)
 def wait(ctx, task_id):
     try:
         client = ctx.obj['client']
@@ -107,22 +106,19 @@ def wait(ctx, task_id):
 
 @task.command(short_help='update task status')
 @click.pass_context
-@click.argument('status',
-                type=click.Choice(TaskStatus._enums.keys()),
-                metavar=as_metavar(TaskStatus._enums.keys()),
-                required=True)
-@click.argument('task_id',
-                metavar='<id>',
-                required=True)
+@click.argument(
+    'status',
+    type=click.Choice(TaskStatus._enums.keys()),
+    metavar=as_metavar(TaskStatus._enums.keys()),
+    required=True)
+@click.argument('task_id', metavar='<id>', required=True)
 def update(ctx, status, task_id):
     try:
         client = ctx.obj['client']
         task = client.get_resource('%s/task/%s' % (client._uri, task_id))
         task.set('status', status)
-        result = client.put_linked_resource(task,
-                                            RelationType.EDIT,
-                                            EntityType.TASK.value,
-                                            task)
+        result = client.put_linked_resource(task, RelationType.EDIT,
+                                            EntityType.TASK.value, task)
         print(result)
     except Exception as e:
         import traceback

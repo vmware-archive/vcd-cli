@@ -13,8 +13,8 @@
 #
 
 import click
-from pyvcloud.vcd.vdc import VDC
 from pyvcloud.vcd.platform import Platform
+from pyvcloud.vcd.vdc import VDC
 
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
@@ -26,8 +26,8 @@ from vcd_cli.vcd import vcd
 @click.pass_context
 def network(ctx):
     """Work with networks in vCloud Director.
-    """
 
+    """
     if ctx.invoked_subcommand is not None:
         try:
             restore_session(ctx)
@@ -254,9 +254,9 @@ def create_isolated_network(ctx, name, gateway_ip, netmask, description,
     except Exception as e:
         stderr(e, ctx)
 
+
 @external.command(
-    'list',
-    short_help='list all external networks in the system')
+    'list', short_help='list all external networks in the system')
 @click.pass_context
 def list_external_networks(ctx):
     try:

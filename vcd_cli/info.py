@@ -13,12 +13,10 @@
 #
 
 import click
-
 from pyvcloud.vcd.client import QueryResultFormat
 from pyvcloud.vcd.client import RESOURCE_TYPES
 from pyvcloud.vcd.utils import stdout_xml
 from pyvcloud.vcd.utils import to_camel_case
-
 from tabulate import tabulate
 
 from vcd_cli.utils import restore_session
@@ -29,12 +27,8 @@ from vcd_cli.vcd import vcd
 
 @vcd.command(short_help='show resource details')
 @click.pass_context
-@click.argument('resource_type',
-                metavar='[resource-type]',
-                required=False)
-@click.argument('resource-id',
-                metavar='[resource-id]',
-                required=False)
+@click.argument('resource_type', metavar='[resource-type]', required=False)
+@click.argument('resource-id', metavar='[resource-id]', required=False)
 def info(ctx, resource_type, resource_id):
     """Display details of a resource in vCloud Director.
 
@@ -76,11 +70,10 @@ def info(ctx, resource_type, resource_id):
             return
         restore_session(ctx)
         client = ctx.obj['client']
-        q = client.get_typed_query(to_camel_case(resource_type,
-                                                 RESOURCE_TYPES),
-                                   query_result_format=QueryResultFormat.
-                                   REFERENCES,
-                                   qfilter='id==%s' % resource_id)
+        q = client.get_typed_query(
+            to_camel_case(resource_type, RESOURCE_TYPES),
+            query_result_format=QueryResultFormat.REFERENCES,
+            qfilter='id==%s' % resource_id)
         records = list(q.execute())
         if len(records) == 0:
             raise Exception('not found')

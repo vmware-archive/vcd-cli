@@ -1,8 +1,7 @@
 ```
-Usage: vcd cse cluster config [OPTIONS] NAME
+Usage: vcd vdc acl unshare [OPTIONS] <vdc-name>
 
 Options:
-  -s, --save
   -h, --help  Show this message and exit.
 
 ```

@@ -13,7 +13,6 @@
 #
 
 import click
-
 from pyvcloud.vcd.client import _WellKnownEndpoint
 
 from vcd_cli.utils import restore_session

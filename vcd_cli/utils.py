@@ -14,10 +14,10 @@
 import collections
 import json
 import logging
+from os import environ
 import re
 import sys
 import traceback
-from os import environ
 
 import click
 from colorama import Fore
@@ -33,7 +33,6 @@ from pyvcloud.vcd.client import NSMAP
 from pyvcloud.vcd.client import TaskStatus
 from pyvcloud.vcd.client import VcdErrorResponseException
 from pyvcloud.vcd.utils import extract_id
-from pyvcloud.vcd.utils import task_to_dict
 from pyvcloud.vcd.utils import to_dict
 import requests
 from tabulate import tabulate
@@ -49,7 +48,9 @@ def is_sysadmin(ctx):
     return org_name == 'System'
 
 
-def as_table(obj_list, show_id=False, sort_headers=True,
+def as_table(obj_list,
+             show_id=False,
+             sort_headers=True,
              hide_fields=['href', 'type']):
     if len(obj_list) == 0:
         return ''
@@ -71,8 +72,13 @@ def as_table(obj_list, show_id=False, sort_headers=True,
 
 
 def as_prop_value_list(obj, show_id=True):
-    return as_table([{'property': k, 'value': v} for k, v in
-                    sorted(obj.items())], show_id=show_id)
+    return as_table(
+        [{
+            'property': k,
+            'value': v
+        } for k, v in sorted(obj.items())],
+        show_id=show_id)
+
 
 def as_metavar(values):
     result = ''
@@ -136,9 +142,10 @@ def task_callback(task):
         last_message = message
     if hasattr(task, 'Progress'):
         message += ', progress: %s%%' % task.Progress
-    if task.get('status').lower() in [TaskStatus.QUEUED.value,
-                                      TaskStatus.PRE_RUNNING.value,
-                                      TaskStatus.RUNNING.value]:
+    if task.get('status').lower() in [
+            TaskStatus.QUEUED.value, TaskStatus.PRE_RUNNING.value,
+            TaskStatus.RUNNING.value
+    ]:
         message += ' %s ' % next(spinner)
     click.secho(message, nl=False)
 
@@ -202,9 +209,12 @@ def stdout(obj, ctx=None, alt_text=None, show_id=False, sort_headers=True):
                         isinstance(obj, collections.Iterable):
                     text = as_table(obj)
                 elif ctx.command.name == 'info':
-                    text = as_table([{'property': k, 'value': v} for k, v in
-                                    sorted(to_dict(obj).items())],
-                                    show_id=show_id)
+                    text = as_table(
+                        [{
+                            'property': k,
+                            'value': v
+                        } for k, v in sorted(to_dict(obj).items())],
+                        show_id=show_id)
                 else:
                     text = as_table(to_dict(obj), show_id=show_id)
             elif not isinstance(obj, list):

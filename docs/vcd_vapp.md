@@ -100,6 +100,7 @@ Options:
   -h, --help  Show this message and exit.
 
 Commands:
+  acl           work with vapp acl
   add-disk      add disk to vm
   add-vm        add VM to vApp
   attach        attach disk to VM in vApp

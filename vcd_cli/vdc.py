@@ -14,12 +14,13 @@
 
 import click
 from pyvcloud.vcd.client import EntityType
-from pyvcloud.vcd.client import MissingLinkException
 from pyvcloud.vcd.client import get_links
+from pyvcloud.vcd.client import MissingLinkException
 from pyvcloud.vcd.org import Org
 from pyvcloud.vcd.utils import access_settings_to_dict
 from pyvcloud.vcd.utils import vdc_to_dict
 from pyvcloud.vcd.vdc import VDC
+
 from vcd_cli.utils import access_settings_to_list
 from vcd_cli.utils import acl_str_to_list_of_dict
 from vcd_cli.utils import restore_session
@@ -213,8 +214,8 @@ def use(ctx, name):
     metavar='<cpu-limit>',
     type=click.INT,
     help='Capacity limit relative to the value specified for Allocation.')
-def create(ctx, name, pvdc_name, network_pool_name, allocation_model,
-           sp_name, sp_limit, description, cpu_allocated, cpu_limit):
+def create(ctx, name, pvdc_name, network_pool_name, allocation_model, sp_name,
+           sp_limit, description, cpu_allocated, cpu_limit):
     try:
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
@@ -347,11 +348,8 @@ def acl(ctx):
 
 @acl.command(short_help='add access settings to a particular vdc')
 @click.pass_context
-@click.argument('vdc-name',
-                metavar='<vdc-name>')
-@click.argument('access-list',
-                nargs=-1,
-                required=True)
+@click.argument('vdc-name', metavar='<vdc-name>')
+@click.argument('access-list', nargs=-1, required=True)
 def add(ctx, vdc_name, access_list):
     try:
         client = ctx.obj['client']
@@ -369,23 +367,22 @@ def add(ctx, vdc_name, access_list):
 
 @acl.command(short_help='remove access settings from a particular vdc')
 @click.pass_context
-@click.argument('vdc-name',
-                metavar='<vdc-name>')
-@click.argument('access-list',
-                nargs=-1,
-                required=False)
-@click.option('--all',
-              is_flag=True,
-              required=False,
-              default=False,
-              metavar='[all]',
-              help='remove all the access settings from the vdc.')
-@click.option('-y',
-              '--yes',
-              is_flag=True,
-              callback=abort_if_false,
-              expose_value=False,
-              prompt='Are you sure you want to remove access settings?')
+@click.argument('vdc-name', metavar='<vdc-name>')
+@click.argument('access-list', nargs=-1, required=False)
+@click.option(
+    '--all',
+    is_flag=True,
+    required=False,
+    default=False,
+    metavar='[all]',
+    help='remove all the access settings from the vdc.')
+@click.option(
+    '-y',
+    '--yes',
+    is_flag=True,
+    callback=abort_if_false,
+    expose_value=False,
+    prompt='Are you sure you want to remove access settings?')
 def remove(ctx, vdc_name, access_list, all):
     try:
         client = ctx.obj['client']
@@ -410,10 +407,9 @@ def remove(ctx, vdc_name, access_list, all):
 
 
 @acl.command(short_help='share vdc access to all members of the current '
-                        'organization')
+             'organization')
 @click.pass_context
-@click.argument('vdc-name',
-                metavar='<vdc-name>')
+@click.argument('vdc-name', metavar='<vdc-name>')
 def share(ctx, vdc_name):
     try:
         client = ctx.obj['client']
@@ -423,17 +419,16 @@ def share(ctx, vdc_name):
         vdc = VDC(client, resource=vdc_resource)
 
         vdc.share_with_org_members()
-        stdout('Vdc \'%s\' shared to all members of the org \'%s\'.'
-               % (vdc_name, ctx.obj['profiles'].get('org_in_use')), ctx)
+        stdout('Vdc \'%s\' shared to all members of the org \'%s\'.' %
+               (vdc_name, ctx.obj['profiles'].get('org_in_use')), ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
 @acl.command(short_help='unshare vdc access from members of the '
-                        'current organization')
+             'current organization')
 @click.pass_context
-@click.argument('vdc-name',
-                metavar='<vdc-name>')
+@click.argument('vdc-name', metavar='<vdc-name>')
 def unshare(ctx, vdc_name):
     try:
         client = ctx.obj['client']
@@ -443,16 +438,15 @@ def unshare(ctx, vdc_name):
         vdc = VDC(client, resource=vdc_resource)
 
         vdc.unshare_from_org_members()
-        stdout('Vdc \'%s\' unshared from all members of the org \'%s\'.'
-               % (vdc_name, ctx.obj['profiles'].get('org_in_use')), ctx)
+        stdout('Vdc \'%s\' unshared from all members of the org \'%s\'.' %
+               (vdc_name, ctx.obj['profiles'].get('org_in_use')), ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
 @acl.command('list', short_help='list vdc access control list')
 @click.pass_context
-@click.argument('vdc-name',
-                metavar='<vdc-name>')
+@click.argument('vdc-name', metavar='<vdc-name>')
 def list_acl(ctx, vdc_name):
     try:
         client = ctx.obj['client']
@@ -463,8 +457,8 @@ def list_acl(ctx, vdc_name):
 
         acl = vdc.get_access_settings()
         stdout(
-            access_settings_to_list(
-                acl, ctx.obj['profiles'].get('org_in_use')),
+            access_settings_to_list(acl,
+                                    ctx.obj['profiles'].get('org_in_use')),
             ctx,
             sort_headers=False)
     except Exception as e:

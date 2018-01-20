@@ -1,9 +1,9 @@
 ```
-Usage: vcd right list [OPTIONS]
+Usage: vcd right remove [OPTIONS] RIGHTS...
 
 Options:
   -o, --org [org-name]  name of the org
-  --all                 list all rights available in the System
+  -y, --yes
   -h, --help            Show this message and exit.
 
 ```

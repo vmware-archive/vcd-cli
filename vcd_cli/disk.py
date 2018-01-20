@@ -95,15 +95,22 @@ def list_disks(ctx):
             if hasattr(disk, 'attached_vms') and \
                hasattr(disk.attached_vms, 'VmReference'):
                 attached_vms = disk.attached_vms.VmReference.get('name')
-            result.append({'name': disk.get('name'),
-                           'id': extract_id(disk.get('id')),
-                           'owner': disk.Owner.User.get('name'),
-                           'size': humanfriendly.format_size(
-                               int(disk.get('size'))),
-                           'size_bytes': disk.get('size'),
-                           'status': VCLOUD_STATUS_MAP.get(int(
-                               disk.get('status'))),
-                           'vms_attached': attached_vms})
+            result.append({
+                'name':
+                disk.get('name'),
+                'id':
+                extract_id(disk.get('id')),
+                'owner':
+                disk.Owner.User.get('name'),
+                'size':
+                humanfriendly.format_size(int(disk.get('size'))),
+                'size_bytes':
+                disk.get('size'),
+                'status':
+                VCLOUD_STATUS_MAP.get(int(disk.get('status'))),
+                'vms_attached':
+                attached_vms
+            })
         stdout(result, ctx, show_id=True)
     except Exception as e:
         stderr(e, ctx)
@@ -113,24 +120,27 @@ def list_disks(ctx):
 @click.pass_context
 @click.argument('name', metavar='<name>')
 @click.argument('size', metavar='<size in bytes>')
-@click.option('-d',
-              '--description',
-              'description',
-              required=False,
-              metavar='<description>',
-              help='Description of the new disk')
-@click.option('-s',
-              '--storage-profile',
-              'storage_profile',
-              required=False,
-              metavar='<name>',
-              help='Name of the Storage Profile to be used for the new disk.')
-@click.option('-i',
-              '--iops',
-              'iops',
-              required=False,
-              metavar='<iops>',
-              help='Iops requirements of the new disk')
+@click.option(
+    '-d',
+    '--description',
+    'description',
+    required=False,
+    metavar='<description>',
+    help='Description of the new disk')
+@click.option(
+    '-s',
+    '--storage-profile',
+    'storage_profile',
+    required=False,
+    metavar='<name>',
+    help='Name of the Storage Profile to be used for the new disk.')
+@click.option(
+    '-i',
+    '--iops',
+    'iops',
+    required=False,
+    metavar='<iops>',
+    help='Iops requirements of the new disk')
 def create(ctx, name, size, description, storage_profile, iops):
     try:
         client = ctx.obj['client']
@@ -150,12 +160,13 @@ def create(ctx, name, size, description, storage_profile, iops):
 @disk.command(short_help='delete a disk')
 @click.pass_context
 @click.argument('name', metavar='<name>')
-@click.option('-y',
-              '--yes',
-              is_flag=True,
-              callback=abort_if_false,
-              expose_value=False,
-              prompt='Are you sure you want to delete the disk?')
+@click.option(
+    '-y',
+    '--yes',
+    is_flag=True,
+    callback=abort_if_false,
+    expose_value=False,
+    prompt='Are you sure you want to delete the disk?')
 def delete(ctx, name):
     try:
         client = ctx.obj['client']
@@ -172,40 +183,43 @@ def delete(ctx, name):
 
 @disk.command('update', short_help='update disk')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
-@click.option('-n',
-              '--new-name',
-              'new_name',
-              required=False,
-              metavar='<name>',
-              help='New name of the disk')
-@click.option('-s',
-              '--size',
-              'size',
-              metavar='<size>',
-              required=False,
-              help='New size of the disk in bytes')
-@click.option('-d',
-              '--description',
-              'description',
-              required=False,
-              metavar='<description>',
-              help='New Description of the disk')
-@click.option('-S',
-              '--storage-profile',
-              'storage_profile',
-              required=False,
-              metavar='<name>',
-              help='Name of the new Storage Profile to be used for the disk.')
-@click.option('-i',
-              '--iops',
-              'iops',
-              required=False,
-              metavar='<iops>',
-              default=None,
-              help='New iops requirement of the disk')
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-n',
+    '--new-name',
+    'new_name',
+    required=False,
+    metavar='<name>',
+    help='New name of the disk')
+@click.option(
+    '-s',
+    '--size',
+    'size',
+    metavar='<size>',
+    required=False,
+    help='New size of the disk in bytes')
+@click.option(
+    '-d',
+    '--description',
+    'description',
+    required=False,
+    metavar='<description>',
+    help='New Description of the disk')
+@click.option(
+    '-S',
+    '--storage-profile',
+    'storage_profile',
+    required=False,
+    metavar='<name>',
+    help='Name of the new Storage Profile to be used for the disk.')
+@click.option(
+    '-i',
+    '--iops',
+    'iops',
+    required=False,
+    metavar='<iops>',
+    default=None,
+    help='New iops requirement of the disk')
 def update(ctx, name, new_name, size, description, storage_profile, iops):
     try:
         client = ctx.obj['client']
@@ -217,13 +231,14 @@ def update(ctx, name, new_name, size, description, storage_profile, iops):
             new_size = humanfriendly.parse_size(size)
 
         name, id = extract_name_and_id(name)
-        task = vdc.update_disk(name=name,
-                               disk_id=id,
-                               new_name=new_name,
-                               new_size=new_size,
-                               new_description=description,
-                               new_storage_profile_name=storage_profile,
-                               new_iops=iops)
+        task = vdc.update_disk(
+            name=name,
+            disk_id=id,
+            new_name=new_name,
+            new_size=new_size,
+            new_description=description,
+            new_storage_profile_name=storage_profile,
+            new_iops=iops)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -244,11 +259,12 @@ def change_disk_owner(ctx, disk_name, user_name):
         user_resource = org.get_user(user_name)
 
         disk_name, disk_id = extract_name_and_id(disk_name)
-        vdc.change_disk_owner(user_href=user_resource.get('href'),
-                              name=disk_name,
-                              disk_id=disk_id)
+        vdc.change_disk_owner(
+            user_href=user_resource.get('href'),
+            name=disk_name,
+            disk_id=disk_id)
 
-        stdout('Owner of disk \'%s\' changed to \'%s\'' %
-               (disk_name, user_name), ctx)
+        stdout('Owner of disk \'%s\' changed to \'%s\'' % (disk_name,
+                                                           user_name), ctx)
     except Exception as e:
         stderr(e, ctx)

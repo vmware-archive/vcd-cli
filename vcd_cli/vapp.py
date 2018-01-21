@@ -117,6 +117,12 @@ def vapp(ctx):
         vcd vapp power-on vapp1
             Power on a vApp.
 \b
+        vcd vapp reset vapp1
+            Power reset vapp1.
+\b
+        vcd vapp deploy vapp1
+            Deploy vapp1.
+\b
         vcd vapp power-on vapp1 vm1 vm2
             Power on vm1 and vm2 of vapp1.
 \b
@@ -528,16 +534,11 @@ def reset(ctx, name, vm_names):
                 nargs=-1)
 @click.option('--power-on/--power-off',
               is_flag=True,
-              default=True,
-              required=False,
-              help='Specifies whether to power on/off vapp/VM on deployment,'
+              help='Specifies whether to power on/off vApp/VM on deployment,'
                    'if not specified, default is power on'
               )
-@click.option('-fc',
-              '--force-customization',
+@click.option('--force-customization',
               is_flag=True,
-              default=False,
-              required=False,
               help='Specifies whether to force customization on deployment,'
                    'if not specified, default is False')
 def deploy(ctx, name, vm_names, power_on, force_customization):
@@ -547,9 +548,12 @@ def deploy(ctx, name, vm_names, power_on, force_customization):
         vdc = VDC(client, href=vdc_href)
         vapp_resource = vdc.get_vapp(name)
         vapp = VApp(client, resource=vapp_resource)
+        if power_on is not None:
+            power_on = False
+        if force_customization is not None:
+            force_customization = True
         if len(vm_names) == 0:
-            task = vapp.deploy(power_on=power_on,
-                               force_customization=force_customization)
+            task = vapp.deploy(power_on=power_on)
             stdout(task, ctx)
         else:
             for vm_name in vm_names:

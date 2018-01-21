@@ -1,8 +1,7 @@
 ```
-Usage: vcd cse cluster delete [OPTIONS] NAME
+Usage: vcd vdc acl list [OPTIONS] <vdc-name>
 
 Options:
-  -y, --yes
   -h, --help  Show this message and exit.
 
 ```

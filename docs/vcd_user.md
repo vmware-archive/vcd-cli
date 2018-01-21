@@ -28,6 +28,6 @@ Options:
 Commands:
   create  create user in current organization
   delete  delete an user in current organization
-  update  update an user in current organizaton
+  update  update an user in current organization
 
 ```

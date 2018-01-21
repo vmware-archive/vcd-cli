@@ -1,8 +1,7 @@
 ```
-Usage: vcd cse system stop [OPTIONS]
+Usage: vcd vc info [OPTIONS] NAME
 
 Options:
-  -y, --yes
   -h, --help  Show this message and exit.
 
 ```

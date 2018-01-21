@@ -13,7 +13,6 @@
 #
 
 import click
-
 from pyvcloud.vcd.client import QueryResultFormat
 from pyvcloud.vcd.org import Org
 from pyvcloud.vcd.utils import to_dict
@@ -22,9 +21,9 @@ from pyvcloud.vcd.vapp import VApp
 from pyvcloud.vcd.vdc import VDC
 from pyvcloud.vcd.vm import VM
 
-from vcd_cli.utils import extract_name_and_id
 from vcd_cli.utils import access_settings_to_list
 from vcd_cli.utils import acl_str_to_list_of_dict
+from vcd_cli.utils import extract_name_and_id
 from vcd_cli.utils import is_sysadmin
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
@@ -156,9 +155,7 @@ def vapp(ctx):
 
 @vapp.command(short_help='show vApp details')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
+@click.argument('name', metavar='<name>', required=True)
 def info(ctx, name):
     try:
         client = ctx.obj['client']
@@ -176,15 +173,9 @@ def info(ctx, name):
 
 @vapp.command(short_help='attach disk to VM in vApp')
 @click.pass_context
-@click.argument('vapp-name',
-                metavar='<vapp-name>',
-                required=True)
-@click.argument('vm-name',
-                metavar='<vm-name>',
-                required=True)
-@click.argument('disk-name',
-                metavar='<disk-name>',
-                required=True)
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.argument('disk-name', metavar='<disk-name>', required=True)
 def attach(ctx, vapp_name, vm_name, disk_name):
     try:
         client = ctx.obj['client']
@@ -198,8 +189,7 @@ def attach(ctx, vapp_name, vm_name, disk_name):
         vapp = VApp(client, resource=vapp_resource)
 
         task = vapp.attach_disk_to_vm(
-            disk_href=disk.get('href'),
-            vm_name=vm_name)
+            disk_href=disk.get('href'), vm_name=vm_name)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -207,15 +197,9 @@ def attach(ctx, vapp_name, vm_name, disk_name):
 
 @vapp.command(short_help='detach disk from VM in vApp')
 @click.pass_context
-@click.argument('vapp-name',
-                metavar='<vapp-name>',
-                required=True)
-@click.argument('vm-name',
-                metavar='<vm-name>',
-                required=True)
-@click.argument('disk-name',
-                metavar='<disk-name>',
-                required=True)
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.argument('disk-name', metavar='<disk-name>', required=True)
 def detach(ctx, vapp_name, vm_name, disk_name):
     try:
         client = ctx.obj['client']
@@ -229,8 +213,7 @@ def detach(ctx, vapp_name, vm_name, disk_name):
         vapp = VApp(client, resource=vapp_resource)
 
         task = vapp.detach_disk_from_vm(
-            disk_href=disk.get('href'),
-            vm_name=vm_name)
+            disk_href=disk.get('href'), vm_name=vm_name)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -238,9 +221,7 @@ def detach(ctx, vapp_name, vm_name, disk_name):
 
 @vapp.command('list', short_help='list vApps')
 @click.pass_context
-@click.argument('name',
-                metavar='[name]',
-                required=False)
+@click.argument('name', metavar='[name]', required=False)
 def list_vapps(ctx, name):
     try:
         client = ctx.obj['client']
@@ -252,18 +233,22 @@ def list_vapps(ctx, name):
         else:
             resource_type = 'adminVm' if is_sysadmin(ctx) else 'vm'
             qfilter = 'containerName==%s' % name
-            attributes = ['name', 'containerName', 'ipAddress', 'status',
-                          'memoryMB', 'numberOfCpus']
-        q = client.get_typed_query(resource_type,
-                                   query_result_format=QueryResultFormat.
-                                   ID_RECORDS, qfilter=qfilter)
+            attributes = [
+                'name', 'containerName', 'ipAddress', 'status', 'memoryMB',
+                'numberOfCpus'
+            ]
+        q = client.get_typed_query(
+            resource_type,
+            query_result_format=QueryResultFormat.ID_RECORDS,
+            qfilter=qfilter)
         records = list(q.execute())
         if len(records) == 0:
             result = 'not found'
         else:
             for r in records:
-                result.append(to_dict(r, resource_type=resource_type,
-                                      attributes=attributes))
+                result.append(
+                    to_dict(
+                        r, resource_type=resource_type, attributes=attributes))
         stdout(result, ctx, show_id=False)
     except Exception as e:
         stderr(e, ctx)
@@ -271,82 +256,77 @@ def list_vapps(ctx, name):
 
 @vapp.command(short_help='create a vApp')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
-@click.option('-d',
-              '--description',
-              metavar='text',
-              help='vApp description')
-@click.option('-c',
-              '--catalog',
-              metavar='name',
-              help='Catalog where the template is')
-@click.option('-t',
-              '--template',
-              metavar='name',
-              help='Name of the template')
-@click.option('-n',
-              '--network',
-              'network',
-              required=False,
-              default=None,
-              metavar='name',
-              help='Network')
-@click.option('ip_allocation_mode',
-              '-i',
-              '--ip-allocation-mode',
-              type=click.Choice(['dhcp', 'pool']),
-              required=False,
-              default='dhcp',
-              metavar='mode',
-              help='IP allocation mode')
-@click.option('-m',
-              '--memory',
-              'memory',
-              required=False,
-              default=None,
-              metavar='<MB>',
-              type=click.INT,
-              help='Amount of memory in MB')
-@click.option('-u',
-              '--cpu',
-              'cpu',
-              required=False,
-              default=None,
-              metavar='<virtual-cpus>',
-              type=click.INT,
-              help='Number of CPUs')
-@click.option('-k',
-              '--disk-size',
-              'disk_size',
-              required=False,
-              default=None,
-              metavar='<MB>',
-              type=click.INT,
-              help='Size of the vm home disk in MB')
-@click.option('-v',
-              '--vm-name',
-              required=False,
-              default=None,
-              metavar='name',
-              help='VM name')
-@click.option('-o',
-              '--hostname',
-              metavar='hostname',
-              help='Hostname')
-@click.option('storage_profile',
-              '-s',
-              '--storage-profile',
-              required=False,
-              default=None,
-              metavar='name',
-              help='Name of the storage profile for the vApp')
-@click.option('-a',
-              '--accept-all-eulas',
-              is_flag=True,
-              default=False,
-              help='Accept all EULAs')
+@click.argument('name', metavar='<name>', required=True)
+@click.option('-d', '--description', metavar='text', help='vApp description')
+@click.option(
+    '-c', '--catalog', metavar='name', help='Catalog where the template is')
+@click.option('-t', '--template', metavar='name', help='Name of the template')
+@click.option(
+    '-n',
+    '--network',
+    'network',
+    required=False,
+    default=None,
+    metavar='name',
+    help='Network')
+@click.option(
+    'ip_allocation_mode',
+    '-i',
+    '--ip-allocation-mode',
+    type=click.Choice(['dhcp', 'pool']),
+    required=False,
+    default='dhcp',
+    metavar='mode',
+    help='IP allocation mode')
+@click.option(
+    '-m',
+    '--memory',
+    'memory',
+    required=False,
+    default=None,
+    metavar='<MB>',
+    type=click.INT,
+    help='Amount of memory in MB')
+@click.option(
+    '-u',
+    '--cpu',
+    'cpu',
+    required=False,
+    default=None,
+    metavar='<virtual-cpus>',
+    type=click.INT,
+    help='Number of CPUs')
+@click.option(
+    '-k',
+    '--disk-size',
+    'disk_size',
+    required=False,
+    default=None,
+    metavar='<MB>',
+    type=click.INT,
+    help='Size of the vm home disk in MB')
+@click.option(
+    '-v',
+    '--vm-name',
+    required=False,
+    default=None,
+    metavar='name',
+    help='VM name')
+@click.option('-o', '--hostname', metavar='hostname', help='Hostname')
+@click.option(
+    'storage_profile',
+    '-s',
+    '--storage-profile',
+    required=False,
+    default=None,
+    metavar='name',
+    help='Name of the storage profile for the vApp')
+@click.option(
+    '-a',
+    '--accept-all-eulas',
+    is_flag=True,
+    default=False,
+    help='Accept all EULAs')
 def create(ctx, name, description, catalog, template, network, memory, cpu,
            disk_size, ip_allocation_mode, vm_name, hostname, storage_profile,
            accept_all_eulas):
@@ -355,9 +335,11 @@ def create(ctx, name, description, catalog, template, network, memory, cpu,
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
         if catalog is None and template is None:
-            vapp_resource = vdc.create_vapp(name, description=description,
-                                            network=network,
-                                            accept_all_eulas=accept_all_eulas)
+            vapp_resource = vdc.create_vapp(
+                name,
+                description=description,
+                network=network,
+                accept_all_eulas=accept_all_eulas)
         else:
             vapp_resource = vdc.instantiate_vapp(
                 name,
@@ -382,20 +364,20 @@ def create(ctx, name, description, catalog, template, network, memory, cpu,
 
 @vapp.command(short_help='delete a vApp or VM(s)')
 @click.pass_context
-@click.argument('name',
-                required=True)
-@click.argument('vm-names',
-                nargs=-1)
-@click.option('-y',
-              '--yes',
-              is_flag=True,
-              callback=abort_if_false,
-              expose_value=False,
-              prompt='Are you sure you want to delete the vApp or the VM(s)?')
-@click.option('-f',
-              '--force',
-              is_flag=True,
-              help='Force delete running VM(s). Only applies to vApp delete.')
+@click.argument('name', required=True)
+@click.argument('vm-names', nargs=-1)
+@click.option(
+    '-y',
+    '--yes',
+    is_flag=True,
+    callback=abort_if_false,
+    expose_value=False,
+    prompt='Are you sure you want to delete the vApp or the VM(s)?')
+@click.option(
+    '-f',
+    '--force',
+    is_flag=True,
+    help='Force delete running VM(s). Only applies to vApp delete.')
 def delete(ctx, name, vm_names, force):
     try:
         client = ctx.obj['client']
@@ -414,15 +396,9 @@ def delete(ctx, name, vm_names, force):
 
 @vapp.command('update-lease', short_help='update vApp lease')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
-@click.argument('runtime-seconds',
-                metavar='<runtime-seconds>',
-                required=True)
-@click.argument('storage-seconds',
-                metavar='[storage-seconds]',
-                required=False)
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('runtime-seconds', metavar='<runtime-seconds>', required=True)
+@click.argument('storage-seconds', metavar='[storage-seconds]', required=False)
 def update_lease(ctx, name, runtime_seconds, storage_seconds):
     try:
         client = ctx.obj['client']
@@ -440,12 +416,8 @@ def update_lease(ctx, name, runtime_seconds, storage_seconds):
 
 @vapp.command('change-owner', short_help='change vApp owner')
 @click.pass_context
-@click.argument('vapp-name',
-                metavar='<vapp-name>',
-                required=True)
-@click.argument('user-name',
-                metavar='<user-name>',
-                required=True)
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('user-name', metavar='<user-name>', required=True)
 def change_owner(ctx, vapp_name, user_name):
     try:
         client = ctx.obj['client']
@@ -464,17 +436,15 @@ def change_owner(ctx, vapp_name, user_name):
 
 @vapp.command('power-off', short_help='power off a vApp')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
-@click.argument('vm-names',
-                nargs=-1)
-@click.option('-y',
-              '--yes',
-              is_flag=True,
-              callback=abort_if_false,
-              expose_value=False,
-              prompt='Are you sure you want to power off the vApp?')
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('vm-names', nargs=-1)
+@click.option(
+    '-y',
+    '--yes',
+    is_flag=True,
+    callback=abort_if_false,
+    expose_value=False,
+    prompt='Are you sure you want to power off the vApp?')
 def power_off(ctx, name, vm_names):
     try:
         client = ctx.obj['client']
@@ -568,22 +538,21 @@ def deploy(ctx, name, vm_names, power_on, force_customization):
 
 @vapp.command('undeploy', short_help='undeploy a vApp or VM(s)')
 @click.pass_context
-@click.argument('name',
-                required=True)
-@click.argument('vm-names',
-                nargs=-1)
-@click.option('-y',
-              '--yes',
-              is_flag=True,
-              callback=abort_if_false,
-              expose_value=False,
-              prompt='Are you sure you want to undeploy the vApp or VM(s)?')
-@click.option('--action',
-              type=click.Choice(['default', 'powerOff', 'suspend', 'shutdown',
-                                 'force']),
-              required=False,
-              default='default',
-              help='Undeploy power action')
+@click.argument('name', required=True)
+@click.argument('vm-names', nargs=-1)
+@click.option(
+    '-y',
+    '--yes',
+    is_flag=True,
+    callback=abort_if_false,
+    expose_value=False,
+    prompt='Are you sure you want to undeploy the vApp or VM(s)?')
+@click.option(
+    '--action',
+    type=click.Choice(['default', 'powerOff', 'suspend', 'shutdown', 'force']),
+    required=False,
+    default='default',
+    help='Undeploy power action')
 def undeploy(ctx, name, vm_names, action):
     try:
         client = ctx.obj['client']
@@ -606,10 +575,8 @@ def undeploy(ctx, name, vm_names, action):
 
 @vapp.command('power-on', short_help='power on a vApp or VM(s)')
 @click.pass_context
-@click.argument('name',
-                required=True)
-@click.argument('vm-names',
-                nargs=-1)
+@click.argument('name', required=True)
+@click.argument('vm-names', nargs=-1)
 def power_on(ctx, name, vm_names):
     try:
         client = ctx.obj['client']
@@ -632,14 +599,14 @@ def power_on(ctx, name, vm_names):
 
 @vapp.command('shutdown', short_help='shutdown a vApp')
 @click.pass_context
-@click.argument('name',
-                required=True)
-@click.option('-y',
-              '--yes',
-              is_flag=True,
-              callback=abort_if_false,
-              expose_value=False,
-              prompt='Are you sure you want to shutdown the vApp?')
+@click.argument('name', required=True)
+@click.option(
+    '-y',
+    '--yes',
+    is_flag=True,
+    callback=abort_if_false,
+    expose_value=False,
+    prompt='Are you sure you want to shutdown the vApp?')
 def shutdown(ctx, name):
     try:
         client = ctx.obj['client']
@@ -655,26 +622,22 @@ def shutdown(ctx, name):
 
 @vapp.command(short_help='save a vApp as a template')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
-@click.argument('catalog',
-                metavar='<catalog>',
-                required=True)
-@click.argument('template',
-                metavar='[template]',
-                required=False)
-@click.option('-i',
-              '--identical',
-              'customizable',
-              flag_value='identical',
-              help='Make identical copy')
-@click.option('-c',
-              '--customizable',
-              'customizable',
-              flag_value='customizable',
-              default=True,
-              help='Make copy customizable during instantiation')
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('catalog', metavar='<catalog>', required=True)
+@click.argument('template', metavar='[template]', required=False)
+@click.option(
+    '-i',
+    '--identical',
+    'customizable',
+    flag_value='identical',
+    help='Make identical copy')
+@click.option(
+    '-c',
+    '--customizable',
+    'customizable',
+    flag_value='customizable',
+    default=True,
+    help='Make copy customizable during instantiation')
 def capture(ctx, name, catalog, template, customizable):
     try:
         client = ctx.obj['client']
@@ -699,23 +662,17 @@ def capture(ctx, name, catalog, template, customizable):
 
 @vapp.command('add-disk', short_help='add disk to vm')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
-@click.argument('vm-name',
-                required=True,
-                metavar='<vm-name>')
-@click.argument('size',
-                metavar='<size>',
-                required=True,
-                type=click.INT)
-@click.option('storage_profile',
-              '-s',
-              '--storage-profile',
-              required=False,
-              default=None,
-              metavar='<storage-profile>',
-              help='Name of the storage profile for the new disk')
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('vm-name', required=True, metavar='<vm-name>')
+@click.argument('size', metavar='<size>', required=True, type=click.INT)
+@click.option(
+    'storage_profile',
+    '-s',
+    '--storage-profile',
+    required=False,
+    default=None,
+    metavar='<storage-profile>',
+    help='Name of the storage profile for the new disk')
 def add_disk(ctx, name, vm_name, size, storage_profile):
     try:
         client = ctx.obj['client']
@@ -756,50 +713,46 @@ def use(ctx, name):
 
 @vapp.command('add-vm', short_help='add VM to vApp')
 @click.pass_context
-@click.argument('name',
-                metavar='<target-vapp>',
-                required=True)
-@click.argument('source-vapp',
-                metavar='<source-vapp>',
-                required=True)
-@click.argument('source-vm',
-                metavar='<source-vm>',
-                required=True)
-@click.option('-c',
-              '--catalog',
-              metavar='name',
-              help='Name of the catalog if the source vApp is a template')
-@click.option('-t',
-              '--target-vm',
-              metavar='name',
-              help='Rename the target VM with this name')
-@click.option('-o',
-              '--hostname',
-              metavar='hostname',
-              help='Customize VM and set hostname in the guest OS')
-@click.option('-n',
-              '--network',
-              metavar='name',
-              help='vApp network to connect to')
-@click.option('ip_allocation_mode',
-              '-i',
-              '--ip-allocation-mode',
-              type=click.Choice(['dhcp', 'pool']),
-              required=False,
-              default='dhcp',
-              metavar='mode',
-              help='IP allocation mode')
-@click.option('storage_profile',
-              '-s',
-              '--storage-profile',
-              metavar='name',
-              help='Name of the storage profile for the VM')
-@click.option('--password-auto',
-              is_flag=True,
-              help='Autogenerate administrator password')
-@click.option('--accept-all-eulas',
-              is_flag=True,
-              help='Accept all EULAs')
+@click.argument('name', metavar='<target-vapp>', required=True)
+@click.argument('source-vapp', metavar='<source-vapp>', required=True)
+@click.argument('source-vm', metavar='<source-vm>', required=True)
+@click.option(
+    '-c',
+    '--catalog',
+    metavar='name',
+    help='Name of the catalog if the source vApp is a template')
+@click.option(
+    '-t',
+    '--target-vm',
+    metavar='name',
+    help='Rename the target VM with this name')
+@click.option(
+    '-o',
+    '--hostname',
+    metavar='hostname',
+    help='Customize VM and set hostname in the guest OS')
+@click.option(
+    '-n', '--network', metavar='name', help='vApp network to connect to')
+@click.option(
+    'ip_allocation_mode',
+    '-i',
+    '--ip-allocation-mode',
+    type=click.Choice(['dhcp', 'pool']),
+    required=False,
+    default='dhcp',
+    metavar='mode',
+    help='IP allocation mode')
+@click.option(
+    'storage_profile',
+    '-s',
+    '--storage-profile',
+    metavar='name',
+    help='Name of the storage profile for the VM')
+@click.option(
+    '--password-auto',
+    is_flag=True,
+    help='Autogenerate administrator password')
+@click.option('--accept-all-eulas', is_flag=True, help='Accept all EULAs')
 def add_vm(ctx, name, source_vapp, source_vm, catalog, target_vm, hostname,
            network, ip_allocation_mode, storage_profile, password_auto,
            accept_all_eulas):
@@ -881,11 +834,8 @@ def acl(ctx):
 
 @acl.command(short_help='add access settings to a particular vapp')
 @click.pass_context
-@click.argument('vapp-name',
-                metavar='<vapp-name>')
-@click.argument('access-list',
-                nargs=-1,
-                required=True)
+@click.argument('vapp-name', metavar='<vapp-name>')
+@click.argument('access-list', nargs=-1, required=True)
 def add(ctx, vapp_name, access_list):
     try:
         client = ctx.obj['client']
@@ -902,23 +852,22 @@ def add(ctx, vapp_name, access_list):
 
 @acl.command(short_help='remove access settings from a particular vapp')
 @click.pass_context
-@click.argument('vapp-name',
-                metavar='<vapp-name>')
-@click.argument('access-list',
-                nargs=-1,
-                required=False)
-@click.option('--all',
-              is_flag=True,
-              required=False,
-              default=False,
-              metavar='[all]',
-              help='remove all the access settings from the vapp')
-@click.option('-y',
-              '--yes',
-              is_flag=True,
-              callback=abort_if_false,
-              expose_value=False,
-              prompt='Are you sure you want to remove access settings?')
+@click.argument('vapp-name', metavar='<vapp-name>')
+@click.argument('access-list', nargs=-1, required=False)
+@click.option(
+    '--all',
+    is_flag=True,
+    required=False,
+    default=False,
+    metavar='[all]',
+    help='remove all the access settings from the vapp')
+@click.option(
+    '-y',
+    '--yes',
+    is_flag=True,
+    callback=abort_if_false,
+    expose_value=False,
+    prompt='Are you sure you want to remove access settings?')
 def remove(ctx, vapp_name, access_list, all):
     try:
         if all:
@@ -943,17 +892,16 @@ def remove(ctx, vapp_name, access_list, all):
 @acl.command(short_help='share vapp access to all members of the current v'
              'organization')
 @click.pass_context
-@click.argument('vapp-name',
-                metavar='<vapp-name>')
-@click.option('access_level',
-              '--access-level',
-              type=click.Choice(
-                  ['ReadOnly', 'Change', 'FullControl']),
-              required=False,
-              default='ReadOnly',
-              metavar='<access-level>',
-              help='access level at which the vapp is shared. ReadOnly by'
-                   ' default')
+@click.argument('vapp-name', metavar='<vapp-name>')
+@click.option(
+    'access_level',
+    '--access-level',
+    type=click.Choice(['ReadOnly', 'Change', 'FullControl']),
+    required=False,
+    default='ReadOnly',
+    metavar='<access-level>',
+    help='access level at which the vapp is shared. ReadOnly by'
+    ' default')
 def share(ctx, vapp_name, access_level):
     try:
         client = ctx.obj['client']
@@ -962,17 +910,16 @@ def share(ctx, vapp_name, access_level):
         vapp = VApp(client, resource=vdc.get_vapp(vapp_name))
 
         vapp.share_with_org_members(everyone_access_level=access_level)
-        stdout('Vapp \'%s\' shared to all members of the org \'%s\'.'
-               % (vapp_name, ctx.obj['profiles'].get('org_in_use')), ctx)
+        stdout('Vapp \'%s\' shared to all members of the org \'%s\'.' %
+               (vapp_name, ctx.obj['profiles'].get('org_in_use')), ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
 @acl.command(short_help='unshare vapp access from members of the '
-                        'current organization')
+             'current organization')
 @click.pass_context
-@click.argument('vapp-name',
-                metavar='<vapp-name>')
+@click.argument('vapp-name', metavar='<vapp-name>')
 def unshare(ctx, vapp_name):
     try:
         client = ctx.obj['client']
@@ -981,16 +928,15 @@ def unshare(ctx, vapp_name):
         vapp = VApp(client, resource=vdc.get_vapp(vapp_name))
 
         vapp.unshare_from_org_members()
-        stdout('Vapp \'%s\' unshared from all members of the org \'%s\'.'
-               % (vapp_name, ctx.obj['profiles'].get('org_in_use')), ctx)
+        stdout('Vapp \'%s\' unshared from all members of the org \'%s\'.' %
+               (vapp_name, ctx.obj['profiles'].get('org_in_use')), ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
 @acl.command('list', short_help='list vapp access control list')
 @click.pass_context
-@click.argument('vapp-name',
-                metavar='<vapp-name>')
+@click.argument('vapp-name', metavar='<vapp-name>')
 def list_acl(ctx, vapp_name):
     try:
         client = ctx.obj['client']
@@ -1000,8 +946,8 @@ def list_acl(ctx, vapp_name):
 
         acl = vapp.get_access_settings()
         stdout(
-            access_settings_to_list(
-                acl, ctx.obj['profiles'].get('org_in_use')),
+            access_settings_to_list(acl,
+                                    ctx.obj['profiles'].get('org_in_use')),
             ctx,
             sort_headers=False)
     except Exception as e:

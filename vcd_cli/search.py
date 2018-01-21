@@ -13,12 +13,10 @@
 #
 
 import click
-
 from pyvcloud.vcd.client import QueryResultFormat
 from pyvcloud.vcd.client import RESOURCE_TYPES
 from pyvcloud.vcd.utils import to_camel_case
 from pyvcloud.vcd.utils import to_dict
-
 from tabulate import tabulate
 
 from vcd_cli.utils import restore_session
@@ -30,15 +28,14 @@ from vcd_cli.vcd import vcd
 
 @vcd.command(short_help='search resources')
 @click.pass_context
-@click.argument('resource_type',
-                metavar='[resource-type]',
-                required=False)
-@click.option('-f',
-              '--filter',
-              'query_filter',
-              required=False,
-              metavar='[query-filter]',
-              help='query filter')
+@click.argument('resource_type', metavar='[resource-type]', required=False)
+@click.option(
+    '-f',
+    '--filter',
+    'query_filter',
+    required=False,
+    metavar='[query-filter]',
+    help='query filter')
 def search(ctx, resource_type, query_filter):
     """Search for resources in vCloud Director.
 
@@ -96,10 +93,10 @@ def search(ctx, resource_type, query_filter):
         client = ctx.obj['client']
         result = []
         resource_type_cc = to_camel_case(resource_type, RESOURCE_TYPES)
-        q = client.get_typed_query(resource_type_cc,
-                                   query_result_format=QueryResultFormat.
-                                   ID_RECORDS,
-                                   qfilter=query_filter)
+        q = client.get_typed_query(
+            resource_type_cc,
+            query_result_format=QueryResultFormat.ID_RECORDS,
+            qfilter=query_filter)
         records = list(q.execute())
         if len(records) == 0:
             result = 'not found'

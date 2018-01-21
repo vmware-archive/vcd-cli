@@ -13,7 +13,6 @@
 #
 
 import click
-
 from pyvcloud.vcd.platform import Platform
 
 from vcd_cli.utils import restore_session

@@ -1,9 +1,8 @@
 ```
-Usage: vcd right list [OPTIONS]
+Usage: vcd role add-right [OPTIONS] <role-name> RIGHTS...
 
 Options:
   -o, --org [org-name]  name of the org
-  --all                 list all rights available in the System
   -h, --help            Show this message and exit.
 
 ```

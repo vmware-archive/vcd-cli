@@ -1,6 +1,21 @@
 CHANGES
 =======
 
+* VCDA-409: validate PEP8 compliance
+* VCDA-451: work with pending tasks
+* VCDA-451: work with pending tasks
+* VCDA-229 & VCDA-455: Show Info of Right and Role (#166)
+* VCDA-394: Adding command to list external networks. (#168)
+* VCDA-230 & VCDA-234: Add or remove rights from organization (#164)
+* VCDA-248 error handling on invalid session
+*  Implementing commands to update acl of vdc and vapp (#160)
+* VCDA-369: Implementing commands to create isolated OrgVDC networks
+* VCDA-369: Implementing commands to create isolated OrgVDC networks
+* VCDA-354: CSE support multiple vCenters
+* VCDA-226 & VCDA-233 Add or Remove rights from a given role (#157)
+*  VCDA-311 : Unifying argument 'name' and option 'id' for independent disk related commands (#158)
+* auto-generated doc
+
 20.1.0
 ------
 

@@ -20,7 +20,6 @@ Options:
 
 Commands:
   catalog  work with catalogs
-  cse      manage kubernetes clusters
   disk     manage independent disks
   gateway  manage edge gateways
   help     show help
@@ -40,6 +39,7 @@ Commands:
   task     work with tasks
   user     work with users in current organization
   vapp     manage vApps
+  vc       manage vCenter Servers
   vdc      work with virtual datacenters
   version  show version
   vm       manage VMs

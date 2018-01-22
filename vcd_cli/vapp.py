@@ -95,6 +95,9 @@ def vapp(ctx):
         vcd vapp shutdown vapp1 --yes
             Gracefully shutdown a vApp.
 \b
+        vcd vapp reboot vapp1 --yes
+            Reboot a vApp.
+\b
         vcd vapp power-off vapp1
             Power off a vApp.
 \b
@@ -112,6 +115,12 @@ def vapp(ctx):
 \b
         vcd vapp delete vapp1 vm1 vm2
             Delete vm1 and vm2 from vapp1.
+\b
+        vcd vapp reboot vapp1 vm1 --yes
+            Reboot vm1 in vApp.
+\b
+        vcd vapp shutdown vapp1 vm1 --yes
+            Shutdown vm1 in vApp.
 \b
         vcd vapp power-on vapp1
             Power on a vApp.
@@ -434,6 +443,38 @@ def change_owner(ctx, vapp_name, user_name):
         stderr(e, ctx)
 
 
+@vapp.command('reboot', short_help='Reboot a vApp or VM(s)')
+@click.pass_context
+@click.argument('name',
+                required=True)
+@click.argument('vm-names',
+                nargs=-1)
+@click.option('-y',
+              '--yes',
+              is_flag=True,
+              callback=abort_if_false,
+              expose_value=False,
+              prompt='Are you sure you want to reboot the vApp or VM(s)?')
+def reboot(ctx, name, vm_names):
+    try:
+        client = ctx.obj['client']
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        vdc = VDC(client, href=vdc_href)
+        vapp_resource = vdc.get_vapp(name)
+        vapp = VApp(client, resource=vapp_resource)
+        if len(vm_names) == 0:
+            task = vapp.reboot()
+            stdout(task, ctx)
+        else:
+            for vm_name in vm_names:
+                vm = VM(client, href=vapp.get_vm(vm_name).get('href'))
+                vm.reload()
+                task = vm.reboot()
+                stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
 @vapp.command('power-off', short_help='power off a vApp')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
@@ -600,6 +641,8 @@ def power_on(ctx, name, vm_names):
 @vapp.command('shutdown', short_help='shutdown a vApp')
 @click.pass_context
 @click.argument('name', required=True)
+@click.argument('vm-names',
+                nargs=-1)
 @click.option(
     '-y',
     '--yes',
@@ -607,15 +650,22 @@ def power_on(ctx, name, vm_names):
     callback=abort_if_false,
     expose_value=False,
     prompt='Are you sure you want to shutdown the vApp?')
-def shutdown(ctx, name):
+def shutdown(ctx, name, vm_names):
     try:
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
         vapp_resource = vdc.get_vapp(name)
         vapp = VApp(client, resource=vapp_resource)
-        task = vapp.shutdown()
-        stdout(task, ctx)
+        if len(vm_names) == 0:
+            task = vapp.shutdown()
+            stdout(task, ctx)
+        else:
+            for vm_name in vm_names:
+                vm = VM(client, href=vapp.get_vm(vm_name).get('href'))
+                vm.reload()
+                task = vm.shutdown()
+                stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
 

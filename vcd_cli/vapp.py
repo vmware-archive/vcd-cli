@@ -101,6 +101,12 @@ def vapp(ctx):
         vcd vapp power-off vapp1 vm1 vm2
             Power off vm1 and vm2 of vapp1.
 \b
+        vcd vapp reset vapp1 vm1 vm2
+            Power reset vm1 and vm2 of vapp1.
+\b
+        vcd vapp deploy vapp1 vm1 vm2
+            Deploy vm1 and vm2 of vapp1.
+\b
         vcd vapp undeploy vapp1 vm1 vm2
             Undeploy vm1 and vm2 of vapp1.
 \b
@@ -109,6 +115,12 @@ def vapp(ctx):
 \b
         vcd vapp power-on vapp1
             Power on a vApp.
+\b
+        vcd vapp reset vapp1
+            Power reset vapp1.
+\b
+        vcd vapp deploy vapp1
+            Deploy vapp1.
 \b
         vcd vapp power-on vapp1 vm1 vm2
             Power on vm1 and vm2 of vapp1.
@@ -447,6 +459,78 @@ def power_off(ctx, name, vm_names):
             for vm_name in vm_names:
                 vm = VM(client, resource=vapp.get_vm(vm_name))
                 task = vm.power_off()
+                stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('reset', short_help='Reset a vApp or VM(s)')
+@click.pass_context
+@click.argument('name',
+                metavar='<name>',
+                required=True)
+@click.argument('vm-names',
+                nargs=-1)
+@click.option('-y',
+              '--yes',
+              is_flag=True,
+              callback=abort_if_false,
+              expose_value=False,
+              prompt='Are you sure you want to reset the vApp or VM(s)?')
+def reset(ctx, name, vm_names):
+    try:
+        client = ctx.obj['client']
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        vdc = VDC(client, href=vdc_href)
+        vapp_resource = vdc.get_vapp(name)
+        vapp = VApp(client, resource=vapp_resource)
+        if len(vm_names) == 0:
+            task = vapp.power_reset()
+            stdout(task, ctx)
+        else:
+            for vm_name in vm_names:
+                vm = VM(client, resource=vapp.get_vm(vm_name))
+                task = vm.power_reset()
+                stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('deploy', short_help='Deploy a vApp or VM(s)')
+@click.pass_context
+@click.argument('name',
+                required=True)
+@click.argument('vm-names',
+                nargs=-1)
+@click.option('--power-on/--power-off',
+              is_flag=True,
+              help='Specifies whether to power on/off vApp/VM on deployment,'
+                   'if not specified, default is power on'
+              )
+@click.option('--force-customization',
+              is_flag=True,
+              help='Specifies whether to force customization on deployment,'
+                   'if not specified, default is False')
+def deploy(ctx, name, vm_names, power_on, force_customization):
+    try:
+        client = ctx.obj['client']
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        vdc = VDC(client, href=vdc_href)
+        vapp_resource = vdc.get_vapp(name)
+        vapp = VApp(client, resource=vapp_resource)
+        if power_on is not None:
+            power_on = False
+        if force_customization is not None:
+            force_customization = True
+        if len(vm_names) == 0:
+            task = vapp.deploy(power_on=power_on)
+            stdout(task, ctx)
+        else:
+            for vm_name in vm_names:
+                vm = VM(client, href=vapp.get_vm(vm_name).get('href'))
+                vm.reload()
+                task = vm.deploy(power_on=power_on,
+                                 force_customization=force_customization)
                 stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

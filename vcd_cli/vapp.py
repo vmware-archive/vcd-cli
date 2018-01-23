@@ -116,11 +116,11 @@ def vapp(ctx):
         vcd vapp delete vapp1 vm1 vm2
             Delete vm1 and vm2 from vapp1.
 \b
-        vcd vapp reboot vapp1 vm1 --yes
-            Reboot vm1 in vApp.
+        vcd vapp reboot vapp1 vm1 vm2 --yes
+            Reboot vm1 and vm2 in vApp.
 \b
-        vcd vapp shutdown vapp1 vm1 --yes
-            Shutdown vm1 in vApp.
+        vcd vapp shutdown vapp1 vm1 vm2 --yes
+            Shutdown vm1 and vm2 in vApp.
 \b
         vcd vapp power-on vapp1
             Power on a vApp.
@@ -649,7 +649,7 @@ def power_on(ctx, name, vm_names):
     is_flag=True,
     callback=abort_if_false,
     expose_value=False,
-    prompt='Are you sure you want to shutdown the vApp?')
+    prompt='Are you sure you want to shutdown the vApp or VM(s)?')
 def shutdown(ctx, name, vm_names):
     try:
         client = ctx.obj['client']

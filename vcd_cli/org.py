@@ -67,16 +67,13 @@ def info(ctx, name):
         client = ctx.obj['client']
         logged_in_org_name = ctx.obj['profiles'].get('org')
         in_use_org_name = ctx.obj['profiles'].get('org_in_use')
-        orgs = client.get_org_list()
-        for org in [o for o in orgs.Org if hasattr(orgs, 'Org')]:
-            if name == org.get('name'):
-                resource = client.get_resource(org.get('href'))
-                result = org_to_dict(resource)
-                result['logged_in'] = logged_in_org_name == org.get('name')
-                result['in_use'] = in_use_org_name == org.get('name')
-                stdout(result, ctx)
-                return
-        raise Exception('not found')
+        org = client.get_org_by_name(name)
+        resource = client.get_resource(org.get('href'))
+        result = org_to_dict(resource)
+        result['logged_in'] = logged_in_org_name.lower() == \
+            org.get('name').lower()
+        result['in_use'] = in_use_org_name.lower() == org.get('name').lower()
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -92,9 +89,12 @@ def list_orgs(ctx):
         result = []
         for org in [o for o in orgs.Org if hasattr(orgs, 'Org')]:
             result.append({
-                'name': org.get('name'),
-                'logged_in': logged_in_org_name == org.get('name'),
-                'in_use': in_use_org_name == org.get('name')
+                'name':
+                org.get('name'),
+                'logged_in':
+                logged_in_org_name.lower() == org.get('name').lower(),
+                'in_use':
+                in_use_org_name.lower() == org.get('name').lower()
             })
         stdout(result, ctx)
     except Exception as e:
@@ -107,33 +107,29 @@ def list_orgs(ctx):
 def use(ctx, name):
     try:
         client = ctx.obj['client']
-        orgs = client.get_org_list()
-        for org in [o for o in orgs.Org if hasattr(orgs, 'Org')]:
-            if name == org.get('name'):
-                resource = client.get_resource(org.get('href'))
-                in_use_vdc = ''
-                vdc_href = ''
-                in_use_vapp = ''
-                vapp_href = ''
-                for v in get_links(resource, media_type=EntityType.VDC.value):
-                    in_use_vdc = v.name
-                    vdc_href = v.href
-                    break
-                ctx.obj['profiles'].set('org_in_use', str(name))
-                ctx.obj['profiles'].set('org_href', str(org.get('href')))
-                ctx.obj['profiles'].set('vdc_in_use', str(in_use_vdc))
-                ctx.obj['profiles'].set('vdc_href', str(vdc_href))
-                ctx.obj['profiles'].set('vapp_in_use', str(in_use_vapp))
-                ctx.obj['profiles'].set('vapp_href', vapp_href)
-                message = 'now using org: \'%s\', vdc: \'%s\', vApp: \'%s\'.' \
-                    % (name, in_use_vdc, in_use_vapp)
-                stdout({
-                    'org': name,
-                    'vdc': in_use_vdc,
-                    'vapp': in_use_vapp
-                }, ctx, message)
-                return
-        raise Exception('not found')
+        org = client.get_org_by_name(name)
+        resource = client.get_resource(org.get('href'))
+        in_use_vdc = ''
+        vdc_href = ''
+        in_use_vapp = ''
+        vapp_href = ''
+        for v in get_links(resource, media_type=EntityType.VDC.value):
+            in_use_vdc = v.name
+            vdc_href = v.href
+            break
+        ctx.obj['profiles'].set('org_in_use', str(name))
+        ctx.obj['profiles'].set('org_href', str(org.get('href')))
+        ctx.obj['profiles'].set('vdc_in_use', str(in_use_vdc))
+        ctx.obj['profiles'].set('vdc_href', str(vdc_href))
+        ctx.obj['profiles'].set('vapp_in_use', str(in_use_vapp))
+        ctx.obj['profiles'].set('vapp_href', vapp_href)
+        message = 'now using org: \'%s\', vdc: \'%s\', vApp: \'%s\'.' \
+            % (name, in_use_vdc, in_use_vapp)
+        stdout({
+            'org': name,
+            'vdc': in_use_vdc,
+            'vapp': in_use_vapp
+        }, ctx, message)
     except Exception as e:
         stderr(e, ctx)
 
@@ -212,7 +208,7 @@ def delete(ctx, name, recursive, force):
 def update(ctx, name, is_enabled):
     try:
         client = ctx.obj['client']
-        org = Org(client, resource=client.get_org_by_name(name))
+        org = Org(client, href=client.get_org_by_name(name).get('href'))
         result = org.update_org(is_enabled=is_enabled)
         stdout('Org \'%s\' is successfully updated.' % result.get('name'), ctx)
     except Exception as e:

@@ -1,6 +1,6 @@
 # VMware vCloud Director CLI
 #
-# Copyright (c) 2017 VMware, Inc. All Rights Reserved.
+# Copyright (c) 2018 VMware, Inc. All Rights Reserved.
 #
 # This product is licensed to you under the
 # Apache License, Version 2.0 (the "License").
@@ -13,14 +13,13 @@
 #
 
 import click
+from pyvcloud.vcd.pvdc import PVDC
+from pyvcloud.vcd.utils import pvdc_to_dict
 from pyvcloud.vcd.system import System
-
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
 from vcd_cli.vcd import vcd
-from pyvcloud.vcd.pvdc import PVDC
-from pyvcloud.vcd.utils import pvdc_to_dict
 
 
 @vcd.group(short_help='work with provider virtual datacenters')
@@ -61,18 +60,17 @@ def list_pvdc(ctx):
 
 @pvdc.command('info', short_help='show pvdc details')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
+@click.argument('name', metavar='<name>')
 def info_pvdc(ctx, name):
     try:
         client = ctx.obj['client']
         sys_admin_resource = client.get_admin()
         system = System(client, admin_resource=sys_admin_resource)
-        pvdc_resource = system.get_provider_vdc(name)
-        pvdc = PVDC(client, name=pvdc_resource.get('name'),
-                    href=pvdc_resource.get('href'))
-        pvdc.reload()
+        pvdc_reference = system.get_provider_vdc(name)
+        pvdc = PVDC(
+            client,
+            name=pvdc_reference.get('name'),
+            href=pvdc_reference.get('href'))
         refs = pvdc.get_vdc_references()
         md = pvdc.get_metadata()
         result = pvdc_to_dict(pvdc.get_resource(), refs, md)

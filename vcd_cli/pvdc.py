@@ -69,7 +69,6 @@ def info_pvdc(ctx, name):
         pvdc_reference = system.get_provider_vdc(name)
         pvdc = PVDC(
             client,
-            name=pvdc_reference.get('name'),
             href=pvdc_reference.get('href'))
         refs = pvdc.get_vdc_references()
         md = pvdc.get_metadata()

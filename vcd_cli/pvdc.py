@@ -19,6 +19,8 @@ from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
 from vcd_cli.vcd import vcd
+from pyvcloud.vcd.pvdc import PVDC
+from pyvcloud.vcd.utils import pvdc_to_dict
 
 
 @vcd.group(short_help='work with provider virtual datacenters')
@@ -30,6 +32,9 @@ def pvdc(ctx):
     Examples
         vcd pvdc list
             Get list of provider virtual datacenters.
+\b
+        vcd pvdc info name
+            Display provider virtual data center details.
     """
 
     if ctx.invoked_subcommand is not None:
@@ -49,6 +54,28 @@ def list_pvdc(ctx):
         result = []
         for pvdc in system.list_provider_vdcs():
             result.append({'name': pvdc.get('name')})
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@pvdc.command('info', short_help='show pvdc details')
+@click.pass_context
+@click.argument('name',
+                metavar='<name>',
+                required=True)
+def info_pvdc(ctx, name):
+    try:
+        client = ctx.obj['client']
+        sys_admin_resource = client.get_admin()
+        system = System(client, admin_resource=sys_admin_resource)
+        pvdc_resource = system.get_provider_vdc(name)
+        pvdc = PVDC(client, name=pvdc_resource.get('name'),
+                    href=pvdc_resource.get('href'))
+        pvdc.reload()
+        refs = pvdc.get_vdc_references()
+        md = pvdc.get_metadata()
+        result = pvdc_to_dict(pvdc.get_resource(), refs, md)
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -1,5 +1,5 @@
 ```
-Usage: vcd vapp shutdown [OPTIONS] NAME [VM_NAMES]...
+Usage: vcd vapp reboot [OPTIONS] NAME [VM_NAMES]...
 
 Options:
   -y, --yes

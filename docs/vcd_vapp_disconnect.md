@@ -1,5 +1,5 @@
 ```
-Usage: vcd vapp shutdown [OPTIONS] NAME [VM_NAMES]...
+Usage: vcd vapp disconnect [OPTIONS] <vapp-name> <orgvdc-network-name>
 
 Options:
   -y, --yes

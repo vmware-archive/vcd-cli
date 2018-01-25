@@ -677,7 +677,7 @@ def shutdown(ctx, name, vm_names):
         stderr(e, ctx)
 
 
-@vapp.command('connect', short_help='connect an ovdc network')
+@vapp.command('connect', short_help='connect an ovdc network to a vapp')
 @click.pass_context
 @click.argument('name',
                 required=True,
@@ -688,13 +688,13 @@ def shutdown(ctx, name, vm_names):
 @click.option(
     '--retain-ip',
     is_flag=True,
-    default=False,
+    default=None,
     help="True if the network resources such as IP/MAC of router will be "
          "retained across deployments. False by default")
 @click.option(
     '--is-deployed',
     is_flag=True,
-    default=False,
+    default=None,
     help="True if this orgvdc network has been deployed. False by default")
 def connect(ctx, name, network, retain_ip, is_deployed):
     try:
@@ -703,15 +703,15 @@ def connect(ctx, name, network, retain_ip, is_deployed):
         vdc = VDC(client, href=vdc_href)
         vapp_resource = vdc.get_vapp(name)
         vapp = VApp(client, resource=vapp_resource)
-        vapp.connect_org_vdc_network(network, retain_ip=retain_ip,
-                                     is_deployed=is_deployed)
-        stdout("Successfully connected ovdc network \'%s\' to vapp \'%s\'"
-               % (network, name))
+        task = vapp.connect_org_vdc_network(network, retain_ip=retain_ip,
+                                            is_deployed=is_deployed)
+        stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
-@vapp.command('disconnect', short_help='disconnect an ovdc network')
+@vapp.command('disconnect', short_help='disconnect an ovdc network from a '
+                                       'vapp')
 @click.pass_context
 @click.argument('name',
                 required=True,
@@ -733,9 +733,8 @@ def disconnect(ctx, name, network):
         vdc = VDC(client, href=vdc_href)
         vapp_resource = vdc.get_vapp(name)
         vapp = VApp(client, resource=vapp_resource)
-        vapp.disconnect_org_vdc_network(network)
-        stdout("Successfully disconnected ovdc network \'%s\' from vapp \'%s\'"
-               %(network, name))
+        task = vapp.disconnect_org_vdc_network(network)
+        stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
 

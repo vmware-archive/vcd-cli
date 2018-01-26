@@ -6,12 +6,16 @@ Usage: vcd pvdc [OPTIONS] COMMAND [ARGS]...
       Examples
           vcd pvdc list
               Get list of provider virtual datacenters.
+  
+          vcd pvdc info name
+              Display provider virtual data center details.
       
 
 Options:
   -h, --help  Show this message and exit.
 
 Commands:
+  info  show pvdc details
   list  list of provider virtual datacenters
 
 ```

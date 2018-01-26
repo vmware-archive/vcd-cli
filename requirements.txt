@@ -1,6 +1,6 @@
-click>=6.7
-colorama>=0.3.3
-pyvcloud>=19.1.0
-tabulate>=0.7.5
-pycryptodome
-keyring
+click >= 6.7
+colorama >= 0.3.9
+keyring >= 10.6.0
+pycryptodome >= 3.4.7
+pyvcloud >= 19.1.1
+tabulate >= 0.7.5

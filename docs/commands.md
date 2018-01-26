@@ -45,7 +45,9 @@
 <li>
 <a href="vcd_network">network</a><ul><li>
 <a href="vcd_network_direct">direct</a><ul><li>
-<a href="vcd_network_direct_create">create</a></li>
+<a href="vcd_network_direct_create">create</a></li><li>
+<a href="vcd_network_direct_delete">delete</a></li><li>
+<a href="vcd_network_direct_list">list</a></li>
 </ul></li>
 <li>
 <a href="vcd_network_external">external</a><ul><li>
@@ -53,7 +55,9 @@
 </ul></li>
 <li>
 <a href="vcd_network_isolated">isolated</a><ul><li>
-<a href="vcd_network_isolated_create">create</a></li>
+<a href="vcd_network_isolated_create">create</a></li><li>
+<a href="vcd_network_isolated_delete">delete</a></li><li>
+<a href="vcd_network_isolated_list">list</a></li>
 </ul></li>
 </ul></li>
 <li>
@@ -68,6 +72,7 @@
 <li>
 <a href="vcd_profile">profile</a></li><li>
 <a href="vcd_pvdc">pvdc</a><ul><li>
+<a href="vcd_pvdc_info">info</a></li><li>
 <a href="vcd_pvdc_list">list</a></li>
 </ul></li>
 <li>
@@ -136,13 +141,18 @@
 <a href="vcd_vapp_attach">attach</a></li><li>
 <a href="vcd_vapp_capture">capture</a></li><li>
 <a href="vcd_vapp_change-owner">change-owner</a></li><li>
+<a href="vcd_vapp_connect">connect</a></li><li>
 <a href="vcd_vapp_create">create</a></li><li>
 <a href="vcd_vapp_delete">delete</a></li><li>
+<a href="vcd_vapp_deploy">deploy</a></li><li>
 <a href="vcd_vapp_detach">detach</a></li><li>
+<a href="vcd_vapp_disconnect">disconnect</a></li><li>
 <a href="vcd_vapp_info">info</a></li><li>
 <a href="vcd_vapp_list">list</a></li><li>
 <a href="vcd_vapp_power-off">power-off</a></li><li>
 <a href="vcd_vapp_power-on">power-on</a></li><li>
+<a href="vcd_vapp_reboot">reboot</a></li><li>
+<a href="vcd_vapp_reset">reset</a></li><li>
 <a href="vcd_vapp_shutdown">shutdown</a></li><li>
 <a href="vcd_vapp_undeploy">undeploy</a></li><li>
 <a href="vcd_vapp_update-lease">update-lease</a></li><li>

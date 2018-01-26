@@ -14,6 +14,7 @@
 
 import click
 from pyvcloud.vcd.org import Org
+from pyvcloud.vcd.utils import to_dict
 
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
@@ -247,7 +248,7 @@ def update(ctx, user_name, is_enabled):
     metavar='[org-name]',
     help='name of the org',
 )
-def list(ctx, org_name):
+def list_users(ctx, org_name):
     try:
         client = ctx.obj['client']
         if org_name is not None:
@@ -256,6 +257,9 @@ def list(ctx, org_name):
             org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, href=org_href)
         users = org.list_users()
-        stdout(users, ctx)
+        result = []
+        for record in list(users):
+            result.append(to_dict(record, exclude=['org', 'orgName']))
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

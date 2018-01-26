@@ -1,7 +1,20 @@
 CHANGES
 =======
 
-* VCDA-409: validate PEP8 compliance
+20.1.1
+------
+
+* Updated requirements with version info (#178)
+* VCDA-441 list available storage profiles
+* VCDA-421 & VCDA-422: Implementing SDK methods and cli commands to connect/disconnect ovdc\_network to/from vapp. (#175)
+* VCDA-370 & VCDA-475: Making vcd org [info/update/use/delete/list] and vcd user [update/delete] case insensitive #176
+* VCDA-470: Fixing help text for command vcd info #177
+* VCDA-365,366: Shutdown and Reboot a vapp/VM (#172)
+* VCDA-395 and VCDA-396: Adding commands for listing and deleting org vdc networks
+* VCDA-181: Clean up installation instructions for vcd-cli
+* Updated travis ci (#171)
+* VCDA-344,367: Reset/Deploy a vapp/vm command (#169)
+* VCDA-409: validate PEP8 compliance (#170)
 * VCDA-451: work with pending tasks
 * VCDA-451: work with pending tasks
 * VCDA-229 & VCDA-455: Show Info of Right and Role (#166)

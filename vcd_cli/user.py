@@ -14,6 +14,7 @@
 
 import click
 from pyvcloud.vcd.org import Org
+from pyvcloud.vcd.utils import to_dict
 
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
@@ -44,6 +45,9 @@ def user(ctx):
 \b
         vcd user update 'my user' --enable
            update user in the current organization, e.g enable the user
+\b
+        vcd user list
+            Get list of users in the current organization.
 
     """
 
@@ -230,5 +234,35 @@ def update(ctx, user_name, is_enabled):
         result = org.update_user(user_name=user_name, is_enabled=is_enabled)
         stdout('User \'%s\' is successfully updated.' % result.get('name'),
                ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@user.command('list', short_help='list users')
+@click.pass_context
+@click.option(
+    '-o',
+    '--org',
+    'org_name',
+    required=False,
+    metavar='[org-name]',
+    help='name of the org',
+)
+def list_users(ctx, org_name):
+    try:
+        client = ctx.obj['client']
+        if org_name is not None:
+            org_href = client.get_org_by_name(org_name).get('href')
+        else:
+            org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, href=org_href)
+        users = org.list_users()
+        result = []
+        for record in list(users):
+            result.append(to_dict(record, exclude=['org',
+                                                   'orgName',
+                                                   'deployedVMQuotaRank',
+                                                   'storedVMQuotaRank']))
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

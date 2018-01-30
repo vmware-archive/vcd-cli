@@ -51,7 +51,7 @@ def right(ctx):
             Adds list of rights to the organization
 
 \b
-        vcd rights remove 'vApp: Copy' 'Disk: Create' -o myOrg
+        vcd right remove 'vApp: Copy' 'Disk: Create' -o myOrg
             Removes list of rights from the organization
     """
 
@@ -128,6 +128,7 @@ def add(ctx, rights, org_name):
             org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
+            org_name = ctx.obj['profiles'].get('org_in_use')
         org = Org(client, href=org_href)
         org.add_rights(rights)
         stdout("Rights added to the Org \'%s\'" % org_name, ctx)
@@ -160,6 +161,7 @@ def remove(ctx, rights, org_name):
             org_href = client.get_org_by_name(org_name).get('href')
         else:
             org_href = ctx.obj['profiles'].get('org_href')
+            org_name = ctx.obj['profiles'].get('org_in_use')
         org = Org(client, href=org_href)
         org.remove_rights(rights)
         stdout("Rights removed from the Org \'%s\'" % org_name, ctx)

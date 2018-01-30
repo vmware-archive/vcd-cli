@@ -36,6 +36,7 @@ from vcd_cli.vcd import vcd
 @click.pass_context
 def vapp(ctx):
     """Manage vApps in vCloud Director.
+
 \b
     Description
         The vapp command manages vApps.
@@ -152,6 +153,7 @@ def vapp(ctx):
 \b
         vdc vapp connect vapp1 org-vdc-network1
             Connects the network org-vdc-network1 to vapp1.
+
 \b
         vdc vapp disconnect vapp1 org-vdc-network1
             Disconnects the network org-vdc-network1 from vapp1.
@@ -911,6 +913,7 @@ def add_vm(ctx, name, source_vapp, source_vm, catalog, target_vm, hostname,
 @click.pass_context
 def acl(ctx):
     """Work with vapp access control list.
+
 \b
    Description
         Work with vapp access control list in the current Organization.
@@ -938,6 +941,8 @@ def acl(ctx):
 \b
         vcd vapp acl list my-vapp
             List acl of a vapp.
+
+
     """
     if ctx.invoked_subcommand is not None:
         try:

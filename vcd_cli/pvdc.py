@@ -15,6 +15,7 @@
 import click
 from pyvcloud.vcd.pvdc import PVDC
 from pyvcloud.vcd.system import System
+from pyvcloud.vcd.platform import Platform
 from pyvcloud.vcd.utils import pvdc_to_dict
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
@@ -34,6 +35,13 @@ def pvdc(ctx):
 \b
         vcd pvdc info name
             Display provider virtual data center details.
+\b
+        vcd pvdc create pvdc-name vc-name \
+            --storage-profile 'SP name' \
+            --resource-pool 'RP name' \
+            --description 'description' --enable \
+            (can have multiple --storage-profile and --resource-pool options) 
+            Create Provider Virtual Datacenter
     """
 
     if ctx.invoked_subcommand is not None:
@@ -74,5 +82,44 @@ def info_pvdc(ctx, name):
         md = pvdc.get_metadata()
         result = pvdc_to_dict(pvdc.get_resource(), refs, md)
         stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+        
+@pvdc.command('create', short_help='create pvdc')
+@click.pass_context
+@click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
+@click.argument('vc-name', metavar='<vc-name>', required=True)
+@click.option(
+    '--storage-profile',
+    required=False,
+    default=None,
+    multiple=True,
+    metavar='[storage-profile]')
+@click.option(
+    '--resource-pool',
+    required=False,
+    default=None,
+    multiple=True,
+    metavar='[resource-pool]')
+@click.option(
+    '-d',
+    '--description',
+    required=False,
+    default=None,
+    metavar='[description]')
+@click.option(
+    '--enable',
+    is_flag=True,
+    default=None,
+    metavar='[enable]')
+def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,  
+    description, enable):
+    try:
+        client = ctx.obj['client']
+        platform = Platform(client)
+        pvdc = platform.create_provider_vdc(vc_name, 
+            resource_pool, storage_profile, pvdc_name, enable, False, False, 
+            description)
+        stdout('PVDC create successful', ctx)
     except Exception as e:
         stderr(e, ctx)

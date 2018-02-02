@@ -36,13 +36,17 @@ def vm(ctx):
         vcd vm info vapp1 vm1
             Get details of the VM 'vm1' in vApp 'vapp1'.
 \b
-        vcd vm modify_cpu vapp1 vm1 --cpu 2 --core 2
+        vcd vm update vapp1 vm1 --cpu 2 --core 2
             Modifies the VM 'vm1' in vApp 'vapp1' to be configured
             with 2 cpu and 2 cores .
 \b
-        vcd vm modify_memory vapp1 vm1 --memory 512
+        vcd vm update vapp1 vm1 --memory 512
             Modifies the VM 'vm1' in vApp 'vapp1' to be configured
             with the specified memory .
+\b
+        vcd vm update vapp1 vm1 --cpu 2 --memory 512
+            Modifies the VM 'vm1' in vApp 'vapp1' to be configured
+            with with 2 cpu and the specified memory .
     """
 
     if ctx.invoked_subcommand is not None:

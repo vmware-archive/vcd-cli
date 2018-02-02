@@ -121,9 +121,11 @@ def update(ctx, vapp_name, vm_name, cpu, cores,  memory):
         vm = VM(client, resource=vm_resource)
         if cpu is not None :
             task_cpu_update = vm.modify_cpu(cpu, cores)
+            stdout("Updating cpu (and core if specified) for the VM")
             stdout(task_cpu_update, ctx)
         if memory is not None:
             task_memory_update = vm.modify_memory(memory)
+            stdout("Updating memory for the VM")
             stdout(task_memory_update, ctx)
     except Exception as e:
         stderr(e, ctx)

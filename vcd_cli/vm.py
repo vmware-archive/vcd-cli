@@ -82,15 +82,15 @@ def info(ctx, vapp_name, vm_name):
         stderr(e, ctx)
 
 
-@vm.command('modify-cpu',
-            short_help='Modify the number of cpu/cores in the VM')
+@vm.command('update',
+            short_help='Modify or update the VM properties and configurations')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)
 @click.option(
     'cpu',
     '--cpu',
-    required=True,
+    required=False,
     metavar='<cpu>',
     type=click.INT,
     help='Number of virtual CPUs to configure the VM.')
@@ -102,34 +102,15 @@ def info(ctx, vapp_name, vm_name):
     metavar='<cores>',
     type=click.INT,
     help='Number of cores per socket.')
-def modify_cpu(ctx, vapp_name, vm_name, cpu, cores):
-    try:
-        client = ctx.obj['client']
-        vdc_href = ctx.obj['profiles'].get('vdc_href')
-        vdc = VDC(client, href=vdc_href)
-        vapp_resource = vdc.get_vapp(vapp_name)
-        vapp = VApp(client, resource=vapp_resource)
-        vm_resource = vapp.get_vm(vm_name)
-        vm = VM(client, resource=vm_resource)
-        task = vm.modify_cpu(cpu, cores)
-        stdout(task, ctx)
-    except Exception as e:
-        stderr(e, ctx)
-
-
-@vm.command('modify-memory', short_help='Modify the memory of the VM')
-@click.pass_context
-@click.argument('vapp-name', metavar='<vapp-name>', required=True)
-@click.argument('vm-name', metavar='<vm-name>', required=True)
 @click.option(
     'memory',
-    '-m',
     '--memory',
-    required=True,
+    required=False,
     metavar='<memory>',
     type=click.INT,
     help='Memory to configure the VM.')
-def modify_memory(ctx, vapp_name, vm_name, memory):
+
+def update(ctx, vapp_name, vm_name, cpu, cores,  memory):
     try:
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
@@ -138,7 +119,11 @@ def modify_memory(ctx, vapp_name, vm_name, memory):
         vapp = VApp(client, resource=vapp_resource)
         vm_resource = vapp.get_vm(vm_name)
         vm = VM(client, resource=vm_resource)
-        task = vm.modify_memory(memory)
-        stdout(task, ctx)
+        if cpu is not None :
+            task_cpu_update = vm.modify_cpu(cpu, cores)
+            stdout(task_cpu_update, ctx)
+        if memory is not None:
+            task_memory_update = vm.modify_memory(memory)
+            stdout(task_memory_update, ctx)
     except Exception as e:
         stderr(e, ctx)

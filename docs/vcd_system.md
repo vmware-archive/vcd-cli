@@ -10,7 +10,7 @@ Options:
 
 Commands:
   amqp       manage AMQP settings
-  extension  manage extensions
+  extension  manage extension services
   info       show system details
 
 ```

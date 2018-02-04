@@ -1,5 +1,5 @@
 ```
-Usage: vcd cluster delete [OPTIONS] <name>
+Usage: vcd vapp reset [OPTIONS] <name> [VM_NAMES]...
 
 Options:
   -y, --yes

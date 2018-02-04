@@ -31,6 +31,7 @@ Options:
   -h, --help  Show this message and exit.
 
 Commands:
+  acl      work with vdc acl
   create   create a virtual datacenter
   delete   delete a virtual datacenter
   disable  disable a virtual datacenter

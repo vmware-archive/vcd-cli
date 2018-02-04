@@ -1,9 +1,8 @@
 ```
-Usage: vcd vapp power-off [OPTIONS] <name>
+Usage: vcd vapp power-off [OPTIONS] <name> [VM_NAMES]...
 
 Options:
   -y, --yes
-  -f, --force  Force power off running vApps
-  -h, --help   Show this message and exit.
+  -h, --help  Show this message and exit.
 
 ```

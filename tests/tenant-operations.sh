@@ -7,7 +7,7 @@ vcd version
 VCD_HOST=bos1-vcd-sp-static-202-34.eng.vmware.com
 VCD_ORG=org5
 VCD_USER=usr1
-VCD_PASSWORD=ca\$hc0w
+VCD_PASSWORD='********'
 VDC=vdc1
 
 vcd login $VCD_HOST $VCD_ORG $VCD_USER --password $VCD_PASSWORD -w -i --vdc $VDC

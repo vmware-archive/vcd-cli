@@ -5,7 +5,7 @@ set -e
 VCD_HOST=bos1-vcd-sp-static-202-34.eng.vmware.com
 VCD_ORG=System
 VCD_USER=Administrator
-VCD_PASSWORD=ca\$hc0w
+VCD_PASSWORD='********'
 
 vcd login $VCD_HOST $VCD_ORG $VCD_USER --password $VCD_PASSWORD -w -i
 

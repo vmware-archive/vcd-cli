@@ -13,7 +13,6 @@
 #
 
 import click
-
 from pyvcloud.vcd.vapp import VApp
 from pyvcloud.vcd.vdc import VDC
 
@@ -47,9 +46,9 @@ def vm(ctx):
             stderr(e, ctx)
 
 
-@vm.command(short_help='list VMs')
+@vm.command('list', short_help='list VMs')
 @click.pass_context
-def list(ctx):
+def list_vms(ctx):
     try:
         raise Exception('not implemented')
     except Exception as e:
@@ -58,12 +57,8 @@ def list(ctx):
 
 @vm.command(short_help='show VM details')
 @click.pass_context
-@click.argument('vapp-name',
-                metavar='<vapp-name>',
-                required=True)
-@click.argument('vm-name',
-                metavar='<vm-name>',
-                required=True)
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
 def info(ctx, vapp_name, vm_name):
     try:
         client = ctx.obj['client']

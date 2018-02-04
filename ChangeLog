@@ -1,6 +1,83 @@
 CHANGES
 =======
 
+20.1.1
+------
+
+* Updated requirements with version info (#178)
+* VCDA-441 list available storage profiles
+* VCDA-421 & VCDA-422: Implementing SDK methods and cli commands to connect/disconnect ovdc\_network to/from vapp. (#175)
+* VCDA-370 & VCDA-475: Making vcd org [info/update/use/delete/list] and vcd user [update/delete] case insensitive #176
+* VCDA-470: Fixing help text for command vcd info #177
+* VCDA-365,366: Shutdown and Reboot a vapp/VM (#172)
+* VCDA-395 and VCDA-396: Adding commands for listing and deleting org vdc networks
+* VCDA-181: Clean up installation instructions for vcd-cli
+* Updated travis ci (#171)
+* VCDA-344,367: Reset/Deploy a vapp/vm command (#169)
+* VCDA-409: validate PEP8 compliance (#170)
+* VCDA-451: work with pending tasks
+* VCDA-451: work with pending tasks
+* VCDA-229 & VCDA-455: Show Info of Right and Role (#166)
+* VCDA-394: Adding command to list external networks. (#168)
+* VCDA-230 & VCDA-234: Add or remove rights from organization (#164)
+* VCDA-248 error handling on invalid session
+*  Implementing commands to update acl of vdc and vapp (#160)
+* VCDA-369: Implementing commands to create isolated OrgVDC networks
+* VCDA-369: Implementing commands to create isolated OrgVDC networks
+* VCDA-354: CSE support multiple vCenters
+* VCDA-226 & VCDA-233 Add or Remove rights from a given role (#157)
+*  VCDA-311 : Unifying argument 'name' and option 'id' for independent disk related commands (#158)
+* auto-generated doc
+
+20.1.0
+------
+
+* updated dependencies
+* Update test-requirements.txt
+* removed unused force option
+* addressed review comments
+* renamed file to gateway to be conformant to the command
+* fixed command name to gateway, don't use camel case, change method name to list\_gateways
+* Implementing catalog update acl commands (#153)
+* refactored wait\_for\_status, added VM delete
+* VCDA-419 retrieve api filter for extension
+* addressed review comments
+* Changing params to create command as per review command
+* Adding param to share the network with other VDC(s) in the org
+* Link/Unlink role to its template (#154)
+* VCDA-258: Provide an optional parameter to specify IOPS during creation (#149)
+* Fixing help strings as per review comments
+* vcd vapp examples
+* power-off, undeploy, delete VM
+* Changing the command structuer as per the new design doc
+* install
+* Fixing small typos
+* flake8 validation fixes
+* Command to create directky connected org vdc network
+* docs
+* docs
+
+20.0.0
+------
+
+* removed dead code
+* added edgegateway
+* added howto develop
+* eula and plugin
+* addressed comments
+* [vcd-cli] delete role from a given org (#146)
+* docs
+* VCDA-381/2/3/4/5
+* install
+* readme
+* readme
+* readme
+* readme
+* readme
+* cleanup deprecated code; end-to-end tests
+* removed vca command
+* auto
+
 19.2.3
 ------
 
@@ -11,6 +88,7 @@ CHANGES
 * Fixing small typo
 * Fixing import order as per flake8\_import\_order, addressing review comments
 * address review comments
+* Add code of conduct and PR/issue templates
 * Tying colored output param to environment variable USE\_COLORED\_OUTPUT
 * Introducing top level param in vcd-cli to print info in monochrome
 * Fixing text color issue after an error, and also exposing option to turn off colored output entirely

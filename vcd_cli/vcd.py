@@ -15,14 +15,11 @@
 import platform
 
 import click
-
 from colorama import init
-
 import pkg_resources
 
 from vcd_cli.plugin import load_user_plugins
 from vcd_cli.utils import stdout
-
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
@@ -32,35 +29,30 @@ def abort_if_false(ctx, param, value):
         ctx.abort()
 
 
-@click.group(context_settings=CONTEXT_SETTINGS,
-             invoke_without_command=True)
+@click.group(context_settings=CONTEXT_SETTINGS, invoke_without_command=True)
 @click.pass_context
-@click.option('-d',
-              '--debug',
-              is_flag=True,
-              default=False,
-              help='Enable debug')
-@click.option('-j',
-              '--json',
-              'json_output',
-              is_flag=True,
-              default=False,
-              help='Results as JSON object')
-@click.option('-n',
-              '--no-wait',
-              is_flag=True,
-              default=False,
-              help='Don\'t wait for task')
-@click.option('--colorized/--no-colorized',
-              'is_colorized',
-              default=True,
-              envvar='VCD_USE_COLORED_OUTPUT',
-              help='print info in color or monochrome')
-def vcd(ctx,
-        debug,
-        json_output,
-        no_wait,
-        is_colorized):
+@click.option(
+    '-d', '--debug', is_flag=True, default=False, help='Enable debug')
+@click.option(
+    '-j',
+    '--json',
+    'json_output',
+    is_flag=True,
+    default=False,
+    help='Results as JSON object')
+@click.option(
+    '-n',
+    '--no-wait',
+    is_flag=True,
+    default=False,
+    help='Don\'t wait for task')
+@click.option(
+    '--colorized/--no-colorized',
+    'is_colorized',
+    default=True,
+    envvar='VCD_USE_COLORED_OUTPUT',
+    help='print info in color or monochrome')
+def vcd(ctx, debug, json_output, no_wait, is_colorized):
     """VMware vCloud Director Command Line Interface.
 
 \b
@@ -81,31 +73,29 @@ def vcd(ctx,
 def version(ctx):
     """Show vcd-cli version"""
     ver = pkg_resources.require("vcd-cli")[0].version
-    ver_obj = {'product': 'vcd-cli',
-               'description': 'VMware vCloud Director Command Line Interface',
-               'version': ver,
-               'python': platform.python_version()}
-    ver_str = '%s, %s, %s' % (ver_obj['product'],
-                              ver_obj['description'],
+    ver_obj = {
+        'product': 'vcd-cli',
+        'description': 'VMware vCloud Director Command Line Interface',
+        'version': ver,
+        'python': platform.python_version()
+    }
+    ver_str = '%s, %s, %s' % (ver_obj['product'], ver_obj['description'],
                               ver_obj['version'])
     stdout(ver_obj, ctx, ver_str)
 
 
 def print_command(cmd, level=0):
-    click.echo(' '+(' '*level*2)+' ', nl=False)
+    click.echo(' ' + (' ' * level * 2) + ' ', nl=False)
     click.echo(cmd.name)
     if type(cmd) == click.core.Group:
         for k in sorted(cmd.commands.keys()):
-            print_command(cmd.commands[k], level+1)
+            print_command(cmd.commands[k], level + 1)
 
 
 @vcd.command(short_help='show help')
 @click.pass_context
-@click.option('-t',
-              '--tree',
-              is_flag=True,
-              default=False,
-              help='show commands tree')
+@click.option(
+    '-t', '--tree', is_flag=True, default=False, help='show commands tree')
 def help(ctx, tree):
     """Show vcd-cli help"""
     if tree:
@@ -117,24 +107,25 @@ def help(ctx, tree):
 if __name__ == '__main__':
     vcd()
 else:
+    load_user_plugins()
     from vcd_cli import catalog  # NOQA
-    from vcd_cli import cluster  # NOQA
     from vcd_cli import disk  # NOQA
     from vcd_cli import gateway  # NOQA
     from vcd_cli import info  # NOQA
     from vcd_cli import login  # NOQA
     from vcd_cli import org  # NOQA
     from vcd_cli import netpool  # NOQA
+    from vcd_cli import network  # NOQA
     from vcd_cli import profile  # NOQA
     from vcd_cli import pvdc  # NOQA
     from vcd_cli import role  # NOQA
-    from vcd_cli import right # NOQA
+    from vcd_cli import right  # NOQA
     from vcd_cli import search  # NOQA
     from vcd_cli import system  # NOQA
     from vcd_cli import task  # NOQA
     from vcd_cli import user  # NOQA
     from vcd_cli import vapp  # NOQA
+    from vcd_cli import vc  # NOQA
     from vcd_cli import vdc  # NOQA
     from vcd_cli import vm  # NOQA
-    load_user_plugins()
     init(autoreset=True)

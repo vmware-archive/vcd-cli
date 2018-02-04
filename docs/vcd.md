@@ -20,13 +20,14 @@ Options:
 
 Commands:
   catalog  work with catalogs
-  cluster  manage clusters
   disk     manage independent disks
+  gateway  manage edge gateways
   help     show help
   info     show resource details
   login    login to vCD
   logout   logout from vCD
   netpool  work with network pools
+  network  work with vcd networks
   org      work with organizations
   profile  manage profiles
   pvdc     work with provider virtual datacenters
@@ -38,6 +39,7 @@ Commands:
   task     work with tasks
   user     work with users in current organization
   vapp     manage vApps
+  vc       manage vCenter Servers
   vdc      work with virtual datacenters
   version  show version
   vm       manage VMs

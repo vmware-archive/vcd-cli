@@ -13,7 +13,6 @@
 #
 
 import click
-
 from pyvcloud.vcd.client import EntityType
 from pyvcloud.vcd.client import get_links
 from pyvcloud.vcd.org import Org
@@ -62,24 +61,19 @@ def org(ctx):
 
 @org.command(short_help='show org details')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
+@click.argument('name', metavar='<name>', required=True)
 def info(ctx, name):
     try:
         client = ctx.obj['client']
         logged_in_org_name = ctx.obj['profiles'].get('org')
         in_use_org_name = ctx.obj['profiles'].get('org_in_use')
-        orgs = client.get_org_list()
-        for org in [o for o in orgs.Org if hasattr(orgs, 'Org')]:
-            if name == org.get('name'):
-                resource = client.get_resource(org.get('href'))
-                result = org_to_dict(resource)
-                result['logged_in'] = logged_in_org_name == org.get('name')
-                result['in_use'] = in_use_org_name == org.get('name')
-                stdout(result, ctx)
-                return
-        raise Exception('not found')
+        org = client.get_org_by_name(name)
+        resource = client.get_resource(org.get('href'))
+        result = org_to_dict(resource)
+        result['logged_in'] = logged_in_org_name.lower() == \
+            org.get('name').lower()
+        result['in_use'] = in_use_org_name.lower() == org.get('name').lower()
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -94,9 +88,14 @@ def list_orgs(ctx):
         orgs = client.get_org_list()
         result = []
         for org in [o for o in orgs.Org if hasattr(orgs, 'Org')]:
-            result.append({'name': org.get('name'),
-                           'logged_in': logged_in_org_name == org.get('name'),
-                           'in_use': in_use_org_name == org.get('name')})
+            result.append({
+                'name':
+                org.get('name'),
+                'logged_in':
+                logged_in_org_name.lower() == org.get('name').lower(),
+                'in_use':
+                in_use_org_name.lower() == org.get('name').lower()
+            })
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -104,58 +103,49 @@ def list_orgs(ctx):
 
 @org.command(short_help='set active organization')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
+@click.argument('name', metavar='<name>', required=True)
 def use(ctx, name):
     try:
         client = ctx.obj['client']
-        orgs = client.get_org_list()
-        for org in [o for o in orgs.Org if hasattr(orgs, 'Org')]:
-            if name == org.get('name'):
-                resource = client.get_resource(org.get('href'))
-                in_use_vdc = ''
-                vdc_href = ''
-                in_use_vapp = ''
-                vapp_href = ''
-                for v in get_links(resource, media_type=EntityType.VDC.value):
-                    in_use_vdc = v.name
-                    vdc_href = v.href
-                    break
-                ctx.obj['profiles'].set('org_in_use', str(name))
-                ctx.obj['profiles'].set('org_href', str(org.get('href')))
-                ctx.obj['profiles'].set('vdc_in_use', str(in_use_vdc))
-                ctx.obj['profiles'].set('vdc_href', str(vdc_href))
-                ctx.obj['profiles'].set('vapp_in_use', str(in_use_vapp))
-                ctx.obj['profiles'].set('vapp_href', vapp_href)
-                message = 'now using org: \'%s\', vdc: \'%s\', vApp: \'%s\'.' \
-                    % (name, in_use_vdc, in_use_vapp)
-                stdout({
-                    'org': name,
-                    'vdc': in_use_vdc,
-                    'vapp': in_use_vapp
-                }, ctx, message)
-                return
-        raise Exception('not found')
+        org = client.get_org_by_name(name)
+        resource = client.get_resource(org.get('href'))
+        in_use_vdc = ''
+        vdc_href = ''
+        in_use_vapp = ''
+        vapp_href = ''
+        for v in get_links(resource, media_type=EntityType.VDC.value):
+            in_use_vdc = v.name
+            vdc_href = v.href
+            break
+        ctx.obj['profiles'].set('org_in_use', str(name))
+        ctx.obj['profiles'].set('org_href', str(org.get('href')))
+        ctx.obj['profiles'].set('vdc_in_use', str(in_use_vdc))
+        ctx.obj['profiles'].set('vdc_href', str(vdc_href))
+        ctx.obj['profiles'].set('vapp_in_use', str(in_use_vapp))
+        ctx.obj['profiles'].set('vapp_href', vapp_href)
+        message = 'now using org: \'%s\', vdc: \'%s\', vApp: \'%s\'.' \
+            % (name, in_use_vdc, in_use_vapp)
+        stdout({
+            'org': name,
+            'vdc': in_use_vdc,
+            'vapp': in_use_vapp
+        }, ctx, message)
     except Exception as e:
         stderr(e, ctx)
 
 
 @org.command(short_help='create an organization')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
-@click.argument('full_name',
-                metavar='<full_name>',
-                required=True)
-@click.option('-e',
-              '--enabled',
-              is_flag=True,
-              required=False,
-              default=False,
-              metavar='[enabled]',
-              help='Enable org')
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('full_name', metavar='<full_name>', required=True)
+@click.option(
+    '-e',
+    '--enabled',
+    is_flag=True,
+    required=False,
+    default=False,
+    metavar='[enabled]',
+    help='Enable org')
 def create(ctx, name, full_name, enabled):
     try:
         client = ctx.obj['client']
@@ -169,35 +159,38 @@ def create(ctx, name, full_name, enabled):
 
 @org.command(short_help='delete an organization')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
-@click.option('-r',
-              '--recursive',
-              is_flag=True,
-              help='removes the Org and any objects it contains that are in a '
-                   'state that normally allows removal')
-@click.option('-f',
-              '--force',
-              is_flag=True,
-              help='pass this option along with --recursive to remove an Org'
-                   ' and any objects it contains, regardless of their state')
-@click.option('-y',
-              '--yes',
-              is_flag=True,
-              callback=abort_if_false,
-              expose_value=False,
-              prompt='Are you sure you want to delete the Org?')
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-r',
+    '--recursive',
+    is_flag=True,
+    help='removes the Org and any objects it contains that are in a '
+    'state that normally allows removal')
+@click.option(
+    '-f',
+    '--force',
+    is_flag=True,
+    help='pass this option along with --recursive to remove an Org'
+    ' and any objects it contains, regardless of their state')
+@click.option(
+    '-y',
+    '--yes',
+    is_flag=True,
+    callback=abort_if_false,
+    expose_value=False,
+    prompt='Are you sure you want to delete the Org?')
 def delete(ctx, name, recursive, force):
     try:
         client = ctx.obj['client']
         system = System(client)
         if force and recursive:
-            click.confirm('Do you want to force delete \'%s\' and all '
-                          'its objects recursively?' % name, abort=True)
+            click.confirm(
+                'Do you want to force delete \'%s\' and all '
+                'its objects recursively?' % name,
+                abort=True)
         elif force:
-            click.confirm('Do you want to force delete \'%s\'' % name,
-                          abort=True)
+            click.confirm(
+                'Do you want to force delete \'%s\'' % name, abort=True)
         task = system.delete_org(name, force, recursive)
         stdout(task, ctx)
     except Exception as e:
@@ -206,17 +199,16 @@ def delete(ctx, name, recursive, force):
 
 @org.command(short_help='update an organization')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
-@click.option('--enable/--disable',
-              'is_enabled',
-              default=None,
-              help='enable/disable the org')
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '--enable/--disable',
+    'is_enabled',
+    default=None,
+    help='enable/disable the org')
 def update(ctx, name, is_enabled):
     try:
         client = ctx.obj['client']
-        org = Org(client, resource=client.get_org_by_name(name))
+        org = Org(client, href=client.get_org_by_name(name).get('href'))
         result = org.update_org(is_enabled=is_enabled)
         stdout('Org \'%s\' is successfully updated.' % result.get('name'), ctx)
     except Exception as e:

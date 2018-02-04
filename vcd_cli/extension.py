@@ -13,8 +13,7 @@
 #
 
 import click
-
-from pyvcloud.vcd.extension import Extension
+from pyvcloud.vcd.api_extension import APIExtension
 
 from vcd_cli.system import system
 from vcd_cli.utils import restore_session
@@ -23,7 +22,7 @@ from vcd_cli.utils import stdout
 from vcd_cli.vcd import abort_if_false
 
 
-@system.group(short_help='manage extensions')
+@system.group(short_help='manage extension services')
 @click.pass_context
 def extension(ctx):
     """Manage Extension Services in vCloud Director.
@@ -34,7 +33,7 @@ def extension(ctx):
             List available extension services.
 \b
         vcd system extension create cse cse cse vcdext \\
-            '/api/cluster, /api/cluster/.*, /api/cluster/.*/.*'
+            '/api/cse, /api/cse/.*, /api/cse/.*/.*'
             Register a new extension service named 'cse'.
 \b
         vcd system extension delete cse
@@ -47,7 +46,7 @@ def extension(ctx):
     if ctx.invoked_subcommand is not None:
         try:
             restore_session(ctx)
-            ctx.obj['ext'] = Extension(ctx.obj['client'])
+            ctx.obj['ext'] = APIExtension(ctx.obj['client'])
         except Exception as e:
             stderr(e, ctx)
 
@@ -64,34 +63,22 @@ def list(ctx):
 
 @extension.command(short_help='show extension details')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
+@click.argument('name', metavar='<name>', required=True)
 def info(ctx, name):
     try:
         ext = ctx.obj['ext']
-        stdout(ext.get_extension(name), ctx)
+        stdout(ext.get_extension_info(name), ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
 @extension.command(short_help='register new extension')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
-@click.argument('namespace',
-                metavar='<namespace>',
-                required=True)
-@click.argument('routing-key',
-                metavar='<routing-key>',
-                required=True)
-@click.argument('exchange',
-                metavar='<exchange>',
-                required=True)
-@click.argument('patterns',
-                metavar='<patterns>',
-                required=True)
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('namespace', metavar='<namespace>', required=True)
+@click.argument('routing-key', metavar='<routing-key>', required=True)
+@click.argument('exchange', metavar='<exchange>', required=True)
+@click.argument('patterns', metavar='<patterns>', required=True)
 def create(ctx, name, namespace, routing_key, exchange, patterns):
     try:
         ext = ctx.obj['ext']
@@ -106,18 +93,17 @@ def create(ctx, name, namespace, routing_key, exchange, patterns):
 
 @extension.command(short_help='unregister extension')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
-@click.option('-y',
-              '--yes',
-              is_flag=True,
-              callback=abort_if_false,
-              expose_value=False,
-              prompt='Are you sure you want to unregister it?')
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-y',
+    '--yes',
+    is_flag=True,
+    callback=abort_if_false,
+    expose_value=False,
+    prompt='Are you sure you want to unregister it?')
 def delete(ctx, name):
     try:
-        ext = Extension(ctx.obj['client'])
+        ext = ctx.obj['ext']
         ext.delete_extension(name)
     except Exception as e:
         stderr(e, ctx)

@@ -46,7 +46,7 @@ def vm(ctx):
 \b
         vcd vm update vapp1 vm1 --cpu 2 --memory 512
             Modifies the VM 'vm1' in vApp 'vapp1' to be configured
-            with with 2 cpu and the specified memory .
+            with 2 cpu and the specified memory .
     """
 
     if ctx.invoked_subcommand is not None:
@@ -87,7 +87,7 @@ def info(ctx, vapp_name, vm_name):
 
 
 @vm.command('update',
-            short_help='Modify or update the VM properties and configurations')
+            short_help='Update the VM properties and configurations')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)
@@ -114,7 +114,7 @@ def info(ctx, vapp_name, vm_name):
     type=click.INT,
     help='Memory to configure the VM.')
 
-def update(ctx, vapp_name, vm_name, cpu, cores,  memory):
+def update(ctx, vapp_name, vm_name, cpu, cores, memory):
     try:
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
@@ -125,7 +125,7 @@ def update(ctx, vapp_name, vm_name, cpu, cores,  memory):
         vm = VM(client, resource=vm_resource)
         if cpu is not None :
             task_cpu_update = vm.modify_cpu(cpu, cores)
-            stdout("Updating cpu (and core if specified) for the VM")
+            stdout("Updating cpu (and core(s) if specified) for the VM")
             stdout(task_cpu_update, ctx)
         if memory is not None:
             task_memory_update = vm.modify_memory(memory)

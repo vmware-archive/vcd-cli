@@ -452,16 +452,15 @@ def change_owner(ctx, vapp_name, user_name):
 
 @vapp.command('reboot', short_help='Reboot a vApp or VM(s)')
 @click.pass_context
-@click.argument('name',
-                required=True)
-@click.argument('vm-names',
-                nargs=-1)
-@click.option('-y',
-              '--yes',
-              is_flag=True,
-              callback=abort_if_false,
-              expose_value=False,
-              prompt='Are you sure you want to reboot the vApp or VM(s)?')
+@click.argument('name', required=True)
+@click.argument('vm-names', nargs=-1)
+@click.option(
+    '-y',
+    '--yes',
+    is_flag=True,
+    callback=abort_if_false,
+    expose_value=False,
+    prompt='Are you sure you want to reboot the vApp or VM(s)?')
 def reboot(ctx, name, vm_names):
     try:
         client = ctx.obj['client']
@@ -514,17 +513,15 @@ def power_off(ctx, name, vm_names):
 
 @vapp.command('reset', short_help='Reset a vApp or VM(s)')
 @click.pass_context
-@click.argument('name',
-                metavar='<name>',
-                required=True)
-@click.argument('vm-names',
-                nargs=-1)
-@click.option('-y',
-              '--yes',
-              is_flag=True,
-              callback=abort_if_false,
-              expose_value=False,
-              prompt='Are you sure you want to reset the vApp or VM(s)?')
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('vm-names', nargs=-1)
+@click.option(
+    '-y',
+    '--yes',
+    is_flag=True,
+    callback=abort_if_false,
+    expose_value=False,
+    prompt='Are you sure you want to reset the vApp or VM(s)?')
 def reset(ctx, name, vm_names):
     try:
         client = ctx.obj['client']
@@ -546,19 +543,18 @@ def reset(ctx, name, vm_names):
 
 @vapp.command('deploy', short_help='Deploy a vApp or VM(s)')
 @click.pass_context
-@click.argument('name',
-                required=True)
-@click.argument('vm-names',
-                nargs=-1)
-@click.option('--power-on/--power-off',
-              is_flag=True,
-              help='Specifies whether to power on/off vApp/VM on deployment,'
-                   'if not specified, default is power on'
-              )
-@click.option('--force-customization',
-              is_flag=True,
-              help='Specifies whether to force customization on deployment,'
-                   'if not specified, default is False')
+@click.argument('name', required=True)
+@click.argument('vm-names', nargs=-1)
+@click.option(
+    '--power-on/--power-off',
+    is_flag=True,
+    help='Specifies whether to power on/off vApp/VM on deployment,'
+    'if not specified, default is power on')
+@click.option(
+    '--force-customization',
+    is_flag=True,
+    help='Specifies whether to force customization on deployment,'
+    'if not specified, default is False')
 def deploy(ctx, name, vm_names, power_on, force_customization):
     try:
         client = ctx.obj['client']
@@ -577,8 +573,8 @@ def deploy(ctx, name, vm_names, power_on, force_customization):
             for vm_name in vm_names:
                 vm = VM(client, href=vapp.get_vm(vm_name).get('href'))
                 vm.reload()
-                task = vm.deploy(power_on=power_on,
-                                 force_customization=force_customization)
+                task = vm.deploy(
+                    power_on=power_on, force_customization=force_customization)
                 stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -648,8 +644,7 @@ def power_on(ctx, name, vm_names):
 @vapp.command('shutdown', short_help='shutdown a vApp')
 @click.pass_context
 @click.argument('name', required=True)
-@click.argument('vm-names',
-                nargs=-1)
+@click.argument('vm-names', nargs=-1)
 @click.option(
     '-y',
     '--yes',
@@ -679,18 +674,14 @@ def shutdown(ctx, name, vm_names):
 
 @vapp.command('connect', short_help='connect an ovdc network to a vapp')
 @click.pass_context
-@click.argument('name',
-                required=True,
-                metavar='<vapp-name>')
-@click.argument('network',
-                required=True,
-                metavar='<orgvdc-network-name>')
+@click.argument('name', required=True, metavar='<vapp-name>')
+@click.argument('network', required=True, metavar='<orgvdc-network-name>')
 @click.option(
     '--retain-ip',
     is_flag=True,
     default=None,
     help="True if the network resources such as IP/MAC of router will be "
-         "retained across deployments. False by default")
+    "retained across deployments. False by default")
 @click.option(
     '--is-deployed',
     is_flag=True,
@@ -703,22 +694,19 @@ def connect(ctx, name, network, retain_ip, is_deployed):
         vdc = VDC(client, href=vdc_href)
         vapp_resource = vdc.get_vapp(name)
         vapp = VApp(client, resource=vapp_resource)
-        task = vapp.connect_org_vdc_network(network, retain_ip=retain_ip,
-                                            is_deployed=is_deployed)
+        task = vapp.connect_org_vdc_network(
+            network, retain_ip=retain_ip, is_deployed=is_deployed)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
-@vapp.command('disconnect', short_help='disconnect an ovdc network from a '
-                                       'vapp')
+@vapp.command(
+    'disconnect', short_help='disconnect an ovdc network from a '
+    'vapp')
 @click.pass_context
-@click.argument('name',
-                required=True,
-                metavar='<vapp-name>')
-@click.argument('network',
-                required=True,
-                metavar='<orgvdc-network-name>')
+@click.argument('name', required=True, metavar='<vapp-name>')
+@click.argument('network', required=True, metavar='<orgvdc-network-name>')
 @click.option(
     '-y',
     '--yes',

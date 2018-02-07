@@ -28,7 +28,6 @@ def profile(ctx):
     """Manage user profiles
 
     """
-
     profiles = Profiles.load()
     click.echo(yaml.dump(profiles.data, default_flow_style=False))
 
@@ -39,7 +38,6 @@ def pwd(ctx):
     """Current resources in use
 
     """
-
     try:
         restore_session(ctx)
         host = ctx.obj['profiles'].get('host')

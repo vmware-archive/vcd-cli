@@ -51,12 +51,7 @@ def org(ctx):
         vcd org update my-org-name --enable
             Update organization 'my-org-name', e.g. enable the organization
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @org.command(short_help='show org details')
@@ -64,6 +59,7 @@ def org(ctx):
 @click.argument('name', metavar='<name>', required=True)
 def info(ctx, name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         logged_in_org_name = ctx.obj['profiles'].get('org')
         in_use_org_name = ctx.obj['profiles'].get('org_in_use')
@@ -82,6 +78,7 @@ def info(ctx, name):
 @click.pass_context
 def list_orgs(ctx):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         logged_in_org_name = ctx.obj['profiles'].get('org')
         in_use_org_name = ctx.obj['profiles'].get('org_in_use')
@@ -106,6 +103,7 @@ def list_orgs(ctx):
 @click.argument('name', metavar='<name>', required=True)
 def use(ctx, name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         org = client.get_org_by_name(name)
         resource = client.get_resource(org.get('href'))
@@ -148,6 +146,7 @@ def use(ctx, name):
     help='Enable org')
 def create(ctx, name, full_name, enabled):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         sys_admin_resource = client.get_admin()
         system = System(client, admin_resource=sys_admin_resource)
@@ -181,6 +180,7 @@ def create(ctx, name, full_name, enabled):
     prompt='Are you sure you want to delete the Org?')
 def delete(ctx, name, recursive, force):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         system = System(client)
         if force and recursive:
@@ -207,6 +207,7 @@ def delete(ctx, name, recursive, force):
     help='enable/disable the org')
 def update(ctx, name, is_enabled):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         org = Org(client, href=client.get_org_by_name(name).get('href'))
         result = org.update_org(is_enabled=is_enabled)

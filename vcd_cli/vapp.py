@@ -159,15 +159,7 @@ def vapp(ctx):
         vdc vapp disconnect vapp1 org-vdc-network1
             Disconnects the network org-vdc-network1 from vapp1.
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-            if not ctx.obj['profiles'].get('vdc_in_use') or \
-               not ctx.obj['profiles'].get('vdc_href'):
-                raise Exception('select a virtual datacenter')
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @vapp.command(short_help='show vApp details')
@@ -175,6 +167,7 @@ def vapp(ctx):
 @click.argument('name', metavar='<name>', required=True)
 def info(ctx, name):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -196,6 +189,7 @@ def info(ctx, name):
 @click.argument('disk-name', metavar='<disk-name>', required=True)
 def attach(ctx, vapp_name, vm_name, disk_name):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -220,6 +214,7 @@ def attach(ctx, vapp_name, vm_name, disk_name):
 @click.argument('disk-name', metavar='<disk-name>', required=True)
 def detach(ctx, vapp_name, vm_name, disk_name):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -242,6 +237,7 @@ def detach(ctx, vapp_name, vm_name, disk_name):
 @click.argument('name', metavar='[name]', required=False)
 def list_vapps(ctx, name):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         result = []
         if name is None:
@@ -349,6 +345,7 @@ def create(ctx, name, description, catalog, template, network, memory, cpu,
            disk_size, ip_allocation_mode, vm_name, hostname, storage_profile,
            accept_all_eulas):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -398,6 +395,7 @@ def create(ctx, name, description, catalog, template, network, memory, cpu,
     help='Force delete running VM(s). Only applies to vApp delete.')
 def delete(ctx, name, vm_names, force):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -419,6 +417,7 @@ def delete(ctx, name, vm_names, force):
 @click.argument('storage-seconds', metavar='[storage-seconds]', required=False)
 def update_lease(ctx, name, runtime_seconds, storage_seconds):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -438,6 +437,7 @@ def update_lease(ctx, name, runtime_seconds, storage_seconds):
 @click.argument('user-name', metavar='<user-name>', required=True)
 def change_owner(ctx, vapp_name, user_name):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -465,6 +465,7 @@ def change_owner(ctx, vapp_name, user_name):
     prompt='Are you sure you want to reboot the vApp or VM(s)?')
 def reboot(ctx, name, vm_names):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -496,6 +497,7 @@ def reboot(ctx, name, vm_names):
     prompt='Are you sure you want to power off the vApp?')
 def power_off(ctx, name, vm_names):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -526,6 +528,7 @@ def power_off(ctx, name, vm_names):
     prompt='Are you sure you want to reset the vApp or VM(s)?')
 def reset(ctx, name, vm_names):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -559,6 +562,7 @@ def reset(ctx, name, vm_names):
     'if not specified, default is False')
 def deploy(ctx, name, vm_names, power_on, force_customization):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -601,6 +605,7 @@ def deploy(ctx, name, vm_names, power_on, force_customization):
     help='Undeploy power action')
 def undeploy(ctx, name, vm_names, action):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -625,6 +630,7 @@ def undeploy(ctx, name, vm_names, action):
 @click.argument('vm-names', nargs=-1)
 def power_on(ctx, name, vm_names):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -656,6 +662,7 @@ def power_on(ctx, name, vm_names):
     prompt='Are you sure you want to shutdown the vApp or VM(s)?')
 def shutdown(ctx, name, vm_names):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -691,6 +698,7 @@ def shutdown(ctx, name, vm_names):
     help="True if this orgvdc network has been deployed. False by default")
 def connect(ctx, name, network, retain_ip, is_deployed):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -718,6 +726,7 @@ def connect(ctx, name, network, retain_ip, is_deployed):
     prompt='Are you sure you want to disconnect the network?')
 def disconnect(ctx, name, network):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -749,6 +758,7 @@ def disconnect(ctx, name, network):
     help='Make copy customizable during instantiation')
 def capture(ctx, name, catalog, template, customizable):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -784,6 +794,7 @@ def capture(ctx, name, catalog, template, customizable):
     help='Name of the storage profile for the new disk')
 def add_disk(ctx, name, vm_name, size, storage_profile):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -800,6 +811,7 @@ def add_disk(ctx, name, vm_name, size, storage_profile):
 @click.argument('name', metavar='<name>', required=True)
 def use(ctx, name):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         in_use_org_name = ctx.obj['profiles'].get('org_in_use')
         in_use_vdc_name = ctx.obj['profiles'].get('vdc_in_use')
@@ -866,6 +878,7 @@ def add_vm(ctx, name, source_vapp, source_vm, catalog, target_vm, hostname,
            network, ip_allocation_mode, storage_profile, password_auto,
            accept_all_eulas):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -934,11 +947,7 @@ def acl(ctx):
 
 
     """
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @acl.command(short_help='add access settings to a particular vapp')
@@ -947,6 +956,7 @@ def acl(ctx):
 @click.argument('access-list', nargs=-1, required=True)
 def add(ctx, vapp_name, access_list):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -984,7 +994,7 @@ def remove(ctx, vapp_name, access_list, all):
                 'Do you want to remove all access settings from the vapp '
                 '\'%s\'' % vapp_name,
                 abort=True)
-
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -1013,6 +1023,7 @@ def remove(ctx, vapp_name, access_list, all):
     ' default')
 def share(ctx, vapp_name, access_level):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -1031,6 +1042,7 @@ def share(ctx, vapp_name, access_level):
 @click.argument('vapp-name', metavar='<vapp-name>')
 def unshare(ctx, vapp_name):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -1048,6 +1060,7 @@ def unshare(ctx, vapp_name):
 @click.argument('vapp-name', metavar='<vapp-name>')
 def list_acl(ctx, vapp_name):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)

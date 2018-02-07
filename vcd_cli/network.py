@@ -29,11 +29,7 @@ def network(ctx):
     """Work with networks in vCloud Director.
 
     """
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @network.group(short_help='work with external networks')
@@ -49,11 +45,7 @@ def external(ctx):
         vcd network external list
             List all external networks available in the system
     """
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @network.group(short_help='work with directly connected org vdc networks')
@@ -79,11 +71,7 @@ def direct(ctx):
         vcd network direct delete direct-net1
             Delete directly connected network 'direct-net1' in the selected vdc
     """
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @network.group(short_help='work with isolated org vdc networks')
@@ -112,11 +100,7 @@ def isolated(ctx):
         vcd network isolated delete isolated-net1
             Delete isolated network 'isoalted-net1' in the selected vdc
     """
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @direct.command(
@@ -150,6 +134,7 @@ def isolated(ctx):
 def create_direct_network(ctx, name, parent_network_name, description,
                           is_shared):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         in_use_vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=in_use_vdc_href)
@@ -253,6 +238,7 @@ def create_isolated_network(ctx, name, gateway_ip, netmask, description,
                             default_lease_time, max_lease_time,
                             dhcp_ip_range_start, dhcp_ip_range_end, is_shared):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         in_use_vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=in_use_vdc_href)
@@ -284,6 +270,7 @@ def create_isolated_network(ctx, name, gateway_ip, netmask, description,
 @click.pass_context
 def list_external_networks(ctx):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
 
         platform = Platform(client)
@@ -304,6 +291,7 @@ def list_external_networks(ctx):
 @click.pass_context
 def list_direct_networks(ctx):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         in_use_vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=in_use_vdc_href)
@@ -324,6 +312,7 @@ def list_direct_networks(ctx):
 @click.pass_context
 def list_isolated_networks(ctx):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         in_use_vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=in_use_vdc_href)
@@ -359,6 +348,7 @@ def list_isolated_networks(ctx):
     prompt='Are you sure you want to delete the OrgVdc Network?')
 def delete_direct_networks(ctx, name, force):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         in_use_vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=in_use_vdc_href)
@@ -390,6 +380,7 @@ def delete_direct_networks(ctx, name, force):
     prompt='Are you sure you want to delete the OrgVdc Network?')
 def delete_isolated_networks(ctx, name, force):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         in_use_vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=in_use_vdc_href)

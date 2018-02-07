@@ -86,8 +86,7 @@ def info(ctx, vapp_name, vm_name):
         stderr(e, ctx)
 
 
-@vm.command('update',
-            short_help='Update the VM properties and configurations')
+@vm.command('update', short_help='Update the VM properties and configurations')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)
@@ -113,7 +112,6 @@ def info(ctx, vapp_name, vm_name):
     metavar='<memory>',
     type=click.INT,
     help='Memory to configure the VM.')
-
 def update(ctx, vapp_name, vm_name, cpu, cores, memory):
     try:
         client = ctx.obj['client']
@@ -123,7 +121,7 @@ def update(ctx, vapp_name, vm_name, cpu, cores, memory):
         vapp = VApp(client, resource=vapp_resource)
         vm_resource = vapp.get_vm(vm_name)
         vm = VM(client, resource=vm_resource)
-        if cpu is not None :
+        if cpu is not None:
             task_cpu_update = vm.modify_cpu(cpu, cores)
             stdout("Updating cpu (and core(s) if specified) for the VM")
             stdout(task_cpu_update, ctx)

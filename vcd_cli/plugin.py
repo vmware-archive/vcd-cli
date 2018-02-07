@@ -12,11 +12,21 @@
 # conditions of the subcomponent's license, as noted in the LICENSE file.
 #
 
+import click
+
 from vcd_cli.profiles import Profiles
 
 
 def load_user_plugins():
     profiles = Profiles.load()
-    if 'extensions' in profiles.data and len(profiles.data) > 0:
+    if 'extensions' in profiles.data and \
+            profiles.data['extensions'] is not None:
         for extension in profiles.data['extensions']:
-            __import__(extension)
+            try:
+                __import__(extension)
+            except Exception:
+                click.secho(
+                    'Warning: the extension module \'%s\''
+                    ' could not be loaded.' % extension,
+                    fg='yellow',
+                    err=True)

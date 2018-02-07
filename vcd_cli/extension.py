@@ -32,15 +32,16 @@ def extension(ctx):
         vcd system extension list
             List available extension services.
 \b
-        vcd system extension create cse cse cse vcdext \\
+        vcd system extension create cse cse-ns cse vcdext \\
             '/api/cse, /api/cse/.*, /api/cse/.*/.*'
-            Register a new extension service named 'cse'.
+            Register a new extension service named 'cse' in namespace 'cse-ns'.
 \b
-        vcd system extension delete cse
-            Unregister an extension service named 'cse'.
+        vcd system extension delete cse cse-ns
+            Unregister an extension service named 'cse' in namespace 'cse-ns'.
 \b
-        vcd system extension info cse
-            Get details of an extension service named 'cse'.
+        vcd system extension info cse cse-ns
+            Get details of an extension service named 'cse'
+            in namespace 'cse-ns'.
     """
 
     if ctx.invoked_subcommand is not None:
@@ -64,10 +65,11 @@ def list(ctx):
 @extension.command(short_help='show extension details')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
-def info(ctx, name):
+@click.argument('namespace', required=False)
+def info(ctx, name, namespace):
     try:
         ext = ctx.obj['ext']
-        stdout(ext.get_extension_info(name), ctx)
+        stdout(ext.get_extension_info(name, namespace), ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -94,6 +96,7 @@ def create(ctx, name, namespace, routing_key, exchange, patterns):
 @extension.command(short_help='unregister extension')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
+@click.argument('namespace', required=False)
 @click.option(
     '-y',
     '--yes',
@@ -101,9 +104,9 @@ def create(ctx, name, namespace, routing_key, exchange, patterns):
     callback=abort_if_false,
     expose_value=False,
     prompt='Are you sure you want to unregister it?')
-def delete(ctx, name):
+def delete(ctx, name, namespace):
     try:
         ext = ctx.obj['ext']
-        ext.delete_extension(name)
+        ext.delete_extension(name, namespace)
     except Exception as e:
         stderr(e, ctx)

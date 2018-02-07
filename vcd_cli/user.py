@@ -259,10 +259,13 @@ def list_users(ctx, org_name):
         users = org.list_users()
         result = []
         for record in list(users):
-            result.append(to_dict(record, exclude=['org',
-                                                   'orgName',
-                                                   'deployedVMQuotaRank',
-                                                   'storedVMQuotaRank']))
+            result.append(
+                to_dict(
+                    record,
+                    exclude=[
+                        'org', 'orgName', 'deployedVMQuotaRank',
+                        'storedVMQuotaRank'
+                    ]))
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

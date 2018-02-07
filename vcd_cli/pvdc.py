@@ -17,6 +17,7 @@ from pyvcloud.vcd.pvdc import PVDC
 from pyvcloud.vcd.system import System
 from pyvcloud.vcd.platform import Platform
 from pyvcloud.vcd.utils import pvdc_to_dict
+
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
@@ -76,9 +77,7 @@ def info_pvdc(ctx, name):
         sys_admin_resource = client.get_admin()
         system = System(client, admin_resource=sys_admin_resource)
         pvdc_reference = system.get_provider_vdc(name)
-        pvdc = PVDC(
-            client,
-            href=pvdc_reference.get('href'))
+        pvdc = PVDC(client, href=pvdc_reference.get('href'))
         refs = pvdc.get_vdc_references()
         md = pvdc.get_metadata()
         result = pvdc_to_dict(pvdc.get_resource(), refs, md)

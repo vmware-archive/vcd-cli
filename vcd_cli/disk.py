@@ -53,15 +53,7 @@ def disk(ctx):
         vcd disk delete disk1
             Delete an existing independent disk named 'disk1'.
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-            if not ctx.obj['profiles'].get('vdc_in_use') or \
-               not ctx.obj['profiles'].get('vdc_href'):
-                raise Exception('select a virtual datacenter')
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @disk.command('info', short_help='show details of an independent disk')
@@ -69,13 +61,12 @@ def disk(ctx):
 @click.argument('name', metavar='<name>')
 def info(ctx, name):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
-
         name, id = extract_name_and_id(name)
         disk = vdc.get_disk(name=name, disk_id=id)
-
         stdout(disk_to_dict(disk), ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -85,6 +76,7 @@ def info(ctx, name):
 @click.pass_context
 def list_disks(ctx):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -143,6 +135,7 @@ def list_disks(ctx):
     help='Iops requirements of the new disk')
 def create(ctx, name, size, description, storage_profile, iops):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -169,13 +162,12 @@ def create(ctx, name, size, description, storage_profile, iops):
     prompt='Are you sure you want to delete the disk?')
 def delete(ctx, name):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
-
         name, id = extract_name_and_id(name)
         task = vdc.delete_disk(name=name, disk_id=id)
-
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -222,14 +214,13 @@ def delete(ctx, name):
     help='New iops requirement of the disk')
 def update(ctx, name, new_name, size, description, storage_profile, iops):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
-
         new_size = None
         if size is not None:
             new_size = humanfriendly.parse_size(size)
-
         name, id = extract_name_and_id(name)
         task = vdc.update_disk(
             name=name,
@@ -250,20 +241,18 @@ def update(ctx, name, new_name, size, description, storage_profile, iops):
 @click.argument('user_name', metavar='<user_name>')
 def change_disk_owner(ctx, disk_name, user_name):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
-
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
         user_resource = org.get_user(user_name)
-
         disk_name, disk_id = extract_name_and_id(disk_name)
         vdc.change_disk_owner(
             user_href=user_resource.get('href'),
             name=disk_name,
             disk_id=disk_id)
-
         stdout('Owner of disk \'%s\' changed to \'%s\'' % (disk_name,
                                                            user_name), ctx)
     except Exception as e:

@@ -59,12 +59,7 @@ def vdc(ctx):
         vcd vdc delete -y dev-vdc
             Delete virtual datacenter.
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @vdc.command(short_help='show virtual datacenter details')
@@ -72,6 +67,7 @@ def vdc(ctx):
 @click.argument('name', metavar='<name>', required=True)
 def info(ctx, name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_name = ctx.obj['profiles'].get('org_in_use')
         in_use_vdc = ctx.obj['profiles'].get('vdc_in_use')
@@ -97,6 +93,7 @@ def info(ctx, name):
 @click.pass_context
 def list_vdc(ctx):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_name = ctx.obj['profiles'].get('org_in_use')
         in_use_vdc = ctx.obj['profiles'].get('vdc_in_use')
@@ -122,6 +119,7 @@ def list_vdc(ctx):
 @click.argument('name', metavar='<name>', required=True)
 def use(ctx, name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_name = ctx.obj['profiles'].get('org_in_use')
         orgs = client.get_org_list()
@@ -217,6 +215,7 @@ def use(ctx, name):
 def create(ctx, name, pvdc_name, network_pool_name, allocation_model, sp_name,
            sp_limit, description, cpu_allocated, cpu_limit):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -255,6 +254,7 @@ def create(ctx, name, pvdc_name, network_pool_name, allocation_model, sp_name,
     prompt='Are you sure you want to delete the VDC?')
 def delete(ctx, name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         in_use_vdc = ctx.obj['profiles'].get('vdc_in_use')
@@ -277,6 +277,7 @@ def delete(ctx, name):
 @click.argument('name', metavar='<name>', required=True)
 def enable(ctx, name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -292,6 +293,7 @@ def enable(ctx, name):
 @click.argument('name', metavar='<name>', required=True)
 def disable(ctx, name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -339,11 +341,7 @@ def acl(ctx):
 
 
     """
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @acl.command(short_help='add access settings to a particular vdc')
@@ -352,6 +350,7 @@ def acl(ctx):
 @click.argument('access-list', nargs=-1, required=True)
 def add(ctx, vdc_name, access_list):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -385,6 +384,7 @@ def add(ctx, vdc_name, access_list):
     prompt='Are you sure you want to remove access settings?')
 def remove(ctx, vdc_name, access_list, all):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
 
@@ -412,6 +412,7 @@ def remove(ctx, vdc_name, access_list, all):
 @click.argument('vdc-name', metavar='<vdc-name>')
 def share(ctx, vdc_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -431,6 +432,7 @@ def share(ctx, vdc_name):
 @click.argument('vdc-name', metavar='<vdc-name>')
 def unshare(ctx, vdc_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -449,6 +451,7 @@ def unshare(ctx, vdc_name):
 @click.argument('vdc-name', metavar='<vdc-name>')
 def list_acl(ctx, vdc_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)

@@ -36,18 +36,14 @@ def pvdc(ctx):
         vcd pvdc info name
             Display provider virtual data center details.
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @pvdc.command('list', short_help='list of provider virtual datacenters')
 @click.pass_context
 def list_pvdc(ctx):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         sys_admin_resource = client.get_admin()
         system = System(client, admin_resource=sys_admin_resource)
@@ -64,6 +60,7 @@ def list_pvdc(ctx):
 @click.argument('name', metavar='<name>')
 def info_pvdc(ctx, name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         sys_admin_resource = client.get_admin()
         system = System(client, admin_resource=sys_admin_resource)

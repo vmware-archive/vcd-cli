@@ -44,18 +44,14 @@ def amqp(ctx):
         vcd system amqp set amqp-config.json --password guest
             Set AMQP configuration.
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @amqp.command(short_help='show AMQP settings')
 @click.pass_context
 def info(ctx):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         amqp = AmqpService(client)
         settings = amqp.get_settings()
@@ -79,6 +75,7 @@ def info(ctx):
     required=True)
 def test(ctx, password, config_file):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         config = json.loads(
             config_file.read(1024).decode(sys.getfilesystemencoding()))
@@ -108,6 +105,7 @@ def test(ctx, password, config_file):
     required=True)
 def set_config(ctx, password, config_file):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         config = json.loads(
             config_file.read(1024).decode(sys.getfilesystemencoding()))

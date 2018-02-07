@@ -74,12 +74,7 @@ def role(ctx):
             Removes one or more rights from a given role.
 
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @role.command('list', short_help='list roles')
@@ -94,6 +89,7 @@ def role(ctx):
 )
 def list_roles(ctx, org_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         if org_name is not None:
             org_href = client.get_org_by_name(org_name).get('href')
@@ -121,6 +117,7 @@ def list_roles(ctx, org_name):
 )
 def info(ctx, role_name, org_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         if org_name is not None:
             org_href = client.get_org_by_name(org_name).get('href')
@@ -146,6 +143,7 @@ def info(ctx, role_name, org_name):
     help='name of the org')
 def list_rights(ctx, role_name, org_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         if org_name is not None:
             org_href = client.get_org_by_name(org_name).get('href')
@@ -178,6 +176,7 @@ def list_rights(ctx, role_name, org_name):
 )
 def create(ctx, role_name, description, rights, org_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         if org_name is not None:
             org_href = client.get_org_by_name(org_name).get('href')
@@ -210,6 +209,7 @@ def create(ctx, role_name, description, rights, org_name):
     prompt='Are you sure you want to delete the role?')
 def delete(ctx, role_name, org_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         if org_name is not None:
             org_href = client.get_org_by_name(org_name).get('href')
@@ -235,6 +235,7 @@ def delete(ctx, role_name, org_name):
     help='name of the org')
 def unlink(ctx, role_name, org_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         if org_name is not None:
             org_href = client.get_org_by_name(org_name).get('href')
@@ -263,6 +264,7 @@ def unlink(ctx, role_name, org_name):
     help='name of the org')
 def link(ctx, role_name, org_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         if org_name is not None:
             org_href = client.get_org_by_name(org_name).get('href')
@@ -291,6 +293,7 @@ def link(ctx, role_name, org_name):
     help='name of the org')
 def add_right(ctx, role_name, rights, org_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         if org_name is not None:
             org_href = client.get_org_by_name(org_name).get('href')
@@ -327,6 +330,7 @@ def add_right(ctx, role_name, rights, org_name):
     prompt='Are you sure you want to remove rights from the role?')
 def remove_right(ctx, role_name, rights, org_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         if org_name is not None:
             org_href = client.get_org_by_name(org_name).get('href')

@@ -31,21 +31,14 @@ def gateway(ctx):
         vcd gateway list
             Get list of edge gateways in current virtual datacenter.
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-            if not ctx.obj['profiles'].get('vdc_in_use') or \
-               not ctx.obj['profiles'].get('vdc_href'):
-                raise Exception('select a virtual datacenter')
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @gateway.command('list', short_help='list edge gateways')
 @click.pass_context
 def list_gateways(ctx):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)

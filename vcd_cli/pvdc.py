@@ -36,12 +36,13 @@ def pvdc(ctx):
         vcd pvdc info name
             Display provider virtual data center details.
 \b
-        vcd pvdc create pvdc-name vc-name \
-            --storage-profile 'SP name' \
-            --resource-pool 'RP name' \
-            --description 'description' --enable \
-            (can have multiple --storage-profile and --resource-pool options) 
-            Create Provider Virtual Datacenter
+        vcd pvdc create pvdc-name vc-name 
+            --storage-profile 'SP name' (required, can be multiple)
+            --resource-pool 'RP name' (required, can be multiple)
+            --vxlan-network-pool 'vxlanNetworkPool name'
+            --highest-supported-hw-version 'HighestSupportedHardwareVersion' 
+            --description 'description' --enable 
+                Create Provider Virtual Datacenter
     """
 
     if ctx.invoked_subcommand is not None:
@@ -91,16 +92,22 @@ def info_pvdc(ctx, name):
 @click.argument('vc-name', metavar='<vc-name>', required=True)
 @click.option(
     '--storage-profile',
-    required=False,
+    required=True,
     default=None,
     multiple=True,
     metavar='[storage-profile]')
 @click.option(
     '--resource-pool',
-    required=False,
+    required=True,
     default=None,
     multiple=True,
     metavar='[resource-pool]')
+@click.option(
+    '--vxlan-network-pool',
+    required=False,
+    default=None,
+    metavar='[vxlan-network-pool]'
+)
 @click.option(
     '-d',
     '--description',
@@ -112,14 +119,19 @@ def info_pvdc(ctx, name):
     is_flag=True,
     default=None,
     metavar='[enable]')
+@click.option(
+    '--highest-supported-hw-version',
+    required=False,
+    default=None,
+    metavar='[highest-supported-hw-version]')
 def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,  
-    description, enable):
+    enable, description, highest_supported_hw_version, vxlan_network_pool):
     try:
         client = ctx.obj['client']
         platform = Platform(client)
         pvdc = platform.create_provider_vdc(vc_name, 
-            resource_pool, storage_profile, pvdc_name, enable, False, False, 
-            description)
+            resource_pool, storage_profile, pvdc_name, enable, 
+            description, highest_supported_hw_version, vxlan_network_pool)
         stdout('PVDC create successful', ctx)
     except Exception as e:
         stderr(e, ctx)

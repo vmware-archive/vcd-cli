@@ -3,7 +3,7 @@ VMware vCloud Director CLI
 Copyright (c) 2018 VMware, Inc.  All rights reserved
 
 The Apache 2.0 license (the "License") set forth below applies to all parts of the VMware vCloud Director CLI
-project.  You may not use this file except in compliance with the License.†
+project.  You may not use this file except in compliance with the License.
 
 Apache License
 

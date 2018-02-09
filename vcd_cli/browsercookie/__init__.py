@@ -28,6 +28,7 @@ except ImportError:
     import sqlite3
 
 import keyring
+from keyring import backend
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Cipher import AES
 
@@ -95,10 +96,17 @@ class Chrome(BrowserCookieLoader):
         length = 16
         if sys.platform == 'darwin':
             # running Chrome on OSX
-            my_pass = keyring.get_password('Chrome Safe Storage', 'Chrome')
-            my_pass = my_pass.encode('utf8')
-            iterations = 1003
-            key = PBKDF2(my_pass, salt, length, iterations)
+            key = None
+            for k in backend.get_all_keyring():
+                try:
+                    my_pass = k.get_password('Chrome Safe Storage', 'Chrome')
+                    if my_pass is not None:
+                        my_pass = my_pass.encode('utf8')
+                        iterations = 1003
+                        key = PBKDF2(my_pass, salt, length, iterations)
+                        break
+                except:
+                    pass
 
         elif sys.platform.startswith('linux'):
             # running Chrome on Linux

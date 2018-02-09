@@ -12,9 +12,13 @@
 # conditions of the subcomponent's license, as noted in the LICENSE file.
 #
 
+import logging
 import os
 
 import yaml
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.addHandler(logging.FileHandler('vcd.log'))
 
 VCD_CLI_USER_PATH = '~/.vcd-cli'
 PROFILE_PATH = VCD_CLI_USER_PATH + '/profiles.yaml'
@@ -34,7 +38,9 @@ class Profiles(object):
             with open(profile_path, 'r') as f:
                 p.data = yaml.load(f)
         except Exception:
-            pass
+            LOGGER.warning(
+                'Warning: the profiles file \'%s\''
+                ' could not be open. Using default values.' % PROFILE_PATH)
         p.path = profile_path
         return p
 

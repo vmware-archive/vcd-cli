@@ -175,8 +175,8 @@ def info(ctx, name):
         vapp = VApp(client, resource=vapp_resource)
         md = vapp.get_metadata()
         access_control_settings = vapp.get_access_settings()
-        result = vapp_to_dict(vapp_resource, md, access_settings_to_dict(
-            access_control_settings))
+        result = vapp_to_dict(vapp_resource, md,
+                              access_settings_to_dict(access_control_settings))
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

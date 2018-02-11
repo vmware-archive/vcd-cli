@@ -56,17 +56,18 @@ def list_gateways(ctx):
                 metavar='<name>',
                 required=True)
 def info(ctx, name):
-        client = ctx.obj['client']
-        vdc_href = ctx.obj['profiles'].get('vdc_href')
-        vdc = VDC(client, href=vdc_href)
-        edge_gateways = vdc.list_edge_gateways()
-        for gw in edge_gateways:
-            if name == gw.get('name'):
-                resource = client.get_resource(gw.get('href'))
-                result = edge_gateway_to_dict(resource)
-                stdout(result, ctx)
-                return
-        raise Exception('not found')
+    restore_session(ctx, vdc_required=True)
+    client = ctx.obj['client']
+    vdc_href = ctx.obj['profiles'].get('vdc_href')
+    vdc = VDC(client, href=vdc_href)
+    edge_gateways = vdc.list_edge_gateways()
+    for gw in edge_gateways:
+        if name == gw.get('name'):
+            resource = client.get_resource(gw.get('href'))
+            result = edge_gateway_to_dict(resource)
+            stdout(result, ctx)
+            return
+    raise Exception('not found')
 
 
 def edge_gateway_to_dict(gw):
@@ -82,17 +83,18 @@ def edge_gateway_to_dict(gw):
                 metavar='<name>',
                 required=True)
 def natrules(ctx, name):
-        client = ctx.obj['client']
-        vdc_href = ctx.obj['profiles'].get('vdc_href')
-        vdc = VDC(client, href=vdc_href)
-        edge_gateways = vdc.list_edge_gateways()
-        for gw in edge_gateways:
-            if name == gw.get('name'):
-                resource = client.get_resource(gw.get('href'))
-                result = edge_gateway_nat_rules_to_dict(resource)
-                stdout(result, ctx)
-                return
-        raise Exception('not found')
+    restore_session(ctx, vdc_required=True)
+    client = ctx.obj['client']
+    vdc_href = ctx.obj['profiles'].get('vdc_href')
+    vdc = VDC(client, href=vdc_href)
+    edge_gateways = vdc.list_edge_gateways()
+    for gw in edge_gateways:
+        if name == gw.get('name'):
+            resource = client.get_resource(gw.get('href'))
+            result = edge_gateway_nat_rules_to_dict(resource)
+            stdout(result, ctx)
+            return
+    raise Exception('not found')
 
 
 def edge_gateway_nat_rules_to_dict(gw):
@@ -122,17 +124,18 @@ def edge_gateway_nat_rules_to_dict(gw):
                 metavar='<name>',
                 required=True)
 def firewallrules(ctx, name):
-        client = ctx.obj['client']
-        vdc_href = ctx.obj['profiles'].get('vdc_href')
-        vdc = VDC(client, href=vdc_href)
-        edge_gateways = vdc.list_edge_gateways()
-        for gw in edge_gateways:
-            if name == gw.get('name'):
-                resource = client.get_resource(gw.get('href'))
-                result = edge_gateway_firewall_rules_to_dict(resource)
-                stdout(result, ctx)
-                return
-        raise Exception('not found')
+    restore_session(ctx, vdc_required=True)
+    client = ctx.obj['client']
+    vdc_href = ctx.obj['profiles'].get('vdc_href')
+    vdc = VDC(client, href=vdc_href)
+    edge_gateways = vdc.list_edge_gateways()
+    for gw in edge_gateways:
+        if name == gw.get('name'):
+            resource = client.get_resource(gw.get('href'))
+            result = edge_gateway_firewall_rules_to_dict(resource)
+            stdout(result, ctx)
+            return
+    raise Exception('not found')
 
 
 def edge_gateway_firewall_rules_to_dict(gw):

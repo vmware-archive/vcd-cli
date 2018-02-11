@@ -29,7 +29,13 @@ def gateway(ctx):
 \b
     Examples
         vcd gateway list
-            Get list of edge gateways in current virtual datacenter.
+            Get list of edge gateways in current the virtual datacenter.
+\b
+        vcd gateway natrules GATEWAY
+            Get list of the natrules of an edge gateways in the current virtual datacenter.
+\b
+        vcd gateway firewallrules GATEWAY
+            Get list of the firewallrules of an edge gateways in the current virtual datacenter.
     """
     pass
 

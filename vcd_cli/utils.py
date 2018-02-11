@@ -90,7 +90,11 @@ def as_metavar(values):
     return result
 
 
-def restore_session(ctx):
+def restore_session(ctx, vdc_required=False):
+    if type(
+            ctx.obj
+    ) is dict and 'client' in ctx.obj and ctx.obj['client'] is not None:
+        return
     profiles = Profiles.load()
     token = profiles.get('token')
     if token is None or len(token) == 0:
@@ -119,6 +123,10 @@ def restore_session(ctx):
     ctx.obj = {}
     ctx.obj['client'] = client
     ctx.obj['profiles'] = profiles
+    if vdc_required:
+        if not ctx.obj['profiles'].get('vdc_in_use') or \
+           not ctx.obj['profiles'].get('vdc_href'):
+            raise Exception('select a virtual datacenter')
 
 
 def spinning_cursor():

@@ -50,12 +50,7 @@ def user(ctx):
             Get list of users in the current organization.
 
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @user.command(short_help='create user in current organization')
@@ -166,6 +161,7 @@ def create(ctx, user_name, password, role_name, full_name, description, email,
            alert_email_prefix, external, default_cached, group_role,
            stored_vm_quota, deployed_vm_quota):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -209,6 +205,7 @@ def create(ctx, user_name, password, role_name, full_name, description, email,
     ' Are you sure you want to delete the user?')
 def delete(ctx, user_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -228,6 +225,7 @@ def delete(ctx, user_name):
     help='enable/disable the user')
 def update(ctx, user_name, is_enabled):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -250,6 +248,7 @@ def update(ctx, user_name, is_enabled):
 )
 def list_users(ctx, org_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         if org_name is not None:
             org_href = client.get_org_by_name(org_name).get('href')
@@ -259,10 +258,13 @@ def list_users(ctx, org_name):
         users = org.list_users()
         result = []
         for record in list(users):
-            result.append(to_dict(record, exclude=['org',
-                                                   'orgName',
-                                                   'deployedVMQuotaRank',
-                                                   'storedVMQuotaRank']))
+            result.append(
+                to_dict(
+                    record,
+                    exclude=[
+                        'org', 'orgName', 'deployedVMQuotaRank',
+                        'storedVMQuotaRank'
+                    ]))
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

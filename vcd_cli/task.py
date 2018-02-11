@@ -45,12 +45,7 @@ def task(ctx):
         vcd task update aborted 4a115aa5-9657-4d97-a8c2-3faf43fb45dd
             Abort task by id, requires login as 'system administrator'.
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @task.command(short_help='show task details')
@@ -58,6 +53,7 @@ def task(ctx):
 @click.argument('task_id', metavar='<id>', required=True)
 def info(ctx, task_id):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         result = client.get_resource('%s/task/%s' % (client._uri, task_id))
         stdout(task_to_dict(result), ctx, show_id=True)
@@ -75,6 +71,7 @@ def info(ctx, task_id):
     nargs=-1)
 def list_tasks(ctx, status):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         task_obj = Task(client)
         records = task_obj.list_tasks(filter_status_list=status)
@@ -97,6 +94,7 @@ def list_tasks(ctx, status):
 @click.argument('task_id', metavar='<id>', required=True)
 def wait(ctx, task_id):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         task = client.get_resource('%s/task/%s' % (client._uri, task_id))
         stdout(task, ctx)
@@ -114,13 +112,12 @@ def wait(ctx, task_id):
 @click.argument('task_id', metavar='<id>', required=True)
 def update(ctx, status, task_id):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         task = client.get_resource('%s/task/%s' % (client._uri, task_id))
         task.set('status', status)
         result = client.put_linked_resource(task, RelationType.EDIT,
                                             EntityType.TASK.value, task)
-        print(result)
+        stdout(result, ctx)
     except Exception as e:
-        import traceback
-        traceback.print_exc()
         stderr(e, ctx)

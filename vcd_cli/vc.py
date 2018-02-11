@@ -34,18 +34,14 @@ def vc(ctx):
         vcd vc info vc1
             Get details of the vCenter Server 'vc1' attached to the vCD system.
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @vc.command('list', short_help='list vCenter Servers')
 @click.pass_context
 def list_vcenters(ctx):
     try:
+        restore_session(ctx)
         platform = Platform(ctx.obj['client'])
         stdout(platform.list_vcenters(), ctx)
     except Exception as e:
@@ -57,6 +53,7 @@ def list_vcenters(ctx):
 @click.argument('name')
 def info(ctx, name):
     try:
+        restore_session(ctx)
         platform = Platform(ctx.obj['client'])
         stdout(platform.get_vcenter(name), ctx)
     except Exception as e:

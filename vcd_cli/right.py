@@ -54,12 +54,7 @@ def right(ctx):
         vcd right remove 'vApp: Copy' 'Disk: Create' -o myOrg
             Removes list of rights from the organization
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @right.command(
@@ -81,6 +76,7 @@ def right(ctx):
     help='list all rights available in the System')
 def list_rights(ctx, org_name, all):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         if org_name is not None:
             org_href = client.get_org_by_name(org_name).get('href')
@@ -103,6 +99,7 @@ def list_rights(ctx, org_name, all):
 @click.argument('right-name', metavar='<right-name>', required=True)
 def info(ctx, right_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         org = Org(client, href=ctx.obj['profiles'].get('org_href'))
         right_resource = org.get_right_resource(right_name)
@@ -123,6 +120,7 @@ def info(ctx, right_name):
     help='name of the org')
 def add(ctx, rights, org_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         if org_name is not None:
             org_href = client.get_org_by_name(org_name).get('href')
@@ -156,6 +154,7 @@ def add(ctx, rights, org_name):
     'organization?')
 def remove(ctx, rights, org_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         if org_name is not None:
             org_href = client.get_org_by_name(org_name).get('href')

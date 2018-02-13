@@ -1,10 +1,6 @@
 # vCloud CLI 0.1
 #
-<<<<<<< HEAD
-# Copyright (c) 2018 VMware, Inc. All Rights Reserved.
-=======
 # Copyright (c) 2017-2018 VMware, Inc. All Rights Reserved.
->>>>>>> upstream/master
 #
 # This product is licensed to you under the
 # Apache License, Version 2.0 (the "License").

@@ -13,9 +13,9 @@
 #
 
 import click
+from pyvcloud.vcd.platform import Platform
 from pyvcloud.vcd.pvdc import PVDC
 from pyvcloud.vcd.system import System
-from pyvcloud.vcd.platform import Platform
 from pyvcloud.vcd.utils import pvdc_to_dict
 
 from vcd_cli.utils import restore_session
@@ -37,13 +37,16 @@ def pvdc(ctx):
         vcd pvdc info name
             Display provider virtual data center details.
 \b
-        vcd pvdc create pvdc-name vc-name 
-            --storage-profile 'SP name' (required, can be multiple)
-            --resource-pool 'RP name' (required, can be multiple)
+        vcd pvdc create pvdc-name vc-name
+            --storage-profile 'SP name'
+            --resource-pool 'RP name'
             --vxlan-network-pool 'vxlanNetworkPool name'
-            --highest-supported-hw-version 'HighestSupportedHardwareVersion' 
-            --description 'description' --enable 
-                Create Provider Virtual Datacenter
+            --highest-supported-hw-version 'HighestSupportedHardwareVersion'
+            --description 'description'
+            --enable
+                Create Provider Virtual Datacenter.
+                   Parameters --storage-profile and --resource-pool are both
+                   required and each can have multiple entries.
     """
     pass
 
@@ -81,7 +84,8 @@ def info_pvdc(ctx, name):
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
-        
+
+
 @pvdc.command('create', short_help='create pvdc')
 @click.pass_context
 @click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
@@ -91,43 +95,57 @@ def info_pvdc(ctx, name):
     required=True,
     default=None,
     multiple=True,
-    metavar='[storage-profile]')
+    metavar='[storage-profile]',
+    help='storage profile name (required parameter, can have multiple)')
 @click.option(
     '--resource-pool',
     required=True,
     default=None,
     multiple=True,
-    metavar='[resource-pool]')
+    metavar='[resource-pool]',
+    help='resource pool name (required parameter, can have multiple)')
 @click.option(
     '--vxlan-network-pool',
     required=False,
     default=None,
-    metavar='[vxlan-network-pool]'
-)
+    metavar='[vxlan-network-pool]',
+    help='vxlan network pool name')
 @click.option(
     '-d',
     '--description',
     required=False,
     default=None,
-    metavar='[description]')
+    metavar='[description]',
+    help='description of PVDC')
 @click.option(
     '--enable',
     is_flag=True,
     default=None,
-    metavar='[enable]')
+    metavar='[enable]',
+    help='enable flag (enables PVDC when it is created)')
 @click.option(
     '--highest-supported-hw-version',
+    type=click.Choice(['vmx-4', 'vmx-7', 'vmx-9', 'vmx-10', 'vmx-11', 'vmx-12',
+                      'vmx-13']),
     required=False,
     default=None,
-    metavar='[highest-supported-hw-version]')
-def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,  
-    enable, description, highest_supported_hw_version, vxlan_network_pool):
+    metavar='[highest-supported-hw-version]',
+    help='highest supported hardware version, e.g. vmx-11,vmx-10,vmx-9, etc.')
+def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
+           enable, description, highest_supported_hw_version,
+           vxlan_network_pool):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         platform = Platform(client)
-        pvdc = platform.create_provider_vdc(vc_name, 
-            resource_pool, storage_profile, pvdc_name, enable, 
-            description, highest_supported_hw_version, vxlan_network_pool)
+        platform.create_provider_vdc(vim_server_name=vc_name,
+                                     resource_pool_names=resource_pool,
+                                     storage_profiles=storage_profile,
+                                     pvdc_name=pvdc_name,
+                                     is_enabled=enable,
+                                     description=description,
+                                     highest_supp_hw_vers=highest_supported_hw_version,  # NoQA
+                                     vxlan_network_pool=vxlan_network_pool)
         stdout('PVDC create successful', ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -1,6 +1,6 @@
 # vCloud CLI 0.1
 #
-# Copyright (c) 2014 VMware, Inc. All Rights Reserved.
+# Copyright (c) 2014-2018 VMware, Inc. All Rights Reserved.
 #
 # This product is licensed to you under the
 # Apache License, Version 2.0 (the "License").
@@ -43,20 +43,15 @@ def extension(ctx):
             Get details of an extension service named 'cse'
             in namespace 'cse-ns'.
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-            ctx.obj['ext'] = APIExtension(ctx.obj['client'])
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @extension.command(short_help='list extensions')
 @click.pass_context
 def list(ctx):
     try:
-        ext = ctx.obj['ext']
+        restore_session(ctx)
+        ext = APIExtension(ctx.obj['client'])
         stdout(ext.list_extensions(), ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -68,7 +63,8 @@ def list(ctx):
 @click.argument('namespace', required=False)
 def info(ctx, name, namespace):
     try:
-        ext = ctx.obj['ext']
+        restore_session(ctx)
+        ext = APIExtension(ctx.obj['client'])
         stdout(ext.get_extension_info(name, namespace), ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -83,7 +79,8 @@ def info(ctx, name, namespace):
 @click.argument('patterns', metavar='<patterns>', required=True)
 def create(ctx, name, namespace, routing_key, exchange, patterns):
     try:
-        ext = ctx.obj['ext']
+        restore_session(ctx)
+        ext = APIExtension(ctx.obj['client'])
         ext.add_extension(name, namespace, routing_key, exchange,
                           patterns.split(','))
         stdout('Extension registered.', ctx)
@@ -106,7 +103,8 @@ def create(ctx, name, namespace, routing_key, exchange, patterns):
     prompt='Are you sure you want to unregister it?')
 def delete(ctx, name, namespace):
     try:
-        ext = ctx.obj['ext']
+        restore_session(ctx)
+        ext = APIExtension(ctx.obj['client'])
         ext.delete_extension(name, namespace)
     except Exception as e:
         stderr(e, ctx)

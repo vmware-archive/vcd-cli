@@ -1,6 +1,6 @@
 # VMware vCloud Director CLI
 #
-# Copyright (c) 2018 VMware, Inc. All Rights Reserved.
+# Copyright (c) 2017-2018 VMware, Inc. All Rights Reserved.
 #
 # This product is licensed to you under the
 # Apache License, Version 2.0 (the "License").
@@ -45,18 +45,14 @@ def pvdc(ctx):
             --description 'description' --enable 
                 Create Provider Virtual Datacenter
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @pvdc.command('list', short_help='list of provider virtual datacenters')
 @click.pass_context
 def list_pvdc(ctx):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         sys_admin_resource = client.get_admin()
         system = System(client, admin_resource=sys_admin_resource)
@@ -73,6 +69,7 @@ def list_pvdc(ctx):
 @click.argument('name', metavar='<name>')
 def info_pvdc(ctx, name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         sys_admin_resource = client.get_admin()
         system = System(client, admin_resource=sys_admin_resource)

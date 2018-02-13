@@ -1,5 +1,4 @@
-#
-# Copyright (c) 2014 VMware, Inc. All Rights Reserved.
+# Copyright (c) 2014-2018 VMware, Inc. All Rights Reserved.
 #
 # This product is licensed to you under the
 # Apache License, Version 2.0 (the "License").
@@ -88,12 +87,7 @@ def catalog(ctx):
         vcd catalog update my-catalog -n 'new name' -d 'new description'
             Update the name and/or description of a catalog.
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @catalog.command(short_help='show catalog or item details')
@@ -103,6 +97,7 @@ def catalog(ctx):
     'item-name', metavar='[item-name]', required=False, default=None)
 def info(ctx, catalog_name, item_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -142,6 +137,7 @@ def info(ctx, catalog_name, item_name):
     metavar='[description]')
 def update(ctx, catalog_name, new_catalog_name, description):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -156,6 +152,7 @@ def update(ctx, catalog_name, new_catalog_name, description):
 @click.argument('catalog-name', metavar='[catalog-name]', required=False)
 def list_catalogs_or_items(ctx, catalog_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         if catalog_name is None:
             in_use_org_href = ctx.obj['profiles'].get('org_href')
@@ -176,7 +173,6 @@ def list_catalogs_or_items(ctx, catalog_name):
                 for r in records:
                     result.append(to_dict(r, resource_type=resource_type))
         stdout(result, ctx)
-
     except Exception as e:
         stderr(e, ctx)
 
@@ -188,6 +184,7 @@ def list_catalogs_or_items(ctx, catalog_name):
     '-d', '--description', required=False, default='', metavar='[description]')
 def create(ctx, catalog_name, description):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -210,6 +207,7 @@ def create(ctx, catalog_name, description):
     prompt='Are you sure you want to delete it?')
 def delete_catalog_or_item(ctx, catalog_name, item_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -228,6 +226,7 @@ def delete_catalog_or_item(ctx, catalog_name, item_name):
 @click.argument('catalog-name', metavar='<catalog-name>', required=True)
 def share_catalog(ctx, catalog_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -243,6 +242,7 @@ def share_catalog(ctx, catalog_name):
 @click.argument('catalog-name', metavar='<catalog-name>', required=True)
 def unshare_catalog(ctx, catalog_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -288,6 +288,7 @@ def download_callback(transferred, total):
     help='show progress')
 def upload(ctx, catalog_name, file_name, item_name, progress):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -332,6 +333,7 @@ def upload(ctx, catalog_name, file_name, item_name, progress):
     help='overwrite')
 def download(ctx, catalog_name, item_name, file_name, progress, overwrite):
     try:
+        restore_session(ctx)
         save_as_name = item_name
         if file_name is not None:
             save_as_name = file_name
@@ -359,6 +361,7 @@ def download(ctx, catalog_name, item_name, file_name, progress, overwrite):
 @click.argument('user-name', metavar='<user-name>')
 def change_owner(ctx, catalog_name, user_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -402,11 +405,7 @@ def acl(ctx):
             List acl of a catalog
 
     """
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @acl.command(short_help='add access settings to a particular catalog')
@@ -415,6 +414,7 @@ def acl(ctx):
 @click.argument('access-list', nargs=-1, required=True)
 def add(ctx, catalog_name, access_list):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -447,6 +447,7 @@ def add(ctx, catalog_name, access_list):
     prompt='Are you sure you want to remove access settings?')
 def remove(ctx, catalog_name, access_list, all):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -483,6 +484,7 @@ def remove(ctx, catalog_name, access_list, all):
     ' default')
 def acl_share(ctx, catalog_name, access_level):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -503,6 +505,7 @@ def acl_share(ctx, catalog_name, access_level):
 @click.argument('catalog-name', metavar='<catalog-name>')
 def acl_unshare(ctx, catalog_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)
@@ -519,6 +522,7 @@ def acl_unshare(ctx, catalog_name):
 @click.argument('catalog-name', metavar='<catalog-name>')
 def list_acl(ctx, catalog_name):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, in_use_org_href)

@@ -1,6 +1,6 @@
 # vCloud CLI 0.1
 #
-# Copyright (c) 2018 VMware, Inc. All Rights Reserved.
+# Copyright (c) 2017-2018 VMware, Inc. All Rights Reserved.
 #
 # This product is licensed to you under the
 # Apache License, Version 2.0 (the "License").
@@ -48,15 +48,7 @@ def vm(ctx):
             Modifies the VM 'vm1' in vApp 'vapp1' to be configured
             with 2 cpu and the specified memory .
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-            if not ctx.obj['profiles'].get('vdc_in_use') or \
-               not ctx.obj['profiles'].get('vdc_href'):
-                raise Exception('select a virtual datacenter')
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @vm.command('list', short_help='list VMs')
@@ -74,6 +66,7 @@ def list_vms(ctx):
 @click.argument('vm-name', metavar='<vm-name>', required=True)
 def info(ctx, vapp_name, vm_name):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -86,8 +79,7 @@ def info(ctx, vapp_name, vm_name):
         stderr(e, ctx)
 
 
-@vm.command('update',
-            short_help='Update the VM properties and configurations')
+@vm.command('update', short_help='Update the VM properties and configurations')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)
@@ -113,9 +105,9 @@ def info(ctx, vapp_name, vm_name):
     metavar='<memory>',
     type=click.INT,
     help='Memory to configure the VM.')
-
 def update(ctx, vapp_name, vm_name, cpu, cores, memory):
     try:
+        restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
@@ -123,7 +115,7 @@ def update(ctx, vapp_name, vm_name, cpu, cores, memory):
         vapp = VApp(client, resource=vapp_resource)
         vm_resource = vapp.get_vm(vm_name)
         vm = VM(client, resource=vm_resource)
-        if cpu is not None :
+        if cpu is not None:
             task_cpu_update = vm.modify_cpu(cpu, cores)
             stdout("Updating cpu (and core(s) if specified) for the VM")
             stdout(task_cpu_update, ctx)

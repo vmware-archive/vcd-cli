@@ -1,6 +1,6 @@
 # vCloud CLI 0.1
 #
-# Copyright (c) 2014 VMware, Inc. All Rights Reserved.
+# Copyright (c) 2014-2018 VMware, Inc. All Rights Reserved.
 #
 # This product is licensed to you under the
 # Apache License, Version 2.0 (the "License").
@@ -61,7 +61,6 @@ def info(ctx, resource_type, resource_id):
         Several 'vcd' commands provide the id of a resource, including the
         'vcd search' command.
     """
-
     try:
         if resource_type is None or resource_id is None:
             click.secho(ctx.get_help())

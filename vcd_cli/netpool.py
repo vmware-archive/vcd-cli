@@ -1,6 +1,6 @@
 # VMware vCloud Director CLI
 #
-# Copyright (c) 2017 VMware, Inc. All Rights Reserved.
+# Copyright (c) 2017-2018 VMware, Inc. All Rights Reserved.
 #
 # This product is licensed to you under the
 # Apache License, Version 2.0 (the "License").
@@ -31,18 +31,14 @@ def netpool(ctx):
         vcd netpool list
             Get list of network pools.
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @netpool.command('list', short_help='list of network pools')
 @click.pass_context
 def list_netpools(ctx):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         sys_admin_resource = client.get_admin()
         system = System(client, admin_resource=sys_admin_resource)

@@ -1,6 +1,6 @@
 # vCloud CLI 0.1
 #
-# Copyright (c) 2014 VMware, Inc. All Rights Reserved.
+# Copyright (c) 2014-2018 VMware, Inc. All Rights Reserved.
 #
 # This product is licensed to you under the
 # Apache License, Version 2.0 (the "License").
@@ -28,18 +28,14 @@ def system(ctx):
     """Manage system settings in vCloud Director.
 
     """
-
-    if ctx.invoked_subcommand is not None:
-        try:
-            restore_session(ctx)
-        except Exception as e:
-            stderr(e, ctx)
+    pass
 
 
 @system.command(short_help='show system details')
 @click.pass_context
 def info(ctx):
     try:
+        restore_session(ctx)
         client = ctx.obj['client']
         result = client.get_resource(
             client._session_endpoints[_WellKnownEndpoint.ADMIN])

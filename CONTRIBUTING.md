@@ -52,6 +52,11 @@ issue references in the commit message.  See [GFM
 syntax](https://guides.github.com/features/mastering-markdown/#GitHub-flavored-markdown)
 for referencing issues.
 
+### Debugging
+In order to help with debugging the code better, we have included a profiles.yaml file. This is located under ~/.vcd-cli/profiles.yaml (for mac,linux and windows users). You can turn on logging of request body, header or the entire payload
+being sent over the wire, by updating the related flags (log_body, log_header, log_request) in profiles.yaml.
+
+
 ### Unit Tests
 
 Where feasible new features should include fast, easily maintainable unit 

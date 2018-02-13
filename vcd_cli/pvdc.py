@@ -144,8 +144,8 @@ def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
                                      pvdc_name=pvdc_name,
                                      is_enabled=enable,
                                      description=description,
-                                     highest_supp_hw_vers=highest_supported_hw_version,  # NoQA
+                                     highest_supp_hw_vers=highest_supported_hw_version,
                                      vxlan_network_pool=vxlan_network_pool)
-        stdout('PVDC create successful', ctx)
+        stdout('PVDC created successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)

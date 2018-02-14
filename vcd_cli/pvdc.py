@@ -125,8 +125,8 @@ def info_pvdc(ctx, name):
     help='enable flag (enables PVDC when it is created)')
 @click.option(
     '--highest-supported-hw-version',
-    type=click.Choice(['vmx-4', 'vmx-7', 'vmx-9', 'vmx-10', 'vmx-11', 'vmx-12',
-                      'vmx-13']),
+    type=click.Choice(['vmx-04', 'vmx-07', 'vmx-09', 'vmx-10', 'vmx-11', 
+                       'vmx-12', 'vmx-13']),
     required=False,
     default=None,
     metavar='[highest-supported-hw-version]',

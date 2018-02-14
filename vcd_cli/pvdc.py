@@ -128,7 +128,7 @@ def info_pvdc(ctx, name):
     required=False,
     default=None,
     metavar='[highest-supported-hw-version]',
-    help='highest supported hardware version, e.g. vmx-11,vmx-10,vmx-9, etc.')
+    help='highest supported hardware version, e.g. vmx-11, vmx-10, vmx-09, etc.')
 def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
            enable, description, highest_supported_hw_version,
            vxlan_network_pool):

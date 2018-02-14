@@ -53,7 +53,7 @@ syntax](https://guides.github.com/features/mastering-markdown/#GitHub-flavored-m
 for referencing issues.
 
 ### Debugging
-In order to help with debugging the code better, we have included a flags in profiles.yaml file. This is located under ~/.vcd-cli/profiles.yaml for Mac OS X and Linux users and %USERPROFILE%/.vcd-cli\profiles.yaml for Windows. You can turn on logging of request body, header or the entire payload
+In order to help with debugging the code better, we have included flags in profiles.yaml file. This is located under ~/.vcd-cli/profiles.yaml for Mac OS X and Linux users and %USERPROFILE%/.vcd-cli\profiles.yaml for Windows. You can turn on logging of request body, header or the entire payload
 being sent over the wire, by updating the related flags (log_body, log_header, log_request) in profiles.yaml.
 
 Sample contents in profiles.yaml look like the following:

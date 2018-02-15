@@ -38,15 +38,17 @@ def pvdc(ctx):
             Display provider virtual data center details.
 \b
         vcd pvdc create pvdc-name vc-name
-            --storage-profile 'SP name'
-            --resource-pool 'RP name'
-            --vxlan-network-pool 'vxlanNetworkPool name'
-            --highest-supported-hw-version 'HighestSupportedHardwareVersion'
+            --storage-profile 'sp1'
+            --storage-profile 'sp2'
+            --resource-pool 'rp1'
+            --resource-pool 'rp2'
+            --vxlan-network-pool 'vnp1'
+            --highest-supported-hw-version 'vmx-11'
             --description 'description'
             --enable
                 Create Provider Virtual Datacenter.
                    Parameters --storage-profile and --resource-pool are both
-                   required and each can have multiple entries.
+                   required parameters and each can have multiple entries.
     """
     pass
 
@@ -91,20 +93,21 @@ def info_pvdc(ctx, name):
 @click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
 @click.argument('vc-name', metavar='<vc-name>', required=True)
 @click.option(
+    '-s',
     '--storage-profile',
     required=True,
     default=None,
     multiple=True,
-    metavar='[storage-profile]',
     help='storage profile name (required parameter, can have multiple)')
 @click.option(
+    '-r',
     '--resource-pool',
     required=True,
     default=None,
     multiple=True,
-    metavar='[resource-pool]',
     help='resource pool name (required parameter, can have multiple)')
 @click.option(
+    '-n',
     '--vxlan-network-pool',
     required=False,
     default=None,
@@ -118,12 +121,14 @@ def info_pvdc(ctx, name):
     metavar='[description]',
     help='description of PVDC')
 @click.option(
+    '-e',
     '--enable',
     is_flag=True,
     default=None,
     metavar='[enable]',
     help='enable flag (enables PVDC when it is created)')
 @click.option(
+    '-v',
     '--highest-supported-hw-version',
     required=False,
     default=None,

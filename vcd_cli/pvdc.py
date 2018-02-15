@@ -129,13 +129,13 @@ def info_pvdc(ctx, name):
     help='enable flag (enables PVDC when it is created)')
 @click.option(
     '-v',
-    '--highest-supported-hw-version',
+    '--highest-supp-hw-vers',
     required=False,
     default=None,
-    metavar='[highest-supported-hw-version]',
-    help='highest supported hardware version, e.g. vmx-11, vmx-10, vmx-09, etc.')
+    metavar='[highest-supp-hw-vers]',
+    help='highest supported hw version, e.g. vmx-11, vmx-10, vmx-09, etc.')
 def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
-           enable, description, highest_supported_hw_version,
+           enable, description, highest_supp_hw_vers,
            vxlan_network_pool):
     try:
         restore_session(ctx)
@@ -147,7 +147,7 @@ def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
                                      pvdc_name=pvdc_name,
                                      is_enabled=enable,
                                      description=description,
-                                     highest_supp_hw_vers=highest_supported_hw_version,
+                                     highest_supp_hw_vers=highest_supp_hw_vers,
                                      vxlan_network_pool=vxlan_network_pool)
         stdout('PVDC created successfully.', ctx)
     except Exception as e:

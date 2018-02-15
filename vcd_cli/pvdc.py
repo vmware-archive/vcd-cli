@@ -13,6 +13,7 @@
 #
 
 import click
+from pyvcloud.vcd.platform import Platform
 from pyvcloud.vcd.pvdc import PVDC
 from pyvcloud.vcd.system import System
 from pyvcloud.vcd.utils import pvdc_to_dict
@@ -35,6 +36,19 @@ def pvdc(ctx):
 \b
         vcd pvdc info name
             Display provider virtual data center details.
+\b
+        vcd pvdc create pvdc-name vc-name
+            --storage-profile 'sp1'
+            --storage-profile 'sp2'
+            --resource-pool 'rp1'
+            --resource-pool 'rp2'
+            --vxlan-network-pool 'vnp1'
+            --highest-supported-hw-version 'vmx-11'
+            --description 'description'
+            --enable
+                Create Provider Virtual Datacenter.
+                   Parameters --storage-profile and --resource-pool are both
+                   required parameters and each can have multiple entries.
     """
     pass
 
@@ -70,5 +84,71 @@ def info_pvdc(ctx, name):
         md = pvdc.get_metadata()
         result = pvdc_to_dict(pvdc.get_resource(), refs, md)
         stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@pvdc.command('create', short_help='create pvdc')
+@click.pass_context
+@click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
+@click.argument('vc-name', metavar='<vc-name>', required=True)
+@click.option(
+    '-s',
+    '--storage-profile',
+    required=True,
+    default=None,
+    multiple=True,
+    help='storage profile name (required parameter, can have multiple)')
+@click.option(
+    '-r',
+    '--resource-pool',
+    required=True,
+    default=None,
+    multiple=True,
+    help='resource pool name (required parameter, can have multiple)')
+@click.option(
+    '-n',
+    '--vxlan-network-pool',
+    required=False,
+    default=None,
+    metavar='[vxlan-network-pool]',
+    help='vxlan network pool name')
+@click.option(
+    '-d',
+    '--description',
+    required=False,
+    default=None,
+    metavar='[description]',
+    help='description of PVDC')
+@click.option(
+    '-e',
+    '--enable',
+    is_flag=True,
+    default=None,
+    metavar='[enable]',
+    help='enable flag (enables PVDC when it is created)')
+@click.option(
+    '-v',
+    '--highest-supp-hw-vers',
+    required=False,
+    default=None,
+    metavar='[highest-supp-hw-vers]',
+    help='highest supported hw version, e.g. vmx-11, vmx-10, vmx-09, etc.')
+def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
+           enable, description, highest_supp_hw_vers,
+           vxlan_network_pool):
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
+        platform = Platform(client)
+        platform.create_provider_vdc(vim_server_name=vc_name,
+                                     resource_pool_names=resource_pool,
+                                     storage_profiles=storage_profile,
+                                     pvdc_name=pvdc_name,
+                                     is_enabled=enable,
+                                     description=description,
+                                     highest_supp_hw_vers=highest_supp_hw_vers,
+                                     vxlan_network_pool=vxlan_network_pool)
+        stdout('PVDC created successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)

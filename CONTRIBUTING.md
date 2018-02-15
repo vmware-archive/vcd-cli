@@ -52,6 +52,23 @@ issue references in the commit message.  See [GFM
 syntax](https://guides.github.com/features/mastering-markdown/#GitHub-flavored-markdown)
 for referencing issues.
 
+### Debugging
+In order to help with debugging the code better, we have included flags in profiles.yaml file. This is located under ~/.vcd-cli/profiles.yaml for Mac OS X and Linux users and %USERPROFILE%/.vcd-cli\profiles.yaml for Windows. You can turn on logging of request body, header or the entire payload
+being sent over the wire, by updating the related flags (log_body, log_header, log_request) in profiles.yaml.
+
+Sample contents in profiles.yaml look like the following:
+``` shell
+active: default
+profiles:
+
+    api_version: '30.0'
+    disable_warnings: false
+    host: cassini.eng.vmware.com
+    log_body: true
+    log_header: true
+    log_request: true
+```
+
 ### Unit Tests
 
 Where feasible new features should include fast, easily maintainable unit 

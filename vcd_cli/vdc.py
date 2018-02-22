@@ -100,12 +100,12 @@ def list_vdc(ctx):
         orgs = client.get_org_list()
         result = []
         for org in [o for o in orgs.Org if hasattr(orgs, 'Org')]:
-            if org.get('name') == in_use_org_name:
+            if org.get('name').lower() == in_use_org_name.lower():
                 resource = client.get_resource(org.get('href'))
                 for v in get_links(resource, media_type=EntityType.VDC.value):
                     result.append({
                         'name': v.name,
-                        'org': in_use_org_name,
+                        'org': org.get('name'),
                         'in_use': in_use_vdc == v.name
                     })
                 break
@@ -124,7 +124,7 @@ def use(ctx, name):
         in_use_org_name = ctx.obj['profiles'].get('org_in_use')
         orgs = client.get_org_list()
         for org in [o for o in orgs.Org if hasattr(orgs, 'Org')]:
-            if org.get('name') == in_use_org_name:
+            if org.get('name').lower() == in_use_org_name.lower():
                 resource = client.get_resource(org.get('href'))
                 for v in get_links(resource, media_type=EntityType.VDC.value):
                     if v.name == name:
@@ -145,7 +145,7 @@ def use(ctx, name):
                             'vapp': vapp_in_use
                         }, ctx, message)
                         return
-        raise Exception('not found')
+        raise Exception('Org \'%s\' not found' % in_use_org_name)
     except Exception as e:
         stderr(e, ctx)
 

@@ -122,7 +122,7 @@ def info(ctx, name):
     is_flag=True,
     default=None,
     metavar='[enable]',
-    help='enable flag (enables VC when it is vms_attached)')
+    help='enable flag (enables VC when it is attached)')
 def attach(ctx, vc_name, vc_host, vc_user, vc_pwd,
            nsx_server_name, nsx_host, nsx_user, nsx_pwd, enable):
     try:

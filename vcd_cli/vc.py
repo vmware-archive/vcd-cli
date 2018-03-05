@@ -43,7 +43,8 @@ def vc(ctx):
             --nsx-user 'nsx-admin-user-name'
             --nsx-pwd 'nsx-admin-password'
             --enable
-                Attach Virtual Datacenter server.
+                Attaches Virtual Center (VC) server with the given 
+                credentials to vCD.
     """
     pass
 
@@ -122,17 +123,17 @@ def info(ctx, name):
     is_flag=True,
     default=None,
     metavar='[enable]',
-    help='enable flag (enables VC when it is attached)')
+    help='enable flag (enables VC when it is attached to vCD)')
 def attach(ctx, vc_name, vc_host, vc_user, vc_pwd,
            nsx_server_name, nsx_host, nsx_user, nsx_pwd, enable):
     try:
         restore_session(ctx)
         client = ctx.obj['client']
         platform = Platform(client)
-        platform.attach_vcenter(vim_server_name=vc_name,
-                                vim_server_host=vc_host,
-                                vim_admin_user=vc_user,
-                                vim_admin_pwd=vc_pwd,
+        platform.attach_vcenter(vc_server_name=vc_name,
+                                vc_server_host=vc_host,
+                                vc_admin_user=vc_user,
+                                vc_admin_pwd=vc_pwd,
                                 nsx_server_name=nsx_server_name,
                                 nsx_host=nsx_host,
                                 nsx_admin_user=nsx_user,

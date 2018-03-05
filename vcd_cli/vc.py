@@ -43,7 +43,7 @@ def vc(ctx):
             --nsx-user 'nsx-admin-user-name'
             --nsx-pwd 'nsx-admin-password'
             --enable
-                Attaches Virtual Center (VC) server with the given 
+                Attaches Virtual Center (VC) server with the given
                 credentials to vCD.
     """
     pass

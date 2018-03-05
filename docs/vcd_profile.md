@@ -1,5 +1,5 @@
 ```
-Usage: vcd profile [OPTIONS]
+Usage: vcd profile [OPTIONS] COMMAND [ARGS]...
 
   Manage user profiles
 
@@ -7,5 +7,9 @@ Usage: vcd profile [OPTIONS]
 
 Options:
   -h, --help  Show this message and exit.
+
+Commands:
+  extension  work with vcd-cli extensions
+  info       show details of current profile
 
 ```

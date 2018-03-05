@@ -20,6 +20,7 @@ Options:
 
 Commands:
   catalog  work with catalogs
+  cse      manage kubernetes clusters
   disk     manage independent disks
   gateway  manage edge gateways
   help     show help

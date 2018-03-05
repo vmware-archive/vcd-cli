@@ -1,5 +1,5 @@
 ```
-Usage: vcd system extension delete [OPTIONS] <name> [NAMESPACE]
+Usage: vcd profile extension delete [OPTIONS] MODULE
 
 Options:
   -y, --yes

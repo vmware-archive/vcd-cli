@@ -1,5 +1,5 @@
 ```
-Usage: vcd system extension delete [OPTIONS] <name> [NAMESPACE]
+Usage: vcd cse system stop [OPTIONS]
 
 Options:
   -y, --yes

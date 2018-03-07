@@ -7,15 +7,16 @@ Usage: vcd system extension [OPTIONS] COMMAND [ARGS]...
           vcd system extension list
               List available extension services.
   
-          vcd system extension create cse cse cse vcdext \
+          vcd system extension create cse cse-ns cse vcdext \
               '/api/cse, /api/cse/.*, /api/cse/.*/.*'
-              Register a new extension service named 'cse'.
+              Register a new extension service named 'cse' in namespace 'cse-ns'.
   
-          vcd system extension delete cse
-              Unregister an extension service named 'cse'.
+          vcd system extension delete cse cse-ns
+              Unregister an extension service named 'cse' in namespace 'cse-ns'.
   
-          vcd system extension info cse
-              Get details of an extension service named 'cse'.
+          vcd system extension info cse cse-ns
+              Get details of an extension service named 'cse'
+              in namespace 'cse-ns'.
       
 
 Options:

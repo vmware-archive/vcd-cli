@@ -1,6 +1,32 @@
 CHANGES
 =======
 
+* VCDA-532: Fix requirements.txt to avoid Mac OS X pycryptodome bug (#197)
+* VCDA-502: Add additional Mac OS X install notes (#198)
+* Updated license files (#199)
+* VCDA517: Document generation for all commands
+* vcd-cli documentation
+* VDP-1375, VCDA-504: Attach VC (#194)
+* Generate docs for vcd-cli commands
+* VCDA-496: Fix org case insensitive issue (#192)
+* VDP-1205, VCDA-462: added create pvdc CLI to pvdc.py (#182)
+*  VCDA-477: Add doc for logging request headers and payload for debugging purposes (#191)
+* VCDA-454: Updated copyrights for release
+
+20.1.2
+------
+
+* VCDA-501: support multiple keyring backends in browsercookie (#188)
+* VCDA-417: commands to manage extension commands (#187)
+* VCDA-436: avoid unnecessary session restoration (#185)
+* Adding the missing access\_settings\_to\_dict method in vcd-cli/vapp.py . (#186)
+* VCDA-474: consider name and namespace in api extension (#183)
+*  VCDA-410 & 411: VM commands to update cpu and memory of a Vm (#181)
+* VCDA-487: Fix cosmetic bugs in Rights
+* VCDA-473: Implement vcd user list command (#179)
+* Updated License file
+* Updated License file
+
 20.1.1
 ------
 

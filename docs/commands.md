@@ -22,6 +22,35 @@
 <a href="vcd_catalog_upload">upload</a></li>
 </ul></li>
 <li>
+<a href="vcd_cse">cse</a><ul><li>
+<a href="vcd_cse_cluster">cluster</a><ul><li>
+<a href="vcd_cse_cluster_config">config</a></li><li>
+<a href="vcd_cse_cluster_create">create</a></li><li>
+<a href="vcd_cse_cluster_delete">delete</a></li><li>
+<a href="vcd_cse_cluster_info">info</a></li><li>
+<a href="vcd_cse_cluster_list">list</a></li>
+</ul></li>
+<li>
+<a href="vcd_cse_node">node</a><ul><li>
+<a href="vcd_cse_node_create">create</a></li><li>
+<a href="vcd_cse_node_delete">delete</a></li><li>
+<a href="vcd_cse_node_list">list</a></li>
+</ul></li>
+<li>
+<a href="vcd_cse_system">system</a><ul><li>
+<a href="vcd_cse_system_disable">disable</a></li><li>
+<a href="vcd_cse_system_enable">enable</a></li><li>
+<a href="vcd_cse_system_info">info</a></li><li>
+<a href="vcd_cse_system_stop">stop</a></li>
+</ul></li>
+<li>
+<a href="vcd_cse_template">template</a><ul><li>
+<a href="vcd_cse_template_list">list</a></li>
+</ul></li>
+<li>
+<a href="vcd_cse_version">version</a></li>
+</ul></li>
+<li>
 <a href="vcd_disk">disk</a><ul><li>
 <a href="vcd_disk_change-owner">change-owner</a></li><li>
 <a href="vcd_disk_create">create</a></li><li>
@@ -70,8 +99,18 @@
 <a href="vcd_org_use">use</a></li>
 </ul></li>
 <li>
-<a href="vcd_profile">profile</a></li><li>
+<a href="vcd_profile">profile</a><ul><li>
+<a href="vcd_profile_extension">extension</a><ul><li>
+<a href="vcd_profile_extension_add">add</a></li><li>
+<a href="vcd_profile_extension_delete">delete</a></li><li>
+<a href="vcd_profile_extension_list">list</a></li>
+</ul></li>
+<li>
+<a href="vcd_profile_info">info</a></li>
+</ul></li>
+<li>
 <a href="vcd_pvdc">pvdc</a><ul><li>
+<a href="vcd_pvdc_create">create</a></li><li>
 <a href="vcd_pvdc_info">info</a></li><li>
 <a href="vcd_pvdc_list">list</a></li>
 </ul></li>
@@ -124,6 +163,7 @@
 <a href="vcd_user">user</a><ul><li>
 <a href="vcd_user_create">create</a></li><li>
 <a href="vcd_user_delete">delete</a></li><li>
+<a href="vcd_user_list">list</a></li><li>
 <a href="vcd_user_update">update</a></li>
 </ul></li>
 <li>
@@ -185,7 +225,8 @@
 <a href="vcd_version">version</a></li><li>
 <a href="vcd_vm">vm</a><ul><li>
 <a href="vcd_vm_info">info</a></li><li>
-<a href="vcd_vm_list">list</a></li></ul>
+<a href="vcd_vm_list">list</a></li><li>
+<a href="vcd_vm_update">update</a></li></ul>
 </li></ul>
 </li></ul>
 </div>

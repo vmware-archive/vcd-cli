@@ -19,6 +19,9 @@ Usage: vcd user [OPTIONS] COMMAND [ARGS]...
   
           vcd user update 'my user' --enable
              update user in the current organization, e.g enable the user
+  
+          vcd user list
+              Get list of users in the current organization.
 
 
 
@@ -28,6 +31,7 @@ Options:
 Commands:
   create  create user in current organization
   delete  delete an user in current organization
+  list    list users
   update  update an user in current organization
 
 ```

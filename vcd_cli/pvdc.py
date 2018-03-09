@@ -43,7 +43,7 @@ def pvdc(ctx):
             --resource-pool 'rp1'
             --resource-pool 'rp2'
             --vxlan-network-pool 'vnp1'
-            --highest-supported-hw-version 'vmx-11'
+            --highest-supp-hw-vers 'vmx-11'
             --description 'description'
             --enable
                 Create Provider Virtual Datacenter.

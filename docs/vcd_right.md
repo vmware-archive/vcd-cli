@@ -21,7 +21,7 @@ Usage: vcd right [OPTIONS] COMMAND [ARGS]...
           vcd right add 'vApp: Copy' 'General: View Error Details' -o myOrg
               Adds list of rights to the organization
 
-          vcd rights remove 'vApp: Copy' 'Disk: Create' -o myOrg
+          vcd right remove 'vApp: Copy' 'Disk: Create' -o myOrg
               Removes list of rights from the organization
       
 

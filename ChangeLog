@@ -1,9 +1,13 @@
 CHANGES
 =======
 
-* Updated license files
+* VCDA-532: Fix requirements.txt to avoid Mac OS X pycryptodome bug (#197)
+* VCDA-502: Add additional Mac OS X install notes (#198)
+* Updated license files (#199)
 * VCDA517: Document generation for all commands
+* vcd-cli documentation
 * VDP-1375, VCDA-504: Attach VC (#194)
+* Generate docs for vcd-cli commands
 * VCDA-496: Fix org case insensitive issue (#192)
 * VDP-1205, VCDA-462: added create pvdc CLI to pvdc.py (#182)
 *  VCDA-477: Add doc for logging request headers and payload for debugging purposes (#191)

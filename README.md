@@ -11,9 +11,9 @@ In general `vcd-cli` can be installed with the following command:
 ```shell
 $ pip install --user vcd-cli
 ```
-Depending on your operating system and distribution you may need 
+Depending on your operating system and distribution you may need
 additional packages to install successfully.   See [install.md](docs/install.md)
-for full details. 
+for full details.
 
 ## Quick Start
 
@@ -23,7 +23,7 @@ Detailed command syntax and usage can be found in the [vcd-cli site](https://vmw
 
 ```shell
 
-    $ vcd login myserviceprovider.com org1 usr1 --password secure_pass -w -i
+    $ vcd login myserviceprovider.com org1 usr1 --password ******** -w -i
     usr1 logged in, org: 'org1', vdc: 'vdc1'
 
     $ vcd catalog create catalog1
@@ -58,7 +58,7 @@ Detailed command syntax and usage can be found in the [vcd-cli site](https://vmw
     vm-1: Hard disk 1            17,179,869,184 byte
     vm-1: Network adapter 0      DHCP: 10.150.221.213
     vm-1: computer-name          PhotonOS-001
-    vm-1: password               I!8z#z2N
+    vm-1: password               ********
 
     $ ssh root@10.150.221.213
     ...
@@ -84,7 +84,7 @@ Previous versions and deprecated code can be found in this repository under [tag
 If you want to develop, follow these steps:
 * Fork the repository
 * Clone the forked respoitory
-* Install vcd-cli from the local sources `pip3 install --user -e vcd-cli/` 
+* Install vcd-cli from the local sources `pip3 install --user -e vcd-cli/`
 * Add the path `~/.local/bin` to the PATH
 
 If you change the source, it is directly accessible with the `vcd` command

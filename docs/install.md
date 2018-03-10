@@ -123,7 +123,7 @@ Display the version installed:
 It is also possible to install `vcd-cli` in a [virtualenv](https://docs.python.org/3/library/venv.html).  Quick commands to do so:
 ``` shell
     $ python3 -m venv $HOME/my_venv
-    $ . $HOME/my_venv
+    $ . $HOME/my_venv/bin/activate
     (my_venv) $ pip3 install vcd-cli
 ```
 To terminate the virtual environment use the `deactivate` command. In

@@ -13,6 +13,7 @@
 #
 
 import click
+from pyvcloud.vcd.client import NSMAP
 from pyvcloud.vcd.platform import Platform
 from pyvcloud.vcd.pvdc import PVDC
 from pyvcloud.vcd.system import System
@@ -135,20 +136,21 @@ def info_pvdc(ctx, name):
     metavar='[highest-supp-hw-vers]',
     help='highest supported hw version, e.g. vmx-11, vmx-10, vmx-09, etc.')
 def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
-           enable, description, highest_supp_hw_vers,
-           vxlan_network_pool):
+           enable, description, highest_supp_hw_vers, vxlan_network_pool):
     try:
         restore_session(ctx)
         client = ctx.obj['client']
         platform = Platform(client)
-        platform.create_provider_vdc(vim_server_name=vc_name,
-                                     resource_pool_names=resource_pool,
-                                     storage_profiles=storage_profile,
-                                     pvdc_name=pvdc_name,
-                                     is_enabled=enable,
-                                     description=description,
-                                     highest_supp_hw_vers=highest_supp_hw_vers,
-                                     vxlan_network_pool=vxlan_network_pool)
+        pvdc = \
+            platform.create_provider_vdc(vim_server_name=vc_name,
+                                         resource_pool_names=resource_pool,
+                                         storage_profiles=storage_profile,
+                                         pvdc_name=pvdc_name,
+                                         is_enabled=enable,
+                                         description=description,
+                                         highest_hw_vers=highest_supp_hw_vers,
+                                         vxlan_network_pool=vxlan_network_pool)
+        stdout(pvdc.find('vcloud:Tasks', NSMAP).Task[0], ctx)
         stdout('PVDC created successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)

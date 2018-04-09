@@ -13,6 +13,7 @@
 #
 
 import click
+from pyvcloud.vcd.client import NSMAP
 from pyvcloud.vcd.platform import Platform
 
 from vcd_cli.utils import restore_session
@@ -130,15 +131,18 @@ def attach(ctx, vc_name, vc_host, vc_user, vc_pwd,
         restore_session(ctx)
         client = ctx.obj['client']
         platform = Platform(client)
-        platform.attach_vcenter(vc_server_name=vc_name,
-                                vc_server_host=vc_host,
-                                vc_admin_user=vc_user,
-                                vc_admin_pwd=vc_pwd,
-                                nsx_server_name=nsx_server_name,
-                                nsx_host=nsx_host,
-                                nsx_admin_user=nsx_user,
-                                nsx_admin_pwd=nsx_pwd,
-                                is_enabled=enable)
+        result = platform.attach_vcenter(vc_server_name=vc_name,
+                                         vc_server_host=vc_host,
+                                         vc_admin_user=vc_user,
+                                         vc_admin_pwd=vc_pwd,
+                                         nsx_server_name=nsx_server_name,
+                                         nsx_host=nsx_host,
+                                         nsx_admin_user=nsx_user,
+                                         nsx_admin_pwd=nsx_pwd,
+                                         is_enabled=enable)
+        vc = result.find('vmext:VimServer', NSMAP)
+        Tasks = vc.find('vcloud:Tasks', NSMAP)
+        stdout(Tasks.Task[0], ctx)
         stdout('VirtualCenter server attached successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)

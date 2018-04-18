@@ -39,6 +39,7 @@ def vc(ctx):
             --vc-host 'VC-host-FQDN-or-IP-address'
             --vc-user 'vc-admin-user-name'
             --vc-pwd 'vc-admin-user-password'
+            --vc-root-folder 'vc-root-folder'
             --nsx-server-name 'nsx-server-namespace'
             --nsx-host 'NSX-host-FQDN-or-IP-address'
             --nsx-user 'nsx-admin-user-name'
@@ -95,6 +96,12 @@ def info(ctx, name):
     metavar='[vc-pwd]',
     help='VC admin password')
 @click.option(
+    '--vc-root-folder',
+    required=False,
+    default=None,
+    metavar='[vc-root-folder]',
+    help='VC root folder')
+@click.option(
     '--nsx-server-name',
     required=False,
     default=None,
@@ -125,7 +132,7 @@ def info(ctx, name):
     default=None,
     metavar='[enable]',
     help='enable flag (enables VC when it is attached to vCD)')
-def attach(ctx, vc_name, vc_host, vc_user, vc_pwd,
+def attach(ctx, vc_name, vc_host, vc_user, vc_pwd, vc_root_folder,
            nsx_server_name, nsx_host, nsx_user, nsx_pwd, enable):
     try:
         restore_session(ctx)
@@ -135,6 +142,7 @@ def attach(ctx, vc_name, vc_host, vc_user, vc_pwd,
                                          vc_server_host=vc_host,
                                          vc_admin_user=vc_user,
                                          vc_admin_pwd=vc_pwd,
+                                         vc_root_folder=vc_root_folder,
                                          nsx_server_name=nsx_server_name,
                                          nsx_host=nsx_host,
                                          nsx_admin_user=nsx_user,

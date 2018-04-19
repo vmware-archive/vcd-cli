@@ -15,7 +15,7 @@
 import click
 from pyvcloud.vcd.client import EntityType
 from pyvcloud.vcd.client import get_links
-from pyvcloud.vcd.client import MissingLinkException
+from pyvcloud.vcd.exceptions import OperationNotSupportedException
 from pyvcloud.vcd.org import Org
 from pyvcloud.vcd.utils import access_settings_to_dict
 from pyvcloud.vcd.utils import vdc_to_dict
@@ -78,7 +78,7 @@ def info(ctx, name):
         access_settings = None
         try:
             access_settings = vdc.get_access_settings()
-        except MissingLinkException:
+        except OperationNotSupportedException:
             pass
         result = vdc_to_dict(vdc_resource,
                              access_settings_to_dict(access_settings))

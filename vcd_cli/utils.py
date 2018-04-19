@@ -27,11 +27,12 @@ from pygments import highlight
 from pygments import lexers
 from pyvcloud.vcd.client import Client
 from pyvcloud.vcd.client import EntityType
-from pyvcloud.vcd.client import MissingLinkException
-from pyvcloud.vcd.client import MissingRecordException
 from pyvcloud.vcd.client import NSMAP
 from pyvcloud.vcd.client import TaskStatus
-from pyvcloud.vcd.client import VcdErrorResponseException
+from pyvcloud.vcd.exceptions import AccessForbiddenException
+from pyvcloud.vcd.exceptions import MissingRecordException
+from pyvcloud.vcd.exceptions import RequestTimeoutException
+from pyvcloud.vcd.exceptions import UnauthorizedException
 from pyvcloud.vcd.utils import extract_id
 from pyvcloud.vcd.utils import to_dict
 import requests
@@ -248,19 +249,14 @@ def stderr(exception, ctx=None):
         LOGGER.error(traceback.format_exc())
     except Exception:
         LOGGER.error(exception)
-    if type(exception) == VcdErrorResponseException:
-        if exception.status_code == 401:
-            message = 'Session has expired or is invalid, please login again.'
-        elif exception.status_code == 403:
-            message = 'Access to the resource is forbidden, please login ' \
-                      'with the required credentials and access level.'
-        elif exception.status_code == 408:
-            message = 'The server timed out waiting for the request, ' \
-                      'please check your connection.'
-        else:
-            message = str(exception)
-    elif type(exception) == MissingLinkException:
-        message = str(exception)
+    if type(exception) == UnauthorizedException:
+        message = 'Session has expired or is invalid, please login again.'
+    elif type(exception) == AccessForbiddenException:
+        message = 'Access to the resource is forbidden, please login ' \
+                  'with the required credentials and access level.'
+    elif type(exception) == RequestTimeoutException:
+        message = 'The server timed out waiting for the request, ' \
+                  'please check your connection.'
     elif type(exception) == MissingRecordException:
         message = 'Record not found.'
     elif hasattr(exception, 'message'):

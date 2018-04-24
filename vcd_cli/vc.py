@@ -100,7 +100,7 @@ def info(ctx, name):
     required=False,
     default=None,
     metavar='[vc-root-folder]',
-    help='VC root folder')
+    help='VC root folder (for a future release - VCD API version 31.0)')
 @click.option(
     '--nsx-server-name',
     required=False,

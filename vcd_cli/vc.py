@@ -36,12 +36,12 @@ def vc(ctx):
             Get details of the vCenter Server 'vc1' attached to the vCD system.
 \b
         vcd vc attach vc-name
-            --vc-host 'VC-host-FQDN-or-IP-address'
+            --vc-host 'vc.server.example.com' (or something similar)
             --vc-user 'vc-admin-user-name'
             --vc-pwd 'vc-admin-user-password'
             --vc-root-folder 'vc-root-folder'
             --nsx-server-name 'nsx-server-namespace'
-            --nsx-host 'NSX-host-FQDN-or-IP-address'
+            --nsx-host 'nsx.server.example.com' (or something similar)
             --nsx-user 'nsx-admin-user-name'
             --nsx-pwd 'nsx-admin-password'
             --enable
@@ -82,7 +82,7 @@ def info(ctx, name):
     required=True,
     default=None,
     metavar='[vc-host]',
-    help='VC host FQDN or IP address')
+    help='vc host name (vc.server.example.com, or something similar)')
 @click.option(
     '--vc-user',
     required=True,
@@ -112,7 +112,7 @@ def info(ctx, name):
     required=False,
     default=None,
     metavar='[nsx-host]',
-    help='NSX host FQDN or IP address')
+    help='NSX host name (nsx.server.example.com, or something similar)')
 @click.option(
     '--nsx-user',
     required=False,

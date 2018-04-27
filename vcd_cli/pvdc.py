@@ -44,7 +44,7 @@ def pvdc(ctx):
             --resource-pool 'rp1'
             --resource-pool 'rp2'
             --vxlan-network-pool 'vnp1'
-            --nsxt-manager-name 'nsx-t manager name'
+            --nsxt-manager-name 'nsx-t manager name' (for VCD API version 31.0)
             --highest-supp-hw-vers 'vmx-11'
             --description 'description'
             --enable
@@ -121,7 +121,7 @@ def info_pvdc(ctx, name):
     required=False,
     default=None,
     metavar='[nsxt-manager-name]',
-    help='nsx-t manager name')
+    help='nsx-t manager name (for a future release -- VCD API version 31.0)')
 @click.option(
     '-d',
     '--description',

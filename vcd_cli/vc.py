@@ -39,7 +39,7 @@ def vc(ctx):
             --vc-host 'vc.server.example.com' (or something similar)
             --vc-user 'vc-admin-user-name'
             --vc-pwd 'vc-admin-user-password'
-            --vc-root-folder 'vc-root-folder'
+            --vc-root-folder 'vc-root-folder' (for VCD API version 31.0)
             --nsx-server-name 'nsx-server-namespace'
             --nsx-host 'nsx.server.example.com' (or something similar)
             --nsx-user 'nsx-admin-user-name'

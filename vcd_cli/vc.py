@@ -36,11 +36,12 @@ def vc(ctx):
             Get details of the vCenter Server 'vc1' attached to the vCD system.
 \b
         vcd vc attach vc-name
-            --vc-host 'VC-host-FQDN-or-IP-address'
+            --vc-host 'vc.server.example.com' (or something similar)
             --vc-user 'vc-admin-user-name'
             --vc-pwd 'vc-admin-user-password'
+            --vc-root-folder 'vc-root-folder' (for VCD API version 31.0)
             --nsx-server-name 'nsx-server-namespace'
-            --nsx-host 'NSX-host-FQDN-or-IP-address'
+            --nsx-host 'nsx.server.example.com' (or something similar)
             --nsx-user 'nsx-admin-user-name'
             --nsx-pwd 'nsx-admin-password'
             --enable
@@ -81,7 +82,7 @@ def info(ctx, name):
     required=True,
     default=None,
     metavar='[vc-host]',
-    help='VC host FQDN or IP address')
+    help='vc host name (vc.server.example.com, or something similar)')
 @click.option(
     '--vc-user',
     required=True,
@@ -95,6 +96,12 @@ def info(ctx, name):
     metavar='[vc-pwd]',
     help='VC admin password')
 @click.option(
+    '--vc-root-folder',
+    required=False,
+    default=None,
+    metavar='[vc-root-folder]',
+    help='VC root folder (for a future release - VCD API version 31.0)')
+@click.option(
     '--nsx-server-name',
     required=False,
     default=None,
@@ -105,7 +112,7 @@ def info(ctx, name):
     required=False,
     default=None,
     metavar='[nsx-host]',
-    help='NSX host FQDN or IP address')
+    help='NSX host name (nsx.server.example.com, or something similar)')
 @click.option(
     '--nsx-user',
     required=False,
@@ -125,7 +132,7 @@ def info(ctx, name):
     default=None,
     metavar='[enable]',
     help='enable flag (enables VC when it is attached to vCD)')
-def attach(ctx, vc_name, vc_host, vc_user, vc_pwd,
+def attach(ctx, vc_name, vc_host, vc_user, vc_pwd, vc_root_folder,
            nsx_server_name, nsx_host, nsx_user, nsx_pwd, enable):
     try:
         restore_session(ctx)
@@ -135,6 +142,7 @@ def attach(ctx, vc_name, vc_host, vc_user, vc_pwd,
                                          vc_server_host=vc_host,
                                          vc_admin_user=vc_user,
                                          vc_admin_pwd=vc_pwd,
+                                         vc_root_folder=vc_root_folder,
                                          nsx_server_name=nsx_server_name,
                                          nsx_host=nsx_host,
                                          nsx_admin_user=nsx_user,

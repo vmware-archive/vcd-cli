@@ -182,7 +182,8 @@ def delete(ctx, name, recursive, force):
     try:
         restore_session(ctx)
         client = ctx.obj['client']
-        system = System(client)
+        sys_admin_resource = client.get_admin()
+        system = System(client, admin_resource=sys_admin_resource)
         if force and recursive:
             click.confirm(
                 'Do you want to force delete \'%s\' and all '

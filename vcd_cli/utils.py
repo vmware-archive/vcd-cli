@@ -45,7 +45,7 @@ LOGGER.addHandler(logging.FileHandler('vcd.log'))
 
 def is_sysadmin(ctx):
     org_name = ctx.obj['profiles'].get('org')
-    return org_name == 'System'
+    return org_name.lower() == 'system'
 
 
 def as_table(obj_list,

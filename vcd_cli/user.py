@@ -161,6 +161,8 @@ def create(ctx, user_name, password, role_name, full_name, description, email,
            alert_email_prefix, external, default_cached, group_role,
            stored_vm_quota, deployed_vm_quota):
     try:
+        if len(password) < 6:
+            raise Exception('Password must be atleast 6 characters long.')
         restore_session(ctx)
         client = ctx.obj['client']
         in_use_org_href = ctx.obj['profiles'].get('org_href')

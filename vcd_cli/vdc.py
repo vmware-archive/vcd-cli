@@ -462,7 +462,6 @@ def list_acl(ctx, vdc_name):
         stdout(
             access_settings_to_list(acl,
                                     ctx.obj['profiles'].get('org_in_use')),
-            ctx,
-            sort_headers=False)
+            ctx)
     except Exception as e:
         stderr(e, ctx)

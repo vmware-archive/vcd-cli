@@ -44,6 +44,7 @@ def pvdc(ctx):
             --resource-pool 'rp1'
             --resource-pool 'rp2'
             --vxlan-network-pool 'vnp1'
+            --nsxt-manager-name 'nsx-t manager name' (for VCD API version 31.0)
             --highest-supp-hw-vers 'vmx-11'
             --description 'description'
             --enable
@@ -115,6 +116,13 @@ def info_pvdc(ctx, name):
     metavar='[vxlan-network-pool]',
     help='vxlan network pool name')
 @click.option(
+    '-t',
+    '--nsxt-manager-name',
+    required=False,
+    default=None,
+    metavar='[nsxt-manager-name]',
+    help='nsx-t manager name (for a future release -- VCD API version 31.0)')
+@click.option(
     '-d',
     '--description',
     required=False,
@@ -136,7 +144,8 @@ def info_pvdc(ctx, name):
     metavar='[highest-supp-hw-vers]',
     help='highest supported hw version, e.g. vmx-11, vmx-10, vmx-09, etc.')
 def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
-           enable, description, highest_supp_hw_vers, vxlan_network_pool):
+           enable, description, highest_supp_hw_vers, vxlan_network_pool,
+           nsxt_manager_name):
     try:
         restore_session(ctx)
         client = ctx.obj['client']
@@ -149,7 +158,8 @@ def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
                                          is_enabled=enable,
                                          description=description,
                                          highest_hw_vers=highest_supp_hw_vers,
-                                         vxlan_network_pool=vxlan_network_pool)
+                                         vxlan_network_pool=vxlan_network_pool,
+                                         nsxt_manager_name=nsxt_manager_name)
         stdout(pvdc.find('vcloud:Tasks', NSMAP).Task[0], ctx)
         stdout('PVDC created successfully.', ctx)
     except Exception as e:

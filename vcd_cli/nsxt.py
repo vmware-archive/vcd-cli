@@ -14,6 +14,7 @@
 
 import click
 from pyvcloud.vcd.platform import Platform
+from pyvcloud.vcd.utils import to_dict
 
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
@@ -24,15 +25,22 @@ from vcd_cli.vcd import vcd
 @vcd.group(short_help='manage NSX-T Managers')
 @click.pass_context
 def nsxt(ctx):
-    """Manage NSX-T Managers in vCloud Director.
+    """Manage NSX-T Managers in vCloud Director (for VCD API vers 31.0)
 
 \b
     Examples
-        vcd nsxt register nsxt-name (for a future release - VCD API vers 31.0)
+        vcd nsxt register nsxt-name
             --url 'https://<FQDN or IP address> of NSX-T host'
             --user 'nsxt-admin-user-name'
             --password 'nsxt-admin-user-password'
             --desc 'description of nsxt-manager'
+                Register an NSX-T Manager.
+\b
+        vcd nsxt unregister nsxt-name
+            Unregister an NSX-T Manager.
+\b
+        vcd nsxt list
+            List all registered NSX-T Managers.
     """
     pass
 
@@ -75,5 +83,35 @@ def register(ctx, nsxt_name, url, user, password, desc):
                                        nsxt_manager_password=password,
                                        nsxt_manager_description=desc)
         stdout('NSX-T Manager registered successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@nsxt.command('unregister', short_help='unregister NSX-T Manager')
+@click.pass_context
+@click.argument('nsxt-name', metavar='<nsxt-name>', required=True)
+def unregister(ctx, nsxt_name):
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
+        platform = Platform(client)
+        platform.unregister_nsxt_manager(nsxt_manager_name=nsxt_name)
+        stdout('NSX-T Manager unregistered successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@nsxt.command('list', short_help='list NSX-T Managers')
+@click.pass_context
+def list(ctx):
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
+        platform = Platform(client)
+        query = platform.list_nsxt_managers()
+        result = []
+        for record in query:
+            result.append(to_dict(record, exclude=['href']))
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

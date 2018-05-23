@@ -103,14 +103,14 @@ def unregister(ctx, nsxt_name):
 
 @nsxt.command('list', short_help='list NSX-T Managers')
 @click.pass_context
-def list(ctx):
+def list_nsxt(ctx):
     try:
         restore_session(ctx)
         client = ctx.obj['client']
         platform = Platform(client)
         query = platform.list_nsxt_managers()
         result = []
-        for record in query:
+        for record in list(query):
             result.append(to_dict(record, exclude=['href']))
         stdout(result, ctx)
     except Exception as e:

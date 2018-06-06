@@ -22,10 +22,10 @@ from vcd_cli.utils import stdout
 from vcd_cli.vcd import vcd
 
 
-@vcd.group(short_help='manage NSX-T Managers')
+@vcd.group(short_help='manage NSX-T managers')
 @click.pass_context
 def nsxt(ctx):
-    """Manage NSX-T Managers in vCloud Director (for VCD API vers 31.0)
+    """Manage NSX-T managers in vCloud Director (for VCD API v31.0)
 
 \b
     Examples
@@ -34,44 +34,48 @@ def nsxt(ctx):
             --user 'nsxt-admin-user-name'
             --password 'nsxt-admin-user-password'
             --desc 'description of nsxt-manager'
-                Register an NSX-T Manager.
+                Register an NSX-T manager.
 \b
         vcd nsxt unregister nsxt-name
-            Unregister an NSX-T Manager.
+            Unregister an NSX-T manager.
 \b
         vcd nsxt list
-            List all registered NSX-T Managers.
+            List all registered NSX-T managers.
     """
     pass
 
 
-@nsxt.command('register', short_help='register NSX-T Manager')
+@nsxt.command('register', short_help='register NSX-T manager')
 @click.pass_context
 @click.argument('nsxt-name', metavar='<nsxt-name>', required=True)
 @click.option(
+    '-U',
     '--url',
     required=True,
     default=None,
     metavar='[url]',
     help='https://<FQDN or IP address> of NSX-T host')
 @click.option(
+    '-u',
     '--user',
     required=True,
     default=None,
-    metavar='[user]',
+    metavar='[username]',
     help='NSX-T admin user name')
 @click.option(
+    '-p',
     '--password',
-    required=False,
+    required=True,
     default=None,
     metavar='[password]',
     help='NSX-T admin password')
 @click.option(
+    '-d',
     '--desc',
     required=False,
     default=None,
-    metavar='[desc]',
-    help='description of NSX-T Manager')
+    metavar='[description]',
+    help='description of NSX-T manager')
 def register(ctx, nsxt_name, url, user, password, desc):
     try:
         restore_session(ctx)
@@ -82,12 +86,12 @@ def register(ctx, nsxt_name, url, user, password, desc):
                                        nsxt_manager_username=user,
                                        nsxt_manager_password=password,
                                        nsxt_manager_description=desc)
-        stdout('NSX-T Manager registered successfully.', ctx)
+        stdout('NSX-T manager registered successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
-@nsxt.command('unregister', short_help='unregister NSX-T Manager')
+@nsxt.command('unregister', short_help='unregister NSX-T manager')
 @click.pass_context
 @click.argument('nsxt-name', metavar='<nsxt-name>', required=True)
 def unregister(ctx, nsxt_name):
@@ -96,12 +100,12 @@ def unregister(ctx, nsxt_name):
         client = ctx.obj['client']
         platform = Platform(client)
         platform.unregister_nsxt_manager(nsxt_manager_name=nsxt_name)
-        stdout('NSX-T Manager unregistered successfully.', ctx)
+        stdout('NSX-T manager unregistered successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
-@nsxt.command('list', short_help='list NSX-T Managers')
+@nsxt.command('list', short_help='list NSX-T managers')
 @click.pass_context
 def list_nsxt(ctx):
     try:

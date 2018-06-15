@@ -1,6 +1,23 @@
 CHANGES
 =======
 
+* [VDP-1661, VCDA-619] Added register, list, and unregister NSX-T Managers (#223)
+* VCDA-525: vcd catalog acl list returns columns in random order (#221)
+* [VCDA-606] added support for nsxt manager (new optional parameter for create pvdc) (#214)
+* Adding code to pass description of vApp to pyvcloud when the vApp is instantiated off a template. (#218)
+* Added logic in user creation command to throw appropriate exception if password length is not adequate. (#217)
+* VCDA-541: Changes in vcd-cli related to the Exception Handling changes in pyvcloud. (#213)
+* Issue 215: Fixed bug in vcd org delete (#216)
+* [VCDA-605] Added optional root\_folder parameter to attach VC (#212)
+* added wait for async commands to complete (attach vc and create pvdc) (#208)
+* Fix venv activation command (#202)
+* Update pvdc.py
+
+20.2.0
+------
+
+* VCDA:515 Changing pyvcloud requirement to the latest version (#201)
+* Changed pyvcloud requirement to 19.2.0
 * VCDA-532: Fix requirements.txt to avoid Mac OS X pycryptodome bug (#197)
 * VCDA-502: Add additional Mac OS X install notes (#198)
 * Updated license files (#199)
@@ -667,30 +684,74 @@ CHANGES
 * display error message from server
 * doc
 * doc
+
+v6
+--
+
 * v6
 * install
 * install
+
+v5
+--
+
 * v5
 * readme
+
+v4
+--
+
 * v4
+
+v3
+--
+
 * v3
 * examples
 * examples
 * examples
 * examples
+
+v2
+--
+
 * v2
 * v1.1
+
+v1.1
+----
+
 * v1.1
 * vm name
 * vm name
 * wip
 * scripts
+
+v0.9.1
+------
+
 * v0.9.1
 * readme
+
+v0.5
+----
+
 * v0.5
+
+v0.4
+----
+
 * list all templates
+
+v0.3
+----
+
 * v0.3
 * support types of services
+
+v0.2
+----
+
 * v0.2
 * json
 * notes

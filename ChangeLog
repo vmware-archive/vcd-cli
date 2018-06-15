@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+20.3.0
+------
+
+* Updated AUTHORS, ChangeLog and requirements.txt. Removed forward slash from setup.cfg, Windows can't parse / in file path
 * [VDP-1661, VCDA-619] Added register, list, and unregister NSX-T Managers (#223)
 * VCDA-525: vcd catalog acl list returns columns in random order (#221)
 * [VCDA-606] added support for nsxt manager (new optional parameter for create pvdc) (#214)

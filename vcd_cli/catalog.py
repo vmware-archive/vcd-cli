@@ -109,7 +109,7 @@ def info(ctx, catalog_name, item_name):
             # catalog's ACL or not. So we try to retrieve it always. If the
             # call fails due to permission issues, we silently eat the
             # exception and exclude ACL settings from the output of the current
-            # command. Users who has access to ACL of the catalog will remain
+            # command. Users who have access to ACL of the catalog will remain
             # unaffected. Also any other errors/exceptions will bubble up as
             # usual.
             try:

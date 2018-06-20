@@ -105,13 +105,18 @@ def info(ctx, catalog_name, item_name):
         if item_name is None:
             catalog = org.get_catalog(catalog_name)
             result = to_dict(catalog)
+            # We don't have a way to know in advance if a user has access to a
+            # catalog's ACL or not. So we try to retrieve it always. If the
+            # call fails due to permission issues, we silently eat the
+            # exception and exclude ACL settings from the output of the current
+            # command. Users who has access to ACL of the catalog will remain
+            # unaffected. Also any other errors/exceptions will bubble up as
+            # usual.
             try:
                 access_control_settings = access_settings_to_dict(
                     org.get_catalog_access_settings(catalog_name))
                 result.update(access_control_settings)
             except AccessForbiddenException as e:
-                # Users who don't have admin privilege or aren't the owner of
-                # the catalog can't access its ACL settings.
                 pass
         else:
             catalog_item = org.get_catalog_item(catalog_name, item_name)

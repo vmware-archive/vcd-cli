@@ -111,7 +111,7 @@ def info(ctx, catalog_name, item_name):
                 result.update(access_control_settings)
             except AccessForbiddenException as e:
                 # Users who don't have admin privilege or aren't the owner of
-                # the catalog can't access it's ACL settings.
+                # the catalog can't access its ACL settings.
                 pass
         else:
             catalog_item = org.get_catalog_item(catalog_name, item_name)

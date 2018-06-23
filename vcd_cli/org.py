@@ -63,12 +63,12 @@ def info(ctx, name):
         client = ctx.obj['client']
         logged_in_org_name = ctx.obj['profiles'].get('org')
         in_use_org_name = ctx.obj['profiles'].get('org_in_use')
-        org = client.get_org_by_name(name)
-        resource = client.get_resource(org.get('href'))
-        result = org_to_dict(resource)
+        org_resource = client.get_org_by_name(name)
+        result = org_to_dict(org_resource)
         result['logged_in'] = logged_in_org_name.lower() == \
-            org.get('name').lower()
-        result['in_use'] = in_use_org_name.lower() == org.get('name').lower()
+            result.get('name').lower()
+        result['in_use'] = in_use_org_name.lower() == \
+            result.get('name').lower()
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -84,14 +84,14 @@ def list_orgs(ctx):
         in_use_org_name = ctx.obj['profiles'].get('org_in_use')
         orgs = client.get_org_list()
         result = []
-        for org in [o for o in orgs.Org if hasattr(orgs, 'Org')]:
+        for org_resource in orgs:
             result.append({
                 'name':
-                org.get('name'),
+                org_resource.get('name'),
                 'logged_in':
-                logged_in_org_name.lower() == org.get('name').lower(),
+                logged_in_org_name.lower() == org_resource.get('name').lower(),
                 'in_use':
-                in_use_org_name.lower() == org.get('name').lower()
+                in_use_org_name.lower() == org_resource.get('name').lower()
             })
         stdout(result, ctx)
     except Exception as e:
@@ -105,18 +105,17 @@ def use(ctx, name):
     try:
         restore_session(ctx)
         client = ctx.obj['client']
-        org = client.get_org_by_name(name)
-        resource = client.get_resource(org.get('href'))
+        org_resource = client.get_org_by_name(name)
         in_use_vdc = ''
         vdc_href = ''
         in_use_vapp = ''
         vapp_href = ''
-        for v in get_links(resource, media_type=EntityType.VDC.value):
-            in_use_vdc = v.name
-            vdc_href = v.href
+        for link in get_links(org_resource, media_type=EntityType.VDC.value):
+            in_use_vdc = link.name
+            vdc_href = link.href
             break
         ctx.obj['profiles'].set('org_in_use', str(name))
-        ctx.obj['profiles'].set('org_href', str(org.get('href')))
+        ctx.obj['profiles'].set('org_href', str(org_resource.get('href')))
         ctx.obj['profiles'].set('vdc_in_use', str(in_use_vdc))
         ctx.obj['profiles'].set('vdc_href', str(vdc_href))
         ctx.obj['profiles'].set('vapp_in_use', str(in_use_vapp))

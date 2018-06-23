@@ -99,14 +99,14 @@ def list_vdc(ctx):
         in_use_vdc = ctx.obj['profiles'].get('vdc_in_use')
         orgs = client.get_org_list()
         result = []
-        for org in [o for o in orgs.Org if hasattr(orgs, 'Org')]:
-            if org.get('name').lower() == in_use_org_name.lower():
-                resource = client.get_resource(org.get('href'))
-                for v in get_links(resource, media_type=EntityType.VDC.value):
+        for org_resouce in orgs:
+            if org_resouce.get('name').lower() == in_use_org_name.lower():
+                for link in get_links(org_resouce,
+                                      media_type=EntityType.VDC.value):
                     result.append({
-                        'name': v.name,
-                        'org': org.get('name'),
-                        'in_use': in_use_vdc == v.name
+                        'name': link.name,
+                        'org': org_resouce.get('name'),
+                        'in_use': in_use_vdc == link.name
                     })
                 break
         stdout(result, ctx)
@@ -123,17 +123,17 @@ def use(ctx, name):
         client = ctx.obj['client']
         in_use_org_name = ctx.obj['profiles'].get('org_in_use')
         orgs = client.get_org_list()
-        for org in [o for o in orgs.Org if hasattr(orgs, 'Org')]:
-            if org.get('name').lower() == in_use_org_name.lower():
-                resource = client.get_resource(org.get('href'))
-                for v in get_links(resource, media_type=EntityType.VDC.value):
-                    if v.name == name:
+        for org_resource in orgs:
+            if org_resource.get('name').lower() == in_use_org_name.lower():
+                for link in get_links(org_resource,
+                                      media_type=EntityType.VDC.value):
+                    if link.name == name:
                         vdc_in_use = name
                         vapp_in_use = ''
                         vapp_href = ''
-                        client.get_resource(v.href)
+                        client.get_resource(link.href)
                         ctx.obj['profiles'].set('vdc_in_use', vdc_in_use)
-                        ctx.obj['profiles'].set('vdc_href', str(v.href))
+                        ctx.obj['profiles'].set('vdc_href', str(link.href))
                         ctx.obj['profiles'].set('vapp_in_use', vapp_in_use)
                         ctx.obj['profiles'].set('vapp_href', vapp_href)
                         message = 'now using org: \'%s\', vdc: \'%s\', vApp:' \

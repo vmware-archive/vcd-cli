@@ -164,7 +164,7 @@ def login(ctx, user, host, password, api_version, org, verify_ssl_certs,
             if endpoint in client._session_endpoints:
                 wkep[endpoint.name] = client._session_endpoints[endpoint]
         profiles = Profiles.load()
-        logged_in_org = client.get_logged_in_org()
+        logged_in_org = client.get_org()
         org_href = logged_in_org.get('href')
         vdc_href = ''
         in_use_vdc = ''

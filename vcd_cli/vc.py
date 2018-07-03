@@ -78,7 +78,7 @@ def info(ctx, name):
     try:
         restore_session(ctx)
         platform = Platform(ctx.obj['client'])
-        stdout(platform.get_vcenter(name), ctx)
+        stdout(platform.get_vcenter(name=name), ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -172,7 +172,8 @@ def enable(ctx, name):
     try:
         restore_session(ctx)
         platform = Platform(ctx.obj['client'])
-        stdout(platform.enable_disable_vcenter(name, True), ctx)
+        stdout(platform.enable_disable_vcenter(vc_name=name, enable_flag=True),
+               ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -184,7 +185,8 @@ def disable(ctx, name):
     try:
         restore_session(ctx)
         platform = Platform(ctx.obj['client'])
-        stdout(platform.enable_disable_vcenter(name, False), ctx)
+        stdout(platform.enable_disable_vcenter(
+            vc_name=name, enable_flag=False), ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -196,6 +198,6 @@ def detach(ctx, name):
     try:
         restore_session(ctx)
         platform = Platform(ctx.obj['client'])
-        stdout(platform.detach_vcenter(name), ctx)
+        stdout(platform.detach_vcenter(vc_name=name), ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -47,6 +47,15 @@ def vc(ctx):
             --enable
                 Attaches Virtual Center (VC) server with the given
                 credentials to vCD.
+
+        vcd vc enable vc-name
+            Enable specified Virtual Center.
+
+        vcd vc disable vc-name
+            Disable specified Virtucal Center.
+
+        vcd vc detach vc-name
+            Detach (unregister) Virtual Center.
     """
     pass
 
@@ -69,7 +78,7 @@ def info(ctx, name):
     try:
         restore_session(ctx)
         platform = Platform(ctx.obj['client'])
-        stdout(platform.get_vcenter(name), ctx)
+        stdout(platform.get_vcenter(name=name), ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -152,5 +161,43 @@ def attach(ctx, vc_name, vc_host, vc_user, vc_pwd, vc_root_folder,
         Tasks = vc.find('vcloud:Tasks', NSMAP)
         stdout(Tasks.Task[0], ctx)
         stdout('VirtualCenter server attached successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vc.command(short_help='enable vCenter')
+@click.pass_context
+@click.argument('name')
+def enable(ctx, name):
+    try:
+        restore_session(ctx)
+        platform = Platform(ctx.obj['client'])
+        stdout(platform.enable_disable_vcenter(vc_name=name, enable_flag=True),
+               ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vc.command(short_help='disable vCenter')
+@click.pass_context
+@click.argument('name')
+def disable(ctx, name):
+    try:
+        restore_session(ctx)
+        platform = Platform(ctx.obj['client'])
+        stdout(platform.enable_disable_vcenter(
+            vc_name=name, enable_flag=False), ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vc.command(short_help='detach vCenter')
+@click.pass_context
+@click.argument('name')
+def detach(ctx, name):
+    try:
+        restore_session(ctx)
+        platform = Platform(ctx.obj['client'])
+        stdout(platform.detach_vcenter(vc_name=name), ctx)
     except Exception as e:
         stderr(e, ctx)

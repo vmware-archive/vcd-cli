@@ -39,12 +39,12 @@ def vc(ctx):
             --vc-host 'vc.server.example.com' (or something similar)
             --vc-user 'vc-admin-user-name'
             --vc-pwd 'vc-admin-user-password'
+            --enable 'true' (or 'false')
             --vc-root-folder 'vc-root-folder' (for VCD API version 31.0)
             --nsx-server-name 'nsx-server-namespace'
             --nsx-host 'nsx.server.example.com' (or something similar)
             --nsx-user 'nsx-admin-user-name'
             --nsx-pwd 'nsx-admin-password'
-            --enable
                 Attaches Virtual Center (VC) server with the given
                 credentials to vCD.
 
@@ -105,6 +105,12 @@ def info(ctx, name):
     metavar='[vc-pwd]',
     help='VC admin password')
 @click.option(
+    '-e',
+    '--enable',
+    required=True,
+    metavar='[enable]',
+    help='enable flag (boolean: True or False)')
+@click.option(
     '--vc-root-folder',
     required=False,
     default=None,
@@ -134,15 +140,8 @@ def info(ctx, name):
     default=None,
     metavar='[nsx-pwd]',
     help='NSX admin password')
-@click.option(
-    '-e',
-    '--enable',
-    is_flag=True,
-    default=None,
-    metavar='[enable]',
-    help='enable flag (enables VC when it is attached to vCD)')
-def attach(ctx, vc_name, vc_host, vc_user, vc_pwd, vc_root_folder,
-           nsx_server_name, nsx_host, nsx_user, nsx_pwd, enable):
+def attach(ctx, vc_name, vc_host, vc_user, vc_pwd, enable, vc_root_folder,
+           nsx_server_name, nsx_host, nsx_user, nsx_pwd):
     try:
         restore_session(ctx)
         client = ctx.obj['client']
@@ -151,16 +150,15 @@ def attach(ctx, vc_name, vc_host, vc_user, vc_pwd, vc_root_folder,
                                          vc_server_host=vc_host,
                                          vc_admin_user=vc_user,
                                          vc_admin_pwd=vc_pwd,
+                                         is_enabled=enable,
                                          vc_root_folder=vc_root_folder,
                                          nsx_server_name=nsx_server_name,
                                          nsx_host=nsx_host,
                                          nsx_admin_user=nsx_user,
-                                         nsx_admin_pwd=nsx_pwd,
-                                         is_enabled=enable)
+                                         nsx_admin_pwd=nsx_pwd)
         vc = result.find('vmext:VimServer', NSMAP)
         Tasks = vc.find('vcloud:Tasks', NSMAP)
         stdout(Tasks.Task[0], ctx)
-        stdout('VirtualCenter server attached successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)
 

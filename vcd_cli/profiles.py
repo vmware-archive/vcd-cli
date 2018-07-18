@@ -36,7 +36,7 @@ class Profiles(object):
             p = Profiles()
             p.data = {'active': None}
             with open(profile_path, 'r') as f:
-                p.data = yaml.load(f)
+                p.data = yaml.safe_load(f)
         except Exception:
             LOGGER.warning(
                 'Warning: the profiles file \'%s\''

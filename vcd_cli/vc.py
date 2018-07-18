@@ -108,7 +108,6 @@ def info(ctx, name):
     '-e',
     '--enable',
     required=True,
-    default=None,
     metavar='[enable]',
     help='enable flag (boolean: True or False)')
 @click.option(

@@ -51,6 +51,11 @@ def pvdc(ctx):
                 Create Provider Virtual Datacenter.
                    Parameters --storage-profile and --resource-pool are both
                    required parameters and each can have multiple entries.
+\b
+        vcd pvdc respool vc-name pvdc-name
+            --operation 'add' (or 'del')
+            --resource-pool 'rp1'
+            --resource-pool 'rp2'
     """
     pass
 
@@ -162,5 +167,43 @@ def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
                                          nsxt_manager_name=nsxt_manager_name)
         stdout(pvdc.find('vcloud:Tasks', NSMAP).Task[0], ctx)
         stdout('PVDC created successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@pvdc.command('respool', short_help='add/remove resource pools from pvdc')
+@click.pass_context
+@click.argument('vc-name', metavar='<vc-name>', required=True)
+@click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
+@click.option(
+    '-o',
+    '--operation',
+    type=click.Choice(['add', 'del']),
+    required=True,
+    default=None,
+    help='operation ("add" or "del", required parameter)')
+@click.option(
+    '-r',
+    '--resource-pool',
+    required=True,
+    default=None,
+    multiple=True,
+    help='resource pool name (required parameter, can have multiple)')
+def respool(ctx, vc_name, pvdc_name, operation, resource_pool):
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
+        platform = Platform(client)
+        if operation == 'add':
+            task = platform.add_resource_pools_to_provider_vdc(
+                vim_server_name=vc_name,
+                pvdc_name=pvdc_name,
+                resource_pool_names=resource_pool)
+        else:  # operation == 'del', guaranteed by choice option
+            task = platform.del_resource_pools_from_provider_vdc(
+                vim_server_name=vc_name,
+                pvdc_name=pvdc_name,
+                resource_pool_names=resource_pool)
+        stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

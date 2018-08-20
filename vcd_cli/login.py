@@ -50,7 +50,6 @@ from vcd_cli.vcd import vcd
     'api_version',
     required=False,
     metavar=as_metavar(API_CURRENT_VERSIONS),
-    type=click.Choice(API_CURRENT_VERSIONS),
     help='API version')
 @click.option(
     '-s/-i',

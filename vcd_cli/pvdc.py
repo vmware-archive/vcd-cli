@@ -38,24 +38,27 @@ def pvdc(ctx):
         vcd pvdc info name
             Display provider virtual data center details.
 \b
-        vcd pvdc create pvdc-name vc-name
-            --storage-profile 'sp1'
-            --storage-profile 'sp2'
-            --resource-pool 'rp1'
-            --resource-pool 'rp2'
-            --vxlan-network-pool 'vnp1'
-            --nsxt-manager-name 'nsx-t manager name' (for VCD API version 31.0)
-            --highest-supp-hw-vers 'vmx-11'
-            --description 'description'
-            --enable
-                Create Provider Virtual Datacenter.
-                   Parameters --storage-profile and --resource-pool are both
-                   required parameters and each can have multiple entries.
+        vcd pvdc create pvdc-name vc-name \\
+                --storage-profile 'sp1' \\
+                --storage-profile 'sp2' \\
+                --resource-pool 'rp1' \\
+                --resource-pool 'rp2' \\
+                --vxlan-network-pool 'vnp1' \\
+                --nsxt-manager-name 'nsx-t manager name' \\ (API version 31.0)
+                --highest-supp-hw-vers 'vmx-11' \\
+                --description 'description' \\
+                --enable
+            Create Provider Virtual Datacenter.
+                Parameters --storage-profile and --resource-pool are both
+                required parameters and each can have multiple entries.
 \b
-        vcd pvdc respool vc-name pvdc-name
-            --operation 'add' (or 'del')
-            --resource-pool 'rp1'
-            --resource-pool 'rp2'
+        vcd pvdc respool vc-name pvdc-name \\
+                --operation 'add' (or 'del') \\
+                --resource-pool 'rp1' \\
+                --resource-pool 'rp2'
+            Add or remove resource pools from a Provider Virtual Datacenter.
+                Parameters operation and resource pool are both required.
+                There can be multiple resource pool parameters.
     """
     pass
 

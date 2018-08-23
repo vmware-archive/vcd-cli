@@ -52,13 +52,11 @@ def pvdc(ctx):
                 Parameters --storage-profile and --resource-pool are both
                 required parameters and each can have multiple entries.
 \b
-        vcd pvdc respool vc-name pvdc-name \\
-                --operation 'add' (or 'del') \\
-                --resource-pool 'rp1' \\
-                --resource-pool 'rp2'
-            Add or remove resource pools from a Provider Virtual Datacenter.
-                Parameters operation and resource pool are both required.
-                There can be multiple resource pool parameters.
+        vcd pvdc add_rp pvdc-name vc-name [rp-name]+ (one or more rp-names)
+            Add one or more resource pools to a Provider vDC.
+\b
+        vcd pvdc del_rp pvdc-name vc-name [rp-name]+ (one or more rp-names)
+            Delete one or more resource pools from a Provider vDC.
     """
     pass
 
@@ -174,39 +172,39 @@ def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
         stderr(e, ctx)
 
 
-@pvdc.command('respool', short_help='add/remove resource pools from pvdc')
+@pvdc.command('add_rp', short_help='add resource pools to a pvdc')
 @click.pass_context
-@click.argument('vc-name', metavar='<vc-name>', required=True)
 @click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
-@click.option(
-    '-o',
-    '--operation',
-    type=click.Choice(['add', 'del']),
-    required=True,
-    default=None,
-    help='operation ("add" or "del", required parameter)')
-@click.option(
-    '-r',
-    '--resource-pool',
-    required=True,
-    default=None,
-    multiple=True,
-    help='resource pool name (required parameter, can have multiple)')
-def respool(ctx, vc_name, pvdc_name, operation, resource_pool):
+@click.argument('vc-name', metavar='<vc-name>', required=True)
+@click.argument('respool', nargs=-1, metavar='<respool>', required=True)
+def add_rp(ctx, pvdc_name, vc_name, respool):
     try:
         restore_session(ctx)
         client = ctx.obj['client']
         platform = Platform(client)
-        if operation == 'add':
-            task = platform.add_resource_pools_to_provider_vdc(
-                vim_server_name=vc_name,
-                pvdc_name=pvdc_name,
-                resource_pool_names=resource_pool)
-        else:  # operation == 'del', guaranteed by choice option
-            task = platform.del_resource_pools_from_provider_vdc(
-                vim_server_name=vc_name,
-                pvdc_name=pvdc_name,
-                resource_pool_names=resource_pool)
+        task = platform.add_resource_pools_to_provider_vdc(
+            vim_server_name=vc_name,
+            pvdc_name=pvdc_name,
+            resource_pool_names=respool)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@pvdc.command('del_rp', short_help='delete resource pools from a pvdc')
+@click.pass_context
+@click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
+@click.argument('vc-name', metavar='<vc-name>', required=True)
+@click.argument('respool', nargs=-1, metavar='<respool>', required=True)
+def del_rp(ctx, pvdc_name, vc_name, respool):
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
+        platform = Platform(client)
+        task = platform.del_resource_pools_from_provider_vdc(
+            vim_server_name=vc_name,
+            pvdc_name=pvdc_name,
+            resource_pool_names=respool)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

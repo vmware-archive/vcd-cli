@@ -52,10 +52,10 @@ def pvdc(ctx):
                 Parameters --storage-profile and --resource-pool are both
                 required parameters and each can have multiple entries.
 \b
-        vcd pvdc add_rp pvdc-name vc-name [rp-name]+ (one or more rp-names)
+        vcd pvdc add_rp pvdc-name [rp-name]+ (one or more rp-names)
             Add one or more resource pools to a Provider vDC.
 \b
-        vcd pvdc del_rp pvdc-name vc-name [rp-name]+ (one or more rp-names)
+        vcd pvdc del_rp pvdc-name [rp-name]+ (one or more rp-names)
             Delete one or more resource pools from a Provider vDC.
     """
     pass
@@ -175,15 +175,13 @@ def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
 @pvdc.command('add_rp', short_help='add resource pools to a pvdc')
 @click.pass_context
 @click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
-@click.argument('vc-name', metavar='<vc-name>', required=True)
 @click.argument('respool', nargs=-1, metavar='<respool>', required=True)
-def add_rp(ctx, pvdc_name, vc_name, respool):
+def add_rp(ctx, pvdc_name, respool):
     try:
         restore_session(ctx)
         client = ctx.obj['client']
         platform = Platform(client)
         task = platform.add_resource_pools_to_provider_vdc(
-            vim_server_name=vc_name,
             pvdc_name=pvdc_name,
             resource_pool_names=respool)
         stdout(task, ctx)
@@ -194,15 +192,13 @@ def add_rp(ctx, pvdc_name, vc_name, respool):
 @pvdc.command('del_rp', short_help='delete resource pools from a pvdc')
 @click.pass_context
 @click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
-@click.argument('vc-name', metavar='<vc-name>', required=True)
 @click.argument('respool', nargs=-1, metavar='<respool>', required=True)
-def del_rp(ctx, pvdc_name, vc_name, respool):
+def del_rp(ctx, pvdc_name, respool):
     try:
         restore_session(ctx)
         client = ctx.obj['client']
         platform = Platform(client)
         task = platform.del_resource_pools_from_provider_vdc(
-            vim_server_name=vc_name,
             pvdc_name=pvdc_name,
             resource_pool_names=respool)
         stdout(task, ctx)

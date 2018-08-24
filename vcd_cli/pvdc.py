@@ -52,10 +52,10 @@ def pvdc(ctx):
                 Parameters --storage-profile and --resource-pool are both
                 required parameters and each can have multiple entries.
 \b
-        vcd pvdc add_rp pvdc-name [rp-name]+ (one or more rp-names)
+        vcd pvdc add_rp pvdc-name rp1 rp2 ... (one or more rp names)
             Add one or more resource pools to a Provider vDC.
 \b
-        vcd pvdc del_rp pvdc-name [rp-name]+ (one or more rp-names)
+        vcd pvdc del_rp pvdc-name rp1 rp2 ... (one or more rp names)
             Delete one or more resource pools from a Provider vDC.
     """
     pass

@@ -38,19 +38,25 @@ def pvdc(ctx):
         vcd pvdc info name
             Display provider virtual data center details.
 \b
-        vcd pvdc create pvdc-name vc-name
-            --storage-profile 'sp1'
-            --storage-profile 'sp2'
-            --resource-pool 'rp1'
-            --resource-pool 'rp2'
-            --vxlan-network-pool 'vnp1'
-            --nsxt-manager-name 'nsx-t manager name' (for VCD API version 31.0)
-            --highest-supp-hw-vers 'vmx-11'
-            --description 'description'
-            --enable
-                Create Provider Virtual Datacenter.
-                   Parameters --storage-profile and --resource-pool are both
-                   required parameters and each can have multiple entries.
+        vcd pvdc create pvdc-name vc-name \\
+                --storage-profile 'sp1' \\
+                --storage-profile 'sp2' \\
+                --resource-pool 'rp1' \\
+                --resource-pool 'rp2' \\
+                --vxlan-network-pool 'vnp1' \\
+                --nsxt-manager-name 'nsx-t manager name' \\ (API version 31.0)
+                --highest-supp-hw-vers 'vmx-11' \\
+                --description 'description' \\
+                --enable
+            Create Provider Virtual Datacenter.
+                Parameters --storage-profile and --resource-pool are both
+                required parameters and each can have multiple entries.
+\b
+        vcd pvdc add_rp pvdc-name rp1 rp2 ... (one or more rp names)
+            Add one or more resource pools to a Provider vDC.
+\b
+        vcd pvdc del_rp pvdc-name rp1 rp2 ... (one or more rp names)
+            Delete one or more resource pools from a Provider vDC.
     """
     pass
 
@@ -162,5 +168,39 @@ def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
                                          nsxt_manager_name=nsxt_manager_name)
         stdout(pvdc.find('vcloud:Tasks', NSMAP).Task[0], ctx)
         stdout('PVDC created successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@pvdc.command('add_rp', short_help='add resource pools to a pvdc')
+@click.pass_context
+@click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
+@click.argument('respool', nargs=-1, metavar='<respool>', required=True)
+def add_rp(ctx, pvdc_name, respool):
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
+        platform = Platform(client)
+        task = platform.add_resource_pools_to_provider_vdc(
+            pvdc_name=pvdc_name,
+            resource_pool_names=respool)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@pvdc.command('del_rp', short_help='delete resource pools from a pvdc')
+@click.pass_context
+@click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
+@click.argument('respool', nargs=-1, metavar='<respool>', required=True)
+def del_rp(ctx, pvdc_name, respool):
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
+        platform = Platform(client)
+        task = platform.del_resource_pools_from_provider_vdc(
+            pvdc_name=pvdc_name,
+            resource_pool_names=respool)
+        stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -52,11 +52,22 @@ def pvdc(ctx):
                 Parameters --storage-profile and --resource-pool are both
                 required parameters and each can have multiple entries.
 \b
-        vcd pvdc add_rp pvdc-name rp1 rp2 ... (one or more rp names)
-            Add one or more resource pools to a Provider vDC.
+        vcd pvdc attach-rp pvdc-name rp1 rp2 ... (one or more rp names)
+            Attach one or more resource pools to a Provider vDC.
 \b
-        vcd pvdc del_rp pvdc-name rp1 rp2 ... (one or more rp names)
-            Delete one or more resource pools from a Provider vDC.
+        vcd pvdc detach-rp pvdc-name rp1 rp2 ... (one or more rp names)
+            Detach one or more resource pools from a Provider vDC.
+\b
+        Caveat: The current implementation of the attach-rp and detach-rp
+        functions take a list of RP "basenames" as input. A basename is the
+        last element of a full pathname. For example, given a pathname /a/b/c,
+        the basename of that pathname is "c". Since RP names are only required
+        to have unique pathnames but not unique basenames, this function may
+        not work correctly if there are non-unique RP basenames. Therefore, in
+        order to use these functions, all RP basenames must be unique. It is
+        up to the user of these functions to be aware of this limitation and
+        name their RPs appropriately. This limitation will be fixed in a future
+        version of these functions.
     """
     pass
 
@@ -172,16 +183,16 @@ def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
         stderr(e, ctx)
 
 
-@pvdc.command('add_rp', short_help='add resource pools to a pvdc')
+@pvdc.command('attach-rp', short_help='attach resource pools to a pvdc')
 @click.pass_context
 @click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
 @click.argument('respool', nargs=-1, metavar='<respool>', required=True)
-def add_rp(ctx, pvdc_name, respool):
+def attach_rp(ctx, pvdc_name, respool):
     try:
         restore_session(ctx)
         client = ctx.obj['client']
         platform = Platform(client)
-        task = platform.add_resource_pools_to_provider_vdc(
+        task = platform.attach_resource_pools_to_provider_vdc(
             pvdc_name=pvdc_name,
             resource_pool_names=respool)
         stdout(task, ctx)
@@ -189,16 +200,16 @@ def add_rp(ctx, pvdc_name, respool):
         stderr(e, ctx)
 
 
-@pvdc.command('del_rp', short_help='delete resource pools from a pvdc')
+@pvdc.command('detach-rp', short_help='detach resource pools from a pvdc')
 @click.pass_context
 @click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
 @click.argument('respool', nargs=-1, metavar='<respool>', required=True)
-def del_rp(ctx, pvdc_name, respool):
+def detach_rp(ctx, pvdc_name, respool):
     try:
         restore_session(ctx)
         client = ctx.obj['client']
         platform = Platform(client)
-        task = platform.del_resource_pools_from_provider_vdc(
+        task = platform.detach_resource_pools_from_provider_vdc(
             pvdc_name=pvdc_name,
             resource_pool_names=respool)
         stdout(task, ctx)

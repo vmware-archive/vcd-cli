@@ -242,11 +242,11 @@ def list_vapps(ctx, name):
         result = []
         if name is None:
             resource_type = 'adminVApp' if is_sysadmin(ctx) else 'vApp'
-            qfilter = None
+            name_filter = None
             attributes = None
         else:
             resource_type = 'adminVm' if is_sysadmin(ctx) else 'vm'
-            qfilter = 'containerName==%s' % name
+            name_filter = ('containerName', name)
             attributes = [
                 'name', 'containerName', 'ipAddress', 'status', 'memoryMB',
                 'numberOfCpus'
@@ -254,7 +254,7 @@ def list_vapps(ctx, name):
         q = client.get_typed_query(
             resource_type,
             query_result_format=QueryResultFormat.ID_RECORDS,
-            qfilter=qfilter)
+            equality_filter=name_filter)
         records = list(q.execute())
         if len(records) == 0:
             result = 'not found'

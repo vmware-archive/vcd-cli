@@ -176,7 +176,7 @@ def list_catalogs_or_items(ctx, catalog_name):
             q = client.get_typed_query(
                 resource_type,
                 query_result_format=QueryResultFormat.ID_RECORDS,
-                qfilter='catalogName==%s' % catalog_name)
+                equality_filter=('catalogName', catalog_name))
             records = list(q.execute())
             if len(records) == 0:
                 result = 'not found'

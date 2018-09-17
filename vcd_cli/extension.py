@@ -14,6 +14,7 @@
 
 import click
 from pyvcloud.vcd.api_extension import APIExtension
+from pyvcloud.vcd.exceptions import OperationNotSupportedException
 
 from vcd_cli.system import system
 from vcd_cli.utils import restore_session
@@ -53,6 +54,8 @@ def list(ctx):
         restore_session(ctx)
         ext = APIExtension(ctx.obj['client'])
         stdout(ext.list_extensions(), ctx)
+    except OperationNotSupportedException as e:
+        stderr('User doesn\'t have permission to view extensions.', ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -66,6 +69,8 @@ def info(ctx, name, namespace):
         restore_session(ctx)
         ext = APIExtension(ctx.obj['client'])
         stdout(ext.get_extension_info(name, namespace), ctx)
+    except OperationNotSupportedException as e:
+        stderr('User doesn\'t have permission to view extensions.', ctx)
     except Exception as e:
         stderr(e, ctx)
 

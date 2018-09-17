@@ -68,6 +68,12 @@ def pvdc(ctx):
         up to the user of these functions to be aware of this limitation and
         name their RPs appropriately. This limitation will be fixed in a future
         version of these functions.
+\b
+        vcd pvdc migrate-vms pvdc-name rp1 vm1 vm2 ... --target-rp rp2
+            Migrate one or more VMs from the source resource pool (rp1)
+            to the target-rp (rp2 in this example, which is the target
+            resource pool, an optional parameter). If the target-rp isn't
+            specified, any available resource pool is chosen automatically.
     """
     pass
 
@@ -212,6 +218,33 @@ def detach_rp(ctx, pvdc_name, respool):
         task = platform.detach_resource_pools_from_provider_vdc(
             pvdc_name=pvdc_name,
             resource_pool_names=respool)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@pvdc.command('migrate-vms', short_help='migrate vms to another resource pool')
+@click.pass_context
+@click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
+@click.argument('source-rp', metavar='<source-rp>', required=True)
+@click.argument('vm-name', nargs=-1, metavar='<vm-name>', required=True)
+@click.option(
+    '-t',
+    '--target-rp',
+    required=False,
+    default=None,
+    metavar='[target-rp]',
+    help='target resource pool name')
+def migrate_vms(ctx, pvdc_name, source_rp, vm_name, target_rp):
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
+        platform = Platform(client)
+        task = platform.pvdc_migrate_vms(
+            pvdc_name=pvdc_name,
+            vms_to_migrate=vm_name,
+            src_resource_pool=source_rp,
+            target_resource_pool=target_rp)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -72,7 +72,7 @@ def info(ctx, resource_type, resource_id):
         q = client.get_typed_query(
             to_camel_case(resource_type, RESOURCE_TYPES),
             query_result_format=QueryResultFormat.REFERENCES,
-            qfilter='id==%s' % resource_id)
+            equality_filter=('id', resource_id))
         records = list(q.execute())
         if len(records) == 0:
             raise Exception('not found')

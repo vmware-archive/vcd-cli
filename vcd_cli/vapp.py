@@ -14,6 +14,7 @@
 
 import click
 from pyvcloud.vcd.client import QueryResultFormat
+from pyvcloud.vcd.client import ResourceType
 from pyvcloud.vcd.org import Org
 from pyvcloud.vcd.utils import access_settings_to_dict
 from pyvcloud.vcd.utils import to_dict
@@ -241,12 +242,18 @@ def list_vapps(ctx, name):
         client = ctx.obj['client']
         result = []
         if name is None:
-            resource_type = 'adminVApp' if is_sysadmin(ctx) else 'vApp'
-            qfilter = None
+            if is_sysadmin(ctx):
+                resource_type = ResourceType.ADMIN_VAPP.value
+            else:
+                resource_type = ResourceType.VAPP.value
+            name_filter = None
             attributes = None
         else:
-            resource_type = 'adminVm' if is_sysadmin(ctx) else 'vm'
-            qfilter = 'containerName==%s' % name
+            if is_sysadmin(ctx):
+                resource_type = ResourceType.ADMIN_VM.value
+            else:
+                resource_type = ResourceType.VM.value
+            name_filter = ('containerName', name)
             attributes = [
                 'name', 'containerName', 'ipAddress', 'status', 'memoryMB',
                 'numberOfCpus'
@@ -254,10 +261,13 @@ def list_vapps(ctx, name):
         q = client.get_typed_query(
             resource_type,
             query_result_format=QueryResultFormat.ID_RECORDS,
-            qfilter=qfilter)
+            equality_filter=name_filter)
         records = list(q.execute())
         if len(records) == 0:
-            result = 'not found'
+            if name is None:
+                result = 'No vApps were found.'
+            else:
+                result = 'No vms were found.'
         else:
             for r in records:
                 result.append(

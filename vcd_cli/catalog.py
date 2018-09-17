@@ -14,6 +14,7 @@ import os
 
 import click
 from pyvcloud.vcd.client import QueryResultFormat
+from pyvcloud.vcd.client import ResourceType
 from pyvcloud.vcd.exceptions import AccessForbiddenException
 from pyvcloud.vcd.org import Org
 from pyvcloud.vcd.utils import access_settings_to_dict
@@ -171,12 +172,14 @@ def list_catalogs_or_items(ctx, catalog_name):
             result = org.list_catalogs()
         else:
             result = []
-            resource_type = \
-                'adminCatalogItem' if is_sysadmin(ctx) else 'catalogItem'
+            if is_sysadmin(ctx):
+                resource_type = ResourceType.ADMIN_CATALOG_ITEM.value
+            else:
+                resource_type = ResourceType.CATALOG_ITEM.value
             q = client.get_typed_query(
                 resource_type,
                 query_result_format=QueryResultFormat.ID_RECORDS,
-                qfilter='catalogName==%s' % catalog_name)
+                equality_filter=('catalogName', catalog_name))
             records = list(q.execute())
             if len(records) == 0:
                 result = 'not found'

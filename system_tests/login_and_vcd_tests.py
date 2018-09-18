@@ -87,10 +87,14 @@ class LoginAndVcdTest(BaseTestCase):
         """Login works with password in VCD_PASSWORD environmental variable
         """
         login_args = [self._host, self._org, self._admin_user, "-i", "-w"]
-        os.environ["VCD_PASSWORD"] = self._admin_pass
-        result = self._runner.invoke(login, args=login_args)
-        self.assertEqual(0, result.exit_code)
-        self.assertTrue("logged in" in result.output)
+        try:
+            os.environ["VCD_PASSWORD"] = self._admin_pass
+            result = self._runner.invoke(login, args=login_args)
+            self.assertEqual(0, result.exit_code)
+            self.assertTrue("logged in" in result.output)
+        finally:
+            # Pop value to prevent other cases from using it accidentally.
+            os.environ.pop("VCD_PASSWORD")
 
     def test_0025_set_server_version(self):
         """Login can set any API version supported by server

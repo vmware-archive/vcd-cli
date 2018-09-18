@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import random
+import uuid
 from click.testing import CliRunner
 
 from pyvcloud.system_test_framework.base_test import BaseTestCase
@@ -94,7 +94,7 @@ class OrgTest(BaseTestCase):
         # Use a fixed org name with a randomized description to prove
         # org creation worked.
         test_org = "my_test_org"
-        description = "TEST:{0}".format(random.randint(1, 10000))
+        description = "TEST:{0}".format(uuid.uuid1())
         self._login()
         # Ensure that the org does not exist and then create.
         self._runner.invoke(org, args=['delete', test_org])

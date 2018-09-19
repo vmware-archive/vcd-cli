@@ -192,9 +192,9 @@ def login(ctx, user, host, password, api_version, org, verify_ssl_certs,
             vdc=in_use_vdc,
             org_href=org_href,
             vdc_href=vdc_href,
-            log_request=profiles.get('log_request', default=False),
-            log_header=profiles.get('log_header', default=False),
-            log_body=profiles.get('log_body', default=False),
+            log_request=True,
+            log_header=True,
+            log_body=True,
             vapp='',
             vapp_href='')
         alt_text = '%s logged in, org: \'%s\', vdc: \'%s\'' % \

@@ -30,7 +30,6 @@ from pyvcloud.vcd.client import EntityType
 from pyvcloud.vcd.client import NSMAP
 from pyvcloud.vcd.client import TaskStatus
 from pyvcloud.vcd.exceptions import AccessForbiddenException
-from pyvcloud.vcd.exceptions import MissingRecordException
 from pyvcloud.vcd.exceptions import RequestTimeoutException
 from pyvcloud.vcd.exceptions import UnauthorizedException
 from pyvcloud.vcd.utils import extract_id
@@ -257,8 +256,6 @@ def stderr(exception, ctx=None):
     elif type(exception) == RequestTimeoutException:
         message = 'The server timed out waiting for the request, ' \
                   'please check your connection.'
-    elif type(exception) == MissingRecordException:
-        message = 'Record not found.'
     elif hasattr(exception, 'message'):
         message = exception.message
     else:

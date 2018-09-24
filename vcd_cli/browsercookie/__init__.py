@@ -136,7 +136,7 @@ class Chrome(BrowserCookieLoader):
                     host, path, secure, expires, name = item[:5]
                     try:
                         # Any error around creating the cookie oject or
-                        # decrypting it's value will cause the exception
+                        # decrypting its value will cause the exception
                         # error message to be printed out on the console.
                         # However the exception shouldn't halt the whole
                         # process, and we should continue processing rest of

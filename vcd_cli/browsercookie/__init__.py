@@ -101,6 +101,8 @@ class Chrome(BrowserCookieLoader):
         if sys.platform == 'darwin':
             # running Chrome on OSX
             key = None
+            # Look for key in all keychains, if nothing matches continue using
+            # None as key
             for k in backend.get_all_keyring():
                 try:
                     my_pass = k.get_password('Chrome Safe Storage', 'Chrome')
@@ -133,6 +135,12 @@ class Chrome(BrowserCookieLoader):
                 for item in cur.fetchall():
                     host, path, secure, expires, name = item[:5]
                     try:
+                        # Any error around creating the cookie oject or
+                        # decrypting it's value will cause the exception
+                        # error message to be printed out on the console.
+                        # However the exception shouldn't halt the whole
+                        # process, and we should continue processing rest of
+                        # the cookies.
                         value = self._decrypt(item[5], item[6], key=key)
                         yield create_cookie(host, path, secure, expires, name,
                                             value)
@@ -227,6 +235,9 @@ class Firefox(BrowserCookieLoader):
             with create_local_copy(cookie_file) as tmp_cookie_file:
                 con = sqlite3.connect(tmp_cookie_file)
                 cur = con.cursor()
+                # isSecure might not be the right column. Please note, we don't
+                # support reading cookies off firefox as of now, so this can be
+                # checked/fixed later.
                 cur.execute('select host, path, isSecure, expiry, name, value '
                             'from moz_cookies')
 

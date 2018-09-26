@@ -1,8 +1,8 @@
-VMware vCloud Director CLI
+pyvCloud
 
-Copyright (c) 2018 VMware, Inc.  All rights reserved
+Copyright 2018 VMware, Inc.  All rights reserved.
 
-The Apache 2.0 license (the "License") set forth below applies to all parts of the VMware vCloud Director CLI
+The Apache 2.0 license (the "License") set forth below applies to all parts of the pyvCloud
 project.  You may not use this file except in compliance with the License.
 
 Apache License

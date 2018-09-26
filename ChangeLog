@@ -1,6 +1,23 @@
 CHANGES
 =======
 
+* [VCDA-761] Fix command vcd login session list chrome for Windows (#246)
+* added migrate-vms CLI (#241)
+* [VCDA-756] Limit keyring version to 12.0.0 to avoid installation failures on linux. (#244)
+* [VCDA-731] Create initial system tests for vcd-cli (#240)
+* [VCDA-762] Fix confusing error message when non admin users invoke vcd system extension commands (#243)
+* [VCDA-760] Fix logging of REST calls made on behalf of vcd-cli commands. (#242)
+* [VCDA-549] Fix query service to handle special characters in filter values (#239)
+* BUG FIX: Add to docstring about current RP name limitation (basenames must be unique) and rename functions from add/delete to attach/detach (#238)
+* [VDP-1663, VCDA-696]: Implement add, delete ResourcePool from a PVDC (#236)
+* [VCDA-727] Fixed login issue with custom version other than [27.0, 28.0, 29.0, 30.0] (#237)
+* [VCDA-709] CVE-2017-18342 : Replace yaml.load() with yaml.safe\_load() (#233)
+* fixed bug https://github.com/vmware/vcd-cli/issues/229 & #230 (#232)
+* [VDP-1665, VCDA-642] Implemented enable, disable, detach VC (#227)
+* [VCDA-584] Handled fallout of making changes to org related methods (#226)
+* [VCDA-603] Fixed 'vcd catalog info' when user can't access ACL settings of the catalog. (#225)
+* Updated AUTHORS and ChangeLog for v20.3.0 (#224)
+
 20.3.0
 ------
 

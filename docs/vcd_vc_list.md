@@ -1,7 +1,7 @@
 ```
-Usage: vcd vc list [OPTIONS]
-
-Options:
-  -h, --help  Show this message and exit.
+Usage: vcd vc list [OPTIONS]
+
+Options:
+  -h, --help  Show this message and exit.
 
 ```

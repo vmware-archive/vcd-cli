@@ -1,7 +1,7 @@
 ```
-Usage: vcd network direct list [OPTIONS]
-
-Options:
-  -h, --help  Show this message and exit.
+Usage: vcd network direct list [OPTIONS]
+
+Options:
+  -h, --help  Show this message and exit.
 
 ```

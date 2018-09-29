@@ -1,5 +1,5 @@
 ```
-Usage: vcd cse cluster info [OPTIONS] NAME
+Usage: vcd pvdc detach-rp [OPTIONS] <pvdc-name> <respool>
 
 Options:
   -h, --help  Show this message and exit.

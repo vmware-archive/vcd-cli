@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
-import click
+import re
 from subprocess import check_output
+
+import click
+
 from vcd_cli.vcd import vcd
 
 command_list = []
@@ -18,7 +21,7 @@ def generate_index_page(commands):
                 out.write('<ul><li>\n')
             elif len(tokens) < last_level:
                 out.write('</li>\n')
-                for n in range(last_level-len(tokens)):
+                for n in range(last_level - len(tokens)):
                     out.write('</ul></li>\n')
                 out.write('<li>\n')
             else:
@@ -28,6 +31,7 @@ def generate_index_page(commands):
         for n in range(last_level):
             out.write('</li></ul>\n')
         out.write('</div>\n')
+    check_output(['git', 'add', 'docs/commands.md'])
 
 
 def generate_page(cmd_str):
@@ -38,9 +42,9 @@ def generate_page(cmd_str):
         tokens = (cmd_str + ' -h').split()
         output = check_output(tokens)
         out.write('```\n')
-        out.write(output.decode())
+        out.write(re.sub(r'(\r\n|\r|\n)', '\n', output.decode()))
         out.write('\n```\n')
-        output = check_output(['git', 'add', file_name])
+    output = check_output(['git', 'add', file_name])
 
 
 def process_command(cmd, ancestors=[]):
@@ -54,16 +58,16 @@ def process_command(cmd, ancestors=[]):
             a = ancestors + [cmd]
             process_command(cmd.commands[k], ancestors=a)
 
+
 try:
     output = check_output(['git', 'rm', '-rf', 'docs/vcd*.md'])
-except:
-    pass
+except Exception as e:
+    print(e)
 try:
     output = check_output(['git', 'rm', '-rf', 'docs/commands.md'])
-except:
-    pass
+except Exception as e:
+    print(e)
 process_command(vcd)
 generate_index_page(command_list)
-check_output(['git', 'add', 'docs/commands.md'])
 for cmd_str in command_list:
     generate_page(cmd_str)

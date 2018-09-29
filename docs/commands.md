@@ -22,35 +22,6 @@
 <a href="vcd_catalog_upload">upload</a></li>
 </ul></li>
 <li>
-<a href="vcd_cse">cse</a><ul><li>
-<a href="vcd_cse_cluster">cluster</a><ul><li>
-<a href="vcd_cse_cluster_config">config</a></li><li>
-<a href="vcd_cse_cluster_create">create</a></li><li>
-<a href="vcd_cse_cluster_delete">delete</a></li><li>
-<a href="vcd_cse_cluster_info">info</a></li><li>
-<a href="vcd_cse_cluster_list">list</a></li>
-</ul></li>
-<li>
-<a href="vcd_cse_node">node</a><ul><li>
-<a href="vcd_cse_node_create">create</a></li><li>
-<a href="vcd_cse_node_delete">delete</a></li><li>
-<a href="vcd_cse_node_list">list</a></li>
-</ul></li>
-<li>
-<a href="vcd_cse_system">system</a><ul><li>
-<a href="vcd_cse_system_disable">disable</a></li><li>
-<a href="vcd_cse_system_enable">enable</a></li><li>
-<a href="vcd_cse_system_info">info</a></li><li>
-<a href="vcd_cse_system_stop">stop</a></li>
-</ul></li>
-<li>
-<a href="vcd_cse_template">template</a><ul><li>
-<a href="vcd_cse_template_list">list</a></li>
-</ul></li>
-<li>
-<a href="vcd_cse_version">version</a></li>
-</ul></li>
-<li>
 <a href="vcd_disk">disk</a><ul><li>
 <a href="vcd_disk_change-owner">change-owner</a></li><li>
 <a href="vcd_disk_create">create</a></li><li>
@@ -90,6 +61,12 @@
 </ul></li>
 </ul></li>
 <li>
+<a href="vcd_nsxt">nsxt</a><ul><li>
+<a href="vcd_nsxt_list">list</a></li><li>
+<a href="vcd_nsxt_register">register</a></li><li>
+<a href="vcd_nsxt_unregister">unregister</a></li>
+</ul></li>
+<li>
 <a href="vcd_org">org</a><ul><li>
 <a href="vcd_org_create">create</a></li><li>
 <a href="vcd_org_delete">delete</a></li><li>
@@ -110,9 +87,12 @@
 </ul></li>
 <li>
 <a href="vcd_pvdc">pvdc</a><ul><li>
+<a href="vcd_pvdc_attach-rp">attach-rp</a></li><li>
 <a href="vcd_pvdc_create">create</a></li><li>
+<a href="vcd_pvdc_detach-rp">detach-rp</a></li><li>
 <a href="vcd_pvdc_info">info</a></li><li>
-<a href="vcd_pvdc_list">list</a></li>
+<a href="vcd_pvdc_list">list</a></li><li>
+<a href="vcd_pvdc_migrate-vms">migrate-vms</a></li>
 </ul></li>
 <li>
 <a href="vcd_pwd">pwd</a></li><li>
@@ -200,6 +180,10 @@
 </ul></li>
 <li>
 <a href="vcd_vc">vc</a><ul><li>
+<a href="vcd_vc_attach">attach</a></li><li>
+<a href="vcd_vc_detach">detach</a></li><li>
+<a href="vcd_vc_disable">disable</a></li><li>
+<a href="vcd_vc_enable">enable</a></li><li>
 <a href="vcd_vc_info">info</a></li><li>
 <a href="vcd_vc_list">list</a></li>
 </ul></li>

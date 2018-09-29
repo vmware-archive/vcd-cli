@@ -1,7 +1,7 @@
 ```
-Usage: vcd vc detach [OPTIONS] NAME
-
-Options:
-  -h, --help  Show this message and exit.
+Usage: vcd vc detach [OPTIONS] NAME
+
+Options:
+  -h, --help  Show this message and exit.
 
 ```

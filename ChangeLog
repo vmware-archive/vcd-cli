@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* [VCDA-752] Updated docs as of SHA ee2c3c3 (#248)
 * [VCDA-761] Fix command vcd login session list chrome for Windows (#246)
 * added migrate-vms CLI (#241)
 * [VCDA-756] Limit keyring version to 12.0.0 to avoid installation failures on linux. (#244)

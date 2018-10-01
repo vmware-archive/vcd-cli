@@ -9,8 +9,8 @@ Options:
   -n, --vxlan-network-pool [vxlan-network-pool]
                                   vxlan network pool name
   -t, --nsxt-manager-name [nsxt-manager-name]
-                                  nsx-t manager name (for a future release --
-                                  VCD API version 31.0)
+                                  nsx-t manager name (valid for vCD API
+                                  version 31.0 and above)
   -d, --description [description]
                                   description of PVDC
   -e, --enable                    enable flag (enables PVDC when it is

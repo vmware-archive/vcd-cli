@@ -1,5 +1,5 @@
 ```
-Usage: vcd cse cluster list [OPTIONS]
+Usage: vcd vc detach [OPTIONS] NAME
 
 Options:
   -h, --help  Show this message and exit.

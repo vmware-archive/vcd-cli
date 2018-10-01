@@ -144,7 +144,7 @@ def info_pvdc(ctx, name):
     required=False,
     default=None,
     metavar='[nsxt-manager-name]',
-    help='nsx-t manager name (for a future release -- VCD API version 31.0)')
+    help='nsx-t manager name (valid for vCD API version 31.0 and above)')
 @click.option(
     '-d',
     '--description',

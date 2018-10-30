@@ -382,3 +382,18 @@ def extract_name_and_id(user_input):
     else:
         name = user_input
     return name, id
+
+
+def tuple_to_dict(tup=()):
+    """Convert list of tuples to dictionary
+
+    :param tup: list of tuple. For ex: (("a", 'India', '12'), ("b", 'USA',
+    '23'))
+
+    :return: converted dict in the format of {'a': {India: 12},
+    'b': {'USA':'23}}
+    """
+    dic = {}
+    for a in tup:
+        dic.setdefault(a[0], {a[1]: a[2]})
+    return dic

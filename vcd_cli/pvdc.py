@@ -69,6 +69,12 @@ def pvdc(ctx):
         name their RPs appropriately. This limitation will be fixed in a future
         version of these functions.
 \b
+        vcd pvdc add-sp pvdc-name sp1 sp2 ... (one or more storage profiles)
+            Add one or more storage profiles to a Provider vDC.
+\b
+        vcd pvdc del-sp pvdc-name sp1 sp2 ... (one or more storage profiles)
+            Delete one or more storage profiles from a Provider vDC.
+\b
         vcd pvdc migrate-vms pvdc-name rp1 vm1 vm2 ... --target-rp rp2
             Migrate one or more VMs from the source resource pool (rp1)
             to the target-rp (rp2 in this example, which is the target
@@ -105,9 +111,13 @@ def info_pvdc(ctx, name):
         system = System(client, admin_resource=sys_admin_resource)
         pvdc_reference = system.get_provider_vdc(name)
         pvdc = PVDC(client, href=pvdc_reference.get('href'))
+        # stdout_xml(pvdc.get_resource())
         refs = pvdc.get_vdc_references()
+        # stdout_xml(refs)
         md = pvdc.get_metadata()
+        # stdout_xml(md)
         result = pvdc_to_dict(pvdc.get_resource(), refs, md)
+        # pprint(result)
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -218,6 +228,42 @@ def detach_rp(ctx, pvdc_name, respool):
         task = platform.detach_resource_pools_from_provider_vdc(
             pvdc_name=pvdc_name,
             resource_pool_names=respool)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@pvdc.command('add-sp', short_help='add storage profiles to a pvdc')
+@click.pass_context
+@click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
+@click.argument('storage-profile', nargs=-1, metavar='<storage-profile>',
+                required=True)
+def add_sp(ctx, pvdc_name, storage_profile):
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
+        platform = Platform(client)
+        task = platform.pvdc_add_storage_profile(
+            pvdc_name=pvdc_name,
+            storage_profile_names=storage_profile)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@pvdc.command('del-sp', short_help='delete storage profiles from a pvdc')
+@click.pass_context
+@click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
+@click.argument('storage-profile', nargs=-1, metavar='<storage-profile>',
+                required=True)
+def del_sp(ctx, pvdc_name, storage_profile):
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
+        platform = Platform(client)
+        task = platform.pvdc_del_storage_profile(
+            pvdc_name=pvdc_name,
+            storage_profile_names=storage_profile)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

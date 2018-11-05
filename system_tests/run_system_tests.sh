@@ -10,15 +10,15 @@
 # code for the these subcomponents is subject to the terms and
 # conditions of the subcomponent's license, as noted in the LICENSE file.
 
-# Script to run all tests. 
+# Script to run all tests.
 #
 # Usage: ./run_system_tests.sh [test1.py test2.py ...]
 #
 # If you give test names we'll run them.  Otherwise it defaults
-# to the current stable tests. 
+# to the current stable tests.
 #
-# The script requires a vcd_connection file which defaults to 
-# $HOME/vcd_connection.  See vcd_connection.sample for an example. 
+# The script requires a vcd_connection file which defaults to
+# $HOME/vcd_connection.  See vcd_connection.sample for an example.
 # You can also set it in the VCD_CONNECTION environmental variable.
 #
 set -e
@@ -28,8 +28,9 @@ SCRIPT_DIR=`pwd`
 SRCROOT=`cd ..; pwd`
 cd $SRCROOT
 
-# If there are tests to run use those. Otherwise use stable tests. 
+# If there are tests to run use those. Otherwise use stable tests.
 STABLE_TESTS="login_and_vcd_tests.py \
+extnet_tests.py \
 org_tests.py"
 
 if [ $# == 0 ]; then
@@ -39,7 +40,7 @@ else
   TESTS=$*
 fi
 
-# Get connection information.  
+# Get connection information.
 if [ -z "$VCD_CONNECTION" ]; then
   VCD_CONNECTION=$HOME/vcd_connection
 fi
@@ -52,9 +53,9 @@ else
 fi
 . "$VCD_CONNECTION"
 
-# Prepare a test parameter file. We'll use sed to replace values and create 
+# Prepare a test parameter file. We'll use sed to replace values and create
 # a new file.  Note that some environmental variables may not be set in which
-# case the corresponding parameter will end up an empty string. 
+# case the corresponding parameter will end up an empty string.
 auto_base_config=$SRCROOT/auto.base_config.yaml
 sed -e "s/<vcd ip>/${VCD_HOST}/" \
 -e "s/30.0/${VCD_API_VERSION}/" \
@@ -73,7 +74,7 @@ fi
 
 cd system_tests
 
-# Run the tests with the new file. From here on out all commands are logged. 
+# Run the tests with the new file. From here on out all commands are logged.
 set -x
 export VCD_TEST_BASE_CONFIG_FILE=${auto_base_config}
 python3 -m unittest $TESTS -v

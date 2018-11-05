@@ -15,6 +15,7 @@
 import click
 from pyvcloud.vcd.platform import Platform
 from pyvcloud.vcd.vdc import VDC
+from pyvcloud.vcd.client import NSMAP
 
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
@@ -40,10 +41,31 @@ def external(ctx):
 \b
     Note
         Only System Administrators can work with external networks.
+
+\b
+        vcd network external create external-net1 vc1 \\
+                --port-group 'pg1' \\
+                --port-group 'pg2' \\
+                --gateway-ip 192.168.1.1 \\
+                --netmask 255.255.255.0 \\
+                --ip-range 192.168.1.2-192.168.1.49 \\
+                --ip-range 192.168.1.100-192.168.1.149 \\
+                --description 'External network' \\
+                --primary-dns-ip 8.8.8.8 \\
+                --secondary-dns-ip 8.8.8.9 \\
+                --dns-suffix example.com \\
+            Create an external network.
+                Parameters --port-group and --ip-range are both
+                required parameters and each can have multiple entries.
+
 \b
     Examples
         vcd network external list
             List all external networks available in the system
+
+\b
+        vcd network external delete external-net1
+            Delete an external network.
     """
     pass
 
@@ -265,6 +287,88 @@ def create_isolated_network(ctx, name, gateway_ip, netmask, description,
         stderr(e, ctx)
 
 
+@external.command('create', short_help='create a new external network')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('vc-name', metavar='<vc-name>', required=True)
+@click.option(
+    '-p',
+    '--port-group',
+    'port_group',
+    required=True,
+    multiple=True,
+    metavar='<name>',
+    help='gateway of the subnet')
+@click.option(
+    '-g',
+    '--gateway',
+    'gateway_ip',
+    required=True,
+    metavar='<ip>',
+    help='gateway of the subnet')
+@click.option(
+    '-n',
+    '--netmask',
+    'netmask',
+    required=True,
+    metavar='<netmask>',
+    help='network mask of the subnet')
+@click.option(
+    '-i',
+    '--ip-range',
+    'ip_range',
+    required=True,
+    multiple=True,
+    metavar='<ip>',
+    help='IP range in StartAddress-EndAddress format')
+@click.option(
+    '-d',
+    '--description',
+    'description',
+    metavar='<description>',
+    default='',
+    help='Description of the external network to be created')
+@click.option(
+    '--dns1',
+    'primary_dns_ip',
+    metavar='<ip>',
+    help='IP of the primary DNS server of the subnet')
+@click.option(
+    '--dns2',
+    'secondary_dns_ip',
+    metavar='<ip>',
+    help='IP of the secondary DNS server of the subnet')
+@click.option(
+    '--dns-suffix',
+    'dns_suffix',
+    metavar='<name>',
+    help='DNS suffix')
+def create_external_network(ctx, name, vc_name, port_group, gateway_ip,
+                            netmask, ip_range, description, primary_dns_ip,
+                            secondary_dns_ip, dns_suffix):
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
+
+        platform = Platform(client)
+        ext_net = platform.create_external_network(
+            name=name,
+            vim_server_name=vc_name,
+            port_group_names=port_group,
+            gateway_ip=gateway_ip,
+            netmask=netmask,
+            ip_ranges=ip_range,
+            description=description,
+            primary_dns_ip=primary_dns_ip,
+            secondary_dns_ip=secondary_dns_ip,
+            dns_suffix=dns_suffix)
+
+        stdout(ext_net.find('vcloud:Tasks', NSMAP).Task[0], ctx)
+        stdout('External network created successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
 @external.command(
     'list', short_help='list all external networks in the system')
 @click.pass_context
@@ -391,3 +495,20 @@ def delete_isolated_networks(ctx, name, force):
         stdout(delete_task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+
+@external.command('delete', short_help='delete an external network')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def delete_external_network(ctx, name):
+        try:
+            restore_session(ctx)
+            client = ctx.obj['client']
+
+            platform = Platform(client)
+            task = platform.delete_external_network(name=name)
+
+            stdout(task, ctx)
+            stdout('External network deleted successfully.', ctx)
+        except Exception as e:
+            stderr(e, ctx)

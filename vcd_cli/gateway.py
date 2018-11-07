@@ -20,6 +20,7 @@ from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
 from vcd_cli.vcd import vcd
 from vcd_cli.utils import tuple_to_dict
+from pyvcloud.vcd.client import GatewayBackingConfigType
 
 
 @vcd.group(short_help='manage edge gateways')
@@ -91,7 +92,11 @@ def list_gateways(ctx):
     '-c',
     '--gateway-config',
     'gateway_config',
-    default='compact',
+    default=GatewayBackingConfigType.COMPACT.value,
+    type=click.Choice([GatewayBackingConfigType.COMPACT.value,
+                       GatewayBackingConfigType.FULL.value,
+                       GatewayBackingConfigType.FULL4.value,
+                       GatewayBackingConfigType.XLARGE.value]),
     metavar='<gateway_config>',
     help='Gateway configuration')
 @click.option(

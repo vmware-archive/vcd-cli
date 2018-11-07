@@ -13,6 +13,7 @@
 #
 
 import click
+from pyvcloud.vcd.client import GatewayBackingConfigType
 from pyvcloud.vcd.vdc import VDC
 
 from vcd_cli.utils import restore_session
@@ -20,7 +21,6 @@ from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
 from vcd_cli.vcd import vcd
 from vcd_cli.utils import tuple_to_dict
-from pyvcloud.vcd.client import GatewayBackingConfigType
 
 
 @vcd.group(short_help='manage edge gateways')

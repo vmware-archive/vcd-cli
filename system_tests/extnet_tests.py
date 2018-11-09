@@ -81,7 +81,11 @@ class Test(BaseTestCase):
     def test_0010_create(self):
         """Create an external network as per configuration stated above.
 
-            Invoke the command 'external create' in network.
+        Choose first unused port group which is not a VxLAN. Unused port groups
+        have network names set to '--'. VxLAN port groups have name starting
+        with 'vxw-'.
+
+        Invoke the command 'external create' in network.
         """
         vc_name = self._config['vc']['vcenter_host_name']
         name_filter = ('vcName', vc_name)
@@ -96,8 +100,8 @@ class Test(BaseTestCase):
                     self._port_group = record.get('name')
                     break
 
-        self.assertFalse(self._port_group is None,
-                         'None of the port groups are free.')
+        self.assertIsNotNone(
+            self._port_group, 'None of the port groups are free.')
 
         self._login()
         result = self._runner.invoke(

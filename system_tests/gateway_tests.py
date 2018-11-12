@@ -17,7 +17,8 @@ from vcd_cli.network import network
 from vcd_cli.gateway import gateway
 from vcd_cli.vcd import vcd
 from vcd_cli.org import org
-from pyvcloud.vcd.vdc import VDC
+from pyvcloud.vcd.client import NSMAP
+from pyvcloud.vcd.platform import Platform
 
 class GatewayTest(BaseTestCase):
     """Test gateway-related commands
@@ -73,17 +74,16 @@ class GatewayTest(BaseTestCase):
         ext_netws_arr = ext_nets_name[1].split('\n')
         ext_network_name = ext_netws_arr[1]
         self.client = Environment.get_sys_admin_client()
-        vdc = Environment.get_test_vdc(
-            Environment.get_sys_admin_client())
-        external_networks_resource = vdc.list_external_network()
-        ext_network = None
-        for ext_network_temp in external_networks_resource.Network:
-            if ext_network_temp.get('name') == ext_network_name:
-                ext_network = ext_network_temp
+        platform = Platform(self.client)
+        ext_network = platform.get_external_network(ext_network_name)
+
         self.assertTrue(len(ext_network) > 0)
         ext_net_resource = self.client.get_resource(ext_network.get('href'))
 
-        first_ipscope = ext_net_resource.Configuration.IpScopes.IpScope[0]
+        ip_scopes = ext_net_resource.xpath(
+            'vcloud:Configuration/vcloud:IpScopes/vcloud:IpScope',
+            namespaces=NSMAP)
+        first_ipscope = ip_scopes[0]
         gateway_ip = first_ipscope.Gateway.text
         subnet_addr = gateway_ip + '/' + str(first_ipscope.SubnetPrefixLength)
 

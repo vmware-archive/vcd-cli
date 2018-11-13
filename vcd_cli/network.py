@@ -43,17 +43,17 @@ def external(ctx):
         Only System Administrators can work with external networks.
 
 \b
-        vcd network external create external-net1 vc1 \\
-                --port-group 'pg1' \\
-                --port-group 'pg2' \\
-                --gateway-ip 192.168.1.1 \\
-                --netmask 255.255.255.0 \\
-                --ip-range 192.168.1.2-192.168.1.49 \\
-                --ip-range 192.168.1.100-192.168.1.149 \\
-                --description 'External network' \\
-                --primary-dns-ip 8.8.8.8 \\
-                --secondary-dns-ip 8.8.8.9 \\
-                --dns-suffix example.com \\
+        vcd network external create external-net1 vc1
+                --port-group 'pg1'
+                --port-group 'pg2'
+                --gateway-ip 192.168.1.1
+                --netmask 255.255.255.0
+                --ip-range 192.168.1.2-192.168.1.49
+                --ip-range 192.168.1.100-192.168.1.149
+                --description 'External network'
+                --primary-dns-ip 8.8.8.8
+                --secondary-dns-ip 8.8.8.9
+                --dns-suffix example.com
             Create an external network.
                 Parameters --port-group and --ip-range are both
                 required parameters and each can have multiple entries.

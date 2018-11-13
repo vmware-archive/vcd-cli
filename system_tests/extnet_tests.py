@@ -52,9 +52,9 @@ class Test(BaseTestCase):
         """Load configuration and create a click runner to invoke CLI."""
         self._config = Environment.get_config()
         self._logger = Environment.get_default_logger()
-        self._sys_admin_client = Environment.get_sys_admin_client()
 
         self._runner = CliRunner()
+        self._login()
 
     def tearDown(self):
         """Logout ignoring any errors to ensure test session is gone."""
@@ -89,7 +89,8 @@ class Test(BaseTestCase):
         """
         vc_name = self._config['vc']['vcenter_host_name']
         name_filter = ('vcName', vc_name)
-        query = self._sys_admin_client.get_typed_query(
+        sys_admin_client = Environment.get_sys_admin_client()
+        query = sys_admin_client.get_typed_query(
             ResourceType.PORT_GROUP.value,
             query_result_format=QueryResultFormat.RECORDS,
             equality_filter=name_filter)
@@ -103,7 +104,6 @@ class Test(BaseTestCase):
         self.assertIsNotNone(
             self._port_group, 'None of the port groups are free.')
 
-        self._login()
         result = self._runner.invoke(
             external,
             args=[
@@ -120,6 +120,5 @@ class Test(BaseTestCase):
 
             Invoke the command 'external delete' in network.
         """
-        self._login()
         result = self._runner.invoke(external, args=['delete', self._name])
         self.assertEqual(0, result.exit_code)

@@ -26,7 +26,7 @@ from pyvcloud.vcd.client import QueryResultFormat
 from pyvcloud.vcd.client import ResourceType
 
 
-class Test(BaseTestCase):
+class ExtNetTest(BaseTestCase):
     """Test external network related commands
 
     Tests cases in this module do not have ordering dependencies,

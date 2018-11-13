@@ -363,7 +363,7 @@ def create_external_network(ctx, name, vc_name, port_group, gateway_ip,
             secondary_dns_ip=secondary_dns_ip,
             dns_suffix=dns_suffix)
 
-        stdout(ext_net.find('vcloud:Tasks', NSMAP).Task[0], ctx)
+        stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
         stdout('External network created successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)

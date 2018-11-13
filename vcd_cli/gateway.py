@@ -185,71 +185,71 @@ def create_gateway(ctx, name, external_networks_name, description,
              configuration
 
     \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1> \\
+            vcd gateway create <gateway-name> -e <External-Network-Name1>
              -e <External-Network-Name1>
             Create gateway by providing multiple external networks
 
     \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1> \\
+            vcd gateway create <gateway-name> -e <External-Network-Name1>
             --default-gateway <External Network> --default-gw-ip <default
             gateway IP> --dns-relay-enabled/--dns-relay-disabled
             Create gateway by providing Default gateway configuration
 
     \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1> \\
+            vcd gateway create <gateway-name> -e <External-Network-Name1>
             --c <compact/full/full4/x-large>
             Create gateway by providing gateway config.
 
     \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1> \\
+            vcd gateway create <gateway-name> -e <External-Network-Name1>
             --ha-enabled/--ha-disabled
             Create gateway with HA enabled
 
     \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1> \\
+            vcd gateway create <gateway-name> -e <External-Network-Name1>
             --advanced-enabled/--advanced-disabled
             Create advanced gateway
 
     \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1> \\
+            vcd gateway create <gateway-name> -e <External-Network-Name1>
             --distributed-routing-enabled/--distributed-routing-disabled
             Create gateway with enable distributed routing for networks
             connected to this gateway
 
     \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1> \\
+            vcd gateway create <gateway-name> -e <External-Network-Name1>
             --distributed-routing-enabled/--distributed-routing-disabled
 
     \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1> \\
-            --configure-ip-setting <External Network Name1> <subnet1> \\
+            vcd gateway create <gateway-name> -e <External-Network-Name1>
+            --configure-ip-setting <External Network Name1> <subnet1>
             <IP>
-            --configure-ip-setting <External Network Name2> <subnet1> \\
+            --configure-ip-setting <External Network Name2> <subnet1>
             <IP> ...(One or more ip settings)
             For ex: --configure-ip-setting ext_net 10.3.2.1/24 Auto or
                     --configure-ip-setting ext_net 10.3.2.1/24 10.3.2.3
             Create gateway with Configure IP settings
 
     \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1> \\
+            vcd gateway create <gateway-name> -e <External-Network-Name1>
             --sub-allocate-ip <External Network Name> --subnet
-            <subnet> --ip-range <IP Range> \\
+            <subnet> --ip-range <IP Range>
             --ip-range <IP Range> ...(one or more IP Ranges)
             For ex: --sub-allocate-ip <External Network Name>
             --subnet 10.3.2.1/20 --ip-range 10.3.2.3-10.3.2.4
 
     \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1> \\
-            --configure-rate-limit <External_Network_Name1> \\
+            vcd gateway create <gateway-name> -e <External-Network-Name1>
+            --configure-rate-limit <External_Network_Name1>
              <incoming rate limit> <outgoing rate limit>
-            --configure-rate-limit  <External_Network_Name2> \\
+            --configure-rate-limit  <External_Network_Name2>
              <incoming rate limit> <outgoing rate limit> ... (One or more
              rate limits)
              Create gateway with Rate Limits Configured
 
     \b
             \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1> \\
+            vcd gateway create <gateway-name> -e <External-Network-Name1>
             --flips-mode-enabled/--flips-mode-disabled
             flips flop mode
         """

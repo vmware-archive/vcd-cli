@@ -18,6 +18,7 @@ from vcd_cli.org import org
 from pyvcloud.vcd.client import NSMAP
 from pyvcloud.vcd.platform import Platform
 
+
 class GatewayTest(BaseTestCase):
     """Test gateway related commands
 
@@ -29,6 +30,7 @@ class GatewayTest(BaseTestCase):
     _ext_network_name = None
     _gateway_ip = None
     _logger = None
+
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
         self._config = Environment.get_config()
@@ -79,43 +81,44 @@ class GatewayTest(BaseTestCase):
 
         :return: str first external network name
         """
-        network_result = GatewayTest._runner.invoke(network, args=['external',
-                                                            'list'])
-        GatewayTest._logger.debug("vcd network external list: {0}"
-                           .format(network_result.output))
+        network_result = GatewayTest._runner.invoke(
+            network, args=['external', 'list'])
+        GatewayTest._logger.debug("vcd network external list: {0}".format(
+            network_result.output))
         ext_netws = network_result.output
         ext_nets_name = ext_netws.split('------')
         ext_netws_arr = ext_nets_name[1].split('\n')
         return ext_netws_arr[1]
 
-    def test_0001_create_gateway(self):
+    def test_0001_create_gateway_with_mandatory_option(self):
         """Admin user can create gateway
         """
-        result_create1 = GatewayTest._runner.invoke(gateway, args=['create',
-                                                            self._name, '-e',
-                                                GatewayTest._ext_network_name])
+        result_create1 = GatewayTest._runner.invoke(
+            gateway,
+            args=['create', self._name, '-e', GatewayTest._ext_network_name])
         GatewayTest._logger.debug("vcd gateway create <name> -e <ext nw>: {"
-                           "0}".format(result_create1.output))
+                                  "0}".format(result_create1.output))
         self.assertEqual(0, result_create1.exit_code)
         self._delete_gateway()
 
-    def test_0002_create_gateway(self):
+    def test_0002_create_gateway_with_configure_ip_setting(self):
         """Create gateway with options --configure-ip-setting.
 
         It will delete the gateway after creation
         """
-        result_create2 = GatewayTest._runner.invoke(gateway, args=['create',
-                                                self._name, '-e',
-                                                GatewayTest._ext_network_name,
-                                                '--configure-ip-setting',
-                                                GatewayTest._ext_network_name,
-                                                GatewayTest._subnet_addr,
-                                                'Auto'])
+        result_create2 = GatewayTest._runner.invoke(
+            gateway,
+            args=[
+                'create', self._name, '-e', GatewayTest._ext_network_name,
+                '--configure-ip-setting', GatewayTest._ext_network_name,
+                GatewayTest._subnet_addr, 'Auto'
+            ])
         GatewayTest._logger.debug("vcd gateway create <name> -e <ext nw> "
-                           "--configure-ip-setting', '{0}', '{1}', "
-                           "'Auto']: {2}".format(GatewayTest._ext_network_name,
-                                                 GatewayTest._subnet_addr,
-                                                 result_create2.output))
+                                  "--configure-ip-setting', '{0}', '{1}', "
+                                  "'Auto']: {2}".format(
+                                      GatewayTest._ext_network_name,
+                                      GatewayTest._subnet_addr,
+                                      result_create2.output))
         self.assertEqual(0, result_create2.exit_code)
         self._delete_gateway()
 
@@ -127,78 +130,75 @@ class GatewayTest(BaseTestCase):
         ip_range = next_ip + '-' + next_ip
         return ip_range
 
-    def test_0003_create_gateway(self):
+    def test_0003_create_gateway_with_sub_allocate_ip_and_subnet(self):
         """Create gateway with options --sub-allocate-ip --subnet --ip-range.
 
         It will delete the gateway after creation
         """
         ip_range = self._get_ip_range()
-        result_create3 = GatewayTest._runner.invoke(gateway, args=['create',
-                                                            self._name,
-                                                            '-e',
-                                                GatewayTest._ext_network_name,
-                                                '--sub-allocate-ip',
-                                                GatewayTest._ext_network_name,
-                                                '--subnet',
-                                                GatewayTest._subnet_addr,
-                                                '--ip-range',
-                                                ip_range])
+        result_create3 = GatewayTest._runner.invoke(
+            gateway,
+            args=[
+                'create', self._name, '-e', GatewayTest._ext_network_name,
+                '--sub-allocate-ip', GatewayTest._ext_network_name, '--subnet',
+                GatewayTest._subnet_addr, '--ip-range', ip_range
+            ])
         GatewayTest._logger.debug("vcd gateway create <name> -e <ext nw> "
-                           "--sub-allocate-ip', {0}, '--subnet',{1}, "
-                           "{2}]: {3}".format(GatewayTest._ext_network_name,
-                                              GatewayTest._subnet_addr,
-                                              ip_range,
-                                              result_create3.output))
+                                  "--sub-allocate-ip', {0}, '--subnet',{1}, "
+                                  "{2}]: {3}".format(
+                                      GatewayTest._ext_network_name,
+                                      GatewayTest._subnet_addr, ip_range,
+                                      result_create3.output))
         self.assertEqual(0, result_create3.exit_code)
         self._delete_gateway()
 
-    def test_0004_create_gateway(self):
+    def test_0004_create_gateway_with_configure_rate_limit(self):
         """Create gateway with options --configure-rate-limit.
 
         It will delete the gateway after creation
         """
-        result_create4 = GatewayTest._runner.invoke(gateway, args=['create',
-                                                            self._name,
-                                                            '-e',
-                                                            GatewayTest._ext_network_name,
-                                                            '--configure-rate-limit',
-                                                            GatewayTest._ext_network_name,
-                                                            100, 101])
+        result_create4 = GatewayTest._runner.invoke(
+            gateway,
+            args=[
+                'create', self._name, '-e', GatewayTest._ext_network_name,
+                '--configure-rate-limit', GatewayTest._ext_network_name, 100,
+                101
+            ])
         GatewayTest._logger.debug("vcd gateway create <name> -e <ext nw> "
-                           "--configure-rate-limit', {0}, 100, "
-                           "101]: {1}".format(GatewayTest._ext_network_name,
-                                              result_create4.output))
+                                  "--configure-rate-limit', {0}, 100, "
+                                  "101]: {1}".format(
+                                      GatewayTest._ext_network_name,
+                                      result_create4.output))
         self.assertEqual(0, result_create4.exit_code)
         self._delete_gateway()
 
-    def test_0005_create_gateway(self):
+    def test_0005_create_gateway_with_default_gateway_and_dns_relay_enabled(
+            self):
         """Create gateway with options --default-gateway --default-gw-ip
         --dns-relay-enabled --advanced-enabled.
 
         It will delete the gateway after creation.
         """
-        result_create5 = GatewayTest._runner.invoke(gateway, args=['create',
-                                                self._name,
-                                                '-e',
-                                                GatewayTest._ext_network_name,
-                                                '--default-gateway',
-                                                GatewayTest._ext_network_name,
-                                                '--default-gw-ip',
-                                                GatewayTest._gateway_ip,
-                                                '--dns-relay-enabled',
-                                                '--advanced-enabled'])
+        result_create5 = GatewayTest._runner.invoke(
+            gateway,
+            args=[
+                'create', self._name, '-e', GatewayTest._ext_network_name,
+                '--default-gateway', GatewayTest._ext_network_name,
+                '--default-gw-ip', GatewayTest._gateway_ip,
+                '--dns-relay-enabled', '--advanced-enabled'
+            ])
         GatewayTest._logger.debug("vcd gateway create <name> -e <ext nw> "
-                           "--defalut-gateway <ext_nw>"
-                           "--default-gw-ip {0} --dns-relay-enabled "
-                           "--advanced-enabled : {"
-                           "1}".format(GatewayTest._gateway_ip,
-                                       result_create5.output))
+                                  "--defalut-gateway <ext_nw>"
+                                  "--default-gw-ip {0} --dns-relay-enabled "
+                                  "--advanced-enabled : {"
+                                  "1}".format(GatewayTest._gateway_ip,
+                                              result_create5.output))
         self.assertEqual(0, result_create5.exit_code)
         self._delete_gateway()
 
     def _delete_gateway(self):
-        result_delete1 = GatewayTest._runner.invoke(gateway, args=['delete',
-                                                            self._name])
+        result_delete1 = GatewayTest._runner.invoke(
+            gateway, args=['delete', self._name])
         self.assertEqual(0, result_delete1.exit_code)
 
     def test_0006_tearDown(self):

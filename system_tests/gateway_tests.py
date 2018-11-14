@@ -20,7 +20,7 @@ from pyvcloud.vcd.platform import Platform
 
 
 class GatewayTest(BaseTestCase):
-    """Test gateway related commands
+    """Test gateway related commandsl
 
         Be aware that this test will delete existing vcd-cli sessions.
         """
@@ -152,27 +152,7 @@ class GatewayTest(BaseTestCase):
         self.assertEqual(0, result_create3.exit_code)
         self._delete_gateway()
 
-    def test_0004_create_gateway_with_configure_rate_limit(self):
-        """Create gateway with options --configure-rate-limit.
-
-        It will delete the gateway after creation
-        """
-        result_create4 = GatewayTest._runner.invoke(
-            gateway,
-            args=[
-                'create', self._name, '-e', GatewayTest._ext_network_name,
-                '--configure-rate-limit', GatewayTest._ext_network_name, 100,
-                101
-            ])
-        GatewayTest._logger.debug("vcd gateway create <name> -e <ext nw> "
-                                  "--configure-rate-limit', {0}, 100, "
-                                  "101]: {1}".format(
-                                      GatewayTest._ext_network_name,
-                                      result_create4.output))
-        self.assertEqual(0, result_create4.exit_code)
-        self._delete_gateway()
-
-    def test_0005_create_gateway_with_default_gateway_and_dns_relay_enabled(
+    def test_0004_create_gateway_with_default_gateway_and_dns_relay_enabled(
             self):
         """Create gateway with options --default-gateway --default-gw-ip
         --dns-relay-enabled --advanced-enabled.
@@ -196,11 +176,57 @@ class GatewayTest(BaseTestCase):
         self.assertEqual(0, result_create5.exit_code)
         self._delete_gateway()
 
+    def test_0005_create_gateway_with_configure_rate_limit(self):
+        """Create gateway with options --configure-rate-limit.
+
+        It will delete the gateway after creation
+        """
+        result_create4 = GatewayTest._runner.invoke(
+            gateway,
+            args=[
+                'create', self._name, '-e', GatewayTest._ext_network_name,
+                '--configure-rate-limit', GatewayTest._ext_network_name, 100,
+                101
+            ])
+        GatewayTest._logger.debug("vcd gateway create <name> -e <ext nw> "
+                                  "--configure-rate-limit', {0}, 100, "
+                                  "101]: {1}".format(
+                                      GatewayTest._ext_network_name,
+                                      result_create4.output))
+        self.assertEqual(0, result_create4.exit_code)
+
     def _delete_gateway(self):
         result_delete1 = GatewayTest._runner.invoke(
             gateway, args=['delete', self._name])
         self.assertEqual(0, result_delete1.exit_code)
 
-    def test_0006_tearDown(self):
+    def test_0006_convert_to_advanced_gateway(self):
+        """Convert legacy gateway to advance gateway.
+
+        It will trigger the cli command with option convert-to-advanced
+        """
+        result_advanced_gateway = self._runner.invoke(gateway,
+                                                      args=[
+                                                        'convert-to-advanced',
+                                                        'test_gateway1'])
+        self.assertEqual(0, result_advanced_gateway.exit_code)
+
+    def test_0007_enable_distributed_routing(self):
+        """Enable Distributed routing for advanced gateway.
+
+        It will trigger the cli command with option enable-distributed-routing
+        """
+        result_advanced_gateway = self._runner.invoke(gateway,
+                                                      args=[
+                                                'enable-distributed-routing',
+                                                'test_gateway1',
+                                            '--distributed-routing-enabled'])
+        self.assertEqual(0, result_advanced_gateway.exit_code)
+
+
+    def test_0008_tearDown(self):
+        result_delete = self._runner.invoke(gateway, args=['delete',
+                                                           'test_gateway1'])
+        self.assertEqual(0, result_delete.exit_code)
         """Logout ignoring any errors to ensure test session is gone."""
         self._logout()

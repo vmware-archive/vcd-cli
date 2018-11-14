@@ -20,7 +20,7 @@ from pyvcloud.vcd.platform import Platform
 
 
 class GatewayTest(BaseTestCase):
-    """Test gateway related commandsl
+    """Test gateway related commands
 
         Be aware that this test will delete existing vcd-cli sessions.
         """
@@ -224,7 +224,7 @@ class GatewayTest(BaseTestCase):
         self.assertEqual(0, result_advanced_gateway.exit_code)
 
 
-    def test_0008_tearDown(self):
+    def test_0098_tearDown(self):
         result_delete = self._runner.invoke(gateway, args=['delete',
                                                            'test_gateway1'])
         self.assertEqual(0, result_delete.exit_code)

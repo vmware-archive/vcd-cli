@@ -220,7 +220,7 @@ class GatewayTest(BaseTestCase):
                                                       args=[
                                                 'enable-distributed-routing',
                                                 'test_gateway1',
-                                            '--distributed-routing-enabled'])
+                                                '--enable'])
         self.assertEqual(0, result_advanced_gateway.exit_code)
 
 

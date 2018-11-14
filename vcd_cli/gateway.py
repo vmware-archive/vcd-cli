@@ -361,18 +361,18 @@ def convert_to_advanced_gateway(ctx, name):
 @click.pass_context
 @click.argument('name', metavar='<gateway name>', required=True)
 @click.option(
-    '--distributed-routing-enabled/--distributed-routing-disabled',
-    'is_dr',
+    '--enable/--disable',
+    'is_enabled',
     default=False,
     metavar='<is_distributed>',
     help='Enable distributed routing for networks connected to this gateway.')
-def enable_distributed_routing(ctx, name, is_dr=False):
+def enable_distributed_routing(ctx, name, is_enabled=False):
     """Enable Distributed routing for gateway.
 
         \b
             Examples
                 vcd gateway enable-distributed-routing  <gateway-name>
-                --distributed-routing-enabled/--distributed-routing-disabled
+                --enable/--disable
 
                  Enable/Disable Distributed routing for gateway.
     """
@@ -383,7 +383,7 @@ def enable_distributed_routing(ctx, name, is_dr=False):
         vdc = VDC(client, href=vdc_href)
         gateway = vdc.get_gateway(name)
         gateway_resource = Gateway(client, href=gateway.get('href'))
-        task = gateway_resource.enable_distributed_routing(is_dr)
+        task = gateway_resource.enable_distributed_routing(is_enabled)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

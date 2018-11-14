@@ -30,6 +30,7 @@ from pyvcloud.vcd.client import EntityType
 from pyvcloud.vcd.client import NSMAP
 from pyvcloud.vcd.client import TaskStatus
 from pyvcloud.vcd.exceptions import AccessForbiddenException
+from pyvcloud.vcd.exceptions import InvalidParameterException
 from pyvcloud.vcd.exceptions import RequestTimeoutException
 from pyvcloud.vcd.exceptions import UnauthorizedException
 from pyvcloud.vcd.utils import extract_id
@@ -382,3 +383,25 @@ def extract_name_and_id(user_input):
     else:
         name = user_input
     return name, id
+
+
+def tuple_to_dict(tup=()):
+    """Convert list of tuples to dictionary.
+
+    provided tuple should have atleast 3 elements and only first three
+    elements will be considered in the method.
+
+    :param tup: list of tuple e.g., (("a", 'India', '12'), ("b", 'USA',
+    '23'))
+
+    :return: converted dict in the format of {'a': {India: 12},
+    'b': {'USA':'23}}
+    :rtype: dict
+    """
+    dic = {}
+    for a in tup:
+        if len(a) < 3:
+            raise InvalidParameterException(
+                "Length of provided parameter cannot be less than 3.")
+        dic.setdefault(a[0], {a[1]: a[2]})
+    return dic

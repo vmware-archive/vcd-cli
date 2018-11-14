@@ -20,6 +20,7 @@ from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
 from vcd_cli.vcd import vcd
+from pyvcloud.vcd.gateway import Gateway
 from vcd_cli.utils import tuple_to_dict
 
 
@@ -174,8 +175,7 @@ def create_gateway(ctx, name, external_networks_name, description,
     """Create a gateway.
     \b
         Note
-            Both System Administrators and Organization Administrators can
-            create gateway.
+            System Administrators can create gateway.
 
     \b
         Examples
@@ -311,8 +311,7 @@ def delete_gateway(ctx, name):
     """delete a gateway.
         \b
             Note
-                Both System Administrators and Organization Administrators can
-                delete gateway.
+                System Administrators can delete gateway.
         \b
             Examples
                 vcd gateway delete <gateway-name>
@@ -324,6 +323,67 @@ def delete_gateway(ctx, name):
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
         task = vdc.delete_gateway(name)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@gateway.command('convert-to-advanced', short_help='convert to advanced '
+                                                   'gateway')
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+def convert_to_advanced_gateway(ctx, name):
+    """Convert to advanced gateway.
+        \b
+            Note
+                System Administrators and Organization Administrator can
+                convert legacy gateway to advanced.
+        \b
+            Examples
+                vcd gateway convert-to-advanced <gateway-name>
+                 Convert gateway to advanced by providing gateway name
+    """
+    try:
+        restore_session(ctx, vdc_required=True)
+        client = ctx.obj['client']
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        vdc = VDC(client, href=vdc_href)
+        gateway = vdc.get_gateway(name)
+        gateway_resource = Gateway(client, href=gateway.get('href'))
+        task = gateway_resource.convert_to_advanced()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@gateway.command('enable-distributed-routing', short_help='enable '
+                                                          'distributed '
+                                                          'routing for '
+                                                          'gateway')
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+@click.option(
+    '--enable/--disable',
+    'is_enabled',
+    default=False,
+    metavar='<is_distributed>',
+    help='Enable distributed routing for networks connected to this gateway.')
+def enable_distributed_routing(ctx, name, is_enabled=False):
+    """Enable Distributed routing for gateway.
+
+        \b
+            Examples
+                vcd gateway enable-distributed-routing  <gateway-name>
+                --enable/--disable
+
+                 Enable/Disable Distributed routing for gateway.
+    """
+    try:
+        restore_session(ctx, vdc_required=True)
+        client = ctx.obj['client']
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        vdc = VDC(client, href=vdc_href)
+        gateway = vdc.get_gateway(name)
+        gateway_resource = Gateway(client, href=gateway.get('href'))
+        task = gateway_resource.enable_distributed_routing(is_enabled)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

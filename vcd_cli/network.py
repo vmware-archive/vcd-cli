@@ -71,7 +71,7 @@ def external(ctx):
         vcd network external update external-net1
                 --name 'new-external-net1'
                 --description 'New external network'
-            Update an external network.
+            Update name and description of an external network.
     """
     pass
 
@@ -520,7 +520,9 @@ def delete_external_network(ctx, name):
             stderr(e, ctx)
 
 
-@external.command('update', short_help='update an external network')
+@external.command(
+    'update',
+    short_help='update name and description of an external network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(

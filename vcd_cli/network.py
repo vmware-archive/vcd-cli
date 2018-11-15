@@ -66,6 +66,12 @@ def external(ctx):
 \b
         vcd network external delete external-net1
             Delete an external network.
+
+\b
+        vcd network external update external-net1
+                --name 'new-external-net1'
+                --description 'New external network'
+            Update name and description of an external network.
     """
     pass
 
@@ -510,5 +516,41 @@ def delete_external_network(ctx, name):
 
             stdout(task, ctx)
             stdout('External network deleted successfully.', ctx)
+        except Exception as e:
+            stderr(e, ctx)
+
+
+@external.command(
+    'update',
+    short_help='update name and description of an external network')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-n',
+    '--name',
+    'new_name',
+    metavar='<name>',
+    required=False,
+    help='New name of the external network')
+@click.option(
+    '-d',
+    '--description',
+    'new_description',
+    metavar='<description>',
+    required=False,
+    help='New description of the external network')
+def update_external_network(ctx, name, new_name, new_description):
+        try:
+            restore_session(ctx)
+            client = ctx.obj['client']
+
+            platform = Platform(client)
+            ext_net = platform.update_external_network(
+                name=name,
+                new_name=new_name,
+                new_description=new_description)
+
+            stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
+            stdout('External network updated successfully.', ctx)
         except Exception as e:
             stderr(e, ctx)

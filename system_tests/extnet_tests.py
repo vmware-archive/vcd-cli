@@ -115,7 +115,31 @@ class ExtNetTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
-    def test_0010_delete(self):
+    def test_0020_update(self):
+        """Update name and description of the external network created.
+
+        Invoke the command 'external update' in network.
+        """
+        new_name = "updated_" + self._name
+        new_description = "Updated " + self._name
+        result = self._runner.invoke(
+            external,
+            args=[
+                'update', self._name, '--name', new_name, '--description',
+                new_description
+            ])
+        self.assertEqual(0, result.exit_code)
+
+        # Update name and description back to original
+        result = self._runner.invoke(
+            external,
+            args=[
+                'update', new_name, '--name', self._name, '--description',
+                self._description
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0100_delete(self):
         """Delete the external network created.
 
             Invoke the command 'external delete' in network.

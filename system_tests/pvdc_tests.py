@@ -36,11 +36,8 @@ class TestPVDC(BaseTestCase):
         self._config = Environment.get_config()
         self._logger = Environment.get_default_logger()
 
-        self._runner = CliRunner()
-
-    def tearDown(self):
-        """Logout ignoring any errors to ensure test session is gone."""
-        self._logout()
+        TestPVDC._runner = CliRunner()
+        self._login()
 
     def _login(self):
         """Logs in using admin credentials"""
@@ -52,16 +49,15 @@ class TestPVDC(BaseTestCase):
             host, org, admin_user, "-i", "-w",
             "--password={0}".format(admin_pass)
         ]
-        result = self._runner.invoke(login, args=login_args)
+        result = TestPVDC._runner.invoke(login, args=login_args)
         self.assertEqual(0, result.exit_code)
         self.assertTrue("logged in" in result.output)
 
     def _logout(self):
         """Logs out current session, ignoring errors"""
-        self._runner.invoke(logout)
+        TestPVDC._runner.invoke(logout)
 
     def test_0005_pvdc_list(self):
-        self._login()
         result = self._runner.invoke(pvdc, args=['list'])
         self._logger.debug("vcd pvdc list: {0}".format(result.output))
         self.assertEqual(0, result.exit_code)
@@ -72,7 +68,6 @@ class TestPVDC(BaseTestCase):
         pvdc_name = self._config['pvdc']['pvdc_name']
         sp_list = self._config['pvdc']['storage_profiles']
         storage_profiles = " ".join(str(x) for x in sp_list)
-        self._login()
         result = self._runner.invoke(
             pvdc, args=['add-sp', pvdc_name, storage_profiles])
         self._logger.debug(
@@ -86,10 +81,13 @@ class TestPVDC(BaseTestCase):
         pvdc_name = self._config['pvdc']['pvdc_name']
         sp_list = self._config['pvdc']['storage_profiles']
         storage_profiles = " ".join(str(x) for x in sp_list)
-        self._login()
         result = self._runner.invoke(
             pvdc, args=['del-sp', pvdc_name, storage_profiles])
         self._logger.debug(
             "vcd pvdc del-sp pvdc_name storage_profiles: {0}".
             format(result.output))
         self.assertEqual(0, result.exit_code)
+
+    def test_0098_tearDown(self):
+        """Logout ignoring any errors to ensure test session is gone."""
+        self._logout()

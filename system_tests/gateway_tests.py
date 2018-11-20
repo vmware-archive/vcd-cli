@@ -15,14 +15,14 @@ from vcd_cli.login import login, logout
 from vcd_cli.network import network
 from vcd_cli.gateway import gateway
 from vcd_cli.org import org
-from pyvcloud.vcd.client import NSMAP
+from pyvcloud.vcd.client import NSMAP, GatewayBackingConfigType
 from pyvcloud.vcd.platform import Platform
 
 
 class GatewayTest(BaseTestCase):
     """Test gateway related commands
 
-        Be aware that this test will delete existing vcd-cli sessions.
+        Be aware that this test will delete existing vcd-cli sessions.l
         """
     _runner = None
     _name = 'test_gateway1'
@@ -223,6 +223,15 @@ class GatewayTest(BaseTestCase):
                                                 '--enable'])
         self.assertEqual(0, result_advanced_gateway.exit_code)
 
+    def test_0008_modify_form_factor(self):
+        """Modify form factor for gateway.
+
+        It will trigger the cli command with option modify-form-factor
+        """
+        result = self._runner.invoke(gateway,
+                    args=['modify-form-factor', 'test_gateway1',
+                          GatewayBackingConfigType.FULL.value])
+        self.assertEqual(0, result.exit_code)
 
     def test_0098_tearDown(self):
         result_delete = self._runner.invoke(gateway, args=['delete',

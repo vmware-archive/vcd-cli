@@ -343,12 +343,7 @@ def convert_to_advanced_gateway(ctx, name):
                  Convert gateway to advanced by providing gateway name
     """
     try:
-        restore_session(ctx, vdc_required=True)
-        client = ctx.obj['client']
-        vdc_href = ctx.obj['profiles'].get('vdc_href')
-        vdc = VDC(client, href=vdc_href)
-        gateway = vdc.get_gateway(name)
-        gateway_resource = Gateway(client, href=gateway.get('href'))
+        gateway_resource = _get_gateway(ctx, name)
         task = gateway_resource.convert_to_advanced()
         stdout(task, ctx)
     except Exception as e:
@@ -377,13 +372,52 @@ def enable_distributed_routing(ctx, name, is_enabled=False):
                  Enable/Disable Distributed routing for gateway.
     """
     try:
-        restore_session(ctx, vdc_required=True)
-        client = ctx.obj['client']
-        vdc_href = ctx.obj['profiles'].get('vdc_href')
-        vdc = VDC(client, href=vdc_href)
-        gateway = vdc.get_gateway(name)
-        gateway_resource = Gateway(client, href=gateway.get('href'))
+        gateway_resource = _get_gateway(ctx, name)
         task = gateway_resource.enable_distributed_routing(is_enabled)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+@gateway.command('modify-form-factor',
+                 short_help='modify form factor for gateway')
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+@click.argument('gateway_configuration', metavar='<gateway configuration>',
+                required=True, type=click.Choice([
+        GatewayBackingConfigType.COMPACT.value,
+        GatewayBackingConfigType.FULL.value,
+        GatewayBackingConfigType.FULL4.value,
+        GatewayBackingConfigType.XLARGE.value]))
+def modify_form_factor(ctx, name, gateway_configuration):
+    """Modify form factor for gateway.
+
+        \b
+            Examples
+                vcd gateway modify-form-factor  <gateway-name>
+                <gateway_configuration>
+
+                Possible value for gatewy configuration are
+                compact/full/full4/x-large
+
+                Modify form factor for gateway.
+    """
+    try:
+        gateway_resource = _get_gateway(ctx, name)
+        task = gateway_resource.modify_form_factor(gateway_configuration)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+def _get_gateway(ctx, name):
+    """Get the sdk's gateway resource.
+
+    It will restore sessions if expired. It will read the client and vdc
+    from context and make get_gateway call to VDC for gateway object.
+    """
+    restore_session(ctx, vdc_required=True)
+    client = ctx.obj['client']
+    vdc_href = ctx.obj['profiles'].get('vdc_href')
+    vdc = VDC(client, href=vdc_href)
+    gateway = vdc.get_gateway(name)
+    gateway_resource = Gateway(client, href=gateway.get('href'))
+    return gateway_resource

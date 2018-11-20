@@ -119,6 +119,12 @@ def info_pvdc(ctx, name):
         stderr(e, ctx)
 
 
+def _pvdc_helper(ctx):
+    client = ctx.obj['client']
+    platform = Platform(client)
+    return client, platform
+
+
 @pvdc.command('create', short_help='create pvdc')
 @click.pass_context
 @click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
@@ -177,8 +183,7 @@ def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
            nsxt_manager_name):
     try:
         restore_session(ctx)
-        client = ctx.obj['client']
-        platform = Platform(client)
+        client, platform = _pvdc_helper(ctx)
         pvdc = \
             platform.create_provider_vdc(vim_server_name=vc_name,
                                          resource_pool_names=resource_pool,
@@ -202,8 +207,7 @@ def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
 def attach_rp(ctx, pvdc_name, respool):
     try:
         restore_session(ctx)
-        client = ctx.obj['client']
-        platform = Platform(client)
+        client, platform = _pvdc_helper(ctx)
         task = platform.attach_resource_pools_to_provider_vdc(
             pvdc_name=pvdc_name,
             resource_pool_names=respool)
@@ -219,8 +223,7 @@ def attach_rp(ctx, pvdc_name, respool):
 def detach_rp(ctx, pvdc_name, respool):
     try:
         restore_session(ctx)
-        client = ctx.obj['client']
-        platform = Platform(client)
+        client, platform = _pvdc_helper(ctx)
         task = platform.detach_resource_pools_from_provider_vdc(
             pvdc_name=pvdc_name,
             resource_pool_names=respool)
@@ -237,8 +240,7 @@ def detach_rp(ctx, pvdc_name, respool):
 def add_sp(ctx, pvdc_name, storage_profile):
     try:
         restore_session(ctx)
-        client = ctx.obj['client']
-        platform = Platform(client)
+        client, platform = _pvdc_helper(ctx)
         task = platform.pvdc_add_storage_profile(
             pvdc_name=pvdc_name,
             storage_profile_names=storage_profile)
@@ -255,8 +257,7 @@ def add_sp(ctx, pvdc_name, storage_profile):
 def del_sp(ctx, pvdc_name, storage_profile):
     try:
         restore_session(ctx)
-        client = ctx.obj['client']
-        platform = Platform(client)
+        client, platform = _pvdc_helper(ctx)
         task = platform.pvdc_del_storage_profile(
             pvdc_name=pvdc_name,
             storage_profile_names=storage_profile)
@@ -280,8 +281,7 @@ def del_sp(ctx, pvdc_name, storage_profile):
 def migrate_vms(ctx, pvdc_name, source_rp, vm_name, target_rp):
     try:
         restore_session(ctx)
-        client = ctx.obj['client']
-        platform = Platform(client)
+        client, platform = _pvdc_helper(ctx)
         task = platform.pvdc_migrate_vms(
             pvdc_name=pvdc_name,
             vms_to_migrate=vm_name,

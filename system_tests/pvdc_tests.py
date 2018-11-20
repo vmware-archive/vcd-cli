@@ -24,11 +24,13 @@ from vcd_cli.pvdc import pvdc
 class TestPVDC(BaseTestCase):
     """Test PVDC related commands."""
 
-    def setUp(self):
+    def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
         self._config = Environment.get_config()
-        self._logger = Environment.get_default_logger()
-
+        TestPVDC._logger = Environment.get_default_logger()
+        TestPVDC._pvdc_name = self._config['pvdc']['pvdc_name']
+        sp_list = self._config['pvdc']['storage_profiles']
+        TestPVDC._storage_profiles = " ".join(str(x) for x in sp_list)
         TestPVDC._runner = CliRunner()
         self._login()
 
@@ -52,18 +54,16 @@ class TestPVDC(BaseTestCase):
 
     def test_0005_pvdc_list(self):
         result = self._runner.invoke(pvdc, args=['list'])
-        self._logger.debug("vcd pvdc list: {0}".format(result.output))
+        TestPVDC._logger.debug("vcd pvdc list: {0}".format(result.output))
         self.assertEqual(0, result.exit_code)
 
     def test_0010_pvdc_add_storage_profile(self):
         """Admin user can add storage profiles to a PVDC
         """
-        pvdc_name = self._config['pvdc']['pvdc_name']
-        sp_list = self._config['pvdc']['storage_profiles']
-        storage_profiles = " ".join(str(x) for x in sp_list)
         result = self._runner.invoke(
-            pvdc, args=['add-sp', pvdc_name, storage_profiles])
-        self._logger.debug(
+            pvdc, args=[
+                'add-sp', TestPVDC._pvdc_name, TestPVDC._storage_profiles])
+        TestPVDC._logger.debug(
             "vcd pvdc add-sp pvdc_name storage_profiles: {0}".
             format(result.output))
         self.assertEqual(0, result.exit_code)
@@ -71,12 +71,10 @@ class TestPVDC(BaseTestCase):
     def test_0020_pvdc_del_storage_profile(self):
         """Admin user can delete storage profiles from a PVDC
         """
-        pvdc_name = self._config['pvdc']['pvdc_name']
-        sp_list = self._config['pvdc']['storage_profiles']
-        storage_profiles = " ".join(str(x) for x in sp_list)
         result = self._runner.invoke(
-            pvdc, args=['del-sp', pvdc_name, storage_profiles])
-        self._logger.debug(
+            pvdc, args=[
+                'del-sp', TestPVDC._pvdc_name, TestPVDC._storage_profiles])
+        TestPVDC._logger.debug(
             "vcd pvdc del-sp pvdc_name storage_profiles: {0}".
             format(result.output))
         self.assertEqual(0, result.exit_code)

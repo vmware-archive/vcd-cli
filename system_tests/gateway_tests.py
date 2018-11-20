@@ -213,7 +213,7 @@ class GatewayTest(BaseTestCase):
         self.assertEqual(0, result_advanced_gateway.exit_code)
 
     def test_0007_enable_distributed_routing(self):
-        """Enable Distributed routing for advanced gateway.
+        """Enable Distributed routing of the advanced gateway.
 
         It will trigger the cli command with option enable-distributed-routing
         """
@@ -225,7 +225,7 @@ class GatewayTest(BaseTestCase):
         self.assertEqual(0, result_advanced_gateway.exit_code)
 
     def test_0008_modify_form_factor(self):
-        """Modify form factor for gateway.
+        """Modify form factor of the gateway.
 
         It will trigger the cli command with option modify-form-factor
         """

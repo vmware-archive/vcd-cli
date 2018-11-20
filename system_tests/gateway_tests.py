@@ -15,14 +15,15 @@ from vcd_cli.login import login, logout
 from vcd_cli.network import network
 from vcd_cli.gateway import gateway
 from vcd_cli.org import org
-from pyvcloud.vcd.client import NSMAP, GatewayBackingConfigType
+from pyvcloud.vcd.client import GatewayBackingConfigType
+from pyvcloud.vcd.client import NSMAP
 from pyvcloud.vcd.platform import Platform
 
 
 class GatewayTest(BaseTestCase):
     """Test gateway related commands
 
-        Be aware that this test will delete existing vcd-cli sessions.l
+        Be aware that this test will delete existing vcd-cli sessions.
         """
     _runner = None
     _name = 'test_gateway1'

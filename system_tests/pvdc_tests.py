@@ -22,14 +22,7 @@ from vcd_cli.pvdc import pvdc
 
 
 class TestPVDC(BaseTestCase):
-    """Test PVDC-related commands
-
-    Tests cases in this module do not have ordering dependencies,
-    so setup is accomplished using Python unittest setUp and tearDown
-    methods.
-
-    Be aware that this test will delete existing vcd-cli sessions.
-    """
+    """Test PVDC related commands."""
 
     def setUp(self):
         """Load configuration and create a click runner to invoke CLI."""

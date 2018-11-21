@@ -69,6 +69,12 @@ def pvdc(ctx):
         name their RPs appropriately. This limitation will be fixed in a future
         version of these functions.
 \b
+        vcd pvdc add-sp pvdc-name sp1 sp2 ... (one or more storage profiles)
+            Add one or more storage profiles to a Provider vDC.
+\b
+        vcd pvdc del-sp pvdc-name sp1 sp2 ... (one or more storage profiles)
+            Delete one or more storage profiles from a Provider vDC.
+\b
         vcd pvdc migrate-vms pvdc-name rp1 vm1 vm2 ... --target-rp rp2
             Migrate one or more VMs from the source resource pool (rp1)
             to the target-rp (rp2 in this example, which is the target
@@ -111,6 +117,12 @@ def info_pvdc(ctx, name):
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+
+def _pvdc_helper(ctx):
+    client = ctx.obj['client']
+    platform = Platform(client)
+    return client, platform
 
 
 @pvdc.command('create', short_help='create pvdc')
@@ -171,8 +183,7 @@ def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
            nsxt_manager_name):
     try:
         restore_session(ctx)
-        client = ctx.obj['client']
-        platform = Platform(client)
+        client, platform = _pvdc_helper(ctx)
         pvdc = \
             platform.create_provider_vdc(vim_server_name=vc_name,
                                          resource_pool_names=resource_pool,
@@ -196,8 +207,7 @@ def create(ctx, vc_name, resource_pool, storage_profile, pvdc_name,
 def attach_rp(ctx, pvdc_name, respool):
     try:
         restore_session(ctx)
-        client = ctx.obj['client']
-        platform = Platform(client)
+        client, platform = _pvdc_helper(ctx)
         task = platform.attach_resource_pools_to_provider_vdc(
             pvdc_name=pvdc_name,
             resource_pool_names=respool)
@@ -213,11 +223,44 @@ def attach_rp(ctx, pvdc_name, respool):
 def detach_rp(ctx, pvdc_name, respool):
     try:
         restore_session(ctx)
-        client = ctx.obj['client']
-        platform = Platform(client)
+        client, platform = _pvdc_helper(ctx)
         task = platform.detach_resource_pools_from_provider_vdc(
             pvdc_name=pvdc_name,
             resource_pool_names=respool)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@pvdc.command('add-sp', short_help='add storage profiles to a pvdc')
+@click.pass_context
+@click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
+@click.argument('storage-profile', nargs=-1, metavar='<storage-profile>',
+                required=True)
+def add_sp(ctx, pvdc_name, storage_profile):
+    try:
+        restore_session(ctx)
+        client, platform = _pvdc_helper(ctx)
+        task = platform.pvdc_add_storage_profile(
+            pvdc_name=pvdc_name,
+            storage_profile_names=storage_profile)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@pvdc.command('del-sp', short_help='delete storage profiles from a pvdc')
+@click.pass_context
+@click.argument('pvdc-name', metavar='<pvdc-name>', required=True)
+@click.argument('storage-profile', nargs=-1, metavar='<storage-profile>',
+                required=True)
+def del_sp(ctx, pvdc_name, storage_profile):
+    try:
+        restore_session(ctx)
+        client, platform = _pvdc_helper(ctx)
+        task = platform.pvdc_del_storage_profile(
+            pvdc_name=pvdc_name,
+            storage_profile_names=storage_profile)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -238,8 +281,7 @@ def detach_rp(ctx, pvdc_name, respool):
 def migrate_vms(ctx, pvdc_name, source_rp, vm_name, target_rp):
     try:
         restore_session(ctx)
-        client = ctx.obj['client']
-        platform = Platform(client)
+        client, platform = _pvdc_helper(ctx)
         task = platform.pvdc_migrate_vms(
             pvdc_name=pvdc_name,
             vms_to_migrate=vm_name,

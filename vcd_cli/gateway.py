@@ -94,10 +94,12 @@ def list_gateways(ctx):
     '--gateway-config',
     'gateway_config',
     default=GatewayBackingConfigType.COMPACT.value,
-    type=click.Choice([GatewayBackingConfigType.COMPACT.value,
-                       GatewayBackingConfigType.FULL.value,
-                       GatewayBackingConfigType.FULL4.value,
-                       GatewayBackingConfigType.XLARGE.value]),
+    type=click.Choice([
+        GatewayBackingConfigType.COMPACT.value,
+        GatewayBackingConfigType.FULL.value,
+        GatewayBackingConfigType.FULL4.value,
+        GatewayBackingConfigType.XLARGE.value
+    ]),
     metavar='<gateway_config>',
     help='Gateway configuration')
 @click.option(
@@ -133,7 +135,7 @@ def list_gateways(ctx):
     metavar='<External Network>',
     default=None,
     help='Sub-allocate the IP Pools provided by the externally connected'
-         ' interfaces')
+    ' interfaces')
 @click.option(
     '--subnet',
     'sub_allocated_subnet',
@@ -156,7 +158,7 @@ def list_gateways(ctx):
     nargs=3,
     type=click.Tuple([str, float, float]),
     help='specify the inbound and outbound rate limits for each externally'
-         ' connected interface.')
+    ' connected interface.')
 @click.option(
     '--flip-flop-enabled/--flip-flop-disabled',
     'is_flip_flop',
@@ -166,11 +168,9 @@ def list_gateways(ctx):
     help='flip flip mode')
 def create_gateway(ctx, name, external_networks_name, description,
                    default_gateway_external_network, default_gw_ip,
-                   is_dns_relay,
-                   is_ha, is_advanced,
-                   is_distributed_routing, configure_ip_settings,
-                   sub_allocated_ext_net_name, sub_allocated_subnet, ip_ranges,
-                   configure_rate_limits,
+                   is_dns_relay, is_ha, is_advanced, is_distributed_routing,
+                   configure_ip_settings, sub_allocated_ext_net_name,
+                   sub_allocated_subnet, ip_ranges, configure_rate_limits,
                    is_flip_flop, gateway_config):
     """Create a gateway.
     \b
@@ -267,8 +267,8 @@ def create_gateway(ctx, name, external_networks_name, description,
         if configure_ip_settings is not None and len(configure_ip_settings) \
                 > 0:
             is_ip_settings_configured = True
-            ext_net_to_participated_subnet_with_ip_settings = tuple_to_dict \
-                (configure_ip_settings)
+            ext_net_to_participated_subnet_with_ip_settings = tuple_to_dict(
+                configure_ip_settings)
         is_sub_allocate_ip_pools_enabled = False
         ext_net_to_subnet_with_ip_range = {}
         if sub_allocated_ext_net_name is not None and len(
@@ -276,33 +276,28 @@ def create_gateway(ctx, name, external_networks_name, description,
                 not None and len(sub_allocated_subnet) > 0 and ip_ranges is \
                 not None and len(sub_allocated_subnet) > 0:
             is_sub_allocate_ip_pools_enabled = True
-            ext_net_to_subnet_with_ip_range = {sub_allocated_ext_net_name :
-                                                   {sub_allocated_subnet :
-                                                        list(ip_ranges)}}
+            ext_net_to_subnet_with_ip_range = {
+                sub_allocated_ext_net_name: {
+                    sub_allocated_subnet: list(ip_ranges)
+                }
+            }
         ext_net_to_rate_limit = {}
         if configure_rate_limits is not None and len(configure_rate_limits) \
                 > 0:
             ext_net_to_rate_limit = tuple_to_dict(configure_rate_limits)
 
-        result = vdc.create_gateway(name, external_networks_name,
-                    gateway_config,
-                    description,
-                    is_configured_default_gw,
-                    default_gateway_external_network,
-                    default_gw_ip,
-                    is_dns_relay,
-                    is_ha,
-                    is_advanced,
-                    is_distributed_routing,
-                    is_ip_settings_configured,
-                    ext_net_to_participated_subnet_with_ip_settings,
-                    is_sub_allocate_ip_pools_enabled,
-                    ext_net_to_subnet_with_ip_range,
-                    ext_net_to_rate_limit,
-                    is_flip_flop)
+        result = vdc.create_gateway(
+            name, external_networks_name, gateway_config, description,
+            is_configured_default_gw, default_gateway_external_network,
+            default_gw_ip, is_dns_relay, is_ha, is_advanced,
+            is_distributed_routing, is_ip_settings_configured,
+            ext_net_to_participated_subnet_with_ip_settings,
+            is_sub_allocate_ip_pools_enabled, ext_net_to_subnet_with_ip_range,
+            ext_net_to_rate_limit, is_flip_flop)
         stdout(result.Tasks.Task[0], ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @gateway.command('delete', short_help='delete edge gateway')
 @click.pass_context
@@ -327,8 +322,10 @@ def delete_gateway(ctx, name):
     except Exception as e:
         stderr(e, ctx)
 
-@gateway.command('convert-to-advanced', short_help='convert to advanced '
-                                                   'gateway')
+
+@gateway.command(
+    'convert-to-advanced', short_help='convert to advanced '
+    'gateway')
 @click.pass_context
 @click.argument('name', metavar='<gateway name>', required=True)
 def convert_to_advanced_gateway(ctx, name):
@@ -354,10 +351,13 @@ def convert_to_advanced_gateway(ctx, name):
     except Exception as e:
         stderr(e, ctx)
 
-@gateway.command('enable-distributed-routing', short_help='enable '
-                                                          'distributed '
-                                                          'routing for '
-                                                          'gateway')
+
+@gateway.command(
+    'enable-distributed-routing',
+    short_help='enable '
+    'distributed '
+    'routing for '
+    'gateway')
 @click.pass_context
 @click.argument('name', metavar='<gateway name>', required=True)
 @click.option(
@@ -385,5 +385,30 @@ def enable_distributed_routing(ctx, name, is_enabled=False):
         gateway_resource = Gateway(client, href=gateway.get('href'))
         task = gateway_resource.enable_distributed_routing(is_enabled)
         stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@gateway.command('info', short_help='show gateway information.')
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+def info(ctx, name):
+    """Display information of the gateway.
+
+        \b
+            Examples
+                vcd gateway info <gateway-name>
+    """
+    try:
+        restore_session(ctx, vdc_required=True)
+        client = ctx.obj['client']
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        vdc = VDC(client, href=vdc_href)
+        gateway = vdc.get_gateway(name)
+        gateway_resource = Gateway(client, href=gateway.get('href'))
+        ip_allocs = gateway_resource.list_external_network_ip_allocations()
+        output = {}
+        output['external_network_ip_allocations'] = ip_allocs
+        stdout(output, ctx)
     except Exception as e:
         stderr(e, ctx)

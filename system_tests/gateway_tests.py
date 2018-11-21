@@ -205,10 +205,8 @@ class GatewayTest(BaseTestCase):
 
         It will trigger the cli command with option convert-to-advanced
         """
-        result_advanced_gateway = self._runner.invoke(gateway,
-                                                      args=[
-                                                        'convert-to-advanced',
-                                                        'test_gateway1'])
+        result_advanced_gateway = self._runner.invoke(
+            gateway, args=['convert-to-advanced', 'test_gateway1'])
         self.assertEqual(0, result_advanced_gateway.exit_code)
 
     def test_0007_enable_distributed_routing(self):
@@ -216,17 +214,24 @@ class GatewayTest(BaseTestCase):
 
         It will trigger the cli command with option enable-distributed-routing
         """
-        result_advanced_gateway = self._runner.invoke(gateway,
-                                                      args=[
-                                                'enable-distributed-routing',
-                                                'test_gateway1',
-                                                '--enable'])
+        result_advanced_gateway = self._runner.invoke(
+            gateway,
+            args=['enable-distributed-routing', 'test_gateway1', '--enable'])
         self.assertEqual(0, result_advanced_gateway.exit_code)
 
+    def test_0008_get_info(self):
+        """Get information of the gateway.
+
+        It will trigger the cli command with command 'info'
+        """
+        result_advanced_gateway = self._runner.invoke(
+            gateway,
+            args=['info', 'test_gateway1'])
+        self.assertEqual(0, result_advanced_gateway.exit_code)
 
     def test_0098_tearDown(self):
-        result_delete = self._runner.invoke(gateway, args=['delete',
-                                                           'test_gateway1'])
+        result_delete = self._runner.invoke(
+            gateway, args=['delete', 'test_gateway1'])
         self.assertEqual(0, result_delete.exit_code)
         """Logout ignoring any errors to ensure test session is gone."""
         self._logout()

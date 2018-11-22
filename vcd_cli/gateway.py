@@ -33,6 +33,10 @@ def gateway(ctx):
     Examples
         vcd gateway list
             Get list of edge gateways in current virtual datacenter.
+
+\b
+        vcd gateway info name
+            Display gateway details.
     """
     pass
 
@@ -173,6 +177,7 @@ def create_gateway(ctx, name, external_networks_name, description,
                    sub_allocated_subnet, ip_ranges, configure_rate_limits,
                    is_flip_flop, gateway_config):
     """Create a gateway.
+
     \b
         Note
             System Administrators can create gateway.
@@ -379,16 +384,20 @@ def enable_distributed_routing(ctx, name, is_enabled=False):
         stderr(e, ctx)
 
 
-@gateway.command('modify-form-factor',
-                 short_help='modify form factor for gateway')
+@gateway.command(
+    'modify-form-factor', short_help='modify form factor for gateway')
 @click.pass_context
 @click.argument('name', metavar='<gateway name>', required=True)
-@click.argument('gateway_configuration', metavar='<gateway configuration>',
-                required=True, type=click.Choice([
+@click.argument(
+    'gateway_configuration',
+    metavar='<gateway configuration>',
+    required=True,
+    type=click.Choice([
         GatewayBackingConfigType.COMPACT.value,
         GatewayBackingConfigType.FULL.value,
         GatewayBackingConfigType.FULL4.value,
-        GatewayBackingConfigType.XLARGE.value]))
+        GatewayBackingConfigType.XLARGE.value
+    ]))
 def modify_form_factor(ctx, name, gateway_configuration):
     """Modify form factor for gateway.
 
@@ -409,6 +418,7 @@ def modify_form_factor(ctx, name, gateway_configuration):
     except Exception as e:
         stderr(e, ctx)
 
+
 def _get_gateway(ctx, name):
     """Get the sdk's gateway resource.
 
@@ -423,17 +433,11 @@ def _get_gateway(ctx, name):
     gateway_resource = Gateway(client, href=gateway.get('href'))
     return gateway_resource
 
-  
+
 @gateway.command('info', short_help='show gateway information.')
 @click.pass_context
-@click.argument('name', metavar='<gateway name>', required=True)
+@click.argument('name', metavar='<name>', required=True)
 def info(ctx, name):
-    """Display information of the gateway.
-
-        \b
-            Examples
-                vcd gateway info <gateway-name>
-    """
     try:
         restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']

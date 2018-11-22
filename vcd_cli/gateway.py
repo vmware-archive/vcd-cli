@@ -37,6 +37,39 @@ def gateway(ctx):
 \b
         vcd gateway info name
             Display gateway details.
+
+\b
+        vcd gateway create gateway1 \\
+            --external_network extnw1 \\
+            --external_network extnw2 \\
+            --default-gateway extnw1 \\
+            --default-gw-ip 10.10.20.1 \\
+            --dns-relay-enabled \\
+            --gateway-config full \\
+            --ha-disabled \\
+            --advanced-enabled \\
+            --distributed-routing-enabled \\
+            --configure-ip-setting extnw1 10.10.20.1/24 10.10.20.3 \\
+            --sub-allocate-ip extnw1 \\
+            --subnet 10.10.20.1/28 --ip-range 10.10.20.5-10.10.20.10 \\
+            --configure-rate-limit extnw1 100 200 \\
+            --flips-mode-disabled
+            Create gateway.
+                Parameter --external-network is a required parameter and
+                can have multiple entries.
+
+\b
+        vcd gateway delete gateway1
+             Delete gateway by providing gateway name.
+
+\b
+        vcd gateway enable-distributed-routing  gateway1 --disable
+            Enable/Disable Distributed routing for gateway.
+
+\b
+        vcd gateway modify-form-factor  gateway1 full4
+            Possible value for gatewy configuration are
+            compact/full/full4/x-large
     """
     pass
 
@@ -59,10 +92,10 @@ def list_gateways(ctx):
 
 @gateway.command('create', short_help='create edge gateway')
 @click.pass_context
-@click.argument('name', metavar='<new gateway name>', required=True)
+@click.argument('name', metavar='<name>', required=True)
 @click.option(
     '-e',
-    '--external-nw',
+    '--external-network',
     'external_networks_name',
     metavar='<external network>',
     multiple=True,
@@ -79,13 +112,13 @@ def list_gateways(ctx):
     'default_gateway_external_network',
     default=None,
     metavar='<external_network>',
-    help='Name of external network for Default gateway configuration')
+    help='name of external network for default gateway configuration')
 @click.option(
-    '--default-gw-ip',
+    '--default-gateway-ip',
     'default_gw_ip',
     default=None,
     metavar='<default gateway IP>',
-    help='Name of external network for Default gateway configuration')
+    help='IP from the external network for the default gateway')
 @click.option(
     '--dns-relay-enabled/--dns-relay-disabled',
     'is_dns_relay',
@@ -105,7 +138,7 @@ def list_gateways(ctx):
         GatewayBackingConfigType.XLARGE.value
     ]),
     metavar='<gateway_config>',
-    help='Gateway configuration')
+    help='gateway configuration')
 @click.option(
     '--ha-enabled/--ha-disabled',
     'is_ha',
@@ -117,13 +150,13 @@ def list_gateways(ctx):
     'is_advanced',
     default=False,
     metavar='<is_advanced>',
-    help='Advanced gateway')
+    help='advanced gateway')
 @click.option(
     '--distributed-routing-enabled/--distributed-routing-disabled',
     'is_distributed_routing',
     default=False,
     metavar='<is_distributed>',
-    help='Enable distributed routing for networks connected to this gateway.')
+    help='enable distributed routing for networks connected to this gateway.')
 @click.option(
     '--configure-ip-setting',
     'configure_ip_settings',
@@ -131,32 +164,32 @@ def list_gateways(ctx):
     type=click.Tuple([str, str, str]),
     multiple=True,
     default=None,
-    metavar='<External Network> <subnet> <configured IP>',
-    help='Configuring multiple ip settings')
+    metavar='<external network> <subnet> <configured IP>',
+    help='configuring multiple ip settings')
 @click.option(
     '--sub-allocate-ip',
     'sub_allocated_ext_net_name',
-    metavar='<External Network>',
+    metavar='<external network>',
     default=None,
-    help='Sub-allocate the IP Pools provided by the externally connected'
+    help='sub-allocate the IP Pools provided by the externally connected'
     ' interfaces')
 @click.option(
     '--subnet',
     'sub_allocated_subnet',
     default=None,
-    metavar='<External Network Subnet>',
-    help='Subnet for the selected external network for IP sub allocation')
+    metavar='<external network subnet>',
+    help='subnet for the selected external network for IP sub allocation')
 @click.option(
     '--ip-range',
     'ip_ranges',
-    metavar='<IP Ranges>',
+    metavar='<IP ranges>',
     multiple=True,
     default=None,
-    help='IP Ranges pertaining to External networks IP Pool')
+    help='IP ranges pertaining to external network\'s IP Pool')
 @click.option(
     '--configure-rate-limit',
     'configure_rate_limits',
-    metavar='<External Network> <incoming rate limit> <outgoing rate limit>',
+    metavar='<external network> <incoming rate limit> <outgoing rate limit>',
     multiple=True,
     default=None,
     nargs=3,
@@ -176,88 +209,6 @@ def create_gateway(ctx, name, external_networks_name, description,
                    configure_ip_settings, sub_allocated_ext_net_name,
                    sub_allocated_subnet, ip_ranges, configure_rate_limits,
                    is_flip_flop, gateway_config):
-    """Create a gateway.
-
-    \b
-        Note
-            System Administrators can create gateway.
-
-    \b
-        Examples
-            vcd gateway create <gateway-name> -e <External-Network-Name1>
-             Create gateway by providing new gateway name, external networks.
-             It will create Compact by default without Default gateway
-             configuration
-
-    \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1>
-             -e <External-Network-Name1>
-            Create gateway by providing multiple external networks
-
-    \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1>
-            --default-gateway <External Network> --default-gw-ip <default
-            gateway IP> --dns-relay-enabled/--dns-relay-disabled
-            Create gateway by providing Default gateway configuration
-
-    \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1>
-            --c <compact/full/full4/x-large>
-            Create gateway by providing gateway config.
-
-    \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1>
-            --ha-enabled/--ha-disabled
-            Create gateway with HA enabled
-
-    \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1>
-            --advanced-enabled/--advanced-disabled
-            Create advanced gateway
-
-    \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1>
-            --distributed-routing-enabled/--distributed-routing-disabled
-            Create gateway with enable distributed routing for networks
-            connected to this gateway
-
-    \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1>
-            --distributed-routing-enabled/--distributed-routing-disabled
-
-    \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1>
-            --configure-ip-setting <External Network Name1> <subnet1>
-            <IP>
-            --configure-ip-setting <External Network Name2> <subnet1>
-            <IP> ...(One or more ip settings)
-            For ex: --configure-ip-setting ext_net 10.3.2.1/24 Auto or
-                    --configure-ip-setting ext_net 10.3.2.1/24 10.3.2.3
-            Create gateway with Configure IP settings
-
-    \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1>
-            --sub-allocate-ip <External Network Name> --subnet
-            <subnet> --ip-range <IP Range>
-            --ip-range <IP Range> ...(one or more IP Ranges)
-            For ex: --sub-allocate-ip <External Network Name>
-            --subnet 10.3.2.1/20 --ip-range 10.3.2.3-10.3.2.4
-
-    \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1>
-            --configure-rate-limit <External_Network_Name1>
-             <incoming rate limit> <outgoing rate limit>
-            --configure-rate-limit  <External_Network_Name2>
-             <incoming rate limit> <outgoing rate limit> ... (One or more
-             rate limits)
-             Create gateway with Rate Limits Configured
-
-    \b
-            \b
-            vcd gateway create <gateway-name> -e <External-Network-Name1>
-            --flips-mode-enabled/--flips-mode-disabled
-            flips flop mode
-        """
     try:
         restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
@@ -308,15 +259,6 @@ def create_gateway(ctx, name, external_networks_name, description,
 @click.pass_context
 @click.argument('name', metavar='<gateway name>', required=True)
 def delete_gateway(ctx, name):
-    """delete a gateway.
-        \b
-            Note
-                System Administrators can delete gateway.
-        \b
-            Examples
-                vcd gateway delete <gateway-name>
-                 Delete gateway by providing gateway name
-    """
     try:
         restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
@@ -367,15 +309,6 @@ def convert_to_advanced_gateway(ctx, name):
     metavar='<is_distributed>',
     help='Enable distributed routing for networks connected to this gateway.')
 def enable_distributed_routing(ctx, name, is_enabled=False):
-    """Enable Distributed routing for gateway.
-
-        \b
-            Examples
-                vcd gateway enable-distributed-routing  <gateway-name>
-                --enable/--disable
-
-                 Enable/Disable Distributed routing for gateway.
-    """
     try:
         gateway_resource = _get_gateway(ctx, name)
         task = gateway_resource.enable_distributed_routing(is_enabled)
@@ -399,18 +332,6 @@ def enable_distributed_routing(ctx, name, is_enabled=False):
         GatewayBackingConfigType.XLARGE.value
     ]))
 def modify_form_factor(ctx, name, gateway_configuration):
-    """Modify form factor for gateway.
-
-        \b
-            Examples
-                vcd gateway modify-form-factor  <gateway-name>
-                <gateway_configuration>
-
-                Possible value for gatewy configuration are
-                compact/full/full4/x-large
-
-                Modify form factor for gateway.
-    """
     try:
         gateway_resource = _get_gateway(ctx, name)
         task = gateway_resource.modify_form_factor(gateway_configuration)

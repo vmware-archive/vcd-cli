@@ -155,7 +155,7 @@ class GatewayTest(BaseTestCase):
 
     def test_0004_create_gateway_with_default_gateway_and_dns_relay_enabled(
             self):
-        """Create gateway with options --default-gateway --default-gw-ip
+        """Create gateway with options --default-gateway --default-gateway-ip
         --dns-relay-enabled --advanced-enabled.
 
         It will delete the gateway after creation.
@@ -165,15 +165,15 @@ class GatewayTest(BaseTestCase):
             args=[
                 'create', self._name, '-e', GatewayTest._ext_network_name,
                 '--default-gateway', GatewayTest._ext_network_name,
-                '--default-gw-ip', GatewayTest._gateway_ip,
+                '--default-gateway-ip', GatewayTest._gateway_ip,
                 '--dns-relay-enabled', '--advanced-enabled'
             ])
-        GatewayTest._logger.debug("vcd gateway create <name> -e <ext nw> "
-                                  "--defalut-gateway <ext_nw>"
-                                  "--default-gw-ip {0} --dns-relay-enabled "
-                                  "--advanced-enabled : {"
-                                  "1}".format(GatewayTest._gateway_ip,
-                                              result_create5.output))
+        GatewayTest._logger.debug(
+            "vcd gateway create <name> -e <ext nw> "
+            "--defalut-gateway <ext_nw>"
+            "--default-gateway-ip {0} --dns-relay-enabled "
+            "--advanced-enabled : {"
+            "1}".format(GatewayTest._gateway_ip, result_create5.output))
         self.assertEqual(0, result_create5.exit_code)
         self._delete_gateway()
 
@@ -225,9 +225,12 @@ class GatewayTest(BaseTestCase):
 
         It will trigger the cli command with option modify-form-factor
         """
-        result = self._runner.invoke(gateway,
-                    args=['modify-form-factor', 'test_gateway1',
-                          GatewayBackingConfigType.FULL.value])
+        result = self._runner.invoke(
+            gateway,
+            args=[
+                'modify-form-factor', 'test_gateway1',
+                GatewayBackingConfigType.FULL.value
+            ])
         self.assertEqual(0, result.exit_code)
 
     def test_0009_get_info(self):
@@ -236,8 +239,7 @@ class GatewayTest(BaseTestCase):
         It will trigger the cli command with command 'info'
         """
         result_advanced_gateway = self._runner.invoke(
-            gateway,
-            args=['info', 'test_gateway1'])
+            gateway, args=['info', 'test_gateway1'])
         self.assertEqual(0, result_advanced_gateway.exit_code)
 
     def test_0098_tearDown(self):

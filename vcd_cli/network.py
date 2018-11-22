@@ -13,6 +13,7 @@
 #
 
 import click
+from pyvcloud.vcd.external_network import ExternalNetwork
 from pyvcloud.vcd.platform import Platform
 from pyvcloud.vcd.vdc import VDC
 from pyvcloud.vcd.client import NSMAP
@@ -72,6 +73,17 @@ def external(ctx):
                 --name 'new-external-net1'
                 --description 'New external network'
             Update name and description of an external network.
+
+\b      vcd network external add-subnet external-net1
+                --gateway-ip 192.168.1.1
+                --netmask 255.255.255.0
+                --ip-range 192.168.1.2-192.168.1.49
+                --primary-dns-ip 8.8.8.8
+                --secondary-dns-ip 8.8.8.9
+                --dns-suffix example.com
+            Add new subnet or network specification in existing external
+            network.
+            ip-range can have multiple entries.
     """
     pass
 
@@ -134,7 +146,7 @@ def isolated(ctx):
 @direct.command(
     'create',
     short_help='create a new directly connected org vdc '
-    'network in vcd')
+               'network in vcd')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -158,7 +170,7 @@ def isolated(ctx):
     is_flag=True,
     default=False,
     help='Share/Don\'t share the network with other VDC(s) in the '
-    'organization')
+         'organization')
 def create_direct_network(ctx, name, parent_network_name, description,
                           is_shared):
     try:
@@ -180,7 +192,7 @@ def create_direct_network(ctx, name, parent_network_name, description,
 
 @isolated.command(
     'create', short_help='create a new isolated org vdc '
-    'network in vcd')
+                         'network in vcd')
 @click.pass_context
 @click.argument('name', metavar='<name>')
 @click.option(
@@ -221,13 +233,13 @@ def create_direct_network(ctx, name, parent_network_name, description,
     'ip_range_start',
     metavar='<ip>',
     help='Start address of the IP ranges used for static pool allocation in '
-    'the network')
+         'the network')
 @click.option(
     '--ip-range-end',
     'ip_range_end',
     metavar='<ip>',
     help='End address of the IP ranges used for static pool allocation in '
-    'the network')
+         'the network')
 @click.option(
     '--dhcp-enabled/--dhcp-disabled',
     'is_dhcp_enabled',
@@ -259,7 +271,7 @@ def create_direct_network(ctx, name, parent_network_name, description,
     is_flag=True,
     default=False,
     help='Share/Don\'t share the network with other VDC(s) in the '
-    'organization')
+         'organization')
 def create_isolated_network(ctx, name, gateway_ip, netmask, description,
                             primary_dns_ip, secondary_dns_ip, dns_suffix,
                             ip_range_start, ip_range_end, is_dhcp_enabled,
@@ -397,7 +409,7 @@ def list_external_networks(ctx):
 @direct.command(
     'list',
     short_help='list all directly connected org vdc networks in the selected'
-    ' vdc')
+               ' vdc')
 @click.pass_context
 def list_direct_networks(ctx):
     try:
@@ -440,7 +452,7 @@ def list_isolated_networks(ctx):
 @direct.command(
     'delete',
     short_help='delete a directly connected org vdc network in the selected'
-    ' vdc')
+               ' vdc')
 @click.pass_context
 @click.argument('name', metavar='<name>')
 @click.option(
@@ -507,17 +519,17 @@ def delete_isolated_networks(ctx, name, force):
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 def delete_external_network(ctx, name):
-        try:
-            restore_session(ctx)
-            client = ctx.obj['client']
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
 
-            platform = Platform(client)
-            task = platform.delete_external_network(name=name)
+        platform = Platform(client)
+        task = platform.delete_external_network(name=name)
 
-            stdout(task, ctx)
-            stdout('External network deleted successfully.', ctx)
-        except Exception as e:
-            stderr(e, ctx)
+        stdout(task, ctx)
+        stdout('External network deleted successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
 
 
 @external.command(
@@ -540,17 +552,85 @@ def delete_external_network(ctx, name):
     required=False,
     help='New description of the external network')
 def update_external_network(ctx, name, new_name, new_description):
-        try:
-            restore_session(ctx)
-            client = ctx.obj['client']
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
 
-            platform = Platform(client)
-            ext_net = platform.update_external_network(
-                name=name,
-                new_name=new_name,
-                new_description=new_description)
+        platform = Platform(client)
+        ext_net = platform.update_external_network(
+            name=name,
+            new_name=new_name,
+            new_description=new_description)
 
-            stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
-            stdout('External network updated successfully.', ctx)
-        except Exception as e:
-            stderr(e, ctx)
+        stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
+        stdout('External network updated successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@external.command(
+    'add-subnet',
+    short_help='Add new subnet or network specification in existing external ' \
+               'network.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-g',
+    '--gateway',
+    'gateway_ip',
+    required=True,
+    metavar='<ip>',
+    help='gateway of the subnet')
+@click.option(
+    '-n',
+    '--netmask',
+    'netmask',
+    required=True,
+    metavar='<netmask>',
+    help='network mask of the subnet')
+@click.option(
+    '-i',
+    '--ip-range',
+    'ip_range',
+    required=True,
+    multiple=True,
+    metavar='<ip>',
+    help='IP range in StartAddress-EndAddress format')
+@click.option(
+    '--dns1',
+    'primary_dns_ip',
+    metavar='<ip>',
+    help='IP of the primary DNS server of the subnet')
+@click.option(
+    '--dns2',
+    'secondary_dns_ip',
+    metavar='<ip>',
+    help='IP of the secondary DNS server of the subnet')
+@click.option(
+    '--dns-suffix',
+    'dns_suffix',
+    metavar='<name>',
+    help='DNS suffix')
+def add_subnet_external_network(ctx, name, gateway_ip, netmask, ip_range,
+                                primary_dns_ip, secondary_dns_ip, dns_suffix):
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
+
+        platform = Platform(client)
+        ext_net = platform.get_external_network(name)
+
+        extnet_obj = ExternalNetwork(client, resource=ext_net)
+
+        ext_net = extnet_obj.add_subnet(name=name,
+                                        gateway_ip=gateway_ip,
+                                        netmask=netmask,
+                                        ip_ranges=ip_range,
+                                        primary_dns_ip=primary_dns_ip,
+                                        secondary_dns_ip=secondary_dns_ip,
+                                        dns_suffix=dns_suffix)
+
+        stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
+        stdout('subnet is added successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)

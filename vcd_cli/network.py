@@ -365,7 +365,7 @@ def create_external_network(ctx, name, vc_name, port_group, gateway_ip,
                             netmask, ip_range, description, primary_dns_ip,
                             secondary_dns_ip, dns_suffix):
     try:
-        platform = get_platform(ctx)
+        platform = _get_platform(ctx)
         ext_net = platform.create_external_network(
             name=name,
             vim_server_name=vc_name,
@@ -389,7 +389,7 @@ def create_external_network(ctx, name, vc_name, port_group, gateway_ip,
 @click.pass_context
 def list_external_networks(ctx):
     try:
-        platform = get_platform(ctx)
+        platform = _get_platform(ctx)
         ext_nets = platform.list_external_networks()
 
         result = []
@@ -514,7 +514,7 @@ def delete_isolated_networks(ctx, name, force):
 @click.argument('name', metavar='<name>', required=True)
 def delete_external_network(ctx, name):
     try:
-        platform = get_platform(ctx)
+        platform = _get_platform(ctx)
         task = platform.delete_external_network(name=name)
 
         stdout(task, ctx)
@@ -544,7 +544,7 @@ def delete_external_network(ctx, name):
     help='New description of the external network')
 def update_external_network(ctx, name, new_name, new_description):
     try:
-        platform = get_platform(ctx)
+        platform = _get_platform(ctx)
         ext_net = platform.update_external_network(
             name=name,
             new_name=new_name,
@@ -601,7 +601,7 @@ def update_external_network(ctx, name, new_name, new_description):
 def add_subnet_external_network(ctx, name, gateway_ip, netmask, ip_range,
                                 primary_dns_ip, secondary_dns_ip, dns_suffix):
     try:
-        extnet_obj = get_ext_net_obj(ctx, name)
+        extnet_obj = _get_ext_net_obj(ctx, name)
 
         ext_net = extnet_obj.add_subnet(name=name,
                                         gateway_ip=gateway_ip,
@@ -617,14 +617,14 @@ def add_subnet_external_network(ctx, name, gateway_ip, netmask, ip_range,
         stderr(e, ctx)
 
 
-def get_ext_net_obj(ctx, name):
+def _get_ext_net_obj(ctx, name):
     """Returns ExternalNetwork object."""
-    platform = get_platform(ctx)
+    platform = _get_platform(ctx)
     client = ctx.obj['client']
     return ExternalNetwork(client, resource=platform.get_external_network(name))
 
 
-def get_platform(ctx):
+def _get_platform(ctx):
     """Returns Platform object"""
     restore_session(ctx)
     client = ctx.obj['client']

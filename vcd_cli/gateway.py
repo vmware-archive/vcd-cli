@@ -39,20 +39,20 @@ def gateway(ctx):
             Display gateway details.
 
 \b
-        vcd gateway create gateway1 \\
-            --external_network extnw1 \\
-            --external_network extnw2 \\
-            --default-gateway extnw1 \\
-            --default-gw-ip 10.10.20.1 \\
-            --dns-relay-enabled \\
-            --gateway-config full \\
-            --ha-disabled \\
-            --advanced-enabled \\
-            --distributed-routing-enabled \\
-            --configure-ip-setting extnw1 10.10.20.1/24 10.10.20.3 \\
-            --sub-allocate-ip extnw1 \\
-            --subnet 10.10.20.1/28 --ip-range 10.10.20.5-10.10.20.10 \\
-            --configure-rate-limit extnw1 100 200 \\
+        vcd gateway create gateway1
+            --external_network extnw1
+            --external_network extnw2
+            --default-gateway extnw1
+            --default-gw-ip 10.10.20.1
+            --dns-relay-enabled
+            --gateway-config full
+            --ha-disabled
+            --advanced-enabled
+            --distributed-routing-enabled
+            --configure-ip-setting extnw1 10.10.20.1/24 10.10.20.3
+            --sub-allocate-ip extnw1
+            --subnet 10.10.20.1/28 --ip-range 10.10.20.5-10.10.20.10
+            --configure-rate-limit extnw1 100 200
             --flips-mode-disabled
             Create gateway.
                 Parameter --external-network is a required parameter and
@@ -360,12 +360,7 @@ def _get_gateway(ctx, name):
 @click.argument('name', metavar='<name>', required=True)
 def info(ctx, name):
     try:
-        restore_session(ctx, vdc_required=True)
-        client = ctx.obj['client']
-        vdc_href = ctx.obj['profiles'].get('vdc_href')
-        vdc = VDC(client, href=vdc_href)
-        gateway = vdc.get_gateway(name)
-        gateway_resource = Gateway(client, href=gateway.get('href'))
+        gateway_resource = _get_gateway(ctx, name)
         ip_allocs = gateway_resource.list_external_network_ip_allocations()
         output = {}
         output['external_network_ip_allocations'] = ip_allocs

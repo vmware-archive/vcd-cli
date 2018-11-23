@@ -47,6 +47,8 @@ class ExtNetTest(BaseTestCase):
     _dns1 = '8.8.8.8'
     _dns2 = '8.8.8.9'
     _dns_suffix = 'example.com'
+    _gateway1 = '10.10.30.1'
+    _ip_range1 = '10.10.30.2-10.10.30.99'
 
     def setUp(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -136,6 +138,21 @@ class ExtNetTest(BaseTestCase):
             args=[
                 'update', new_name, '--name', self._name, '--description',
                 self._description
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0030_add_subnet(self):
+        """Add subnet to the external network created.
+
+        Invoke the command 'external add-subnet' in network.
+        """
+        result = self._runner.invoke(
+            external,
+            args=[
+                'add-subnet', self._name, '--gateway', self._gateway1,
+                '--netmask', self._netmask, '--ip-range', self._ip_range1,
+                '--dns1', self._dns1, '--dns2', self._dns2, '--dns-suffix',
+                self._dns_suffix
             ])
         self.assertEqual(0, result.exit_code)
 

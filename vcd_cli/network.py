@@ -44,6 +44,11 @@ def external(ctx):
         Only System Administrators can work with external networks.
 
 \b
+    Examples
+        vcd network external list
+            List all external networks available in the system
+
+\b
         vcd network external create external-net1 vc1
                 --port-group 'pg1'
                 --port-group 'pg2'
@@ -60,11 +65,6 @@ def external(ctx):
                 required parameters and each can have multiple entries.
 
 \b
-    Examples
-        vcd network external list
-            List all external networks available in the system
-
-\b
         vcd network external delete external-net1
             Delete an external network.
 
@@ -74,15 +74,15 @@ def external(ctx):
                 --description 'New external network'
             Update name and description of an external network.
 
-\b      vcd network external add-subnet external-net1
+\b
+        vcd network external add-subnet external-net1
                 --gateway-ip 192.168.1.1
                 --netmask 255.255.255.0
                 --ip-range 192.168.1.2-192.168.1.49
                 --primary-dns-ip 8.8.8.8
                 --secondary-dns-ip 8.8.8.9
                 --dns-suffix example.com
-            Add new subnet or network specification in existing external
-            network.
+            Add subnet to external network.
             ip-range can have multiple entries.
     """
     pass
@@ -365,10 +365,7 @@ def create_external_network(ctx, name, vc_name, port_group, gateway_ip,
                             netmask, ip_range, description, primary_dns_ip,
                             secondary_dns_ip, dns_suffix):
     try:
-        restore_session(ctx)
-        client = ctx.obj['client']
-
-        platform = Platform(client)
+        platform = get_platform(ctx)
         ext_net = platform.create_external_network(
             name=name,
             vim_server_name=vc_name,
@@ -392,10 +389,7 @@ def create_external_network(ctx, name, vc_name, port_group, gateway_ip,
 @click.pass_context
 def list_external_networks(ctx):
     try:
-        restore_session(ctx)
-        client = ctx.obj['client']
-
-        platform = Platform(client)
+        platform = get_platform(ctx)
         ext_nets = platform.list_external_networks()
 
         result = []
@@ -520,10 +514,7 @@ def delete_isolated_networks(ctx, name, force):
 @click.argument('name', metavar='<name>', required=True)
 def delete_external_network(ctx, name):
     try:
-        restore_session(ctx)
-        client = ctx.obj['client']
-
-        platform = Platform(client)
+        platform = get_platform(ctx)
         task = platform.delete_external_network(name=name)
 
         stdout(task, ctx)
@@ -553,10 +544,7 @@ def delete_external_network(ctx, name):
     help='New description of the external network')
 def update_external_network(ctx, name, new_name, new_description):
     try:
-        restore_session(ctx)
-        client = ctx.obj['client']
-
-        platform = Platform(client)
+        platform = get_platform(ctx)
         ext_net = platform.update_external_network(
             name=name,
             new_name=new_name,
@@ -570,8 +558,7 @@ def update_external_network(ctx, name, new_name, new_description):
 
 @external.command(
     'add-subnet',
-    short_help='Add new subnet or network specification in existing external ' \
-               'network.')
+    short_help='Add subnet to external network.')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -580,7 +567,7 @@ def update_external_network(ctx, name, new_name, new_description):
     'gateway_ip',
     required=True,
     metavar='<ip>',
-    help='gateway of the subnet')
+    help='gateway ip of the subnet')
 @click.option(
     '-n',
     '--netmask',
@@ -595,32 +582,26 @@ def update_external_network(ctx, name, new_name, new_description):
     required=True,
     multiple=True,
     metavar='<ip>',
-    help='IP range in StartAddress-EndAddress format')
+    help='ip range in StartAddress-EndAddress format')
 @click.option(
     '--dns1',
     'primary_dns_ip',
     metavar='<ip>',
-    help='IP of the primary DNS server of the subnet')
+    help='ip of the primary dns server of the subnet')
 @click.option(
     '--dns2',
     'secondary_dns_ip',
     metavar='<ip>',
-    help='IP of the secondary DNS server of the subnet')
+    help='ip of the secondary dns server of the subnet')
 @click.option(
     '--dns-suffix',
     'dns_suffix',
     metavar='<name>',
-    help='DNS suffix')
+    help='dns suffix')
 def add_subnet_external_network(ctx, name, gateway_ip, netmask, ip_range,
                                 primary_dns_ip, secondary_dns_ip, dns_suffix):
     try:
-        restore_session(ctx)
-        client = ctx.obj['client']
-
-        platform = Platform(client)
-        ext_net = platform.get_external_network(name)
-
-        extnet_obj = ExternalNetwork(client, resource=ext_net)
+        extnet_obj = get_ext_net_obj(ctx, name)
 
         ext_net = extnet_obj.add_subnet(name=name,
                                         gateway_ip=gateway_ip,
@@ -634,3 +615,17 @@ def add_subnet_external_network(ctx, name, gateway_ip, netmask, ip_range,
         stdout('subnet is added successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)
+
+
+def get_ext_net_obj(ctx, name):
+    """Returns ExternalNetwork object."""
+    platform = get_platform(ctx)
+    client = ctx.obj['client']
+    return ExternalNetwork(client, resource=platform.get_external_network(name))
+
+
+def get_platform(ctx):
+    """Returns Platform object"""
+    restore_session(ctx)
+    client = ctx.obj['client']
+    return Platform(client)

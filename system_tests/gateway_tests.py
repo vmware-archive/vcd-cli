@@ -238,9 +238,18 @@ class GatewayTest(BaseTestCase):
 
         It will trigger the cli command with command 'info'
         """
-        result_advanced_gateway = self._runner.invoke(
+        result_info = self._runner.invoke(
             gateway, args=['info', 'test_gateway1'])
-        self.assertEqual(0, result_advanced_gateway.exit_code)
+        self.assertEqual(0, result_info.exit_code)
+
+    def test_0010_redeploy_gateway(self):
+        """Redeploy the gateway.
+
+        It will trigger the cli command with option redeploy
+        """
+        result = self._runner.invoke(
+            gateway, args=['redeploy', 'test_gateway1'])
+        self.assertEqual(0, result.exit_code)
 
     def test_0098_tearDown(self):
         result_delete = self._runner.invoke(

@@ -70,6 +70,14 @@ def gateway(ctx):
         vcd gateway modify-form-factor  gateway1 full4
             Possible value for gatewy configuration are
             compact/full/full4/x-large
+
+\b
+        vcd gateway convert-to-advanced gateway1
+             Convert gateway to advanced by providing gateway name
+
+\b
+        vcd gateway redeploy gateway1
+             Redeploys the gateway with given name
     """
     pass
 
@@ -276,16 +284,6 @@ def delete_gateway(ctx, name):
 @click.pass_context
 @click.argument('name', metavar='<gateway name>', required=True)
 def convert_to_advanced_gateway(ctx, name):
-    """Convert to advanced gateway.
-        \b
-            Note
-                System Administrators and Organization Administrator can
-                convert legacy gateway to advanced.
-        \b
-            Examples
-                vcd gateway convert-to-advanced <gateway-name>
-                 Convert gateway to advanced by providing gateway name
-    """
     try:
         gateway_resource = _get_gateway(ctx, name)
         task = gateway_resource.convert_to_advanced()
@@ -365,5 +363,17 @@ def info(ctx, name):
         output = {}
         output['external_network_ip_allocations'] = ip_allocs
         stdout(output, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@gateway.command('redeploy', short_help='redeploy the given gateway')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def redeploy_gateway(ctx, name):
+    try:
+        gateway_resource = _get_gateway(ctx, name)
+        task = gateway_resource.redeploy()
+        stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

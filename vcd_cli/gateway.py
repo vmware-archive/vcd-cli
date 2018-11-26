@@ -79,7 +79,6 @@ def gateway(ctx):
         vcd gateway redeploy gateway1
              Redeploys the gateway with given name
 
-
 \b
         vcd gateway sync-syslog-settings gateway1
              Synchronizes syslog settings of the gateway with given name
@@ -384,8 +383,9 @@ def redeploy_gateway(ctx, name):
         stderr(e, ctx)
 
 
-
-@gateway.command('sync-syslog-settings', short_help='sync syslog settings of the given gateway')
+@gateway.command(
+    'sync-syslog-settings',
+    short_help='sync syslog settings of the given gateway')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 def sync_syslog_settings(ctx, name):

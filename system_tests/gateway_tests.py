@@ -251,6 +251,14 @@ class GatewayTest(BaseTestCase):
             gateway, args=['redeploy', 'test_gateway1'])
         self.assertEqual(0, result.exit_code)
 
+    def test_0011_sync_syslog_settings(self):
+        """Sync syslog settings of the gateway.
+         It will trigger the cli command with option sync-syslog-settings
+        """
+        result = self._runner.invoke(
+            gateway, args=['sync-syslog-settings', 'test_gateway1'])
+        self.assertEqual(0, result.exit_code)
+
     def test_0098_tearDown(self):
         result_delete = self._runner.invoke(
             gateway, args=['delete', 'test_gateway1'])

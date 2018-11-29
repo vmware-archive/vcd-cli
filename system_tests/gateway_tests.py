@@ -18,6 +18,7 @@ from vcd_cli.org import org
 from pyvcloud.vcd.client import GatewayBackingConfigType
 from pyvcloud.vcd.client import NSMAP
 from pyvcloud.vcd.platform import Platform
+from pyvcloud.vcd.utils import netmask_to_cidr_prefix_len
 
 
 class GatewayTest(BaseTestCase):
@@ -56,8 +57,10 @@ class GatewayTest(BaseTestCase):
             namespaces=NSMAP)
         first_ipscope = ip_scopes[0]
         GatewayTest._gateway_ip = first_ipscope.Gateway.text
+        prefix_len = netmask_to_cidr_prefix_len(GatewayTest._gateway_ip,
+                                                first_ipscope.Netmask.text)
         GatewayTest._subnet_addr = GatewayTest._gateway_ip + '/' + str(
-            first_ipscope.SubnetPrefixLength)
+            prefix_len)
 
     def _login(self):
         """Logs in using admin credentials"""
@@ -141,6 +144,8 @@ class GatewayTest(BaseTestCase):
             gateway,
             args=[
                 'create', self._name, '-e', GatewayTest._ext_network_name,
+                '--sub-allocate-ip', GatewayTest._ext_network_name, '--subnet',
+                GatewayTest._subnet_addr, '--ip-range', ip_range,
                 '--sub-allocate-ip', GatewayTest._ext_network_name, '--subnet',
                 GatewayTest._subnet_addr, '--ip-range', ip_range
             ])

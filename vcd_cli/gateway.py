@@ -13,6 +13,7 @@
 #
 
 import click
+from pyvcloud.vcd.client import ApiVersion
 from pyvcloud.vcd.client import GatewayBackingConfigType
 from pyvcloud.vcd.vdc import VDC
 
@@ -225,6 +226,7 @@ def create_gateway(ctx, name, external_networks_name, description,
         restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
+        api_version = ctx.obj['profiles'].get('api_version')
         vdc = VDC(client, href=vdc_href)
         is_configured_default_gw = False
         if default_gateway_external_network is not None and len(
@@ -254,14 +256,26 @@ def create_gateway(ctx, name, external_networks_name, description,
                 > 0:
             ext_net_to_rate_limit = tuple_to_dict(configure_rate_limits)
 
-        result = vdc.create_gateway(
-            name, external_networks_name, gateway_config, description,
-            is_configured_default_gw, default_gateway_external_network,
-            default_gw_ip, is_dns_relay, is_ha, is_advanced,
-            is_distributed_routing, is_ip_settings_configured,
-            ext_net_to_participated_subnet_with_ip_settings,
-            is_sub_allocate_ip_pools_enabled, ext_net_to_subnet_with_ip_range,
-            ext_net_to_rate_limit, is_flip_flop)
+        if float(api_version) <= float(ApiVersion.VERSION_30.value):
+            result = vdc.create_gateway_api_version_30(
+                name, external_networks_name, gateway_config, description,
+                is_configured_default_gw, default_gateway_external_network,
+                default_gw_ip, is_dns_relay, is_ha, is_advanced,
+                is_distributed_routing, is_ip_settings_configured,
+                ext_net_to_participated_subnet_with_ip_settings,
+                is_sub_allocate_ip_pools_enabled,
+                ext_net_to_subnet_with_ip_range,
+                ext_net_to_rate_limit)
+        else:
+            result = vdc.create_gateway(
+                name, external_networks_name, gateway_config, description,
+                is_configured_default_gw, default_gateway_external_network,
+                default_gw_ip, is_dns_relay, is_ha, is_advanced,
+                is_distributed_routing, is_ip_settings_configured,
+                ext_net_to_participated_subnet_with_ip_settings,
+                is_sub_allocate_ip_pools_enabled,
+                ext_net_to_subnet_with_ip_range, ext_net_to_rate_limit,
+                is_flip_flop)
         stdout(result.Tasks.Task[0], ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -84,6 +84,12 @@ def external(ctx):
                 --dns-suffix example.com
             Add subnet to external network.
             ip-range can have multiple entries.
+
+\b
+       vcd network external modify-ip-range external-net1
+               --gateway-ip 192.168.1.1
+               --ip-range 192.168.1.2-192.168.1.20
+               --new-ip-range 192.168.1.25-192.168.1.50
     """
     pass
 
@@ -629,3 +635,44 @@ def _get_platform(ctx):
     restore_session(ctx)
     client = ctx.obj['client']
     return Platform(client)
+
+@external.command(
+    'modify-ip-range',
+    short_help='Modifies an IP range of a subnet in an external network.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-g',
+    '--gateway-ip',
+    'gateway_ip',
+    required=True,
+    metavar='<ip>',
+    help='gateway ip of the subnet')
+@click.option(
+    '-i',
+    '--ip-range',
+    'ip_range',
+    required=True,
+    metavar='<ip>',
+    help='ip range in StartAddress-EndAddress format')
+@click.option(
+    '-n',
+    '--new-ip-range',
+    'new_ip_range',
+    required=True,
+    metavar='<ip>',
+    help='ip range in StartAddress-EndAddress format')
+
+def modify_ip_range_external_network(ctx, name, gateway_ip, ip_range,
+                                new_ip_range):
+    try:
+        extnet_obj = _get_ext_net_obj(ctx, name)
+
+        ext_net = extnet_obj.modify_ip_range(
+                                        gateway_ip=gateway_ip,
+                                        old_ip_range=ip_range,
+                                        new_ip_range=new_ip_range)
+        stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
+        stdout('Ip Range of a subnet modified successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)

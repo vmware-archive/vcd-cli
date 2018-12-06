@@ -90,9 +90,10 @@ class GatewayTest(BaseTestCase):
         GatewayTest._logger.debug("vcd network external list: {0}".format(
             network_result.output))
         ext_netws = network_result.output
-        ext_nets_name = ext_netws.split('------')
-        ext_netws_arr = ext_nets_name[1].split('\n')
-        return ext_netws_arr[1]
+
+        ext_netws_arr = ext_netws.split("\n")
+        GatewayTest._logger.debug("extNetwork: "+ext_netws_arr[2])
+        return "externalNetwork"
 
     def test_0001_create_gateway_with_mandatory_option(self):
         """Admin user can create gateway
@@ -263,6 +264,15 @@ class GatewayTest(BaseTestCase):
         result = self._runner.invoke(
             gateway, args=['sync-syslog-settings', 'test_gateway1'])
         self.assertEqual(0, result.exit_code)
+
+    def test_0012_get_config_ip_settings(self):
+        """Get information of the gateway config ip settings.
+
+        It will trigger the cli command with option list-config-ip-settings
+        """
+        result_info = self._runner.invoke(
+            gateway, args=['list-config-ip-settings', 'test_gateway1'])
+        self.assertEqual(0, result_info.exit_code)
 
     def test_0098_tearDown(self):
         result_delete = self._runner.invoke(

@@ -413,7 +413,7 @@ def configure_external_network(ctx):
 \b
         vcd gateway configure-external-network remove gateway1
             -e extNw1
-            Removes an external network to the edge gateway.
+            Removes an external network from the edge gateway.
     """
     pass
 
@@ -438,7 +438,7 @@ def configure_external_network(ctx):
     multiple=True,
     default=None,
     metavar='<subnet> <configured IP>',
-    help='configuring multiple ip settings')
+    help='configuring multiple IP settings')
 def add_external_network(ctx, name, external_network_name,
                          configure_ip_settings):
     try:
@@ -451,7 +451,7 @@ def add_external_network(ctx, name, external_network_name,
 
 
 @configure_external_network.command(
-    'remove', short_help='removes an external network to the edge gateway')
+    'remove', short_help='removes an external network from the edge gateway')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(

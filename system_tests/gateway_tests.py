@@ -89,11 +89,8 @@ class GatewayTest(BaseTestCase):
             network, args=['external', 'list'])
         GatewayTest._logger.debug("vcd network external list: {0}".format(
             network_result.output))
-        ext_netws = network_result.output
-
-        ext_netws_arr = ext_netws.split("\n")
-        GatewayTest._logger.debug("extNetwork: "+ext_netws_arr[2])
-        return "externalNetwork"
+        ext_netws = remove_empty_lines(network_result.output)
+        return ext_netws[2]
 
     def test_0001_create_gateway_with_mandatory_option(self):
         """Admin user can create gateway
@@ -271,7 +268,7 @@ class GatewayTest(BaseTestCase):
         It will trigger the cli command with option list-config-ip-settings
         """
         result_info = self._runner.invoke(
-            gateway, args=['list-config-ip-settings', 'test_gateway1'])
+            gateway, args=['list-config-ip-settings', self._name])
         self.assertEqual(0, result_info.exit_code)
 
     def test_0098_tearDown(self):

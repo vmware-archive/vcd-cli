@@ -269,6 +269,15 @@ class GatewayTest(BaseTestCase):
             gateway, args=['sync-syslog-settings', 'test_gateway1'])
         self.assertEqual(0, result.exit_code)
 
+    def test_0012_get_config_ip_settings(self):
+        """Get information of the gateway config ip settings.
+
+        It will trigger the cli command with option list-config-ip-settings
+        """
+        result_info = self._runner.invoke(
+            gateway, args=['list-config-ip-settings', self._name])
+        self.assertEqual(0, result_info.exit_code)
+
     def _create_external_network(self):
         """Create an external network as per configuration stated above.
 

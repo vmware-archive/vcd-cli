@@ -83,6 +83,9 @@ def gateway(ctx):
 \b
         vcd gateway sync-syslog-settings gateway1
              Synchronizes syslog settings of the gateway with given name
+\b
+        vcd gateway list-config-ip-settings gateway1
+             lists the config ip settings of the gateway with given name
     """
     pass
 
@@ -410,6 +413,18 @@ def sync_syslog_settings(ctx, name):
     except Exception as e:
         stderr(e, ctx)
 
+
+@gateway.command('list-config-ip-settings', short_help=
+        'shows config ip settings.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def list_config_ip_settings(ctx, name):
+    try:
+        gateway_resource = _get_gateway(ctx, name)
+        ip_allocs = gateway_resource.list_configure_ip_settings()
+        stdout(ip_allocs, ctx)
+    except Exception as e:
+        stderr(e, ctx)
 
 @gateway.group(short_help='configures external networks of an edge gateway')
 @click.pass_context

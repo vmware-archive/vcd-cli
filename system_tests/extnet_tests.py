@@ -49,6 +49,7 @@ class ExtNetTest(BaseTestCase):
     _dns_suffix = 'example.com'
     _gateway1 = '10.10.30.1'
     _ip_range1 = '10.10.30.2-10.10.30.99'
+    _ip_range2 = '10.10.30.30-10.10.30.60'
 
     def setUp(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -153,6 +154,19 @@ class ExtNetTest(BaseTestCase):
                 '--netmask', self._netmask, '--ip-range', self._ip_range1,
                 '--dns1', self._dns1, '--dns2', self._dns2, '--dns-suffix',
                 self._dns_suffix
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0031_modify_ip_range(self):
+        """Modify an IP range of a subnet in an external network.
+
+        Invoke the command 'external modify-ip-range' in network.
+        """
+        result = self._runner.invoke(
+            external,
+            args=[
+                'modify-ip-range', self._name, '--gateway-ip', self._gateway1,
+                '--ip-range', self._ip_range1,'--new-ip-range', self._ip_range2
             ])
         self.assertEqual(0, result.exit_code)
 

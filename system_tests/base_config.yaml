@@ -81,3 +81,11 @@ nsxt:
 pvdc:
   pvdc_name: '<pvdc-name>'
   resource_pool_names: ['resource-pool-name-1', 'resource-pool-name-2', ...]
+
+external_network:
+  name: '<ext-net-name>'
+  port_group_name: '<pg-name>'
+  ip_scopes:
+    - subnet: '<gateway-ip/prefix_len>'
+      ip_ranges:
+        - '<start-ip>-<end-ip>'

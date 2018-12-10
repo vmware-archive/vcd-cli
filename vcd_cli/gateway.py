@@ -425,3 +425,76 @@ def list_config_ip_settings(ctx, name):
         stdout(ip_allocs, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+@gateway.group(short_help='configures external networks of an edge gateway')
+@click.pass_context
+def configure_external_network(ctx):
+    """Configures external networks of edge gateways in vCloud Director.
+
+\b
+    Examples
+        vcd gateway configure-external-network add gateway1
+            --external_network extNw1
+            --configure-ip-setting 10.10.10.1/28 10.10.10.9
+            --configure-ip-setting 10.10.20.1/24 Auto
+            Adds an external network to the edge gateway.
+
+\b
+        vcd gateway configure-external-network remove gateway1
+            -e extNw1
+            Removes an external network from the edge gateway.
+    """
+    pass
+
+
+@configure_external_network.command(
+    'add', short_help='adds an external network to the edge gateway')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-e',
+    '--external-network',
+    'external_network_name',
+    metavar='<external network>',
+    multiple=False,
+    required=True,
+    help='external network to which the gateway can connect.')
+@click.option(
+    '--configure-ip-setting',
+    'configure_ip_settings',
+    nargs=2,
+    type=click.Tuple([str, str]),
+    multiple=True,
+    default=None,
+    metavar='<subnet> <configured IP>',
+    help='configuring multiple IP settings')
+def add_external_network(ctx, name, external_network_name,
+                         configure_ip_settings):
+    try:
+        gateway_resource = _get_gateway(ctx, name)
+        task = gateway_resource.add_external_network(external_network_name,
+                                                     configure_ip_settings)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@configure_external_network.command(
+    'remove', short_help='removes an external network from the edge gateway')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-e',
+    '--external-network',
+    'external_network_name',
+    metavar='<external network>',
+    multiple=False,
+    required=True,
+    help='external network that needs to be removed from the gateway.')
+def remove_external_network(ctx, name, external_network_name):
+    try:
+        gateway_resource = _get_gateway(ctx, name)
+        task = gateway_resource.remove_external_network(external_network_name)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)

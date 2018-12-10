@@ -7,16 +7,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from uuid import uuid1
 from click.testing import CliRunner
 
 from pyvcloud.system_test_framework.base_test import BaseTestCase
 from pyvcloud.system_test_framework.environment import Environment
 from vcd_cli.login import login, logout
+from vcd_cli.network import external
 from vcd_cli.network import network
 from vcd_cli.gateway import gateway
 from vcd_cli.org import org
 from pyvcloud.vcd.client import GatewayBackingConfigType
 from pyvcloud.vcd.client import NSMAP
+from pyvcloud.vcd.client import QueryResultFormat
+from pyvcloud.vcd.client import ResourceType
 from pyvcloud.vcd.platform import Platform
 from pyvcloud.vcd.utils import netmask_to_cidr_prefix_len
 
@@ -28,6 +32,7 @@ class GatewayTest(BaseTestCase):
         """
     _runner = None
     _name = 'test_gateway1'
+    _external_network_name = 'external_network_' + str(uuid1())
     _subnet_addr = None
     _ext_network_name = None
     _gateway_ip = None
@@ -89,8 +94,10 @@ class GatewayTest(BaseTestCase):
             network, args=['external', 'list'])
         GatewayTest._logger.debug("vcd network external list: {0}".format(
             network_result.output))
-        ext_netws = remove_empty_lines(network_result.output)
-        return ext_netws[2]
+        ext_netws = network_result.output
+        ext_nets_name = ext_netws.split('\n')
+        GatewayTest._logger.debug(ext_nets_name)
+        return ext_nets_name[2]
 
     def test_0001_create_gateway_with_mandatory_option(self):
         """Admin user can create gateway
@@ -270,6 +277,85 @@ class GatewayTest(BaseTestCase):
         result_info = self._runner.invoke(
             gateway, args=['list-config-ip-settings', self._name])
         self.assertEqual(0, result_info.exit_code)
+
+    def _create_external_network(self):
+        """Create an external network as per configuration stated above.
+
+        Choose first unused port group which is not a VxLAN. Unused port groups
+        have network names set to '--'. VxLAN port groups have name starting
+        with 'vxw-'.
+
+        Invoke the command 'external create' in network.
+        """
+        _config = Environment.get_config()
+        vc_name = _config['vc']['vcenter_host_name']
+        name_filter = ('vcName', vc_name)
+        sys_admin_client = Environment.get_sys_admin_client()
+        query = sys_admin_client.get_typed_query(
+            ResourceType.PORT_GROUP.value,
+            query_result_format=QueryResultFormat.RECORDS,
+            equality_filter=name_filter)
+
+        _port_group = None
+        for record in list(query.execute()):
+            if record.get('networkName') == '--':
+                if not record.get('name').startswith('vxw-'):
+                    _port_group = record.get('name')
+                    break
+
+        self.assertIsNotNone(_port_group, 'None of the port groups are free.')
+
+        result = self._runner.invoke(
+            external,
+            args=[
+                'create', self._external_network_name, vc_name, '--port-group',
+                _port_group, '--gateway', '10.10.30.1', '--netmask',
+                '255.255.255.0', '--ip-range', '10.10.30.101-10.10.30.150',
+                '--description', self._external_network_name, '--dns1',
+                '8.8.8.8', '--dns2', '8.8.8.9', '--dns-suffix', 'example.com'
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def _delete_external_network(self):
+        """Delete the external network created.
+
+            Invoke the command 'external delete' in network.
+        """
+        result = self._runner.invoke(
+            external, args=['delete', self._external_network_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0013_add_external_network(self):
+        """Adds external network to the gateway.
+         It will trigger the cli command configure-external-network add
+        """
+        self._create_external_network()
+        result = self._runner.invoke(
+            gateway,
+            args=[
+                'configure-external-network', 'add', 'test_gateway1', '-e',
+                self._external_network_name, '--configure-ip-setting',
+                '10.10.30.1/24', '10.10.30.110'
+            ])
+        GatewayTest._logger.debug(
+            "vcd gateway configure-external-network add "
+            "-e {0} --configure-ip-setting {1}\n{2}".format(
+                self._external_network_name, '10.10.30.1/24 10.10.30.110',
+                result.output))
+        self.assertEqual(0, result.exit_code)
+
+    def test_0014_remove_external_network(self):
+        """Removes external network from the gateway.
+         It will trigger the cli command configure-external-network remove
+        """
+        result = self._runner.invoke(
+            gateway,
+            args=[
+                'configure-external-network', 'remove', 'test_gateway1', '-e',
+                self._external_network_name
+            ])
+        self.assertEqual(0, result.exit_code)
+        self._delete_external_network()
 
     def test_0098_tearDown(self):
         result_delete = self._runner.invoke(

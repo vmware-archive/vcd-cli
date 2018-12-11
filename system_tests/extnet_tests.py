@@ -24,6 +24,7 @@ from vcd_cli.network import external
 
 from pyvcloud.vcd.client import QueryResultFormat
 from pyvcloud.vcd.client import ResourceType
+from pyvcloud.vcd.platform import Platform
 
 
 class ExtNetTest(BaseTestCase):
@@ -50,6 +51,7 @@ class ExtNetTest(BaseTestCase):
     _gateway1 = '10.10.30.1'
     _ip_range1 = '10.10.30.2-10.10.30.99'
     _ip_range2 = '10.10.30.30-10.10.30.60'
+    _portgroupType = "DV_PORTGROUP"
 
     def setUp(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -167,6 +169,23 @@ class ExtNetTest(BaseTestCase):
             args=[
                 'modify-ip-range', self._name, '--gateway-ip', self._gateway1,
                 '--ip-range', self._ip_range1,'--new-ip-range', self._ip_range2
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0032_attach_port_group(self):
+        """Attach a portgroup to an external network.
+
+        Invoke the command 'external attach-pg' in network.
+        """
+        vc_name = self._config['vc2']['vcenter_host_name']
+        self.client = Environment.get_sys_admin_client()
+        platform = Platform(self.client)
+        pgroup_name = platform.get_pgroup_name(vc_name,
+            ExtNetTest._portgroupType)
+        result = self._runner.invoke(
+            external,
+            args=[
+                'attach-pg', self._name, vc_name, '--port-group', pgroup_name
             ])
         self.assertEqual(0, result.exit_code)
 

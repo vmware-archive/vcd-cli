@@ -90,6 +90,10 @@ def external(ctx):
                --gateway-ip 192.168.1.1
                --ip-range 192.168.1.2-192.168.1.20
                --new-ip-range 192.168.1.25-192.168.1.50
+
+\b
+       vcd network external attach-pg external-net1 vc1
+               --port-group 'pg1'
     """
     pass
 
@@ -674,5 +678,31 @@ def modify_ip_range_external_network(ctx, name, gateway_ip, ip_range,
                                         new_ip_range=new_ip_range)
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
         stdout('Ip Range of a subnet modified successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@external.command(
+    'attach-pg',
+    short_help='Attaches a port group to an external network.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('vc_name', metavar='<vc-name>', required=True)
+@click.option(
+    '-p',
+    '--port-group',
+    'port_group',
+    required=True,
+    metavar='<name>',
+    help='name of the port group present in vCenter')
+
+def attach_port_group_external_network(ctx, name, vc_name, port_group):
+    try:
+        extnet_obj = _get_ext_net_obj(ctx, name)
+
+        ext_net = extnet_obj.attach_port_group(
+                                        vim_server_name=vc_name,
+                                        port_group_name=port_group)
+        stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
+        stdout('Port group attached to external network successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)

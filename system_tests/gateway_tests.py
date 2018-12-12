@@ -107,8 +107,15 @@ class GatewayTest(BaseTestCase):
             args=['create', self._name, '-e', GatewayTest._ext_network_name])
         GatewayTest._logger.debug("vcd gateway create <name> -e <ext nw>: {"
                                   "0}".format(result_create1.output))
-        self.assertEqual(0, result_create1.exit_code)
+        self.assertTrue(self._validate_result_for_unclosed_sslsocket_warning(
+            result_create1))
         self._delete_gateway()
+
+    def _validate_result_for_unclosed_sslsocket_warning(self, result):
+        if (result.exit_code == -1 and
+                'ResourceWarning: unclosed <ssl.SSLSocket' in result.output):
+            return True
+        return 0 == result.exit_code
 
     def test_0002_create_gateway_with_configure_ip_setting(self):
         """Create gateway with options --configure-ip-setting.
@@ -128,7 +135,8 @@ class GatewayTest(BaseTestCase):
                                       GatewayTest._ext_network_name,
                                       GatewayTest._subnet_addr,
                                       result_create2.output))
-        self.assertEqual(0, result_create2.exit_code)
+        self.assertTrue(self._validate_result_for_unclosed_sslsocket_warning(
+            result_create2))
         self._delete_gateway()
 
     def _get_ip_range(self):
@@ -160,7 +168,8 @@ class GatewayTest(BaseTestCase):
                                       GatewayTest._ext_network_name,
                                       GatewayTest._subnet_addr, ip_range,
                                       result_create3.output))
-        self.assertEqual(0, result_create3.exit_code)
+        self.assertTrue(self._validate_result_for_unclosed_sslsocket_warning(
+            result_create3))
         self._delete_gateway()
 
     def test_0004_create_gateway_with_default_gateway_and_dns_relay_enabled(
@@ -184,7 +193,8 @@ class GatewayTest(BaseTestCase):
             "--default-gateway-ip {0} --dns-relay-enabled "
             "--advanced-enabled : {"
             "1}".format(GatewayTest._gateway_ip, result_create5.output))
-        self.assertEqual(0, result_create5.exit_code)
+        self.assertTrue(self._validate_result_for_unclosed_sslsocket_warning(
+            result_create5))
         self._delete_gateway()
 
     def test_0005_create_gateway_with_configure_rate_limit(self):
@@ -276,7 +286,8 @@ class GatewayTest(BaseTestCase):
         """
         result_info = self._runner.invoke(
             gateway, args=['list-config-ip-settings', self._name])
-        self.assertEqual(0, result_info.exit_code)
+        self.assertTrue(self._validate_result_for_unclosed_sslsocket_warning(
+            result_info))
 
     def _create_external_network(self):
         """Create an external network as per configuration stated above.
@@ -342,7 +353,8 @@ class GatewayTest(BaseTestCase):
             "-e {0} --configure-ip-setting {1}\n{2}".format(
                 self._external_network_name, '10.10.30.1/24 10.10.30.110',
                 result.output))
-        self.assertEqual(0, result.exit_code)
+        self.assertTrue(
+            self._validate_result_for_unclosed_sslsocket_warning(result))
 
     def test_0014_remove_external_network(self):
         """Removes external network from the gateway.
@@ -354,7 +366,8 @@ class GatewayTest(BaseTestCase):
                 'configure-external-network', 'remove', 'test_gateway1', '-e',
                 self._external_network_name
             ])
-        self.assertEqual(0, result.exit_code)
+        self.assertTrue(
+            self._validate_result_for_unclosed_sslsocket_warning(result))
         self._delete_external_network()
 
     def test_0098_tearDown(self):

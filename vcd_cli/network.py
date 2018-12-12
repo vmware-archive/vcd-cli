@@ -13,6 +13,7 @@
 #
 
 import click
+from pyvcloud.vcd.exceptions import InvalidParameterException
 from pyvcloud.vcd.external_network import ExternalNetwork
 from pyvcloud.vcd.platform import Platform
 from pyvcloud.vcd.vdc import VDC
@@ -664,7 +665,7 @@ def _get_platform(ctx):
     help='ip range in StartAddress-EndAddress format')
 
 def modify_ip_range_external_network(ctx, name, gateway_ip, ip_range,
-                                new_ip_range):
+                                     new_ip_range):
     try:
         extnet_obj = _get_ext_net_obj(ctx, name)
 
@@ -674,5 +675,149 @@ def modify_ip_range_external_network(ctx, name, gateway_ip, ip_range,
                                         new_ip_range=new_ip_range)
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
         stdout('Ip Range of a subnet modified successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@network.group(short_help='work with routed org vdc networks')
+@click.pass_context
+def routed(ctx):
+    """Work with routed org vdc networks.
+
+\b
+    Examples
+        vcd network routed create routed_network -g/--gateway-name gateway_name
+            --subnet 5.5.6.1/20 --description description
+            --primary-dns-ip 7.7.7.3 --secondary-dns-ip 7.7.7.4
+            --dns-suffix test-suffix --ip-range 5.5.6.2-5.5.6.100
+            --shared-enabled --guest-vlan-allowed-enabled
+            --sub-interface-enabled --distributed-interface-enabled
+            --retain-net-info-across-deployments-enabled
+        Creates a routed org vdc network
+    """
+    pass
+
+
+@routed.command('create', short_help='Creates a routed org vdc network.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-g',
+    '--gateway-name',
+    'gateway_name',
+    required=True,
+    metavar='<name>',
+    help='name of gateway to which this network will connect')
+@click.option(
+    '--subnet',
+    'subnet',
+    required=True,
+    metavar='<CIDR format. e.g.,x.x.x.x/20>',
+    help='Network CIDR')
+@click.option(
+    '--description',
+    'description',
+    metavar='<description>',
+    help='description')
+@click.option(
+    '--primary-dns-ip',
+    'primary_dns_ip',
+    metavar='<IP>',
+    help='primary DNS IP')
+@click.option(
+    '--secondary-dns-ip',
+    'secondary_dns_ip',
+    metavar='<IP>',
+    help='secondary DNS IP')
+@click.option(
+    '--dns-suffix', 'dns_suffix', metavar='<Name>', help='dns suffix')
+@click.option(
+    '--dns-suffix', 'dns_suffix', metavar='<Name>', help='dns suffix')
+@click.option(
+    '--ip-range',
+    'ip_range',
+    metavar='<ip_range_start-ip_range_end>',
+    help='IP range')
+@click.option(
+    '--shared-enabled/--shared-disabled',
+    'is_shared',
+    default=False,
+    metavar='<bool>',
+    help='shared enabled')
+@click.option(
+    '--guest-vlan-allowed-enabled/--guest-vlan-allowed-disabled',
+    'is_guest_vlan_allowed',
+    default=False,
+    metavar='<bool>',
+    help='guest vlan allowed')
+@click.option(
+    '--sub-interface-enabled/--sub-interface-disabled',
+    'is_sub_interface',
+    default=False,
+    metavar='<bool>',
+    help='create as sub interface')
+@click.option(
+    '--distributed-interface-enabled/--distributed-interface-disabled',
+    'is_distributed_interface',
+    default=False,
+    metavar='<bool>',
+    help='create as distributed interface')
+@click.option(
+    '--retain-net-info-across-deployments-enabled/--retain-net-info-across'
+    '-deployments-disabled',
+    'is_retain_net_info_across_deployments',
+    default=False,
+    metavar='<bool>',
+    help='retain net info across deployment')
+def create_routed_vdc_network(ctx, name, gateway_name, subnet, description,
+                              primary_dns_ip, secondary_dns_ip, dns_suffix,
+                              ip_range, is_shared, is_guest_vlan_allowed,
+                              is_sub_interface, is_distributed_interface,
+                              is_retain_net_info_across_deployments):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        ip_range_start = None
+        ip_range_end = None
+        if ip_range is not None:
+            ip_range_arr = ip_range.split('-')
+            if len(ip_range_arr) != 2:
+                raise InvalidParameterException(
+                    'IP Range should in x.x.x.x-y.y.y.y format.')
+            ip_range_start = ip_range_arr[0]
+            ip_range_end = ip_range_arr[1]
+
+        routed_network = vdc.create_routed_vdc_network(
+            name, gateway_name, subnet, description, primary_dns_ip,
+            secondary_dns_ip, dns_suffix, ip_range_start, ip_range_end,
+            is_shared, is_guest_vlan_allowed, is_sub_interface,
+            is_distributed_interface, is_retain_net_info_across_deployments)
+        stdout(routed_network.Tasks.Task[0], ctx)
+        stdout('Routed org vdc network created successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+def _get_vdc_ref(ctx):
+    """Get the sdk's vdc resource.
+
+    It will restore sessions if expired. It will read the client and vdc href
+    from the context and create VDC object.
+    """
+    restore_session(ctx, vdc_required=True)
+    client = ctx.obj['client']
+    in_use_vdc_href = ctx.obj['profiles'].get('vdc_href')
+    return VDC(client, href=in_use_vdc_href)
+
+@routed.command('delete', short_help='delete org vdc routed network')
+@click.pass_context
+@click.argument('name', metavar='<vdc routed network name>', required=True)
+def delete_vdc_routed_network(ctx, name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        client = ctx.obj['client']
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        vdc = VDC(client, href=vdc_href)
+        task = vdc.delete_routed_orgvdc_network(name)
+        stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

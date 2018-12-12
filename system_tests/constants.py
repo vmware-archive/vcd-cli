@@ -1,4 +1,4 @@
-# VMware vCloud Director Python SDK
+# VMware vCloud Director CLI
 # Copyright (c) 2017-2018 VMware, Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

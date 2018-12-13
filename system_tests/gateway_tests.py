@@ -358,7 +358,7 @@ class GatewayTest(BaseTestCase):
         self._delete_external_network()
 
     def test_0015_edit_gateway_name(self):
-        """Removes external network from the gateway.
+        """Edits the gateway name.
          It will trigger the cli command update
         """
         result = self._runner.invoke(

@@ -83,6 +83,7 @@ def gateway(ctx):
 \b
         vcd gateway sync-syslog-settings gateway1
              Synchronizes syslog settings of the gateway with given name
+
 \b
         vcd gateway list-config-ip-settings gateway1
              lists the config ip settings of the gateway with given name
@@ -551,7 +552,8 @@ def edit_gateway_name(ctx, name, new_name):
     required=True,
     metavar='<subnet> <enable> <ip>',
     help='set the subnet settings')
-def edit_gateway_config_ip(ctx, name, external_networks_name, subnet_settings):
+def edit_gateway_config_ip_settings(ctx, name, external_networks_name,
+                                    subnet_settings):
     try:
         gateway_resource = _get_gateway(ctx, name)
         ext_network = dict()

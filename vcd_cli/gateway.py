@@ -95,7 +95,7 @@ def gateway(ctx):
             extNetwork --subnet-available 10.20.30.1/24 True 10.20.30.3
 
              edits the config ip settings of the gateway with given name
-             Parameter --subnet-available is a required parameter and
+             --subnet-available is a required parameter and
                 can have multiple entries
     """
     pass
@@ -530,7 +530,8 @@ def edit_gateway_name(ctx, name, new_name):
         stderr(e, ctx)
 
 
-@gateway.command('configure-ip-settings', short_help='update gateway name.')
+@gateway.command('configure-ip-settings', short_help='edit config ip settings.'
+                 )
 @click.pass_context
 @click.argument('name', metavar='<gateway name>', required=True)
 @click.option(

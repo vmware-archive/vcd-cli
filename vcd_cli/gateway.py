@@ -83,9 +83,21 @@ def gateway(ctx):
 \b
         vcd gateway sync-syslog-settings gateway1
              Synchronizes syslog settings of the gateway with given name
+
 \b
         vcd gateway list-config-ip-settings gateway1
              lists the config ip settings of the gateway with given name
+\b
+        vcd gateway edit_gateway_name gateway1 --n gateway2
+             edits the gateway name
+
+\b
+        vcd gateway configure-ip-settings gateway1 --external-network
+            extNetwork --subnet-available 10.20.30.1/24 True 10.20.30.3
+
+             edits the config ip settings of the gateway with given name
+             --subnet-available is a required parameter and
+                can have multiple entries
     """
     pass
 
@@ -498,3 +510,64 @@ def remove_external_network(ctx, name, external_network_name):
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+
+@gateway.command('update', short_help='update gateway name.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-n',
+    '--new-name',
+    'new_name',
+    required=True,
+    metavar='<new-name>',
+    help='new name of the gateway')
+def edit_gateway_name(ctx, name, new_name):
+    try:
+        gateway_resource = _get_gateway(ctx, name)
+        task = gateway_resource.edit_gateway_name(new_name)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@gateway.command('configure-ip-settings', short_help='edit config ip settings.'
+                 )
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+@click.option(
+    '-e',
+    '--external-network',
+    'external_networks_name',
+    metavar='<external network>',
+    required=True,
+    help='external networks to which the new gateway can connect.')
+@click.option(
+    '-s',
+    '--subnet-available',
+    'subnet_settings',
+    nargs=3,
+    type=click.Tuple([str, bool, str]),
+    multiple=True,
+    required=True,
+    metavar='<subnet> <enable> <ip>',
+    help='set the subnet settings')
+def edit_gateway_config_ip_settings(ctx, name, external_networks_name,
+                                    subnet_settings):
+    try:
+        gateway_resource = _get_gateway(ctx, name)
+        ext_network = dict()
+        subnet_participation = dict()
+        for setting in subnet_settings:
+            subnet_participation_settings = dict()
+            subnet_participation_settings['enable'] = setting[1]
+            subnet_participation_settings['ip_address'] = setting[2]
+            subnet_participation[setting[0]] = subnet_participation_settings
+
+        ext_network[external_networks_name] = subnet_participation
+        task = gateway_resource.edit_config_ip_settings(ext_network)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+

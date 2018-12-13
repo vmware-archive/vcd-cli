@@ -370,6 +370,35 @@ class GatewayTest(BaseTestCase):
             self._validate_result_for_unclosed_sslsocket_warning(result))
         self._delete_external_network()
 
+    def test_0015_edit_gateway_name(self):
+        """Edits the gateway name.
+         It will trigger the cli command update
+        """
+        result = self._runner.invoke(
+            gateway,
+            args=['update', self._name, '--name', 'gateway2'])
+        self.assertEqual(0, result.exit_code)
+        """ resetting back to original name"""
+        result = self._runner.invoke(
+            gateway,
+            args=['update', 'gateway2', '--name', self._name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0016_edit_config_ip_settings(self):
+        """Edits the gateway config ip settings.
+
+        It will trigger the cli command with option config-ip-settings
+        """
+        result = self._runner.invoke(
+            gateway,
+            args=[
+                'configure-ip-settings', self._name, '-e',
+                self._ext_network_name, '-s', self._subnet_addr, True,
+                self._gateway_ip
+            ])
+        GatewayTest._logger.debug("result :{0}".format(result))
+        self.assertEqual(0, result.exit_code)
+
     def test_0098_tearDown(self):
         result_delete = self._runner.invoke(
             gateway, args=['delete', 'test_gateway1'])

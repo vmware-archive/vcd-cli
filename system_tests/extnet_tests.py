@@ -170,6 +170,26 @@ class ExtNetTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    def test_0032_enable_subnet(self):
+        """Enable subnet of an external network.
+
+        Invoke the command 'external enable-subnet' in network.
+        """
+        result = self._runner.invoke(
+            external,
+            args=[
+                'enable-subnet', self._name, '--gateway', self._gateway1,
+                '--enable'
+            ])
+        self.assertEqual(0, result.exit_code)
+        result = self._runner.invoke(
+            external,
+            args=[
+                'enable-subnet', self._name, '--gateway', self._gateway1,
+                '--disable'
+            ])
+        self.assertEqual(0, result.exit_code)
+
     def test_0100_delete(self):
         """Delete the external network created.
 

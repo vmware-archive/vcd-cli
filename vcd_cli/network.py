@@ -87,6 +87,12 @@ def external(ctx):
             ip-range can have multiple entries.
 
 \b
+        vcd network external enable-subnet external-net1
+                --gateway-ip 192.168.1.1
+                --enable
+            Enable subnet of an external network.
+
+\b
        vcd network external modify-ip-range external-net1
                --gateway-ip 192.168.1.1
                --ip-range 192.168.1.2-192.168.1.20
@@ -624,6 +630,35 @@ def add_subnet_external_network(ctx, name, gateway_ip, netmask, ip_range,
         stderr(e, ctx)
 
 
+@external.command(
+    'enable-subnet',
+    short_help='Enable subnet of an external network.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-g',
+    '--gateway',
+    'gateway_ip',
+    required=True,
+    metavar='<ip>',
+    help='gateway ip of the subnet')
+@click.option('--enable/--disable',
+              'is_enabled',
+              default=None,
+              help='enable/disable the subnet')
+def enable_subnet_external_network(ctx, name, gateway_ip, is_enabled):
+    try:
+        extnet_obj = _get_ext_net_obj(ctx, name)
+
+        ext_net = extnet_obj.enable_subnet(gateway_ip=gateway_ip,
+                                           is_enabled=is_enabled)
+
+        stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
+        stdout('subnet is enabled successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
 def _get_ext_net_obj(ctx, name):
     """Returns ExternalNetwork object."""
     platform = _get_platform(ctx)
@@ -636,6 +671,7 @@ def _get_platform(ctx):
     restore_session(ctx)
     client = ctx.obj['client']
     return Platform(client)
+
 
 @external.command(
     'modify-ip-range',
@@ -663,16 +699,15 @@ def _get_platform(ctx):
     required=True,
     metavar='<ip>',
     help='ip range in StartAddress-EndAddress format')
-
 def modify_ip_range_external_network(ctx, name, gateway_ip, ip_range,
                                      new_ip_range):
     try:
         extnet_obj = _get_ext_net_obj(ctx, name)
 
         ext_net = extnet_obj.modify_ip_range(
-                                        gateway_ip=gateway_ip,
-                                        old_ip_range=ip_range,
-                                        new_ip_range=new_ip_range)
+            gateway_ip=gateway_ip,
+            old_ip_range=ip_range,
+            new_ip_range=new_ip_range)
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
         stdout('Ip Range of a subnet modified successfully.', ctx)
     except Exception as e:
@@ -807,6 +842,7 @@ def _get_vdc_ref(ctx):
     client = ctx.obj['client']
     in_use_vdc_href = ctx.obj['profiles'].get('vdc_href')
     return VDC(client, href=in_use_vdc_href)
+
 
 @routed.command('delete', short_help='delete org vdc routed network')
 @click.pass_context

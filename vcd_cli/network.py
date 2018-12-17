@@ -656,12 +656,8 @@ def enable_subnet_external_network(ctx, name, gateway_ip, is_enabled):
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
         if is_enabled == True:
             stdout('subnet is enabled successfully.', ctx)
-        elif is_enabled == False:
-            stdout('subnet is disabled successfully.', ctx)
         else:
-            stdout(
-                'unknown option given. option should be either --enable/--disable',
-                ctx)
+            stdout('subnet is disabled successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)
 

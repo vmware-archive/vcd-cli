@@ -171,7 +171,7 @@ class ExtNetTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0032_enable_subnet(self):
-        """Enable subnet of an external network.
+        """Enable/Disable subnet of an external network.
 
         Invoke the command 'external enable-subnet' in network.
         """

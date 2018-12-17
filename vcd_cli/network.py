@@ -89,8 +89,8 @@ def external(ctx):
 \b
         vcd network external enable-subnet external-net1
                 --gateway-ip 192.168.1.1
-                --enable
-            Enable subnet of an external network.
+                --enable/--disable
+            Enable/Disable subnet of an external network.
 
 \b
        vcd network external modify-ip-range external-net1
@@ -654,7 +654,14 @@ def enable_subnet_external_network(ctx, name, gateway_ip, is_enabled):
                                            is_enabled=is_enabled)
 
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
-        stdout('subnet is enabled successfully.', ctx)
+        if is_enabled == True:
+            stdout('subnet is enabled successfully.', ctx)
+        elif is_enabled == False:
+            stdout('subnet is disabled successfully.', ctx)
+        else:
+            stdout(
+                'unknown option given. option should be either --enable/--disable',
+                ctx)
     except Exception as e:
         stderr(e, ctx)
 

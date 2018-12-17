@@ -56,6 +56,9 @@ def vc(ctx):
 
         vcd vc detach vc-name
             Detach (unregister) Virtual Center.
+
+        vcd vc list-available-port-groups vc-name
+            lists the available portgroups in a particular vCenter
     """
     pass
 
@@ -199,3 +202,19 @@ def detach(ctx, name):
         stdout(platform.detach_vcenter(vc_name=name), ctx)
     except Exception as e:
         stderr(e, ctx)
+
+@vc.command('list-available-port-groups', short_help='list avaliable portgroups in vc')
+@click.pass_context
+@click.argument('vc_name', metavar='<vc_name>', required=True)
+def list_available_port_groups(ctx, vc_name):
+    try:
+        restore_session(ctx)
+        platform = Platform(ctx.obj['client'])
+        port_groups = platform.list_available_port_group_names(
+            vim_server_name=vc_name)
+        output = {}
+        output['available port-groups'] = port_groups
+        stdout(output, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+

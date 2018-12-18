@@ -93,6 +93,11 @@ def external(ctx):
             Enable/Disable subnet of an external network.
 
 \b
+       vcd network external add-ip-range external-net1
+               --gateway-ip 192.168.1.1
+               --ip-range 192.168.1.2-192.168.1.20
+
+\b
        vcd network external modify-ip-range external-net1
                --gateway-ip 192.168.1.1
                --ip-range 192.168.1.2-192.168.1.20
@@ -674,6 +679,39 @@ def _get_platform(ctx):
     restore_session(ctx)
     client = ctx.obj['client']
     return Platform(client)
+
+
+@external.command(
+    'add-ip-range',
+    short_help='Adds an IP range of a subnet in an external network.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-g',
+    '--gateway-ip',
+    'gateway_ip',
+    required=True,
+    metavar='<ip>',
+    help='gateway ip of the subnet')
+@click.option(
+    '-i',
+    '--ip-range',
+    'ip_range',
+    required=True,
+    multiple=True,
+    metavar='<ip>',
+    help='ip range in StartAddress-EndAddress format')
+def add_ip_range_external_network(ctx, name, gateway_ip, ip_range):
+    try:
+        extnet_obj = _get_ext_net_obj(ctx, name)
+
+        ext_net = extnet_obj.add_ip_range(
+            gateway_ip=gateway_ip,
+            ip_ranges=ip_range)
+        stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
+        stdout('Ip Range of a subnet added successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
 
 
 @external.command(

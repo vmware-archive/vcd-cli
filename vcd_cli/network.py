@@ -683,7 +683,7 @@ def _get_platform(ctx):
 
 @external.command(
     'add-ip-range',
-    short_help='Adds an IP range of a subnet in an external network.')
+    short_help='Adds an IP range to a subnet in an external network.')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -709,7 +709,7 @@ def add_ip_range_external_network(ctx, name, gateway_ip, ip_range):
             gateway_ip=gateway_ip,
             ip_ranges=ip_range)
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
-        stdout('Ip Range of a subnet added successfully.', ctx)
+        stdout('Ip Range added to a subnet successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)
 

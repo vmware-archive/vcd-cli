@@ -50,6 +50,7 @@ class ExtNetTest(BaseTestCase):
     _gateway1 = '10.10.30.1'
     _ip_range1 = '10.10.30.2-10.10.30.99'
     _ip_range2 = '10.10.30.30-10.10.30.60'
+    _ip_range3 = '10.10.30.101-10.10.30.110'
 
     def setUp(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -188,6 +189,18 @@ class ExtNetTest(BaseTestCase):
                 'enable-subnet', self._name, '--gateway', self._gateway1,
                 '--disable'
             ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0033_add_ip_range(self):
+        """Add an IP range to a subnet in an external network.
+
+        Invoke the command 'external add-ip-range' in network.
+        """
+        result = self._runner.invoke(
+            external,
+            args=[
+                'add-ip-range', self._name, '--gateway-ip', self._gateway1,
+                '--ip-range', self._ip_range3])
         self.assertEqual(0, result.exit_code)
 
     def test_0100_delete(self):

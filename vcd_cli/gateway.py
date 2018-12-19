@@ -570,4 +570,55 @@ def edit_gateway_config_ip_settings(ctx, name, external_networks_name,
     except Exception as e:
         stderr(e, ctx)
 
+@gateway.group(short_help='configures Sub allocate ip pools of gateway')
+@click.pass_context
+def sub_allocate_ip(ctx):
+    """Configures sub-allocate ip pools of gateway in vCloud Director.
+
+\b
+    Examples
+        vcd gateway sub-allocate-ip add gateway1
+            --external_network extNw1
+            --ip-range  10.10.10.20-10.10.10.30
+            Adds sub allocate ip pools to the edge gateway.
+
+\b
+        vcd gateway sub-allocate-ip update gateway1
+            -e extNw1
+            --old-ip-range 10.10.10.20-10.10.10.30
+            --new-ip-range 10.10.10.40-10.10.10.50
+            Updates sub allocate ip pools of the edge gateway.
+    """
+    pass
+
+
+@sub_allocate_ip.command(
+    'add', short_help='Adds sub allocate ip pools to the edge gateway')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-e',
+    '--external-network',
+    'external_network_name',
+    metavar='<external network>',
+    multiple=False,
+    required=True,
+    help='external network to connected to the gateway.')
+@click.option(
+    '-i',
+    '--ip-range',
+    'ip_range',
+    metavar='<ip range>',
+    multiple=True,
+    required=True,
+    help='ip ranges used for static pool allocation in the network.')
+def add_sub_allocated_ip_pools(ctx, name, external_network_name,
+                               ip_range):
+    try:
+        gateway_resource = _get_gateway(ctx, name)
+        task = gateway_resource.add_sub_allocated_ip_pools(
+            external_network_name, list(ip_range))
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
 

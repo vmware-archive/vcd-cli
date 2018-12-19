@@ -23,10 +23,10 @@ logging:
 vcd:
 # Fill in the vCloud Dirctor host, sysadmin credentials and other related
 # information here. These will be required for the tests to run.
-  host: '<vcd ip>'
+  host: 'sc-rdops-vm03-dhcp-74-13.eng.vmware.com'
   api_version: '30.0'
-  sys_admin_username: 'administrator'
-  sys_admin_pass: '<root-password>'
+  sys_admin_username: 'root'
+  sys_admin_pass: 'ca$hc0w'
   sys_org_name: 'System'
 
 # The following params defines the org, pvdc, ovdc, etc. that the tests will
@@ -89,3 +89,5 @@ external_network:
     - subnet: '<gateway-ip/prefix_len>'
       ip_ranges:
         - '<start-ip>-<end-ip>'
+  gateway_sub_allocated_ip_range: '<ip-range>'
+  new_gateway_sub_allocated_ip_range: '<ip-range>'

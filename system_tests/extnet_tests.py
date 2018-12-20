@@ -192,7 +192,7 @@ class ExtNetTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0033_add_ip_range(self):
-        """Add an IP range of a subnet in an external network.
+        """Add an IP range to a subnet in an external network.
 
         Invoke the command 'external add-ip-range' in network.
         """

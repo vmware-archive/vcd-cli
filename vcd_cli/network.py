@@ -102,6 +102,11 @@ def external(ctx):
                --gateway-ip 192.168.1.1
                --ip-range 192.168.1.2-192.168.1.20
                --new-ip-range 192.168.1.25-192.168.1.50
+
+\b
+       vcd network external detach-port-group external-net1
+               --vc-name vc1
+               --port-group-name pg1
     """
     pass
 
@@ -754,6 +759,33 @@ def modify_ip_range_external_network(ctx, name, gateway_ip, ip_range,
     except Exception as e:
         stderr(e, ctx)
 
+@external.command(
+    'detach-port-group',
+    short_help='Detach port group from an external network.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '--vc-name',
+    'vc_name',
+    required=True,
+    metavar='<ip>',
+    help=' Attached vcenter name')
+@click.option(
+    '--pg-name',
+    'pg_name',
+    required=True,
+    metavar='<ip>',
+    help='Port group name')
+def detach_port_group_external_network(ctx, name, vc_name, pg_name):
+    try:
+        extnet_obj = _get_ext_net_obj(ctx, name)
+
+        ext_net = extnet_obj.detach_port_group(vim_server_name=vc_name,
+                                               port_group_name=pg_name)
+        stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
+        stdout('Port group detached successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
 
 @network.group(short_help='work with routed org vdc networks')
 @click.pass_context

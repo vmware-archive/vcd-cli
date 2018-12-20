@@ -286,6 +286,7 @@ class GatewayTest(BaseTestCase):
         """
         result_info = self._runner.invoke(
             gateway, args=['list-config-ip-settings', self._name])
+        GatewayTest._logger.debug('result output {0}'.format(result_info))
         self.assertTrue(self._validate_result_for_unclosed_sslsocket_warning(
             result_info))
 
@@ -396,7 +397,24 @@ class GatewayTest(BaseTestCase):
                 self._ext_network_name, '-s', self._subnet_addr, True,
                 self._gateway_ip
             ])
+
         GatewayTest._logger.debug("result :{0}".format(result))
+        self.assertEqual(0, result.exit_code)
+
+    def test_0017_add_sub_allocated_ip_pools(self):
+        """Adds new ip range present to the sub allocate pool of gateway.
+         It will trigger the cli command sub-allocate-ip add
+        """
+        self._config = Environment.get_config()
+        config = self._config['external_network']
+        gateway_sub_allocated_ip_range = \
+            config['gateway_sub_allocated_ip_range']
+        ext_name = config['name']
+        result = self._runner.invoke(
+            gateway,
+            args=[
+                'sub-allocate-ip', 'add', 'test_gateway1', '-e',
+                ext_name, '--ip-range', gateway_sub_allocated_ip_range])
         self.assertEqual(0, result.exit_code)
 
     def test_0098_tearDown(self):

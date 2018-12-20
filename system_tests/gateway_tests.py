@@ -375,6 +375,7 @@ class GatewayTest(BaseTestCase):
         """Edits the gateway name.
          It will trigger the cli command update
         """
+        GatewayTest._logger.debug("self._name{0}".format(self._name))
         result = self._runner.invoke(
             gateway,
             args=['update', self._name, '--name', 'gateway2'])
@@ -415,6 +416,25 @@ class GatewayTest(BaseTestCase):
             args=[
                 'sub-allocate-ip', 'add', 'test_gateway1', '-e',
                 ext_name, '--ip-range', gateway_sub_allocated_ip_range])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0018_edit_sub_allocated_ip_pools(self):
+        """Edits existing ip range present in the sub allocate pool of gateway.
+         It will trigger the cli command sub-allocate-ip update
+        """
+        self._config = Environment.get_config()
+        config = self._config['external_network']
+        gateway_sub_allocated_ip_range = \
+            config['gateway_sub_allocated_ip_range']
+        gateway_sub_allocated_ip_range1 = \
+            config['new_gateway_sub_allocated_ip_range']
+        ext_name = config['name']
+        result = self._runner.invoke(
+            gateway,
+            args=[
+                'sub-allocate-ip', 'update', 'test_gateway1', '-e',
+                ext_name, '-o', gateway_sub_allocated_ip_range,
+                '-n', gateway_sub_allocated_ip_range1])
         self.assertEqual(0, result.exit_code)
 
     def test_0098_tearDown(self):

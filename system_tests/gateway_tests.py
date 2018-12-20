@@ -375,7 +375,6 @@ class GatewayTest(BaseTestCase):
         """Edits the gateway name.
          It will trigger the cli command update
         """
-        GatewayTest._logger.debug("self._name{0}".format(self._name))
         result = self._runner.invoke(
             gateway,
             args=['update', self._name, '--name', 'gateway2'])

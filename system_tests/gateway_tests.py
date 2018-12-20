@@ -33,9 +33,9 @@ class GatewayTest(BaseTestCase):
     _runner = None
     _name = 'test_gateway1'
     _external_network_name = 'external_network_' + str(uuid1())
-    _subnet_addr = '10.10.30.1/24'
-    _ext_network_name = 'extNetwork'
-    _gateway_ip = '10.10.30.10'
+    _subnet_addr = None
+    _ext_network_name = None
+    _gateway_ip = None
     _logger = None
 
     def test_0000_setup(self):
@@ -394,15 +394,11 @@ class GatewayTest(BaseTestCase):
             gateway,
             args=[
                 'configure-ip-settings', self._name, '-e',
-                'extNetwork', '-s', self._subnet_addr, True,
+                self._ext_network_name, '-s', self._subnet_addr, True,
                 self._gateway_ip
             ])
-        args = [
-            'configure-ip-settings', self._name, '-e',
-            'extNetwork', '-s', self._subnet_addr, True,
-            self._gateway_ip
-        ]
-        GatewayTest._logger.debug("args :{0}".format(args))
+
+        GatewayTest._logger.debug("result :{0}".format(result))
         self.assertEqual(0, result.exit_code)
 
     def test_0017_add_sub_allocated_ip_pools(self):

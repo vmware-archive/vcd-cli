@@ -51,6 +51,8 @@ class ExtNetTest(BaseTestCase):
     _ip_range1 = '10.10.30.2-10.10.30.99'
     _ip_range2 = '10.10.30.30-10.10.30.60'
     _ip_range3 = '10.10.30.101-10.10.30.110'
+    _vc_name = 'vc2'
+    _pg_name = 'DPortGroup'
 
     def setUp(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -201,6 +203,18 @@ class ExtNetTest(BaseTestCase):
             args=[
                 'add-ip-range', self._name, '--gateway-ip', self._gateway1,
                 '--ip-range', self._ip_range3])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0034_detach_port_group(self):
+        """Detach port group from an external network.
+
+        Invoke the command 'external detach-port-group' in network.
+        """
+        result = self._runner.invoke(
+            external,
+            args=[
+                'detach-port-group', self._name, '--vc-name', self._vc_name,
+                '--pg-name', self._pg_name])
         self.assertEqual(0, result.exit_code)
 
     def test_0100_delete(self):

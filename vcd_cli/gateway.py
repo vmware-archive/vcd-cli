@@ -578,7 +578,7 @@ def sub_allocate_ip(ctx):
 \b
     Examples
         vcd gateway sub-allocate-ip add gateway1
-            --external_network extNw1
+            --external-network extNw1
             --ip-range  10.10.10.20-10.10.10.30
             Adds sub allocate ip pools to the edge gateway.
 
@@ -603,7 +603,7 @@ def sub_allocate_ip(ctx):
     metavar='<external network>',
     multiple=False,
     required=True,
-    help='external network to connected to the gateway.')
+    help='external network connected to the gateway.')
 @click.option(
     '-i',
     '--ip-range',

@@ -106,7 +106,7 @@ def external(ctx):
 \b
        vcd network external detach-port-group external-net1
                --vc-name vc1
-               --port-group-name pg1
+               --pg-name pg1
     """
     pass
 
@@ -769,13 +769,13 @@ def modify_ip_range_external_network(ctx, name, gateway_ip, ip_range,
     '--vc-name',
     'vc_name',
     required=True,
-    metavar='<ip>',
+    metavar='<vc name>',
     help=' Attached vcenter name')
 @click.option(
     '--pg-name',
     'pg_name',
     required=True,
-    metavar='<ip>',
+    metavar='<pg name>',
     help='Port group name')
 def detach_port_group_external_network(ctx, name, vc_name, pg_name):
     try:

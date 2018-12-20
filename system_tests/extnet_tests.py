@@ -51,7 +51,6 @@ class ExtNetTest(BaseTestCase):
     _ip_range1 = '10.10.30.2-10.10.30.99'
     _ip_range2 = '10.10.30.30-10.10.30.60'
     _ip_range3 = '10.10.30.101-10.10.30.110'
-    _vc_name = 'vc2'
     _pg_name = 'DPortGroup'
 
     def setUp(self):
@@ -213,7 +212,7 @@ class ExtNetTest(BaseTestCase):
         result = self._runner.invoke(
             external,
             args=[
-                'detach-port-group', self._name, '--vc-name', self._vc_name,
+                'detach-port-group', self._name, '--vc-name', ExtNetTest._config['vc2']['vcenter_host_name'],
                 '--pg-name', self._pg_name])
         self.assertEqual(0, result.exit_code)
 

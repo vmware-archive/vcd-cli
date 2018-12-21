@@ -452,7 +452,7 @@ class GatewayTest(BaseTestCase):
                 ext_name, '-i', gateway_sub_allocated_ip_range])
 
         GatewayTest._logger.debug(
-            "vcd gateway 'sub-allocate-ip remove {0}"
+            "vcd gateway sub-allocate-ip remove {0}"
             "-e {1} -i {2}".format(
                 self._name, ext_name, gateway_sub_allocated_ip_range))
         self.assertEqual(0, result.exit_code)

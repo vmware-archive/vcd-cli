@@ -377,12 +377,12 @@ class GatewayTest(BaseTestCase):
         """
         result = self._runner.invoke(
             gateway,
-            args=['update', self._name, '--name', 'gateway2'])
+            args=['update', self._name, '-n', 'gateway2'])
         self.assertEqual(0, result.exit_code)
         """ resetting back to original name"""
         result = self._runner.invoke(
             gateway,
-            args=['update', 'gateway2', '--name', self._name])
+            args=['update', 'gateway2', '-n', self._name])
         self.assertEqual(0, result.exit_code)
 
     def test_0016_edit_config_ip_settings(self):
@@ -434,6 +434,27 @@ class GatewayTest(BaseTestCase):
                 'sub-allocate-ip', 'update', 'test_gateway1', '-e',
                 ext_name, '-o', gateway_sub_allocated_ip_range,
                 '-n', gateway_sub_allocated_ip_range1])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0019_remove_sub_allocated_ip_pools(self):
+        """Removes the given IP ranges from existing IP ranges.
+         It will trigger the cli command sub-allocate-ip remove
+        """
+        self._config = Environment.get_config()
+        config = self._config['external_network']
+        gateway_sub_allocated_ip_range = \
+            config['new_gateway_sub_allocated_ip_range']
+        ext_name = config['name']
+        result = self._runner.invoke(
+            gateway,
+            args=[
+                'sub-allocate-ip', 'remove', self._name, '-e',
+                ext_name, '-i', gateway_sub_allocated_ip_range])
+
+        GatewayTest._logger.debug(
+            "vcd gateway sub-allocate-ip remove {0}"
+            "-e {1} -i {2}".format(
+                self._name, ext_name, gateway_sub_allocated_ip_range))
         self.assertEqual(0, result.exit_code)
 
     def test_0098_tearDown(self):

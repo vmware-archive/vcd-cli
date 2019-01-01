@@ -769,13 +769,11 @@ def modify_ip_range_external_network(ctx, name, gateway_ip, ip_range,
     '--vc-name',
     'vc_name',
     required=True,
-    metavar='<vc name>',
     help=' Attached vcenter name')
 @click.option(
     '--pg-name',
     'pg_name',
     required=True,
-    metavar='<pg name>',
     help='Port group name')
 def detach_port_group_external_network(ctx, name, vc_name, pg_name):
     try:

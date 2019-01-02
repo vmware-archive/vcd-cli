@@ -219,7 +219,7 @@ class ExtNetTest(BaseTestCase):
                 external,
                 args=[
                     'detach-port-group', self._name, '--vc-name', vc_name,
-                    '--pg-name', pg_name])
+                    '--port-group', pg_name])
             self.assertEqual(0, result.exit_code)
 
     def test_0100_delete(self):

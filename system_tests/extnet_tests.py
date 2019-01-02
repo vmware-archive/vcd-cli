@@ -24,6 +24,8 @@ from vcd_cli.network import external
 
 from pyvcloud.vcd.client import QueryResultFormat
 from pyvcloud.vcd.client import ResourceType
+from pyvcloud.vcd.platform import Platform
+from helpers.portgroup_helper import PortgroupHelper
 
 
 class ExtNetTest(BaseTestCase):
@@ -167,7 +169,7 @@ class ExtNetTest(BaseTestCase):
             external,
             args=[
                 'modify-ip-range', self._name, '--gateway-ip', self._gateway1,
-                '--ip-range', self._ip_range1,'--new-ip-range', self._ip_range2
+                '--ip-range', self._ip_range1, '--new-ip-range', self._ip_range2
             ])
         self.assertEqual(0, result.exit_code)
 
@@ -202,6 +204,23 @@ class ExtNetTest(BaseTestCase):
                 'add-ip-range', self._name, '--gateway-ip', self._gateway1,
                 '--ip-range', self._ip_range3])
         self.assertEqual(0, result.exit_code)
+
+        def test_0034_detach_port_group(self):
+            """Detach port group from an external network.
+            Invoke the command 'external detach-port-group' in network.
+            """
+            ExtNetTest._client = Environment.get_sys_admin_client()
+            #       platform = Platform(self.client)
+            port_group_helper = PortgroupHelper(ExtNetTest._client)
+            vc_name = self._config['vc2']['vcenter_host_name']
+            pg_name = port_group_helper. \
+                get_ext_net_used_portgroup_name(vc_name, self._name)
+            result = self._runner.invoke(
+                external,
+                args=[
+                    'detach-port-group', self._name, '--vc-name', vc_name,
+                    '--port-group', pg_name])
+            self.assertEqual(0, result.exit_code)
 
     def test_0100_delete(self):
         """Delete the external network created.

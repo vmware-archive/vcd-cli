@@ -104,6 +104,11 @@ def external(ctx):
                --new-ip-range 192.168.1.25-192.168.1.50
 
 \b
+       vcd network external attach-port-group external-net1
+               --vc-name vc1
+               --port-group pg1
+
+\b
        vcd network external detach-port-group external-net1
                --vc-name vc1
                --port-group pg1
@@ -783,6 +788,33 @@ def detach_port_group_external_network(ctx, name, vc_name, pg_name):
                                                port_group_name=pg_name)
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
         stdout('Port group detached successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@external.command(
+    'attach-port-group',
+    short_help='Attach a portgroup to an external network.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '--vc-name',
+    'vc_name',
+    required=True,
+    help='name of the vcenter')
+@click.option(
+    '--port-group',
+    'pg_name',
+    required=True,
+    help='name of the port group present in vCenter')
+def attach_port_group_external_network(ctx, name, vc_name, pg_name):
+    try:
+        extnet_obj = _get_ext_net_obj(ctx, name)
+
+        ext_net = extnet_obj.attach_port_group(vim_server_name=vc_name,
+                                               port_group_name=pg_name)
+        stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
+        stdout('Port group attached successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)
 

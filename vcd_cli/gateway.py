@@ -438,7 +438,8 @@ def list_config_ip_settings(ctx, name):
     except Exception as e:
         stderr(e, ctx)
 
-@gateway.group(short_help='configures external networks of an edge gateway')
+@gateway.group('configure-external-network',
+            short_help='configures external networks of an edge gateway')
 @click.pass_context
 def configure_external_network(ctx):
     """Configures external networks of edge gateways in vCloud Director.
@@ -571,7 +572,8 @@ def edit_gateway_config_ip_settings(ctx, name, external_networks_name,
         stderr(e, ctx)
 
 
-@gateway.group(short_help='configures Sub allocate ip pools of gateway')
+@gateway.group('sub-allocate-ip', short_help='configures Sub allocate ip '
+                                            'pools of gateway')
 @click.pass_context
 def sub_allocate_ip(ctx):
     """Configures sub-allocate ip pools of gateway in vCloud Director.

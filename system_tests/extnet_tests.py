@@ -207,7 +207,7 @@ class ExtNetTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0034_attach_port_group(self):
-        """Attach port group from an external network.
+        """Attach a portgroup to an external network.
         Invoke the command 'external attach-port-group' in network.
         """
         ExtNetTest._client = Environment.get_sys_admin_client()

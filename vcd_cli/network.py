@@ -794,7 +794,7 @@ def detach_port_group_external_network(ctx, name, vc_name, pg_name):
 
 @external.command(
     'attach-port-group',
-    short_help='Attach port group from an external network.')
+    short_help='Attach a portgroup to an external network.')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(

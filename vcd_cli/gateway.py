@@ -570,6 +570,7 @@ def edit_gateway_config_ip_settings(ctx, name, external_networks_name,
     except Exception as e:
         stderr(e, ctx)
 
+
 @gateway.group(short_help='configures Sub allocate ip pools of gateway')
 @click.pass_context
 def sub_allocate_ip(ctx):
@@ -588,6 +589,10 @@ def sub_allocate_ip(ctx):
             --old-ip-range 10.10.10.20-10.10.10.30
             --new-ip-range 10.10.10.40-10.10.10.50
             Updates sub allocate ip pools of the edge gateway.
+\b
+        vcd gateway sub-allocate-ip remove gateway1
+            -e extNetwork -i 10.10.10.40-10.10.10.50
+            Removes the provided IP range
     """
     pass
 
@@ -622,3 +627,71 @@ def add_sub_allocated_ip_pools(ctx, name, external_network_name,
     except Exception as e:
         stderr(e, ctx)
 
+
+@sub_allocate_ip.command(
+    'update', short_help='Edits sub allocate IP pools to the edge gateway')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-e',
+    '--external-network',
+    'external_network_name',
+    metavar='<external network>',
+    multiple=False,
+    required=True,
+    help='external network connected to the gateway.')
+@click.option(
+    '-o',
+    '--old-ip-range',
+    'old_ip_range',
+    metavar='<old-ip-range>',
+    multiple=False,
+    required=True,
+    help='existing IP ranges used for static pool allocation in the network.')
+@click.option(
+    '-n',
+    '--new-ip-range',
+    'new_ip_range',
+    metavar='<new-ip-range>',
+    multiple=False,
+    required=True,
+    help='new IP range to replace the existing IP range.')
+def edit_sub_allocated_ip_pools(ctx, name, external_network_name, old_ip_range,
+                                new_ip_range):
+    try:
+        gateway_resource = _get_gateway(ctx, name)
+        task = gateway_resource.edit_sub_allocated_ip_pools(
+            external_network_name, old_ip_range, new_ip_range)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@sub_allocate_ip.command(
+    'remove', short_help='Removes the given IP ranges from existing IP ranges')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-e',
+    '--external-network',
+    'external_network_name',
+    metavar='<external network>',
+    multiple=False,
+    required=True,
+    help='external network connected to the gateway.')
+@click.option(
+    '-i',
+    '--ip-range',
+    'ip_range',
+    metavar='<old-ip-range>',
+    multiple=False,
+    required=True,
+    help='IP ranges that needs to be removed.')
+def remove_sub_allocated_ip_pools(ctx, name, external_network_name, ip_range):
+    try:
+        gateway_resource = _get_gateway(ctx, name)
+        task = gateway_resource.remove_sub_allocated_ip_pools(
+            external_network_name, [ip_range])
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)

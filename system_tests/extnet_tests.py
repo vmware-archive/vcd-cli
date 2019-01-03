@@ -43,6 +43,7 @@ class ExtNetTest(BaseTestCase):
     _name = 'external_network_' + str(uuid1())
     _description = 'Description of external_network_' + str(uuid1())
     _port_group = None
+    _portgroupType = "DV_PORTGROUP"
     _gateway = '10.20.30.1'
     _netmask = '255.255.255.0'
     _ip_range = '10.20.30.2-10.20.30.99'
@@ -205,7 +206,24 @@ class ExtNetTest(BaseTestCase):
                 '--ip-range', self._ip_range3])
         self.assertEqual(0, result.exit_code)
 
-        def test_0034_detach_port_group(self):
+    def test_0034_attach_port_group(self):
+        """Attach port group from an external network.
+        Invoke the command 'external attach-port-group' in network.
+        """
+        ExtNetTest._client = Environment.get_sys_admin_client()
+
+        port_group_helper = PortgroupHelper(ExtNetTest._client)
+        vc_name = self._config['vc2']['vcenter_host_name']
+        pg_name = port_group_helper. \
+            get_available_portgroup_name(vc_name, ExtNetTest._portgroupType)
+        result = self._runner.invoke(
+            external,
+            args=[
+                'attach-port-group', self._name, '--vc-name', vc_name,
+                '--port-group', pg_name])
+        self.assertEqual(0, result.exit_code)
+
+        def test_0035_detach_port_group(self):
             """Detach port group from an external network.
             Invoke the command 'external detach-port-group' in network.
             """

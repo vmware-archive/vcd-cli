@@ -206,7 +206,7 @@ class ExtNetTest(BaseTestCase):
                 '--ip-range', self._ip_range3])
         self.assertEqual(0, result.exit_code)
 
-    def test_0034_attach_port_group(self):
+    def test_0040_attach_port_group(self):
         """Attach a portgroup to an external network.
         Invoke the command 'external attach-port-group' in network.
         """
@@ -223,7 +223,7 @@ class ExtNetTest(BaseTestCase):
                 '--port-group', pg_name])
         self.assertEqual(0, result.exit_code)
 
-        def test_0035_detach_port_group(self):
+        def test_0041_detach_port_group(self):
             """Detach port group from an external network.
             Invoke the command 'external detach-port-group' in network.
             """

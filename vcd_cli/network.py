@@ -834,6 +834,11 @@ def routed(ctx):
             --sub-interface-enabled --distributed-interface-enabled
             --retain-net-info-across-deployments-enabled
         Creates a routed org vdc network
+\b
+        vcd network routed edit name -n/--new-name name1
+            --description new_description
+            --shared-enabled/--shared-disabled
+        Edit name, description and shared state of org vdc network
     """
     pass
 

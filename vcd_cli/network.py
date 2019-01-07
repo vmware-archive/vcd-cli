@@ -787,6 +787,7 @@ def modify_ip_range_external_network(ctx, name, gateway_ip, ip_range,
     '--ip-range',
     'ip_range',
     required=True,
+    multiple=True,
     metavar='<ip>',
     help='ip range in StartAddress-EndAddress format')
 def remove_ip_range_external_network(ctx, name, gateway_ip, ip_range):
@@ -795,7 +796,7 @@ def remove_ip_range_external_network(ctx, name, gateway_ip, ip_range):
 
         ext_net = extnet_obj.delete_ip_range(
             gateway_ip=gateway_ip,
-            ip_range=ip_range)
+            ip_ranges=ip_range)
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
         stdout('Ip Range of a subnet removed successfully.', ctx)
     except Exception as e:

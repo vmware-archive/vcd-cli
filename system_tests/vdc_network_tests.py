@@ -24,8 +24,6 @@ class VdcNetworkTests(BaseTestCase):
     """
     _runner = None
     _name = 'test_routed_Nw'+ str(uuid1())
-    _new_name = 'test_routed_Nw_new' + str(uuid1())
-    _new_description = 'New Description'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -46,14 +44,16 @@ class VdcNetworkTests(BaseTestCase):
         self.assertEqual(0, result_create1.exit_code)
 
     def test_0005_edit_name_description_and_shared_state(self):
+        _new_name = 'test_routed_Nw_new' + str(uuid1())
+        _new_description = 'New Description'
         result = self._runner.invoke(
             network, args=['routed', 'edit', VdcNetworkTests._name,
-                           '-n', VdcNetworkTests._new_name,
-                           '--description', VdcNetworkTests._new_description,
+                           '-n', _new_name,
+                           '--description', _new_description,
                            '--shared-enabled'])
         self.assertEqual(0, result.exit_code)
         result = self._runner.invoke(
-            network, args=['routed', 'edit', VdcNetworkTests._new_name,
+            network, args=['routed', 'edit', _new_name,
                            '-n', VdcNetworkTests._name])
         self.assertEqual(0, result.exit_code)
 

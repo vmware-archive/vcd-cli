@@ -834,6 +834,11 @@ def routed(ctx):
             --sub-interface-enabled --distributed-interface-enabled
             --retain-net-info-across-deployments-enabled
         Creates a routed org vdc network
+\b
+        vcd network routed edit name -n/--name name1
+            --description new_description
+            --shared-enabled/--shared-disabled
+        Edit name, description and shared state of org vdc network
     """
     pass
 
@@ -968,7 +973,7 @@ def delete_vdc_routed_network(ctx, name):
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
     '-n',
-    '--new-name',
+    '--name',
     'new_vdc_routed_nw_name',
     required=True,
     metavar='<name>',

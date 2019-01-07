@@ -54,9 +54,7 @@ class VdcNetworkTests(BaseTestCase):
         self.assertEqual(0, result.exit_code)
         result = self._runner.invoke(
             network, args=['routed', 'edit', VdcNetworkTests._new_name,
-                           '-n', VdcNetworkTests._name,
-                           '--description', None,
-                           '--shared-disabled'])
+                           '-n', VdcNetworkTests._name])
         self.assertEqual(0, result.exit_code)
 
     def test_0098_tearDown(self):

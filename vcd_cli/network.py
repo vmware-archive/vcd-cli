@@ -981,6 +981,7 @@ def delete_vdc_routed_network(ctx, name):
 @click.option(
     '--shared-enabled/--shared-disabled',
     'is_shared',
+    default=None,
     metavar='<bool>',
     help='share this network with other VDCs in the organization')
 def edit_routed_vdc_network(ctx, name, new_vdc_routed_nw_name,
@@ -989,6 +990,7 @@ def edit_routed_vdc_network(ctx, name, new_vdc_routed_nw_name,
         vdc = _get_vdc_ref(ctx)
         client = ctx.obj['client']
         routed_network = vdc.get_routed_orgvdc_network(name)
+        is_shared if is_shared is not None else routed_network.IsShared
         vdcNetwork = VdcNetwork(client, resource=routed_network)
         task = vdcNetwork.edit_name_description_and_shared_state(
             new_vdc_routed_nw_name, description, is_shared)

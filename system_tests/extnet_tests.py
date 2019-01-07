@@ -203,7 +203,6 @@ class ExtNetTest(BaseTestCase):
         Invoke the command 'external detach-port-group' in network.
         """
         ExtNetTest._client = Environment.get_sys_admin_client()
-        #       platform = Platform(self.client)
         port_group_helper = PortgroupHelper(ExtNetTest._client)
         vc_name = self._config['vc2']['vcenter_host_name']
         pg_name = port_group_helper. \

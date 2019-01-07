@@ -253,6 +253,15 @@ class ExtNetTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    def test_0055_list_available_prov_vdc(self):
+        """List available provider vdcs.
+
+        Invoke the command 'external list-available-pvdcs' in network.
+        """
+        result = self._runner.invoke(
+            external, args=['list-pvdc', self._name])
+        self.assertEqual(0, result.exit_code)
+
     def test_0100_delete(self):
         """Delete the external network created.
 

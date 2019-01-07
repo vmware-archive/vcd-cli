@@ -161,20 +161,7 @@ class ExtNetTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
-    def test_0031_modify_ip_range(self):
-        """Modify an IP range of a subnet in an external network.
-
-        Invoke the command 'external modify-ip-range' in network.
-        """
-        result = self._runner.invoke(
-            external,
-            args=[
-                'modify-ip-range', self._name, '--gateway-ip', self._gateway1,
-                '--ip-range', self._ip_range1, '--new-ip-range', self._ip_range2
-            ])
-        self.assertEqual(0, result.exit_code)
-
-    def test_0032_enable_subnet(self):
+    def test_0031_enable_subnet(self):
         """Enable/Disable subnet of an external network.
 
         Invoke the command 'external enable-subnet' in network.
@@ -194,18 +181,6 @@ class ExtNetTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
-    def test_0033_add_ip_range(self):
-        """Add an IP range to a subnet in an external network.
-
-        Invoke the command 'external add-ip-range' in network.
-        """
-        result = self._runner.invoke(
-            external,
-            args=[
-                'add-ip-range', self._name, '--gateway-ip', self._gateway1,
-                '--ip-range', self._ip_range3])
-        self.assertEqual(0, result.exit_code)
-
     def test_0040_attach_port_group(self):
         """Attach a portgroup to an external network.
         Invoke the command 'external attach-port-group' in network.
@@ -223,22 +198,60 @@ class ExtNetTest(BaseTestCase):
                 '--port-group', pg_name])
         self.assertEqual(0, result.exit_code)
 
-        def test_0041_detach_port_group(self):
-            """Detach port group from an external network.
-            Invoke the command 'external detach-port-group' in network.
-            """
-            ExtNetTest._client = Environment.get_sys_admin_client()
-            #       platform = Platform(self.client)
-            port_group_helper = PortgroupHelper(ExtNetTest._client)
-            vc_name = self._config['vc2']['vcenter_host_name']
-            pg_name = port_group_helper. \
-                get_ext_net_used_portgroup_name(vc_name, self._name)
-            result = self._runner.invoke(
-                external,
-                args=[
-                    'detach-port-group', self._name, '--vc-name', vc_name,
-                    '--port-group', pg_name])
-            self.assertEqual(0, result.exit_code)
+    def test_0041_detach_port_group(self):
+        """Detach port group from an external network.
+        Invoke the command 'external detach-port-group' in network.
+        """
+        ExtNetTest._client = Environment.get_sys_admin_client()
+        port_group_helper = PortgroupHelper(ExtNetTest._client)
+        vc_name = self._config['vc2']['vcenter_host_name']
+        pg_name = port_group_helper. \
+            get_ext_net_used_portgroup_name(vc_name, self._name)
+        result = self._runner.invoke(
+            external,
+            args=[
+                'detach-port-group', self._name, '--vc-name', vc_name,
+                '--port-group', pg_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0050_add_ip_range(self):
+        """Add an IP range to a subnet in an external network.
+
+        Invoke the command 'external add-ip-range' in network.
+        """
+        result = self._runner.invoke(
+            external,
+            args=[
+                'add-ip-range', self._name, '--gateway-ip', self._gateway1,
+                '--ip-range', self._ip_range3])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0051_modify_ip_range(self):
+        """Modify an IP range of a subnet in an external network.
+
+        Invoke the command 'external modify-ip-range' in network.
+        """
+        result = self._runner.invoke(
+            external,
+            args=[
+                'modify-ip-range', self._name, '--gateway-ip', self._gateway1,
+                '--ip-range', self._ip_range1, '--new-ip-range',
+                self._ip_range2
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0052_remove_ip_range(self):
+        """Remove an IP range of a subnet in an external network.
+
+        Invoke the command 'external remove-ip-range' in network.
+        """
+        result = self._runner.invoke(
+            external,
+            args=[
+                'remove-ip-range', self._name, '--gateway-ip', self._gateway1,
+                '--ip-range', self._ip_range2
+            ])
+        self.assertEqual(0, result.exit_code)
 
     def test_0100_delete(self):
         """Delete the external network created.

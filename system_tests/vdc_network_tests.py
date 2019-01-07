@@ -8,6 +8,7 @@
 # limitations under the License.
 
 from click.testing import CliRunner
+from uuid import uuid1
 
 from pyvcloud.system_test_framework.base_test import BaseTestCase
 from pyvcloud.system_test_framework.environment import Environment
@@ -22,7 +23,7 @@ class VdcNetworkTests(BaseTestCase):
     Be aware that this test will delete existing vcd-cli sessions.
     """
     _runner = None
-    _name = 'test_routed_Nw'
+    _name = 'test_routed_Nw'+ str(uuid1())
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -42,6 +43,19 @@ class VdcNetworkTests(BaseTestCase):
 
         self.assertEqual(0, result_create1.exit_code)
 
+    def test_0005_edit_name_description_and_shared_state(self):
+        _new_name = 'test_routed_Nw_new' + str(uuid1())
+        _new_description = 'New Description'
+        result = self._runner.invoke(
+            network, args=['routed', 'edit', VdcNetworkTests._name,
+                           '-n', _new_name,
+                           '--description', _new_description,
+                           '--shared-enabled'])
+        self.assertEqual(0, result.exit_code)
+        result = self._runner.invoke(
+            network, args=['routed', 'edit', _new_name,
+                           '-n', VdcNetworkTests._name])
+        self.assertEqual(0, result.exit_code)
 
     def test_0098_tearDown(self):
         result_delete = self._runner.invoke(

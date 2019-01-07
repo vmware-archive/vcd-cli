@@ -18,6 +18,7 @@ from pyvcloud.vcd.external_network import ExternalNetwork
 from pyvcloud.vcd.platform import Platform
 from pyvcloud.vcd.vdc import VDC
 from pyvcloud.vcd.client import NSMAP
+from pyvcloud.vcd.vdc_network import VdcNetwork
 
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
@@ -959,5 +960,40 @@ def delete_vdc_routed_network(ctx, name):
         vdc = VDC(client, href=vdc_href)
         task = vdc.delete_routed_orgvdc_network(name)
         stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@routed.command('edit', short_help='Edit a routed org vdc network.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-n',
+    '--new-name',
+    'new_vdc_routed_nw_name',
+    required=True,
+    metavar='<name>',
+    help='new name of org vdc network')
+@click.option(
+    '--description',
+    'description',
+    metavar='<description>',
+    help='new description')
+@click.option(
+    '--shared-enabled/--shared-disabled',
+    'is_shared',
+    metavar='<bool>',
+    help='share this network with other VDCs in the organization')
+def edit_routed_vdc_network(ctx, name, new_vdc_routed_nw_name,
+                            description=None, is_shared=None):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        task = vdcNetwork.edit_name_description_and_shared_state(
+            new_vdc_routed_nw_name, description, is_shared)
+
+        stdout(task, ctx)
+        stdout('Edit of routed org vdc network successfull.', ctx)
     except Exception as e:
         stderr(e, ctx)

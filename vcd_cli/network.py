@@ -345,7 +345,7 @@ def create_isolated_network(ctx, name, gateway_ip, netmask, description,
     required=True,
     multiple=True,
     metavar='<name>',
-    help='gateway of the subnet')
+    help='portgroup to create external network')
 @click.option(
     '-g',
     '--gateway',

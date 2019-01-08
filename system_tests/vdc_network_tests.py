@@ -27,6 +27,7 @@ class VdcNetworkTests(BaseTestCase):
     __subnet = '6.6.5.1/20'
     __ip_range1 = '6.6.5.2-6.6.5.20'
     __ip_range2 = '6.6.6.2-6.6.6.20'
+    __new_ip_range = '6.6.5.12-6.6.5.22'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -65,6 +66,14 @@ class VdcNetworkTests(BaseTestCase):
             network, args=['routed', 'add-ip-ranges', VdcNetworkTests._name,
                            '--ip-range', VdcNetworkTests.__ip_range1,
                            '--ip-range', VdcNetworkTests.__ip_range2])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0015_modify_ip_range_of_routed_nw(self):
+        """Modify Ip range of vdc routed network"""
+        result = self._runner.invoke(
+            network, args=['routed', 'modify-ip-range', VdcNetworkTests._name,
+                           '--ip-range', VdcNetworkTests.__ip_range1,
+                           '--new-ip-range', VdcNetworkTests.__new_ip_range])
         self.assertEqual(0, result.exit_code)
 
     def test_0020_list_all_routed_nw(self):

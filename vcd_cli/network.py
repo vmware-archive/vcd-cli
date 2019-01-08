@@ -890,6 +890,11 @@ def routed(ctx):
             --ip-range 2.2.4.1-2.2.4.2
 
 \b
+        vcd network routed modify-ip-range vdc_routed-nw
+                       --ip-range 192.168.1.2-192.168.1.20
+                       --new-ip-range 192.168.1.25-192.168.1.50
+
+\b
         vcd network routed list
             List all routed org vdc networks in the selected vdc
     """
@@ -1117,5 +1122,36 @@ def list_routed_networks(ctx):
         for routed_net in routed_nets:
             result.append({'name': routed_net.get('name')})
         stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@routed.command('modify-ip-range', short_help='Modify IP range of '
+                                                 'routed org vdc network.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-i',
+    '--ip-range',
+    'ip_range',
+    required=True,
+    metavar='<ip>',
+    help='ip range in StartAddress-EndAddress format')
+@click.option(
+    '-n',
+    '--new-ip-range',
+    'new_ip_range',
+    required=True,
+    metavar='<ip>',
+    help='ip range in StartAddress-EndAddress format')
+def modify_ip_range_of_routed_vdc_network(ctx, name, ip_range, new_ip_range):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        task = vdcNetwork.modify_static_ip_pool(ip_range, new_ip_range)
+        stdout(task, ctx)
+        stdout('Modify IP range of routed org vdc network is '
+               'successfull.', ctx)
     except Exception as e:
         stderr(e, ctx)

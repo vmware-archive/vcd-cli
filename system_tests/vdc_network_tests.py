@@ -24,6 +24,9 @@ class VdcNetworkTests(BaseTestCase):
     """
     _runner = None
     _name = 'test_routed_Nw'+ str(uuid1())
+    __subnet = '6.6.5.1/20'
+    __ip_range1 = '6.6.5.2-6.6.5.20'
+    __ip_range2 = '6.6.6.2-6.6.6.20'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -35,11 +38,10 @@ class VdcNetworkTests(BaseTestCase):
         self._login()
         VdcNetworkTests._runner.invoke(org, ['use', default_org])
         result_create1 = VdcNetworkTests._runner.invoke(network, ['routed',
-                                                                  'create',
-                                                 VdcNetworkTests._name,
-                                                 '-g', GatewayConstants.name,
-                                                 '--subnet', '6.6.5.1/20'
-                                                 ])
+                        'create', VdcNetworkTests._name,
+                        '-g', GatewayConstants.name, '--subnet',
+                        VdcNetworkTests.__subnet
+                        ])
 
         self.assertEqual(0, result_create1.exit_code)
 
@@ -55,6 +57,14 @@ class VdcNetworkTests(BaseTestCase):
         result = self._runner.invoke(
             network, args=['routed', 'edit', _new_name,
                            '-n', VdcNetworkTests._name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0010_add_ip_ranges_of_routed_nw(self):
+
+        result = self._runner.invoke(
+            network, args=['routed', 'add-ip-ranges', VdcNetworkTests._name,
+                           '--ip-range', VdcNetworkTests.__ip_range1,
+                           '--ip-range', VdcNetworkTests.__ip_range2])
         self.assertEqual(0, result.exit_code)
 
     def test_0098_tearDown(self):

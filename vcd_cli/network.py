@@ -18,6 +18,7 @@ from pyvcloud.vcd.external_network import ExternalNetwork
 from pyvcloud.vcd.platform import Platform
 from pyvcloud.vcd.vdc import VDC
 from pyvcloud.vcd.client import NSMAP
+from pyvcloud.vcd.vdc_network import VdcNetwork
 
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
@@ -104,6 +105,11 @@ def external(ctx):
                --new-ip-range 192.168.1.25-192.168.1.50
 
 \b
+       vcd network external remove-ip-range external-net1
+               --gateway-ip 192.168.1.1
+               --ip-range 192.168.1.2-192.168.1.20
+
+\b
        vcd network external attach-port-group external-net1
                --vc-name vc1
                --port-group pg1
@@ -112,6 +118,12 @@ def external(ctx):
        vcd network external detach-port-group external-net1
                --vc-name vc1
                --port-group pg1
+
+\b
+       vcd network external list-pvdc ExtNw --filter name==pvdc*
+
+        List available provider vdcs
+
     """
     pass
 
@@ -344,7 +356,7 @@ def create_isolated_network(ctx, name, gateway_ip, netmask, description,
     required=True,
     multiple=True,
     metavar='<name>',
-    help='gateway of the subnet')
+    help='portgroup to create external network')
 @click.option(
     '-g',
     '--gateway',
@@ -766,6 +778,39 @@ def modify_ip_range_external_network(ctx, name, gateway_ip, ip_range,
 
 
 @external.command(
+    'remove-ip-range',
+    short_help='Removes an IP range of a subnet in an external network.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-g',
+    '--gateway-ip',
+    'gateway_ip',
+    required=True,
+    metavar='<ip>',
+    help='gateway ip of the subnet')
+@click.option(
+    '-i',
+    '--ip-range',
+    'ip_range',
+    required=True,
+    multiple=True,
+    metavar='<ip>',
+    help='ip range in StartAddress-EndAddress format')
+def remove_ip_range_external_network(ctx, name, gateway_ip, ip_range):
+    try:
+        extnet_obj = _get_ext_net_obj(ctx, name)
+
+        ext_net = extnet_obj.delete_ip_range(
+            gateway_ip=gateway_ip,
+            ip_ranges=ip_range)
+        stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
+        stdout('Ip Range of a subnet removed successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@external.command(
     'detach-port-group',
     short_help='Detach port group from an external network.')
 @click.pass_context
@@ -833,6 +878,16 @@ def routed(ctx):
             --sub-interface-enabled --distributed-interface-enabled
             --retain-net-info-across-deployments-enabled
         Creates a routed org vdc network
+\b
+        vcd network routed edit name -n/--name name1
+            --description new_description
+            --shared-enabled/--shared-disabled
+        Edit name, description and shared state of org vdc network
+
+\b
+        vcd network routed add-ip-ranges vdc_routed_nw
+            --ip-range  2.2.3.1-2.2.3.2
+            --ip-range 2.2.4.1-2.2.4.2
     """
     pass
 
@@ -959,5 +1014,89 @@ def delete_vdc_routed_network(ctx, name):
         vdc = VDC(client, href=vdc_href)
         task = vdc.delete_routed_orgvdc_network(name)
         stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@routed.command('edit', short_help='Edit a routed org vdc network.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-n',
+    '--name',
+    'new_vdc_routed_nw_name',
+    required=True,
+    metavar='<name>',
+    help='new name of org vdc network')
+@click.option(
+    '--description',
+    'description',
+    metavar='<description>',
+    help='new description')
+@click.option(
+    '--shared-enabled/--shared-disabled',
+    'is_shared',
+    default=None,
+    metavar='<bool>',
+    help='share this network with other VDCs in the organization')
+def edit_routed_vdc_network(ctx, name, new_vdc_routed_nw_name,
+                            description=None, is_shared=None):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        is_shared if is_shared is not None else routed_network.IsShared
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        task = vdcNetwork.edit_name_description_and_shared_state(
+            new_vdc_routed_nw_name, description, is_shared)
+
+        stdout(task, ctx)
+        stdout('Edit of routed org vdc network successfull.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@external.command('list-pvdc', short_help='list associated pvdcs.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '--filter',
+    'filter',
+    default=None,
+    metavar='<name==pvdc*>',
+    help='filter for provider vdc')
+def list_available_pvdcs(ctx, name, filter):
+    try:
+        platform = _get_platform(ctx)
+        client = ctx.obj['client']
+        ext_net = platform.get_external_network(name)
+        ext_net_obj = ExternalNetwork(client, resource=ext_net)
+        assoc_prov_vdc_name = ext_net_obj.list_provider_vdc(filter)
+        result = []
+        result.append({'Provider Vdcs':assoc_prov_vdc_name})
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@routed.command('add-ip-ranges', short_help='add IP range of '
+                                                 'routed org vdc network.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-i',
+    '--ip-range',
+    'ip_ranges',
+    required=True,
+    multiple=True,
+    metavar='<ip>',
+    help='ip range in StartAddress-EndAddress format')
+def add_ip_ranges_of_routed_vdc_network(ctx, name, ip_ranges):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        task = vdcNetwork.add_static_ip_pool(ip_ranges)
+        stdout(task, ctx)
+        stdout('Add of ip ranges for routed org vdc network is successfull.',
+               ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -256,7 +256,7 @@ class ExtNetTest(BaseTestCase):
     def test_0055_list_available_prov_vdc(self):
         """List available provider vdcs.
 
-        Invoke the command 'external list-available-pvdcs' in network.
+        Invoke the command 'external list-pvdc' in network.
         """
         result = self._runner.invoke(
             external, args=['list-pvdc', self._name])

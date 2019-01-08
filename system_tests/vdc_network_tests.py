@@ -67,6 +67,12 @@ class VdcNetworkTests(BaseTestCase):
                            '--ip-range', VdcNetworkTests.__ip_range2])
         self.assertEqual(0, result.exit_code)
 
+    def test_0020_list_all_routed_nw(self):
+
+        result = self._runner.invoke(
+            network, args=['routed', 'list'])
+        self.assertEqual(0, result.exit_code)
+
     def test_0098_tearDown(self):
         result_delete = self._runner.invoke(
             network, args=['routed', 'delete', VdcNetworkTests._name])

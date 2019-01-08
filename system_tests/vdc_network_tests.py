@@ -68,7 +68,7 @@ class VdcNetworkTests(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0020_list_all_routed_nw(self):
-
+        """List available vdc routed networks in vdc."""
         result = self._runner.invoke(
             network, args=['routed', 'list'])
         self.assertEqual(0, result.exit_code)

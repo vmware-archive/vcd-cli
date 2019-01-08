@@ -123,6 +123,7 @@ def external(ctx):
        vcd network external list-pvdc ExtNw --filter name==pvdc*
 
         List available provider vdcs
+
     """
     pass
 
@@ -882,6 +883,11 @@ def routed(ctx):
             --description new_description
             --shared-enabled/--shared-disabled
         Edit name, description and shared state of org vdc network
+
+\b
+        vcd network routed add-ip-ranges vdc_routed_nw
+            --ip-range  2.2.3.1-2.2.3.2
+            --ip-range 2.2.4.1-2.2.4.2
     """
     pass
 
@@ -1067,5 +1073,30 @@ def list_available_pvdcs(ctx, name, filter):
         result = []
         result.append({'Provider Vdcs':assoc_prov_vdc_name})
         stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@routed.command('add-ip-ranges', short_help='add IP range of '
+                                                 'routed org vdc network.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-i',
+    '--ip-range',
+    'ip_ranges',
+    required=True,
+    multiple=True,
+    metavar='<ip>',
+    help='ip range in StartAddress-EndAddress format')
+def add_ip_ranges_of_routed_vdc_network(ctx, name, ip_ranges):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        task = vdcNetwork.add_static_ip_pool(ip_ranges)
+        stdout(task, ctx)
+        stdout('Add of ip ranges for routed org vdc network is successfull.',
+               ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -457,6 +457,19 @@ class GatewayTest(BaseTestCase):
                 self._name, ext_name, gateway_sub_allocated_ip_range))
         self.assertEqual(0, result.exit_code)
 
+    def test_0020_update_rate_limit(self):
+        """Updates existing rate limit of gateway.
+         It will trigger the cli command configure-rate-limits update
+        """
+        self._config = Environment.get_config()
+        config = self._config['external_network']
+        ext_name = config['name']
+        result = self._runner.invoke(
+            gateway,
+            args=[
+                'configure-rate-limits', 'update', self._name, '-r',
+                [(ext_name, '101.0', '101.0')]])
+
     def test_0098_tearDown(self):
         result_delete = self._runner.invoke(
             gateway, args=['delete', 'test_gateway1'])

@@ -118,6 +118,11 @@ def external(ctx):
        vcd network external detach-port-group external-net1
                --vc-name vc1
                --port-group pg1
+
+\b
+       vcd network external list-pvdc ExtNw --filter name==pvdc*
+
+        List available provider vdcs
     """
     pass
 
@@ -1040,5 +1045,27 @@ def edit_routed_vdc_network(ctx, name, new_vdc_routed_nw_name,
 
         stdout(task, ctx)
         stdout('Edit of routed org vdc network successfull.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@external.command('list-pvdc', short_help='list associated pvdcs.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '--filter',
+    'filter',
+    default=None,
+    metavar='<name==pvdc*>',
+    help='filter for provider vdc')
+def list_available_pvdcs(ctx, name, filter):
+    try:
+        platform = _get_platform(ctx)
+        client = ctx.obj['client']
+        ext_net = platform.get_external_network(name)
+        ext_net_obj = ExternalNetwork(client, resource=ext_net)
+        assoc_prov_vdc_name = ext_net_obj.list_provider_vdc(filter)
+        result = []
+        result.append({'Provider Vdcs':assoc_prov_vdc_name})
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

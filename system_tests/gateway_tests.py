@@ -472,14 +472,15 @@ class GatewayTest(BaseTestCase):
                 [(ext_name, '101.0', '101.0')]])
 
     @unittest.skip("Skipping test case because set syslog server is not in "
-                   "code")
+                   "code. It should be unskipped after set syslog server is "
+                   "written")
     def test_0021_get_tenant_syslog_ip(self):
         """Get information of the gateway tenant syslog ip server.
 
-        It will trigger the cli command with option syslog-server list
+        It will trigger the cli command with option list-syslog-server
         """
         result_info = self._runner.invoke(
-            gateway, args=['syslog-server list', self._name])
+            gateway, args=['list-syslog-server', self._name])
         GatewayTest._logger.debug('result output {0}'.format(result_info))
         self.assertTrue(self._validate_result_for_unclosed_sslsocket_warning(
             result_info))

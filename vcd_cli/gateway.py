@@ -85,7 +85,7 @@ def gateway(ctx):
              Synchronizes syslog settings of the gateway with given name
 
 \b
-        vcd gateway syslog-server list gateway1
+        vcd gateway list-syslog-server gateway1
              List syslog server of the gateway with given name
 
 \b
@@ -745,7 +745,7 @@ def update_configure_rate_limits(ctx, name, rate_limit_config):
 
 
 @gateway.command(
-    'syslog-server list',
+    'list-syslog-server',
     short_help='list tenant syslog server of the given gateway')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)

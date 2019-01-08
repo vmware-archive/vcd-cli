@@ -467,7 +467,7 @@ class GatewayTest(BaseTestCase):
         result = self._runner.invoke(
             gateway,
             args=[
-                'configure-rate-limits', 'update', self._name, '-e',
+                'configure-rate-limits', 'update', self._name, '-r',
                 [(ext_name, '101.0', '101.0')]])
 
     def test_0098_tearDown(self):

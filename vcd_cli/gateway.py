@@ -719,12 +719,13 @@ def configure_rate_limits(ctx):
 @click.pass_context
 @click.argument('name', metavar='<gateway name>', required=True)
 @click.option(
-    '-e',
+    '-r',
     'rate_limit_config',
     nargs=3,
     type=click.Tuple([str, str, str]),
     multiple=True,
     default=None,
+    required=True,
     metavar='<external network> <rate limit start> <rate limit end>',
     help='Updates existing rate limits')
 def update_configure_rate_limits(ctx, name, rate_limit_config):

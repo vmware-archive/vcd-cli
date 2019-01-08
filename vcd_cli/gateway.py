@@ -697,3 +697,43 @@ def remove_sub_allocated_ip_pools(ctx, name, external_network_name, ip_range):
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+
+@gateway.group('configure-rate-limits', short_help='configures rate limits of'
+                                                   ' gateway')
+@click.pass_context
+def configure_rate_limits(ctx):
+    """Configures rate limit of gateway in vCloud Director.
+
+\b
+    Examples
+        vcd gateway configure-rate-limits update gateway1
+            --e extNw1 101.0 101.0
+            updates the rate limit of gateway.
+    """
+    pass
+
+
+@configure_rate_limits.command('update', short_help='updates rate limit of '
+                                                    'gateway.')
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+@click.option(
+    '-e',
+    'rate_limit_config',
+    nargs=3,
+    type=click.Tuple([str, str, str]),
+    multiple=True,
+    default=None,
+    metavar='<external network> <rate limit start> <rate limit end>',
+    help='Updates existing rate limits')
+def update_configure_rate_limits(ctx, name, rate_limit_config):
+    try:
+        rate_limit_conf = dict()
+        for config in rate_limit_config:
+            rate_limit_conf[config[0]] = [config[1], config[2]]
+        gateway_resource = _get_gateway(ctx, name)
+        task = gateway_resource.edit_rate_limits(rate_limit_conf)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)

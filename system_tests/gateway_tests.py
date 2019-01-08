@@ -7,6 +7,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import unittest
 from uuid import uuid1
 from click.testing import CliRunner
 
@@ -469,6 +470,19 @@ class GatewayTest(BaseTestCase):
             args=[
                 'configure-rate-limits', 'update', self._name, '-r',
                 [(ext_name, '101.0', '101.0')]])
+
+    @unittest.skip("Skipping test case because set syslog server is not in "
+                   "code")
+    def test_0021_get_tenant_syslog_ip(self):
+        """Get information of the gateway tenant syslog ip server.
+
+        It will trigger the cli command with option syslog-server list
+        """
+        result_info = self._runner.invoke(
+            gateway, args=['syslog-server list', self._name])
+        GatewayTest._logger.debug('result output {0}'.format(result_info))
+        self.assertTrue(self._validate_result_for_unclosed_sslsocket_warning(
+            result_info))
 
     def test_0098_tearDown(self):
         result_delete = self._runner.invoke(

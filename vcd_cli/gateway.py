@@ -85,6 +85,10 @@ def gateway(ctx):
              Synchronizes syslog settings of the gateway with given name
 
 \b
+        vcd gateway syslog-server list gateway1
+             List syslog server of the gateway with given name
+
+\b
         vcd gateway list-config-ip-settings gateway1
              lists the config ip settings of the gateway with given name
 \b
@@ -736,5 +740,19 @@ def update_configure_rate_limits(ctx, name, rate_limit_config):
         gateway_resource = _get_gateway(ctx, name)
         task = gateway_resource.edit_rate_limits(rate_limit_conf)
         stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@gateway.command(
+    'syslog-server list',
+    short_help='list tenant syslog server of the given gateway')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def list_syslog_server(ctx, name):
+    try:
+        gateway_resource = _get_gateway(ctx, name)
+        syslog_server = gateway_resource.list_syslog_server_ip()
+        stdout(syslog_server, ctx)
     except Exception as e:
         stderr(e, ctx)

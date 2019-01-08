@@ -888,6 +888,10 @@ def routed(ctx):
         vcd network routed add-ip-ranges vdc_routed_nw
             --ip-range  2.2.3.1-2.2.3.2
             --ip-range 2.2.4.1-2.2.4.2
+
+\b
+        vcd network routed list
+            List all routed org vdc networks in the selected vdc
     """
     pass
 
@@ -1098,5 +1102,20 @@ def add_ip_ranges_of_routed_vdc_network(ctx, name, ip_ranges):
         stdout(task, ctx)
         stdout('Add of ip ranges for routed org vdc network is successfull.',
                ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@routed.command(
+    'list',
+    short_help='list all routed org vdc networks in the selected vdc')
+@click.pass_context
+def list_routed_networks(ctx):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        routed_nets = vdc.list_orgvdc_routed_networks()
+        result = []
+        for routed_net in routed_nets:
+            result.append({'name': routed_net.get('name')})
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

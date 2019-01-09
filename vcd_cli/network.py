@@ -129,6 +129,11 @@ def external(ctx):
 
        List associated gateways
 
+\b
+        vcd network external list-allocated-ip ExtNw --filter name==gateway*
+
+       List allocated ip
+
     """
     pass
 
@@ -1109,6 +1114,26 @@ def list_available_gateways(ctx, name, filter):
         result = []
         result.append({'Gateways':assoc_edge_gateways_name})
         stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@external.command('list-allocated-ip', short_help='list allocated ip.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '--filter',
+    'filter',
+    default=None,
+    metavar='<name==gateway*>',
+    help='filter for gateway')
+def list_allocated_ip(ctx, name, filter):
+    try:
+        platform = _get_platform(ctx)
+        client = ctx.obj['client']
+        ext_net = platform.get_external_network(name)
+        ext_net_obj = ExternalNetwork(client, resource=ext_net)
+        allocated_ip = ext_net_obj.list_allocated_ip_address(filter)
+        stdout(allocated_ip, ctx)
     except Exception as e:
         stderr(e, ctx)
 

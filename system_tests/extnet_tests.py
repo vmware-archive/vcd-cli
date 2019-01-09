@@ -271,6 +271,15 @@ class ExtNetTest(BaseTestCase):
             external, args=['list-gateway', self._name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0065_list_allocated_ip(self):
+        """List allocated ip.
+
+        Invoke the command 'external list-allocated-ip' in network.
+        """
+        result = self._runner.invoke(
+            external, args=['list-allocated-ip', self._name])
+        self.assertEqual(0, result.exit_code)
+
     def test_0100_delete(self):
         """Delete the external network created.
 

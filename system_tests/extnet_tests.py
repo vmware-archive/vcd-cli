@@ -262,6 +262,15 @@ class ExtNetTest(BaseTestCase):
             external, args=['list-pvdc', self._name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0060_list_available_gateways(self):
+        """List available gateways.
+
+        Invoke the command 'external list-gateway' in network.
+        """
+        result = self._runner.invoke(
+            external, args=['list-gateway', self._name])
+        self.assertEqual(0, result.exit_code)
+
     def test_0100_delete(self):
         """Delete the external network created.
 

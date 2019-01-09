@@ -124,6 +124,11 @@ def external(ctx):
 
         List available provider vdcs
 
+\b
+       vcd network external list-gateway ExtNw --filter name==gateway*
+
+       List associated gateways
+
     """
     pass
 
@@ -1081,6 +1086,28 @@ def list_available_pvdcs(ctx, name, filter):
         assoc_prov_vdc_name = ext_net_obj.list_provider_vdc(filter)
         result = []
         result.append({'Provider Vdcs':assoc_prov_vdc_name})
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@external.command('list-gateway', short_help='list associated gateways.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '--filter',
+    'filter',
+    default=None,
+    metavar='<name==gateway*>',
+    help='filter for gateway')
+def list_available_gateways(ctx, name, filter):
+    try:
+        platform = _get_platform(ctx)
+        client = ctx.obj['client']
+        ext_net = platform.get_external_network(name)
+        ext_net_obj = ExternalNetwork(client, resource=ext_net)
+        assoc_edge_gateways_name = ext_net_obj.list_extnw_gateways(filter)
+        result = []
+        result.append({'Gateways':assoc_edge_gateways_name})
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

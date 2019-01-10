@@ -130,14 +130,14 @@ def external(ctx):
        List associated gateways
 
 \b
-        vcd network external list-allocated-ip ExtNw --filter name==gateway*
+       vcd network external list-allocated-ip ExtNw --filter name==gateway*
 
        List allocated ip
 
 \b
-        vcd network external list-sub-allocated-ip ExtNw --filter name==gateway*
+       vcd network external list-sub-allocated-ip ExtNw --filter name==gateway*
 
-       List allocated ip
+       List sub allocated ip
 
     """
     pass

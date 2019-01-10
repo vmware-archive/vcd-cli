@@ -1141,6 +1141,7 @@ def list_allocated_ip(ctx, name, filter):
     except Exception as e:
         stderr(e, ctx)
 
+
 @external.command('list-sub-allocated-ip', short_help='list sub allocated ip')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)

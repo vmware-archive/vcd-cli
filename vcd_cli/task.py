@@ -65,8 +65,8 @@ def info(ctx, task_id):
 @click.pass_context
 @click.argument(
     'status',
-    type=click.Choice(TaskStatus._enums.keys()),
-    metavar=as_metavar(TaskStatus._enums.keys()),
+    type=click.Choice(list(TaskStatus.__members__.keys())),
+    metavar=as_metavar(list(TaskStatus.__members__.keys())),
     required=False,
     nargs=-1)
 def list_tasks(ctx, status):
@@ -106,8 +106,8 @@ def wait(ctx, task_id):
 @click.pass_context
 @click.argument(
     'status',
-    type=click.Choice(TaskStatus._enums.keys()),
-    metavar=as_metavar(TaskStatus._enums.keys()),
+    type=click.Choice(list(TaskStatus.__members__.keys())),
+    metavar=as_metavar(list(TaskStatus.__members__.keys())),
     required=True)
 @click.argument('task_id', metavar='<id>', required=True)
 def update(ctx, status, task_id):

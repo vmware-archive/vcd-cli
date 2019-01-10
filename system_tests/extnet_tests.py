@@ -280,6 +280,15 @@ class ExtNetTest(BaseTestCase):
             external, args=['list-allocated-ip', self._name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0070_list_sub_allocated_ip(self):
+        """List sub allocated ip.
+
+        Invoke the command 'external list-sub-allocated-ip' in network.
+        """
+        result = self._runner.invoke(
+            external, args=['list-sub-allocated-ip', self._name])
+        self.assertEqual(0, result.exit_code)
+
     def test_0100_delete(self):
         """Delete the external network created.
 

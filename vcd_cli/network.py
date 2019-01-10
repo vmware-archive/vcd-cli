@@ -134,6 +134,10 @@ def external(ctx):
 
        List allocated ip
 
+\b
+        vcd network external list-sub-allocated-ip ExtNw --filter name==gateway*
+
+       List sub-allocated ip
     """
     pass
 
@@ -1134,6 +1138,26 @@ def list_allocated_ip(ctx, name, filter):
         ext_net_obj = ExternalNetwork(client, resource=ext_net)
         allocated_ip = ext_net_obj.list_allocated_ip_address(filter)
         stdout(allocated_ip, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@external.command('list-sub-allocated-ip', short_help='list sub allocated ip')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '--filter',
+    'filter',
+    default=None,
+    metavar='<name==gateway*>',
+    help='filter for gateway')
+def list_sub_allocated_ip(ctx, name, filter):
+    try:
+        platform = _get_platform(ctx)
+        client = ctx.obj['client']
+        ext_net = platform.get_external_network(name)
+        ext_net_obj = ExternalNetwork(client, resource=ext_net)
+        sub_allocated_ip = ext_net_obj.list_gateway_ip_suballocation(filter)
+        stdout(sub_allocated_ip, ctx)
     except Exception as e:
         stderr(e, ctx)
 

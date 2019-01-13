@@ -289,6 +289,15 @@ class ExtNetTest(BaseTestCase):
             external, args=['list-sub-allocated-ip', self._name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0075_list_associated_direct_org_vdc_networks(self):
+        """List associated direct org vDC networks.
+
+        Invoke the command 'external list-direct-org-vdc-network' in network.
+        """
+        result = self._runner.invoke(
+            external, args=['list-direct-org-vdc-network', self._name])
+        self.assertEqual(0, result.exit_code)
+
     def test_0100_delete(self):
         """Delete the external network created.
 

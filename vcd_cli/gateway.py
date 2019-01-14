@@ -755,8 +755,8 @@ def update_configure_rate_limits(ctx, name, rate_limit_config):
 def list_rate_limits(ctx, name):
     try:
         gateway_resource = _get_gateway(ctx, name)
-        task = gateway_resource.list_rate_limits()
-        stdout(task, ctx)
+        rate_limits = gateway_resource.list_rate_limits()
+        stdout(rate_limits, ctx)
     except Exception as e:
         stderr(e, ctx)
 

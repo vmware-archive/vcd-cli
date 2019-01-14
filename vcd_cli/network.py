@@ -144,6 +144,12 @@ def external(ctx):
 
        List associated direct org vDC networks
 
+\b
+       vcd network external list-vsphere-network ExtNw
+               --filter networkName==Ext*
+
+       List associated vSphere Networks
+
     """
     pass
 
@@ -1188,6 +1194,28 @@ def list_direct_org_vdc_networks(ctx, name, filter):
         result = []
         result.append({'Direct Org VDC Networks':direct_ovdc_networks})
         stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@external.command(
+    'list-vsphere-network',
+     short_help='List associated vSphere Networks.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '--filter',
+    'filter',
+    default=None,
+    metavar='<networkName==Ext*>',
+    help='filter for vSphere Network')
+def list_vsphere_network(ctx, name, filter):
+    try:
+        platform = _get_platform(ctx)
+        client = ctx.obj['client']
+        ext_net = platform.get_external_network(name)
+        ext_net_obj = ExternalNetwork(client, resource=ext_net)
+        vSphere_network_list = ext_net_obj.list_vsphere_network(filter)
+        stdout(vSphere_network_list, ctx)
     except Exception as e:
         stderr(e, ctx)
 

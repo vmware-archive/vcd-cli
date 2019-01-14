@@ -298,6 +298,15 @@ class ExtNetTest(BaseTestCase):
             external, args=['list-direct-org-vdc-network', self._name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0080_list_vsphere_networks(self):
+        """List associated vSphere Networks.
+
+        Invoke the command 'external list-vsphere-network' in network.
+        """
+        result = self._runner.invoke(
+            external, args=['list-vsphere-network', self._name])
+        self.assertEqual(0, result.exit_code)
+
     def test_0100_delete(self):
         """Delete the external network created.
 

@@ -712,8 +712,12 @@ def configure_rate_limits(ctx):
 \b
     Examples
         vcd gateway configure-rate-limits update gateway1
-            --e extNw1 101.0 101.0
+            -r extNw1 101.0 101.0
             updates the rate limit of gateway.
+\b
+        vcd gateway configure-rate-limits list test_gateway1
+\b
+        vcd gateway configure-rate-limits disable test_gateway1 -e ExtNw
     """
     pass
 
@@ -739,6 +743,40 @@ def update_configure_rate_limits(ctx, name, rate_limit_config):
             rate_limit_conf[config[0]] = [config[1], config[2]]
         gateway_resource = _get_gateway(ctx, name)
         task = gateway_resource.edit_rate_limits(rate_limit_conf)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@configure_rate_limits.command('list', short_help='list rate limit of gateway.'
+                               )
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+def list_rate_limits(ctx, name):
+    try:
+        gateway_resource = _get_gateway(ctx, name)
+        rate_limits = gateway_resource.list_rate_limits()
+        stdout(rate_limits, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@configure_rate_limits.command('disable', short_help=' Disable rate limit of '
+                                                     'gateway.')
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+@click.option(
+    '-e',
+    '--external-network',
+    'external_network_name',
+    metavar='<external network>',
+    multiple=True,
+    required=True,
+    help='external network connected to the gateway.')
+def disable_rate_limits(ctx, name, external_network_name):
+    try:
+        gateway_resource = _get_gateway(ctx, name)
+        task = gateway_resource.disable_rate_limits(external_network_name)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

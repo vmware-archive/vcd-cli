@@ -460,7 +460,7 @@ class GatewayTest(BaseTestCase):
 
     def test_0020_update_rate_limit(self):
         """Updates existing rate limit of gateway.
-         It will trigger the cli command configure-rate-limits update
+         It will trigger the cli command configure-rate-limits list
         """
         self._config = Environment.get_config()
         config = self._config['external_network']
@@ -468,13 +468,33 @@ class GatewayTest(BaseTestCase):
         result = self._runner.invoke(
             gateway,
             args=[
-                'configure-rate-limits', 'update', self._name, '-r',
+                'configure-rate-limits', 'list', self._name, '-r',
                 [(ext_name, '101.0', '101.0')]])
+
+    def test_0021_list_rate_limit(self):
+        """Lists rate limit of gateway.
+         It will trigger the cli command configure-rate-limits update
+        """
+        result = self._runner.invoke(
+            gateway,
+            args=['configure-rate-limits', 'list', self._name])
+
+    def test_0022_disable_rate_limit(self):
+        """Disables rate limit of gateway.
+         It will trigger the cli command configure-rate-limits disable
+        """
+        self._config = Environment.get_config()
+        config = self._config['external_network']
+        ext_name = config['name']
+        result = self._runner.invoke(
+            gateway,
+            args=['configure-rate-limits', 'disable', self._name, '-e',
+                  ext_name])
 
     @unittest.skip("Skipping test case because set syslog server is not in "
                    "code. It should be unskipped after set syslog server is "
                    "written")
-    def test_0021_get_tenant_syslog_ip(self):
+    def test_0024_get_tenant_syslog_ip(self):
         """Get information of the gateway tenant syslog ip server.
 
         It will trigger the cli command with option list-syslog-server

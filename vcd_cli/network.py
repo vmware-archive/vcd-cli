@@ -136,6 +136,17 @@ def external(ctx):
        vcd network external list-sub-allocated-ip ExtNw --filter name==gateway*
 
        List sub allocated ip
+\b
+       vcd network external list-direct-org-vdc-network ExtNw
+               --filter connectedTo==Ext*
+
+       List associated direct org vDC networks
+
+\b
+       vcd network external list-vsphere-network ExtNw
+               --filter networkName==Ext*
+
+       List associated vSphere Networks
 
     """
     pass
@@ -962,5 +973,52 @@ def list_sub_allocated_ip(ctx, name, filter):
         ext_net_obj = ExternalNetwork(client, resource=ext_net)
         sub_allocated_ip = ext_net_obj.list_gateway_ip_suballocation(filter)
         stdout(sub_allocated_ip, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@external.command(
+    'list-direct-org-vdc-network',
+	short_help='list associated direct org vDC networks.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '--filter',
+    'filter',
+    default=None,
+    metavar='<connectedTo==Ext*>',
+    help='filter for org vDC network')
+def list_direct_org_vdc_networks(ctx, name, filter):
+    try:
+        platform = _get_platform(ctx)
+        client = ctx.obj['client']
+        ext_net = platform.get_external_network(name)
+        ext_net_obj = ExternalNetwork(client, resource=ext_net)
+        direct_ovdc_networks = ext_net_obj.list_associated_direct_org_vdc_networks(filter)
+        result = []
+        result.append({'Direct Org VDC Networks':direct_ovdc_networks})
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@external.command(
+    'list-vsphere-network',
+     short_help='List associated vSphere Networks.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '--filter',
+    'filter',
+    default=None,
+    metavar='<networkName==Ext*>',
+    help='filter for vSphere Network')
+def list_vsphere_network(ctx, name, filter):
+    try:
+        platform = _get_platform(ctx)
+        client = ctx.obj['client']
+        ext_net = platform.get_external_network(name)
+        ext_net_obj = ExternalNetwork(client, resource=ext_net)
+        vSphere_network_list = ext_net_obj.list_vsphere_network(filter)
+        stdout(vSphere_network_list, ctx)
     except Exception as e:
         stderr(e, ctx)

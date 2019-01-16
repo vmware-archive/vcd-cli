@@ -377,7 +377,7 @@ def create_isolated_network(ctx, name, gateway_ip, netmask, description,
     'vc_name',
     required=True,
     metavar='<vc-name>',
-    help='vc name')
+    help='name of the vCenter')
 @click.option(
     '-p',
     '--port-group',
@@ -834,7 +834,7 @@ def remove_ip_range_external_network(ctx, name, gateway_ip, ip_range):
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
-    '-v', '--vc', 'vc_name', required=True, help=' Attached vcenter name')
+    '-v', '--vc', 'vc_name', required=True, help='name of the vCenter')
 @click.option(
     '-p', '--port-group', 'pg_name', required=True, help='Port group name')
 def detach_port_group_external_network(ctx, name, vc_name, pg_name):
@@ -855,7 +855,7 @@ def detach_port_group_external_network(ctx, name, vc_name, pg_name):
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
-    '-v', '--vc', 'vc_name', required=True, help='name of the vcenter')
+    '-v', '--vc', 'vc_name', required=True, help='name of the vCenter')
 @click.option(
     '-p',
     '--port-group',

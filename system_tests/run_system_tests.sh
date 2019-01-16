@@ -31,7 +31,8 @@ cd $SRCROOT
 # If there are tests to run use those. Otherwise use stable tests.
 STABLE_TESTS="login_and_vcd_tests.py \
 extnet_tests.py \
-org_tests.py"
+org_tests.py \
+routed_tests.py"
 
 if [ $# == 0 ]; then
   echo "No tests provided, will run stable list: ${STABLE_TESTS}"

@@ -1,6 +1,6 @@
 # VMware vCloud Director CLI
 #
-# Copyright (c) 2017-2018 VMware, Inc. All Rights Reserved.
+# Copyright (c) 2017-2019 VMware, Inc. All Rights Reserved.
 #
 # This product is licensed to you under the
 # Apache License, Version 2.0 (the "License").
@@ -55,13 +55,26 @@ def routed(ctx):
             --ip-range 2.2.4.1-2.2.4.2
 
 \b
-        vcd network routed modify-ip-range vdc_routed-nw
+        vcd network routed modify-ip-range vdc_routed_nw
                        --ip-range 192.168.1.2-192.168.1.20
                        --new-ip-range 192.168.1.25-192.168.1.50
 
 \b
         vcd network routed list
             List all routed org vdc networks in the selected vdc
+
+\b
+        vcd network routed set-metadata vdc_routed_nw -k key1 -v value1
+            Set a metadata entry in a routed org vdc network with default
+            domain, visibility and metadata value type
+
+\b
+        vcd network routed remove-metadata vdc_routed_nw -k key1
+            Remove a metadata entry from a routed org vdc network
+
+\b
+        vcd network routed list-metadata vdc_routed_nw
+            List all metadata entries in a routed org vdc network
     """
     pass
 

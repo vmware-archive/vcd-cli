@@ -49,9 +49,9 @@ def external(ctx):
             List all external networks available in the system
 
 \b
-        vcd network external create external-net1 vc1
-                --port-group 'pg1'
-                --port-group 'pg2'
+        vcd network external create external-net1
+                --vc vc1
+                --port-group pg1
                 --gateway-ip 192.168.1.1
                 --netmask 255.255.255.0
                 --ip-range 192.168.1.2-192.168.1.49
@@ -61,8 +61,7 @@ def external(ctx):
                 --secondary-dns-ip 8.8.8.9
                 --dns-suffix example.com
             Create an external network.
-                Parameters --port-group and --ip-range are both
-                required parameters and each can have multiple entries.
+                Parameter --ip-range can have multiple entries.
 
 \b
         vcd network external delete external-net1
@@ -109,12 +108,12 @@ def external(ctx):
 
 \b
        vcd network external attach-port-group external-net1
-               --vc-name vc1
+               --vc vc1
                --port-group pg1
 
 \b
        vcd network external detach-port-group external-net1
-               --vc-name vc1
+               --vc vc1
                --port-group pg1
 
 \b
@@ -210,7 +209,7 @@ def isolated(ctx):
 @direct.command(
     'create',
     short_help='create a new directly connected org vdc '
-               'network in vcd')
+    'network in vcd')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -234,7 +233,7 @@ def isolated(ctx):
     is_flag=True,
     default=False,
     help='Share/Don\'t share the network with other VDC(s) in the '
-         'organization')
+    'organization')
 def create_direct_network(ctx, name, parent_network_name, description,
                           is_shared):
     try:
@@ -256,7 +255,7 @@ def create_direct_network(ctx, name, parent_network_name, description,
 
 @isolated.command(
     'create', short_help='create a new isolated org vdc '
-                         'network in vcd')
+    'network in vcd')
 @click.pass_context
 @click.argument('name', metavar='<name>')
 @click.option(
@@ -297,13 +296,13 @@ def create_direct_network(ctx, name, parent_network_name, description,
     'ip_range_start',
     metavar='<ip>',
     help='Start address of the IP ranges used for static pool allocation in '
-         'the network')
+    'the network')
 @click.option(
     '--ip-range-end',
     'ip_range_end',
     metavar='<ip>',
     help='End address of the IP ranges used for static pool allocation in '
-         'the network')
+    'the network')
 @click.option(
     '--dhcp-enabled/--dhcp-disabled',
     'is_dhcp_enabled',
@@ -335,7 +334,7 @@ def create_direct_network(ctx, name, parent_network_name, description,
     is_flag=True,
     default=False,
     help='Share/Don\'t share the network with other VDC(s) in the '
-         'organization')
+    'organization')
 def create_isolated_network(ctx, name, gateway_ip, netmask, description,
                             primary_dns_ip, secondary_dns_ip, dns_suffix,
                             ip_range_start, ip_range_end, is_dhcp_enabled,
@@ -372,7 +371,13 @@ def create_isolated_network(ctx, name, gateway_ip, netmask, description,
 @external.command('create', short_help='create a new external network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
-@click.argument('vc-name', metavar='<vc-name>', required=True)
+@click.option(
+    '-v',
+    '--vc',
+    'vc_name',
+    required=True,
+    metavar='<vc-name>',
+    help='vc name')
 @click.option(
     '-p',
     '--port-group',
@@ -421,10 +426,7 @@ def create_isolated_network(ctx, name, gateway_ip, netmask, description,
     metavar='<ip>',
     help='IP of the secondary DNS server of the subnet')
 @click.option(
-    '--dns-suffix',
-    'dns_suffix',
-    metavar='<name>',
-    help='DNS suffix')
+    '--dns-suffix', 'dns_suffix', metavar='<name>', help='DNS suffix')
 def create_external_network(ctx, name, vc_name, port_group, gateway_ip,
                             netmask, ip_range, description, primary_dns_ip,
                             secondary_dns_ip, dns_suffix):
@@ -467,7 +469,7 @@ def list_external_networks(ctx):
 @direct.command(
     'list',
     short_help='list all directly connected org vdc networks in the selected'
-               ' vdc')
+    ' vdc')
 @click.pass_context
 def list_direct_networks(ctx):
     try:
@@ -510,7 +512,7 @@ def list_isolated_networks(ctx):
 @direct.command(
     'delete',
     short_help='delete a directly connected org vdc network in the selected'
-               ' vdc')
+    ' vdc')
 @click.pass_context
 @click.argument('name', metavar='<name>')
 @click.option(
@@ -588,8 +590,7 @@ def delete_external_network(ctx, name):
 
 
 @external.command(
-    'update',
-    short_help='update name and description of an external network')
+    'update', short_help='update name and description of an external network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -610,9 +611,7 @@ def update_external_network(ctx, name, new_name, new_description):
     try:
         platform = _get_platform(ctx)
         ext_net = platform.update_external_network(
-            name=name,
-            new_name=new_name,
-            new_description=new_description)
+            name=name, new_name=new_name, new_description=new_description)
 
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
         stdout('External network updated successfully.', ctx)
@@ -620,9 +619,7 @@ def update_external_network(ctx, name, new_name, new_description):
         stderr(e, ctx)
 
 
-@external.command(
-    'add-subnet',
-    short_help='Add subnet to external network.')
+@external.command('add-subnet', short_help='Add subnet to external network.')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -658,22 +655,20 @@ def update_external_network(ctx, name, new_name, new_description):
     metavar='<ip>',
     help='ip of the secondary dns server of the subnet')
 @click.option(
-    '--dns-suffix',
-    'dns_suffix',
-    metavar='<name>',
-    help='dns suffix')
+    '--dns-suffix', 'dns_suffix', metavar='<name>', help='dns suffix')
 def add_subnet_external_network(ctx, name, gateway_ip, netmask, ip_range,
                                 primary_dns_ip, secondary_dns_ip, dns_suffix):
     try:
         extnet_obj = _get_ext_net_obj(ctx, name)
 
-        ext_net = extnet_obj.add_subnet(name=name,
-                                        gateway_ip=gateway_ip,
-                                        netmask=netmask,
-                                        ip_ranges=ip_range,
-                                        primary_dns_ip=primary_dns_ip,
-                                        secondary_dns_ip=secondary_dns_ip,
-                                        dns_suffix=dns_suffix)
+        ext_net = extnet_obj.add_subnet(
+            name=name,
+            gateway_ip=gateway_ip,
+            netmask=netmask,
+            ip_ranges=ip_range,
+            primary_dns_ip=primary_dns_ip,
+            secondary_dns_ip=secondary_dns_ip,
+            dns_suffix=dns_suffix)
 
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
         stdout('subnet is added successfully.', ctx)
@@ -682,8 +677,7 @@ def add_subnet_external_network(ctx, name, gateway_ip, netmask, ip_range,
 
 
 @external.command(
-    'enable-subnet',
-    short_help='Enable subnet of an external network.')
+    'enable-subnet', short_help='Enable subnet of an external network.')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -693,16 +687,17 @@ def add_subnet_external_network(ctx, name, gateway_ip, netmask, ip_range,
     required=True,
     metavar='<ip>',
     help='gateway ip of the subnet')
-@click.option('--enable/--disable',
-              'is_enabled',
-              default=None,
-              help='enable/disable the subnet')
+@click.option(
+    '--enable/--disable',
+    'is_enabled',
+    default=None,
+    help='enable/disable the subnet')
 def enable_subnet_external_network(ctx, name, gateway_ip, is_enabled):
     try:
         extnet_obj = _get_ext_net_obj(ctx, name)
 
-        ext_net = extnet_obj.enable_subnet(gateway_ip=gateway_ip,
-                                           is_enabled=is_enabled)
+        ext_net = extnet_obj.enable_subnet(
+            gateway_ip=gateway_ip, is_enabled=is_enabled)
 
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
         if is_enabled:
@@ -717,8 +712,8 @@ def _get_ext_net_obj(ctx, name):
     """Returns ExternalNetwork object."""
     platform = _get_platform(ctx)
     client = ctx.obj['client']
-    return ExternalNetwork(client,
-                           resource=platform.get_external_network(name))
+    return ExternalNetwork(
+        client, resource=platform.get_external_network(name))
 
 
 def _get_platform(ctx):
@@ -753,8 +748,7 @@ def add_ip_range_external_network(ctx, name, gateway_ip, ip_range):
         extnet_obj = _get_ext_net_obj(ctx, name)
 
         ext_net = extnet_obj.add_ip_range(
-            gateway_ip=gateway_ip,
-            ip_ranges=ip_range)
+            gateway_ip=gateway_ip, ip_ranges=ip_range)
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
         stdout('Ip Range added to a subnet successfully.', ctx)
     except Exception as e:
@@ -827,8 +821,7 @@ def remove_ip_range_external_network(ctx, name, gateway_ip, ip_range):
         extnet_obj = _get_ext_net_obj(ctx, name)
 
         ext_net = extnet_obj.delete_ip_range(
-            gateway_ip=gateway_ip,
-            ip_ranges=ip_range)
+            gateway_ip=gateway_ip, ip_ranges=ip_range)
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
         stdout('Ip Range of a subnet removed successfully.', ctx)
     except Exception as e:
@@ -841,21 +834,15 @@ def remove_ip_range_external_network(ctx, name, gateway_ip, ip_range):
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
-    '--vc-name',
-    'vc_name',
-    required=True,
-    help=' Attached vcenter name')
+    '-v', '--vc', 'vc_name', required=True, help=' Attached vcenter name')
 @click.option(
-    '--port-group',
-    'pg_name',
-    required=True,
-    help='Port group name')
+    '-p', '--port-group', 'pg_name', required=True, help='Port group name')
 def detach_port_group_external_network(ctx, name, vc_name, pg_name):
     try:
         extnet_obj = _get_ext_net_obj(ctx, name)
 
-        ext_net = extnet_obj.detach_port_group(vim_server_name=vc_name,
-                                               port_group_name=pg_name)
+        ext_net = extnet_obj.detach_port_group(
+            vim_server_name=vc_name, port_group_name=pg_name)
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
         stdout('Port group detached successfully.', ctx)
     except Exception as e:
@@ -868,11 +855,9 @@ def detach_port_group_external_network(ctx, name, vc_name, pg_name):
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
-    '--vc-name',
-    'vc_name',
-    required=True,
-    help='name of the vcenter')
+    '-v', '--vc', 'vc_name', required=True, help='name of the vcenter')
 @click.option(
+    '-p',
     '--port-group',
     'pg_name',
     required=True,
@@ -881,8 +866,8 @@ def attach_port_group_external_network(ctx, name, vc_name, pg_name):
     try:
         extnet_obj = _get_ext_net_obj(ctx, name)
 
-        ext_net = extnet_obj.attach_port_group(vim_server_name=vc_name,
-                                               port_group_name=pg_name)
+        ext_net = extnet_obj.attach_port_group(
+            vim_server_name=vc_name, port_group_name=pg_name)
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
         stdout('Port group attached successfully.', ctx)
     except Exception as e:
@@ -979,7 +964,7 @@ def list_sub_allocated_ip(ctx, name, filter):
 
 @external.command(
     'list-direct-org-vdc-network',
-	short_help='list associated direct org vDC networks.')
+    short_help='list associated direct org vDC networks.')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -994,16 +979,17 @@ def list_direct_org_vdc_networks(ctx, name, filter):
         client = ctx.obj['client']
         ext_net = platform.get_external_network(name)
         ext_net_obj = ExternalNetwork(client, resource=ext_net)
-        direct_ovdc_networks = ext_net_obj.list_associated_direct_org_vdc_networks(filter)
+        direct_ovdc_networks = \
+            ext_net_obj.list_associated_direct_org_vdc_networks(filter)
         result = []
-        result.append({'Direct Org VDC Networks':direct_ovdc_networks})
+        result.append({'Direct Org VDC Networks': direct_ovdc_networks})
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
 
+
 @external.command(
-    'list-vsphere-network',
-     short_help='List associated vSphere Networks.')
+    'list-vsphere-network', short_help='List associated vSphere Networks.')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(

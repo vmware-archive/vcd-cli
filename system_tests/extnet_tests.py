@@ -24,7 +24,6 @@ from vcd_cli.network import external
 
 from pyvcloud.vcd.client import QueryResultFormat
 from pyvcloud.vcd.client import ResourceType
-from pyvcloud.vcd.platform import Platform
 from helpers.portgroup_helper import PortgroupHelper
 
 
@@ -108,13 +107,13 @@ class ExtNetTest(BaseTestCase):
                     self._port_group = record.get('name')
                     break
 
-        self.assertIsNotNone(
-            self._port_group, 'None of the port groups are free.')
+        self.assertIsNotNone(self._port_group,
+                             'None of the port groups are free.')
 
         result = self._runner.invoke(
             external,
             args=[
-                'create', self._name, vc_name, '--port-group',
+                'create', self._name, '--vc', vc_name, '--port-group',
                 self._port_group, '--gateway', self._gateway, '--netmask',
                 self._netmask, '--ip-range', self._ip_range, '--description',
                 self._description, '--dns1', self._dns1, '--dns2', self._dns2,
@@ -194,8 +193,9 @@ class ExtNetTest(BaseTestCase):
         result = self._runner.invoke(
             external,
             args=[
-                'attach-port-group', self._name, '--vc-name', vc_name,
-                '--port-group', pg_name])
+                'attach-port-group', self._name, '--vc', vc_name,
+                '--port-group', pg_name
+            ])
         self.assertEqual(0, result.exit_code)
 
     def test_0041_detach_port_group(self):
@@ -210,8 +210,9 @@ class ExtNetTest(BaseTestCase):
         result = self._runner.invoke(
             external,
             args=[
-                'detach-port-group', self._name, '--vc-name', vc_name,
-                '--port-group', pg_name])
+                'detach-port-group', self._name, '--vc', vc_name,
+                '--port-group', pg_name
+            ])
         self.assertEqual(0, result.exit_code)
 
     def test_0050_add_ip_range(self):
@@ -223,7 +224,8 @@ class ExtNetTest(BaseTestCase):
             external,
             args=[
                 'add-ip-range', self._name, '--gateway-ip', self._gateway1,
-                '--ip-range', self._ip_range3])
+                '--ip-range', self._ip_range3
+            ])
         self.assertEqual(0, result.exit_code)
 
     def test_0051_modify_ip_range(self):
@@ -258,8 +260,7 @@ class ExtNetTest(BaseTestCase):
 
         Invoke the command 'external list-pvdc' in network.
         """
-        result = self._runner.invoke(
-            external, args=['list-pvdc', self._name])
+        result = self._runner.invoke(external, args=['list-pvdc', self._name])
         self.assertEqual(0, result.exit_code)
 
     def test_0060_list_available_gateways(self):

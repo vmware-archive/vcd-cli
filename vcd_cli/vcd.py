@@ -121,6 +121,7 @@ else:
     from vcd_cli import pvdc  # NOQA
     from vcd_cli import role  # NOQA
     from vcd_cli import right  # NOQA
+    from vcd_cli import routed # NOQA
     from vcd_cli import search  # NOQA
     from vcd_cli import system  # NOQA
     from vcd_cli import task  # NOQA

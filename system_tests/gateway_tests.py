@@ -509,7 +509,7 @@ class GatewayTest(BaseTestCase):
             gateway,
             args=['configure-default-gateway', 'update', self._name, '-e',
                   ext_name, '--gateway-ip', ip,
-                  '--default-gateway-enable'])
+                  '--enable'])
         self.assertEqual(0, result.exit_code)
 
     def test_0024_enable_dns_relay(self):
@@ -520,7 +520,7 @@ class GatewayTest(BaseTestCase):
         result = self._runner.invoke(
             gateway,
             args=['configure-default-gateway', 'enable-dns-relay', self._name,
-                  '--dns-relay-enable'])
+                  '--enable'])
         self.assertEqual(0, result.exit_code)
 
     def test_0025_list_configure_default_gateways(self):

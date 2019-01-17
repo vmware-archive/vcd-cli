@@ -805,11 +805,11 @@ def configure_default_gateway(ctx):
 \b
     Examples
         vcd gateway configure-default-gateway update gateway1
-            -e extNw1 --gateway-ip 2.2.3.1 --default-gateway-enable
+            -e extNw1 --gateway-ip 2.2.3.1 --enable
             updates default gateway.
 \b
         vcd gateway configure-default-gateway enable-dns-relay gateway1
-            --dns-relay-enable
+            --enable
 \b
         vcd gateway configure-default-gateway list gateway1
 
@@ -818,7 +818,7 @@ def configure_default_gateway(ctx):
 
 
 @configure_default_gateway.command('update', short_help='configures the '
-                                                        'default gateway.')
+                                                        'default gateway')
 @click.pass_context
 @click.argument('name', metavar='<gateway name>', required=True)
 @click.option(
@@ -838,17 +838,17 @@ def configure_default_gateway(ctx):
     required=True,
     help='IP of the gateway.')
 @click.option(
-    '--default-gateway-enable/--default-gateway-disable',
-    'is_default_gateway',
+    '--enable/--disable',
+    'is_enable',
     default=None,
     metavar='<bool>',
     help='enables/disables the default gateway')
 def configure_default_gateways(ctx, name, external_network_name, gateway_ip,
-                               is_default_gateway):
+                               is_enable):
     try:
         gateway_resource = _get_gateway(ctx, name)
         task = gateway_resource.configure_default_gateway(
-            external_network_name, gateway_ip, is_default_gateway)
+            external_network_name, gateway_ip, is_enable)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -859,15 +859,15 @@ def configure_default_gateways(ctx, name, external_network_name, gateway_ip,
 @click.pass_context
 @click.argument('name', metavar='<gateway name>', required=True)
 @click.option(
-    '--dns-relay-enable/--dns-relay-disable',
-    'is_dns_relay',
+    '--enable/-disable',
+    'is_enable',
     default=None,
     metavar='<bool>',
     help='enables/disables the dns relay')
-def enable_dns_relay(ctx, name, is_dns_relay):
+def enable_dns_relay(ctx, name, is_enable):
     try:
         gateway_resource = _get_gateway(ctx, name)
-        task = gateway_resource.configure_dns_default_gateway(is_dns_relay)
+        task = gateway_resource.configure_dns_default_gateway(is_enable)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

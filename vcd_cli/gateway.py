@@ -810,8 +810,10 @@ def configure_default_gateway(ctx):
 \b
         vcd gateway configure-default-gateway enable-dns-relay gateway1
             --enable
+            enables the dns relay.
 \b
         vcd gateway configure-default-gateway list gateway1
+            lists the configured default gateway.
 
     """
     pass

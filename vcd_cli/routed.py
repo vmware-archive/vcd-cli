@@ -434,3 +434,18 @@ def remove_metadata(ctx, name, key, domain):
                ctx)
     except Exception as e:
         stderr(e, ctx)
+
+
+@routed.command('list-allocated-ip', short_help='list allocated IP addresses')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def list_allocated_ip_address(ctx, name):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        allocated_ip_addresses = vdcNetwork.list_allocated_ip_address()
+        stdout(allocated_ip_addresses, ctx)
+    except Exception as e:
+        stderr(e, ctx)

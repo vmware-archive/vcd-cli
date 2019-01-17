@@ -36,7 +36,7 @@ class GatewayTest(BaseTestCase):
     _external_network_name = 'external_network_' + str(uuid1())
     _subnet_addr = None
     _ext_network_name = None
-    _gateway_ip = None
+    _gateway_ip = '2.2.3.1'
     _logger = None
 
     def test_0000_setup(self):
@@ -491,10 +491,50 @@ class GatewayTest(BaseTestCase):
             args=['configure-rate-limits', 'disable', self._name, '-e',
                   ext_name])
 
+    def test_0023_configure_default_gateways(self):
+        """Configures gateway for provided external networks and gateway IP.
+         It will trigger the cli command configure-default-gateway update
+        """
+        self._config = Environment.get_config()
+        config = self._config['external_network']
+        GatewayTest._logger.debug("config :{0} ".format(config))
+        ext_name = config['name']
+        ip_scopes = config['ip_scopes'][0]
+        subnet = ip_scopes['subnet']
+        ip = subnet.split('/')[0]
+        GatewayTest._logger.debug("vcd gateway configure-default-gateway "
+                                  "update {0} -e {1} --gateway-ip {2}".format(
+            self._name, ext_name, ip))
+        result = self._runner.invoke(
+            gateway,
+            args=['configure-default-gateway', 'update', self._name, '-e',
+                  ext_name, '--gateway-ip', ip,
+                  '--default-gateway-enable'])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0024_enable_dns_relay(self):
+        """Enables/disables the dns relay of the default gateway.
+         It will trigger the cli command configure-default-gateway
+             enable-dns-relay
+        """
+        result = self._runner.invoke(
+            gateway,
+            args=['configure-default-gateway', 'enable-dns-relay', self._name,
+                  '--dns-relay-enable'])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0025_list_configure_default_gateways(self):
+        """Lists the configured default gateway.
+         It will trigger the cli command configure-default-gateway list
+        """
+        result = self._runner.invoke(
+            gateway, args=['configure-default-gateway', 'list', self._name])
+        self.assertEqual(0, result.exit_code)
+
     @unittest.skip("Skipping test case because set syslog server is not in "
                    "code. It should be unskipped after set syslog server is "
                    "written")
-    def test_0024_get_tenant_syslog_ip(self):
+    def test_0030_get_tenant_syslog_ip(self):
         """Get information of the gateway tenant syslog ip server.
 
         It will trigger the cli command with option list-syslog-server

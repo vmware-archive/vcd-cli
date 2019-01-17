@@ -794,3 +794,94 @@ def list_syslog_server(ctx, name):
         stdout(syslog_server, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+
+@gateway.group('configure-default-gateway', short_help='configures the default'
+                                                       'gateway')
+@click.pass_context
+def configure_default_gateway(ctx):
+    """Configures the default gateway in vCloud Director.
+
+\b
+    Examples
+        vcd gateway configure-default-gateway update gateway1
+            -e extNw1 --gateway-ip 2.2.3.1 --default-gateway-enable
+            updates default gateway.
+\b
+        vcd gateway configure-default-gateway enable-dns-relay gateway1
+            --dns-relay-enable
+\b
+        vcd gateway configure-default-gateway list gateway1
+
+    """
+    pass
+
+
+@configure_default_gateway.command('update', short_help='configures the '
+                                                        'default gateway.')
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+@click.option(
+    '-e',
+    '--external-network',
+    'external_network_name',
+    metavar='<external network>',
+    multiple=False,
+    required=True,
+    help='external network connected to the gateway.')
+@click.option(
+    '-i',
+    '--gateway-ip',
+    'gateway_ip',
+    metavar='<ip>',
+    multiple=False,
+    required=True,
+    help='IP of the gateway.')
+@click.option(
+    '--default-gateway-enable/--default-gateway-disable',
+    'is_default_gateway',
+    default=None,
+    metavar='<bool>',
+    help='enables/disables the default gateway')
+def configure_default_gateways(ctx, name, external_network_name, gateway_ip,
+                               is_default_gateway):
+    try:
+        gateway_resource = _get_gateway(ctx, name)
+        task = gateway_resource.configure_default_gateway(
+            external_network_name, gateway_ip, is_default_gateway)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@configure_default_gateway.command('enable-dns-relay',
+                                   short_help='enables/disables the dns relay')
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+@click.option(
+    '--dns-relay-enable/--dns-relay-disable',
+    'is_dns_relay',
+    default=None,
+    metavar='<bool>',
+    help='enables/disables the dns relay')
+def enable_dns_relay(ctx, name, is_dns_relay):
+    try:
+        gateway_resource = _get_gateway(ctx, name)
+        task = gateway_resource.configure_dns_default_gateway(is_dns_relay)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@configure_default_gateway.command('list',
+                                   short_help='lists the configure default'
+                                              ' gateway')
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+def list_configure_default_gateways(ctx, name):
+    try:
+        gateway_resource = _get_gateway(ctx, name)
+        configured_list = gateway_resource.list_configure_default_gateway()
+        stdout(configured_list, ctx)
+    except Exception as e:
+        stderr(e, ctx)

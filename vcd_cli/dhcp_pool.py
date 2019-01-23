@@ -19,6 +19,8 @@ from vcd_cli.gateway import get_gateway
 from vcd_cli.gateway import services
 
 LEASE_TIME = '8640'
+
+
 @services.group('dhcp-pool', short_help='manage DHCP pool of the gateway')
 @click.pass_context
 def dhcp_pool(ctx):

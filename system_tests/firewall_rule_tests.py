@@ -29,7 +29,8 @@ class TestFirewallRule(BaseTestCase):
     """Adds new firewall rule in the gateway. It will trigger the cli command
     firewall create.
     """
-    _name = GatewayConstants.name
+    __name = GatewayConstants.name
+    __firewall_rule_name = 'rule1'
 
     def test_0000_setup(self):
 
@@ -42,9 +43,9 @@ class TestFirewallRule(BaseTestCase):
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
-                'services', 'firewall', 'create', TestFirewallRule._name,
-                '--name', 'rule1', '--action', 'accept', '--type', 'User',
-                '--enabled', '--logging-enabled'])
+                'services', 'firewall', 'create', TestFirewallRule.__name,
+                '--name', TestFirewallRule.__firewall_rule_name, '--action',
+                'accept', '--type', 'User', '--enabled', '--logging-enabled'])
         self.assertEqual(0, result.exit_code)
 
     def _login(self):

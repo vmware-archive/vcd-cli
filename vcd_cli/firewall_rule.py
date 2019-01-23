@@ -29,7 +29,7 @@ def firewall(ctx):
     \b
         Examples
             vcd gateway services firewall create test_gateway1 --name rule1
-            --action accept --type User --enabled --logging_enabled
+            --action accept --type User --enabled --logging-enabled
 
             create new firewall rule
 

@@ -28,6 +28,7 @@ class TestDhcpPool(BaseTestCase):
     # All tests in this module should be run as System Administrator.
     _pool_ip_range = '30.20.10.110-30.20.10.112'
     _gateway_name = GatewayConstants.name
+    _pool_id = 'pool-1'
 
     def test_0000_setup(self):
         """Adds new DHCP pool to the gateway.
@@ -61,10 +62,22 @@ class TestDhcpPool(BaseTestCase):
         self.assertEqual(0, result.exit_code)
         self.assertTrue("logged in" in result.output)
 
-    @unittest.skip
     def test_0098_teardown(self):
-        """Will implement in next check in, have to implement delete DHCP pool.
+        """Delete a DHCP Pool from gateway.
+
+        It will trigger the cli command service dhcp-pool delete
         """
+        self._config = Environment.get_config()
+        TestDhcpPool._logger = Environment.get_default_logger()
+        TestDhcpPool._runner = CliRunner()
+        default_org = self._config['vcd']['default_org_name']
+        TestDhcpPool._runner.invoke(org, ['use', default_org])
+        result = TestDhcpPool._runner.invoke(
+            gateway,
+            args=[
+                'services', 'dhcp-pool', 'delete', TestDhcpPool._gateway_name,
+                TestDhcpPool._pool_id])
+        self.assertEqual(0, result.exit_code)
 
     def _logout(self):
         """Logs out current session, ignoring errors"""

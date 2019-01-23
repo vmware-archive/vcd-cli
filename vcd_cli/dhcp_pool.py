@@ -12,15 +12,18 @@
 # conditions of the subcomponent's license, as noted in the LICENSE file.
 #
 import click
+from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
-from vcd_cli.gateway import gateway  # NOQA
+# Don't change the order of vcd  nd gateway
+from vcd_cli.vcd import vcd #NOQA
+from vcd_cli.gateway import gateway # NOQA
 from vcd_cli.gateway import get_gateway
 from vcd_cli.gateway import services
 
+from pyvcloud.vcd.dhcp_pool import DhcpPool
+
 LEASE_TIME = '8640'
-
-
 @services.group('dhcp-pool', short_help='manage DHCP pool of the gateway')
 @click.pass_context
 def dhcp_pool(ctx):
@@ -32,7 +35,12 @@ def dhcp_pool(ctx):
             30.20.10.15 --enable-auto-dns --gateway-ip 30.20.10.1 --domain
             abc.com --primary-server 30.20.10.20 --secondary-server 30.20.10.21
             --expire-lease --lease 8640 --subnet 255.255.255.0
+
             Create dhcp rule.
+    \b
+            vcd gateway services dhcp-pool delete test_gateway1 pool-1
+
+            Deletes the DHCP pool
 
     """
 
@@ -114,3 +122,27 @@ def create_dhcp_pool(ctx, gateway_name, ip_range, is_auto_dns, gateway_ip,
     except Exception as e:
         stderr(e, ctx)
 
+
+@dhcp_pool.command("delete", short_help="deletes the DHCP pool")
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+@click.argument('pool_id', metavar='<dhcp pool id>', required=True)
+def delete_dhcp_pool(ctx, gateway_name, pool_id):
+    try:
+        resource = get_dhcp_pool(ctx, gateway_name, pool_id)
+        resource.delete_pool()
+        stdout('DHCP Pool deleted successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+def get_dhcp_pool(ctx, gateway_name, pool_id):
+    """Get the DHCP pool resource.
+
+    It will restore sessions if expired. It will reads the client and
+    creates the DHCP pool resource.
+    """
+    restore_session(ctx, vdc_required=True)
+    client = ctx.obj['client']
+    resource = DhcpPool(client, gateway_name, pool_id)
+    return resource

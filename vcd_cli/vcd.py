@@ -110,6 +110,7 @@ else:
     load_user_plugins()
     from vcd_cli import catalog  # NOQA
     from vcd_cli import disk  # NOQA
+    from vcd_cli import firewall_rule  # NOQA
     from vcd_cli import gateway  # NOQA
     from vcd_cli import info  # NOQA
     from vcd_cli import login  # NOQA

@@ -13,9 +13,10 @@
 #
 
 import click
-
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
+# Don't change the order of vcd  and gateway
+from vcd_cli.vcd import vcd #NOQA
 from vcd_cli.gateway import gateway # NOQA
 from vcd_cli.gateway import get_gateway
 from vcd_cli.gateway import services
@@ -28,7 +29,7 @@ def snat(ctx):
 
     \b
         Examples
-            vcd gateway services snat create test_gateway1 --type=User
+            vcd gateway services snat create test_gateway1 --type User
             --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
             "SNAT Created" -v 0
             create new snat rule
@@ -115,7 +116,7 @@ def dnat(ctx):
 
     \b
         Examples
-            vcd gateway services dnat create test_gateway1 --type=User
+            vcd gateway services dnat create test_gateway1 --type User
             --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
              "DNAT Created" -v 0 --protocol tcp -op 80 -tp 80
             create new dnat rule
@@ -217,5 +218,29 @@ def create_dnat_rule(ctx, gateway_name, action, type, original_address,
             translated_port=translated_Port)
 
         stdout('DNAT rule created successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@services.group('nat', short_help='manage snat/dnat rules of gateway')
+@click.pass_context
+def nat(ctx):
+    """Manages SNAT/DNAT Rule of gateway.
+
+    \b
+        Examples
+            vcd gateway services nat list test_gateway1
+
+    """
+
+
+@nat.command('list', short_help='List all nat rules on a gateway')
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+def list_nat_rules(ctx, gateway_name):
+    try:
+        gateway_resource = get_gateway(ctx, gateway_name)
+        nat_list = gateway_resource.list_nat_rules()
+        stdout(nat_list, ctx)
     except Exception as e:
         stderr(e, ctx)

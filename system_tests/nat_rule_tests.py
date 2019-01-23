@@ -109,6 +109,15 @@ class TestNatRule(BaseTestCase):
                 TestNatRule._dnat1_trans_port])
         self.assertEqual(0, result.exit_code)
 
+    def test_0025_list_nat_rules(self):
+        """List all nat rules on a gateway.
+
+        Invoke the cli command 'gateway services nat list' in nat_rule.
+        """
+        result = TestNatRule._runner.invoke(
+            gateway, args=['services', 'nat', 'list', TestNatRule._name])
+        self.assertEqual(0, result.exit_code)
+
     @unittest.skip
     def test_0098_teardown(self):
         """Removes the given IP ranges from existing IP ranges.

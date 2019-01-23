@@ -114,6 +114,7 @@ else:
     from vcd_cli import info  # NOQA
     from vcd_cli import login  # NOQA
     from vcd_cli import org  # NOQA
+    from vcd_cli import nat_rule  # NOQA
     from vcd_cli import netpool  # NOQA
     from vcd_cli import network  # NOQA
     from vcd_cli import nsxt  # NOQA

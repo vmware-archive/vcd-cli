@@ -16,7 +16,6 @@ import click
 from pyvcloud.vcd.client import ApiVersion
 from pyvcloud.vcd.client import GatewayBackingConfigType
 from pyvcloud.vcd.vdc import VDC
-
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
@@ -887,3 +886,10 @@ def list_configure_default_gateways(ctx, name):
         stdout(configured_list, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+
+@gateway.group('services', short_help='manage gateway configure services')
+@click.pass_context
+def services(ctx):
+    """Configure services of gateway."""
+    pass

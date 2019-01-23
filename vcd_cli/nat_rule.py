@@ -16,7 +16,7 @@ import click
 
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
-from vcd_cli.gateway import gateway
+from vcd_cli.gateway import gateway # NOQA
 from vcd_cli.gateway import get_gateway
 from vcd_cli.gateway import services
 

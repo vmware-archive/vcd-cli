@@ -12,15 +12,8 @@
 # conditions of the subcomponent's license, as noted in the LICENSE file.
 #
 import click
-from pyvcloud.vcd.client import ApiVersion
-from pyvcloud.vcd.client import GatewayBackingConfigType
-from pyvcloud.vcd.vdc import VDC
-
-from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
-from vcd_cli.vcd import vcd
-from vcd_cli.utils import tuple_to_dict
 from vcd_cli.gateway import gateway  # NOQA
 from vcd_cli.gateway import get_gateway
 from vcd_cli.gateway import services
@@ -36,7 +29,8 @@ def dhcp_pool(ctx):
             vcd gateway services dhcp-pool create gateway1 --range 30.20.10.11-
             30.20.10.15 --enable-auto-dns --gateway-ip 30.20.10.1 --domain
             abc.com --primary-server 30.20.10.20 --secondary-server 30.20.10.21
-            --lease 8640 --subnet 255.255.255.0
+            --expire-lease --lease 8640 --subnet 255.255.255.0
+            Create dhcp rule.
 
     """
 

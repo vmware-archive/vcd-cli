@@ -132,7 +132,7 @@ class TestNatRule(BaseTestCase):
 
     def _logout(self):
         """Logs out current session, ignoring errors"""
-        self._runner.invoke(logout)
+        TestNatRule._runner.invoke(logout)
 
     def test_0099_cleanup(self):
         """Release all resources held by this object for testing purposes."""

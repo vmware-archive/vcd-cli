@@ -14,14 +14,11 @@
 
 import click
 
-from pyvcloud.vcd.vdc import VDC
-
-from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
-from vcd_cli.gateway import gateway # NOQA
+from vcd_cli.gateway import gateway
+from vcd_cli.gateway import get_gateway
 from vcd_cli.gateway import services
-from pyvcloud.vcd.gateway import Gateway
 
 
 @services.group('snat', short_help='manage snat rules of gateway')
@@ -32,7 +29,7 @@ def snat(ctx):
     \b
         Examples
             vcd gateway services snat create test_gateway1 --type=User
-            --original 2.2.3.12 --translated 2.2.3.14 --desc
+            --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
             "SNAT Created" -v 0
             create new snat rule
 
@@ -56,14 +53,14 @@ def snat(ctx):
     help='type')
 @click.option(
     '-o',
-    '--original',
+    '--original-ip',
     'original_address',
     default=None,
     metavar='<ip/ip range>',
     help='Original IP address/Range of SNAT Rule')
 @click.option(
     '-t',
-    '--translated',
+    '--translated-ip',
     'translated_address',
     default=None,
     metavar='<ip/ip range>',
@@ -96,15 +93,16 @@ def create_snat_rule(ctx, gateway_name, action, type, original_address,
                      translated_address, enabled, logging_enabled,
                      description, vnic):
     try:
-        gateway = _get_gateway(ctx, gateway_name)
-        gateway.add_nat_rule(action=action,
-                             original_address=original_address,
-                             translated_address=translated_address,
-                             description=description,
-                             type=type,
-                             logging_enabled=logging_enabled,
-                             enabled=enabled,
-                             vnic=vnic)
+        gateway_resource = get_gateway(ctx, gateway_name)
+        gateway_resource.add_nat_rule(
+            action=action,
+            original_address=original_address,
+            translated_address=translated_address,
+            description=description,
+            type=type,
+            logging_enabled=logging_enabled,
+            enabled=enabled,
+            vnic=vnic)
         stdout('SNAT rule created successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -118,8 +116,8 @@ def dnat(ctx):
     \b
         Examples
             vcd gateway services dnat create test_gateway1 --type=User
-            --original 2.2.3.12 --translated 2.2.3.14 --desc "DNAT Created"
-            -v 0 --protocol tcp -op 80 -tp 80
+            --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
+             "DNAT Created" -v 0 --protocol tcp -op 80 -tp 80
             create new dnat rule
 
     """
@@ -142,14 +140,14 @@ def dnat(ctx):
     help='type')
 @click.option(
     '-o',
-    '--original',
+    '--original-ip',
     'original_address',
     default=None,
     metavar='<ip/ip range>',
     help='Original IP address/Range of DNAT Rule')
 @click.option(
     '-t',
-    '--translated',
+    '--translated-ip',
     'translated_address',
     default=None,
     metavar='<ip/ip range>',
@@ -204,34 +202,20 @@ def create_dnat_rule(ctx, gateway_name, action, type, original_address,
                      description, vnic, protocol, original_Port,
                      translated_Port):
     try:
-        gateway = _get_gateway(ctx, gateway_name)
-        gateway.add_nat_rule(action=action,
-                             original_address=original_address,
-                             translated_address=translated_address,
-                             description=description,
-                             type=type,
-                             logging_enabled=logging_enabled,
-                             enabled=enabled,
-                             vnic=vnic,
-                             protocol=protocol,
-                             original_port=original_Port,
-                             translated_port=translated_Port)
+        gateway_resource = get_gateway(ctx, gateway_name)
+        gateway_resource.add_nat_rule(
+            action=action,
+            original_address=original_address,
+            translated_address=translated_address,
+            description=description,
+            type=type,
+            logging_enabled=logging_enabled,
+            enabled=enabled,
+            vnic=vnic,
+            protocol=protocol,
+            original_port=original_Port,
+            translated_port=translated_Port)
 
         stdout('DNAT rule created successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)
-
-
-def _get_gateway(ctx, name):
-    """Get the sdk's gateway resource.
-
-    It will restore sessions if expired. It will read the client and vdc
-    from context and make get_gateway call to VDC for gateway object.
-    """
-    restore_session(ctx, vdc_required=True)
-    client = ctx.obj['client']
-    vdc_href = ctx.obj['profiles'].get('vdc_href')
-    vdc = VDC(client, href=vdc_href)
-    gateway = vdc.get_gateway(name)
-    gateway_resource = Gateway(client, href=gateway.get('href'))
-    return gateway_resource

@@ -26,10 +26,13 @@ from vcd_cli.firewall_rule import gateway
 
 
 class TestFirewallRule(BaseTestCase):
-
+    """Adds new firewall rule in the gateway. It will trigger the cli command
+    firewall create.
+    """
     _name = GatewayConstants.name
 
     def test_0000_setup(self):
+
         self._config = Environment.get_config()
         TestFirewallRule._logger = Environment.get_default_logger()
         TestFirewallRule._runner = CliRunner()

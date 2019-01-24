@@ -110,10 +110,13 @@ else:
     load_user_plugins()
     from vcd_cli import catalog  # NOQA
     from vcd_cli import disk  # NOQA
+    from vcd_cli import firewall_rule  # NOQA
     from vcd_cli import gateway  # NOQA
     from vcd_cli import info  # NOQA
     from vcd_cli import login  # NOQA
     from vcd_cli import org  # NOQA
+    from vcd_cli import nat_rule  # NOQA
+    from vcd_cli import dhcp_pool  # NOQA
     from vcd_cli import netpool  # NOQA
     from vcd_cli import network  # NOQA
     from vcd_cli import nsxt  # NOQA
@@ -121,6 +124,7 @@ else:
     from vcd_cli import pvdc  # NOQA
     from vcd_cli import role  # NOQA
     from vcd_cli import right  # NOQA
+    from vcd_cli import routed # NOQA
     from vcd_cli import search  # NOQA
     from vcd_cli import system  # NOQA
     from vcd_cli import task  # NOQA

@@ -16,7 +16,6 @@ import click
 from pyvcloud.vcd.client import ApiVersion
 from pyvcloud.vcd.client import GatewayBackingConfigType
 from pyvcloud.vcd.vdc import VDC
-
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
@@ -322,7 +321,7 @@ def delete_gateway(ctx, name):
 @click.argument('name', metavar='<gateway name>', required=True)
 def convert_to_advanced_gateway(ctx, name):
     try:
-        gateway_resource = _get_gateway(ctx, name)
+        gateway_resource = get_gateway(ctx, name)
         task = gateway_resource.convert_to_advanced()
         stdout(task, ctx)
     except Exception as e:
@@ -345,7 +344,7 @@ def convert_to_advanced_gateway(ctx, name):
     help='Enable distributed routing for networks connected to this gateway.')
 def enable_distributed_routing(ctx, name, is_enabled=False):
     try:
-        gateway_resource = _get_gateway(ctx, name)
+        gateway_resource = get_gateway(ctx, name)
         task = gateway_resource.enable_distributed_routing(is_enabled)
         stdout(task, ctx)
     except Exception as e:
@@ -368,14 +367,14 @@ def enable_distributed_routing(ctx, name, is_enabled=False):
     ]))
 def modify_form_factor(ctx, name, gateway_configuration):
     try:
-        gateway_resource = _get_gateway(ctx, name)
+        gateway_resource = get_gateway(ctx, name)
         task = gateway_resource.modify_form_factor(gateway_configuration)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
-def _get_gateway(ctx, name):
+def get_gateway(ctx, name):
     """Get the sdk's gateway resource.
 
     It will restore sessions if expired. It will read the client and vdc
@@ -395,7 +394,7 @@ def _get_gateway(ctx, name):
 @click.argument('name', metavar='<name>', required=True)
 def info(ctx, name):
     try:
-        gateway_resource = _get_gateway(ctx, name)
+        gateway_resource = get_gateway(ctx, name)
         ip_allocs = gateway_resource.list_external_network_ip_allocations()
         output = {}
         output['external_network_ip_allocations'] = ip_allocs
@@ -409,7 +408,7 @@ def info(ctx, name):
 @click.argument('name', metavar='<name>', required=True)
 def redeploy_gateway(ctx, name):
     try:
-        gateway_resource = _get_gateway(ctx, name)
+        gateway_resource = get_gateway(ctx, name)
         task = gateway_resource.redeploy()
         stdout(task, ctx)
     except Exception as e:
@@ -423,7 +422,7 @@ def redeploy_gateway(ctx, name):
 @click.argument('name', metavar='<name>', required=True)
 def sync_syslog_settings(ctx, name):
     try:
-        gateway_resource = _get_gateway(ctx, name)
+        gateway_resource = get_gateway(ctx, name)
         task = gateway_resource.sync_syslog_settings()
         stdout(task, ctx)
     except Exception as e:
@@ -436,7 +435,7 @@ def sync_syslog_settings(ctx, name):
 @click.argument('name', metavar='<name>', required=True)
 def list_config_ip_settings(ctx, name):
     try:
-        gateway_resource = _get_gateway(ctx, name)
+        gateway_resource = get_gateway(ctx, name)
         ip_allocs = gateway_resource.list_configure_ip_settings()
         stdout(ip_allocs, ctx)
     except Exception as e:
@@ -488,7 +487,7 @@ def configure_external_network(ctx):
 def add_external_network(ctx, name, external_network_name,
                          configure_ip_settings):
     try:
-        gateway_resource = _get_gateway(ctx, name)
+        gateway_resource = get_gateway(ctx, name)
         task = gateway_resource.add_external_network(external_network_name,
                                                      configure_ip_settings)
         stdout(task, ctx)
@@ -510,7 +509,7 @@ def add_external_network(ctx, name, external_network_name,
     help='external network that needs to be removed from the gateway.')
 def remove_external_network(ctx, name, external_network_name):
     try:
-        gateway_resource = _get_gateway(ctx, name)
+        gateway_resource = get_gateway(ctx, name)
         task = gateway_resource.remove_external_network(external_network_name)
         stdout(task, ctx)
     except Exception as e:
@@ -529,7 +528,7 @@ def remove_external_network(ctx, name, external_network_name):
     help='new name of the gateway')
 def edit_gateway_name(ctx, name, new_name):
     try:
-        gateway_resource = _get_gateway(ctx, name)
+        gateway_resource = get_gateway(ctx, name)
         task = gateway_resource.edit_gateway_name(new_name)
         stdout(task, ctx)
     except Exception as e:
@@ -560,7 +559,7 @@ def edit_gateway_name(ctx, name, new_name):
 def edit_gateway_config_ip_settings(ctx, name, external_networks_name,
                                     subnet_settings):
     try:
-        gateway_resource = _get_gateway(ctx, name)
+        gateway_resource = get_gateway(ctx, name)
         ext_network = dict()
         subnet_participation = dict()
         for setting in subnet_settings:
@@ -626,7 +625,7 @@ def sub_allocate_ip(ctx):
 def add_sub_allocated_ip_pools(ctx, name, external_network_name,
                                ip_range):
     try:
-        gateway_resource = _get_gateway(ctx, name)
+        gateway_resource = get_gateway(ctx, name)
         task = gateway_resource.add_sub_allocated_ip_pools(
             external_network_name, list(ip_range))
         stdout(task, ctx)
@@ -665,7 +664,7 @@ def add_sub_allocated_ip_pools(ctx, name, external_network_name,
 def edit_sub_allocated_ip_pools(ctx, name, external_network_name, old_ip_range,
                                 new_ip_range):
     try:
-        gateway_resource = _get_gateway(ctx, name)
+        gateway_resource = get_gateway(ctx, name)
         task = gateway_resource.edit_sub_allocated_ip_pools(
             external_network_name, old_ip_range, new_ip_range)
         stdout(task, ctx)
@@ -695,7 +694,7 @@ def edit_sub_allocated_ip_pools(ctx, name, external_network_name, old_ip_range,
     help='IP ranges that needs to be removed.')
 def remove_sub_allocated_ip_pools(ctx, name, external_network_name, ip_range):
     try:
-        gateway_resource = _get_gateway(ctx, name)
+        gateway_resource = get_gateway(ctx, name)
         task = gateway_resource.remove_sub_allocated_ip_pools(
             external_network_name, [ip_range])
         stdout(task, ctx)
@@ -712,8 +711,12 @@ def configure_rate_limits(ctx):
 \b
     Examples
         vcd gateway configure-rate-limits update gateway1
-            --e extNw1 101.0 101.0
+            -r extNw1 101.0 101.0
             updates the rate limit of gateway.
+\b
+        vcd gateway configure-rate-limits list test_gateway1
+\b
+        vcd gateway configure-rate-limits disable test_gateway1 -e ExtNw
     """
     pass
 
@@ -737,8 +740,42 @@ def update_configure_rate_limits(ctx, name, rate_limit_config):
         rate_limit_conf = dict()
         for config in rate_limit_config:
             rate_limit_conf[config[0]] = [config[1], config[2]]
-        gateway_resource = _get_gateway(ctx, name)
+        gateway_resource = get_gateway(ctx, name)
         task = gateway_resource.edit_rate_limits(rate_limit_conf)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@configure_rate_limits.command('list', short_help='list rate limit of gateway.'
+                               )
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+def list_rate_limits(ctx, name):
+    try:
+        gateway_resource = get_gateway(ctx, name)
+        rate_limits = gateway_resource.list_rate_limits()
+        stdout(rate_limits, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@configure_rate_limits.command('disable', short_help=' Disable rate limit of '
+                                                     'gateway.')
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+@click.option(
+    '-e',
+    '--external-network',
+    'external_network_name',
+    metavar='<external network>',
+    multiple=True,
+    required=True,
+    help='external network connected to the gateway.')
+def disable_rate_limits(ctx, name, external_network_name):
+    try:
+        gateway_resource = get_gateway(ctx, name)
+        task = gateway_resource.disable_rate_limits(external_network_name)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -751,8 +788,108 @@ def update_configure_rate_limits(ctx, name, rate_limit_config):
 @click.argument('name', metavar='<name>', required=True)
 def list_syslog_server(ctx, name):
     try:
-        gateway_resource = _get_gateway(ctx, name)
+        gateway_resource = get_gateway(ctx, name)
         syslog_server = gateway_resource.list_syslog_server_ip()
         stdout(syslog_server, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+
+@gateway.group('configure-default-gateway', short_help='configures the default'
+                                                       'gateway')
+@click.pass_context
+def configure_default_gateway(ctx):
+    """Configures the default gateway in vCloud Director.
+
+\b
+    Examples
+        vcd gateway configure-default-gateway update gateway1
+            -e extNw1 --gateway-ip 2.2.3.1 --enable
+            updates default gateway.
+\b
+        vcd gateway configure-default-gateway enable-dns-relay gateway1
+            --enable
+            enables the dns relay.
+\b
+        vcd gateway configure-default-gateway list gateway1
+            lists the configured default gateway.
+
+    """
+    pass
+
+
+@configure_default_gateway.command('update', short_help='configures the '
+                                                        'default gateway')
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+@click.option(
+    '-e',
+    '--external-network',
+    'external_network_name',
+    metavar='<external network>',
+    multiple=False,
+    required=True,
+    help='external network connected to the gateway.')
+@click.option(
+    '-i',
+    '--gateway-ip',
+    'gateway_ip',
+    metavar='<ip>',
+    multiple=False,
+    required=True,
+    help='IP of the gateway.')
+@click.option(
+    '--enable/--disable',
+    'is_enable',
+    default=None,
+    metavar='<bool>',
+    help='enables/disables the default gateway')
+def configure_default_gateways(ctx, name, external_network_name, gateway_ip,
+                               is_enable):
+    try:
+        gateway_resource = get_gateway(ctx, name)
+        task = gateway_resource.configure_default_gateway(
+            external_network_name, gateway_ip, is_enable)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@configure_default_gateway.command('enable-dns-relay',
+                                   short_help='enables/disables the dns relay')
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+@click.option(
+    '--enable/-disable',
+    'is_enable',
+    default=None,
+    metavar='<bool>',
+    help='enables/disables the dns relay')
+def enable_dns_relay(ctx, name, is_enable):
+    try:
+        gateway_resource = get_gateway(ctx, name)
+        task = gateway_resource.configure_dns_default_gateway(is_enable)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@configure_default_gateway.command('list',
+                                   short_help='lists the configure default'
+                                              ' gateway')
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+def list_configure_default_gateways(ctx, name):
+    try:
+        gateway_resource = get_gateway(ctx, name)
+        configured_list = gateway_resource.list_configure_default_gateway()
+        stdout(configured_list, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@gateway.group('services', short_help='manage gateway configure services')
+@click.pass_context
+def services(ctx):
+    """Configure services of gateway."""
+    pass

@@ -99,7 +99,7 @@ class TestDhcpPool(BaseTestCase):
     def test_0098_teardown(self):
         """Delete a DHCP Pool from gateway.
 
-        It will trigger the cli command service dhcp-pool delete
+        It will trigger the cli command services dhcp-pool delete
         """
         self._config = Environment.get_config()
         TestDhcpPool._logger = Environment.get_default_logger()

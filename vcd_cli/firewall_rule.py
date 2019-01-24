@@ -85,13 +85,8 @@ def create_firewall_rule(ctx, gateway_name, name, action, type,
 @click.argument('name', metavar='<name>', required=True)
 def rules_list(ctx, name):
     try:
-
         gateway_resource = get_gateway(ctx, name)
-        firewall_rules = gateway_resource.get_firewall_rules()
-        firewall_rule_list = []
-        for firewall_rule in firewall_rules.iter('firewallRule'):
-            firewall_rule_list.append(dict(ID=firewall_rule.find('id').text, name=firewall_rule.find('name').text,
-                                           ruleType=firewall_rule.find('ruleType').text))
-        stdout(firewall_rule_list, ctx)
+        firewall_rules = gateway_resource.get_firewall_rules_list()
+        stdout(firewall_rules, ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -41,6 +41,14 @@ def dhcp_pool(ctx):
             vcd gateway services dhcp-pool delete test_gateway1 pool-1
 
             Deletes the DHCP pool
+    \b
+            vcd gateway services dhcp-pool list test_gateway1
+
+            Lists the DHCP pool
+    \b
+            vcd gateway services dhcp-pool info test_gateway1 pool-1
+
+            Info DHCP pool
 
     """
 
@@ -140,9 +148,34 @@ def get_dhcp_pool(ctx, gateway_name, pool_id):
     """Get the DHCP pool resource.
 
     It will restore sessions if expired. It will reads the client and
-    creates the DHCP pool resource.
+    creates the DHCP pool resource object.
     """
     restore_session(ctx, vdc_required=True)
     client = ctx.obj['client']
     resource = DhcpPool(client, gateway_name, pool_id)
     return resource
+
+
+@dhcp_pool.command("list", short_help="lists the DHCP pool")
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+def list_dhcp_pool(ctx, gateway_name):
+    try:
+        gateway_resource = get_gateway(ctx, gateway_name)
+        result = gateway_resource.list_dhcp_pools()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@dhcp_pool.command("info", short_help="info about DHCP pool")
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+@click.argument('pool_id', metavar='<dhcp pool id>', required=True)
+def info_dhcp_pool(ctx, gateway_name, pool_id):
+    try:
+        resource = get_dhcp_pool(ctx, gateway_name, pool_id)
+        result = resource.get_pool_info()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)

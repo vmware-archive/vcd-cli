@@ -28,6 +28,7 @@ class TestDhcpPool(BaseTestCase):
     # All tests in this module should be run as System Administrator.
     _pool_ip_range = '30.20.10.110-30.20.10.112'
     _gateway_name = GatewayConstants.name
+    _pool_id = None
 
     def test_0000_setup(self):
         """Adds new DHCP pool to the gateway.
@@ -61,10 +62,56 @@ class TestDhcpPool(BaseTestCase):
         self.assertEqual(0, result.exit_code)
         self.assertTrue("logged in" in result.output)
 
-    @unittest.skip
-    def test_0098_teardown(self):
-        """Will implement in next check in, have to implement delete DHCP pool.
+    def test_0001_list_dhcp_pool(self):
+        """List DHCP pool.
+
+         It will trigger the cli command service dhcp-pool list
         """
+        result = TestDhcpPool._runner.invoke(
+            gateway,
+            args=[
+                'services', 'dhcp-pool', 'list', TestDhcpPool._gateway_name])
+        ip_pool_row = self.get_row_containing_word(result.output,
+                                                   TestDhcpPool._pool_ip_range)
+        ip_pool_arr = ip_pool_row.strip().split()
+        TestDhcpPool._pool_id = ip_pool_arr[1]
+        self.assertEqual(0, result.exit_code)
+
+    def test_0002_info_dhcp_pool(self):
+        """info about DHCP pool.
+
+         It will trigger the cli command services dhcp-pool info
+        """
+        result = TestDhcpPool._runner.invoke(
+            gateway,
+            args=[
+                'services', 'dhcp-pool', 'info', TestDhcpPool._gateway_name,
+                TestDhcpPool._pool_id])
+
+        self.assertEqual(0, result.exit_code)
+
+    def get_row_containing_word(self, output, word):
+        rows = output.split('\n')
+        for row in rows:
+            if row.find(word) != -1:
+                return row
+
+    def test_0098_teardown(self):
+        """Delete a DHCP Pool from gateway.
+
+        It will trigger the cli command services dhcp-pool delete
+        """
+        self._config = Environment.get_config()
+        TestDhcpPool._logger = Environment.get_default_logger()
+        TestDhcpPool._runner = CliRunner()
+        default_org = self._config['vcd']['default_org_name']
+        TestDhcpPool._runner.invoke(org, ['use', default_org])
+        result = TestDhcpPool._runner.invoke(
+            gateway,
+            args=[
+                'services', 'dhcp-pool', 'delete', TestDhcpPool._gateway_name,
+                TestDhcpPool._pool_id])
+        self.assertEqual(0, result.exit_code)
 
     def _logout(self):
         """Logs out current session, ignoring errors"""

@@ -80,7 +80,7 @@ class TestDhcpPool(BaseTestCase):
     def test_0002_info_dhcp_pool(self):
         """info about DHCP pool.
 
-         It will trigger the cli command service dhcp-pool info
+         It will trigger the cli command services dhcp-pool info
         """
         result = TestDhcpPool._runner.invoke(
             gateway,

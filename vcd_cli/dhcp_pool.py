@@ -39,16 +39,13 @@ def dhcp_pool(ctx):
             Create dhcp rule.
     \b
             vcd gateway services dhcp-pool delete test_gateway1 pool-1
-
-            Deletes the DHCP pool
+                Deletes the DHCP pool
     \b
             vcd gateway services dhcp-pool list test_gateway1
-
-            Lists the DHCP pool
+                Lists the DHCP pool
     \b
             vcd gateway services dhcp-pool info test_gateway1 pool-1
-
-            Info DHCP pool
+                Info DHCP pool
 
     """
 

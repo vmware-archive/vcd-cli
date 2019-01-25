@@ -133,6 +133,13 @@ class VdcNetworkTests(BaseTestCase):
             args=['routed', 'list-allocated-ip', VdcNetworkTests._name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0050_list_connected_vapps(self):
+        """Test list connected vApps to a routed org vdc network"""
+        result = self._runner.invoke(
+            network,
+            args=['routed', 'list-connected-vapps', VdcNetworkTests._name])
+        self.assertEqual(0, result.exit_code)
+
     def test_0098_tearDown(self):
         result_delete = self._runner.invoke(
             network, args=['routed', 'delete', VdcNetworkTests._name])

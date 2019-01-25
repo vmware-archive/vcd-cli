@@ -79,3 +79,14 @@ def create_firewall_rule(ctx, gateway_name, name, action, type,
         stdout('Firewall rule created successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)
+
+@firewall.command('list', short_help='displays all firewall rules.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def rules_list(ctx, name):
+    try:
+        gateway_resource = get_gateway(ctx, name)
+        firewall_rules = gateway_resource.get_firewall_rules_list()
+        stdout(firewall_rules, ctx)
+    except Exception as e:
+        stderr(e, ctx)

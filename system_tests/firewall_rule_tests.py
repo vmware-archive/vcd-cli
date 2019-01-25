@@ -14,7 +14,6 @@
 # limitations under the License.
 
 from click.testing import CliRunner
-
 from pyvcloud.system_test_framework.base_test import BaseTestCase
 from pyvcloud.system_test_framework.constants.gateway_constants \
     import GatewayConstants
@@ -65,6 +64,17 @@ class TestFirewallRule(BaseTestCase):
     def _logout(self):
         """Logs out current session, ignoring errors"""
         TestFirewallRule._runner.invoke(logout)
+
+    def test_0001_list_firewall_rules(self):
+        """Get information of the firewall rules.
+
+        It will trigger the cli command with option gateway services firewall list
+        """
+        result = TestFirewallRule._runner.invoke(
+            gateway,
+            args=['services', 'firewall', 'list', TestFirewallRule.__name])
+        TestFirewallRule._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
 
     def test_0099_cleanup(self):
         """Release all resources held by this object for testing purposes."""

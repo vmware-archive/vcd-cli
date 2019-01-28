@@ -75,6 +75,14 @@ def routed(ctx):
 \b
         vcd network routed list-metadata vdc_routed_nw
             List all metadata entries in a routed org vdc network
+
+\b
+        vcd network routed list-allocated-ip vdc_routed_nw
+            List all allocated IP in a routed org vdc network
+
+\b
+        vcd network routed list-connected-vapps vdc_routed_nw
+            List all connected vApps in a routed org vdc network
     """
     pass
 
@@ -447,5 +455,20 @@ def list_allocated_ip_address(ctx, name):
         vdcNetwork = VdcNetwork(client, resource=routed_network)
         allocated_ip_addresses = vdcNetwork.list_allocated_ip_address()
         stdout(allocated_ip_addresses, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@routed.command('list-connected-vapps', short_help='list connected vApps')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def list_connected_vapps(ctx, name):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        connected_vapps = vdcNetwork.list_connected_vapps()
+        stdout(connected_vapps, ctx)
     except Exception as e:
         stderr(e, ctx)

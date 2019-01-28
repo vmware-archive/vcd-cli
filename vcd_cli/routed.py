@@ -83,6 +83,12 @@ def routed(ctx):
 \b
         vcd network routed list-connected-vapps vdc_routed_nw
             List all connected vApps in a routed org vdc network
+
+\b
+        vcd network routed add-dns vdc_routed_nw --dns1 2.2.3.1 --dns2
+        2.2.3.2 --dns-suffix domain.com
+            Add DNS details in a routed org vdc network
+
     """
     pass
 
@@ -254,6 +260,44 @@ def edit_routed_vdc_network(ctx,
         stderr(e, ctx)
 
 
+@routed.command('add-dns', short_help='add DNS of routed org vdc network.')
+@click.pass_context
+@click.argument('name', metavar='<routed network name>', required=True)
+@click.option(
+    '--dns1',
+    'primary_dns_ip',
+    default=None,
+    metavar='<ip>',
+    help='ip of the primary dns server')
+@click.option(
+    '--dns2',
+    'secondary_dns_ip',
+    default=None,
+    metavar='<ip>',
+    help='ip of the secondary dns server')
+@click.option(
+    '--dns-suffix',
+    'dns_suffix',
+    default=None,
+    metavar='<name>',
+    help='dns suffix')
+def add_dns_of_routed_vdc_network(ctx, name, primary_dns_ip, secondary_dns_ip,
+                                  dns_suffix):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        task = vdcNetwork.add_static_ip_pool_and_dns(
+            primary_dns_ip=primary_dns_ip,
+            secondary_dns_ip=secondary_dns_ip,
+            dns_suffix=dns_suffix)
+        stdout(task, ctx)
+        stdout('DNS are added to routed org vdc network successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
 @routed.command(
     'add-ip-ranges', short_help='add IP range of '
     'routed org vdc network.')
@@ -273,7 +317,7 @@ def add_ip_ranges_of_routed_vdc_network(ctx, name, ip_ranges):
         client = ctx.obj['client']
         routed_network = vdc.get_routed_orgvdc_network(name)
         vdcNetwork = VdcNetwork(client, resource=routed_network)
-        task = vdcNetwork.add_static_ip_pool(ip_ranges)
+        task = vdcNetwork.add_static_ip_pool_and_dns(ip_ranges)
         stdout(task, ctx)
         stdout('IP ranges are added to routed org vdc network successfully.',
                ctx)

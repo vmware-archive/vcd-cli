@@ -15,6 +15,7 @@
 import click
 from pyvcloud.vcd.external_network import ExternalNetwork
 from pyvcloud.vcd.platform import Platform
+from pyvcloud.vcd.utils import netmask_to_cidr_prefix_len
 from pyvcloud.vcd.vdc import VDC
 from pyvcloud.vcd.client import NSMAP
 
@@ -188,7 +189,7 @@ def isolated(ctx):
         delete or list isolated org vdc networks.
 \b
     Examples
-        vcd network isolated create isolated-net1 --gateway-ip 192.168.1.1 \\
+        vcd network isolated create isolated-net1 --gateway 192.168.1.1 \\
                 --netmask 255.255.255.0 --description 'Isolated VDC network' \\
                 --primary-dns-ip 8.8.8.8 --dns-suffix example.com \\
                 --ip-range-start 192.168.1.100 --ip-range-end 192.168.1.199 \\
@@ -345,11 +346,12 @@ def create_isolated_network(ctx, name, gateway_ip, netmask, description,
         client = ctx.obj['client']
         in_use_vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=in_use_vdc_href)
+        prefix_len = netmask_to_cidr_prefix_len(gateway_ip, netmask)
+        network_cidr = gateway_ip + '/' + str(prefix_len)
 
         result = vdc.create_isolated_vdc_network(
             network_name=name,
-            gateway_ip=gateway_ip,
-            netmask=netmask,
+            network_cidr=network_cidr,
             description=description,
             primary_dns_ip=primary_dns_ip,
             secondary_dns_ip=secondary_dns_ip,

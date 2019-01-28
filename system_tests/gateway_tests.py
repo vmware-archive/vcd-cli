@@ -32,7 +32,7 @@ class GatewayTest(BaseTestCase):
         Be aware that this test will delete existing vcd-cli sessions.
         """
     _runner = None
-    _name = 'test_gateway1'
+    _name = ('test_gateway1'+ str(uuid1()))[:34]
     _external_network_name = 'external_network_' + str(uuid1())
     _subnet_addr = None
     _ext_network_name = None

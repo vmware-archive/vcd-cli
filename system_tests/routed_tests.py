@@ -31,6 +31,9 @@ class VdcNetworkTests(BaseTestCase):
     __ip_range1 = '6.6.5.2-6.6.5.20'
     __ip_range2 = '6.6.6.2-6.6.6.20'
     __new_ip_range = '6.6.5.12-6.6.5.22'
+    __dns1 = '8.8.8.8'
+    __dns2 = '8.8.8.9'
+    __dns_suffix = 'example.com'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -72,6 +75,18 @@ class VdcNetworkTests(BaseTestCase):
                 'routed', 'add-ip-ranges', VdcNetworkTests._name, '--ip-range',
                 VdcNetworkTests.__ip_range1, '--ip-range',
                 VdcNetworkTests.__ip_range2
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0011_add_dns_of_routed_nw(self):
+
+        result = self._runner.invoke(
+            network,
+            args=[
+                'routed', 'add-dns', VdcNetworkTests._name, '--dns1',
+                VdcNetworkTests.__dns1, '--dns2',
+                VdcNetworkTests.__dns2, '--dns-suffix',
+                VdcNetworkTests.__dns_suffix
             ])
         self.assertEqual(0, result.exit_code)
 

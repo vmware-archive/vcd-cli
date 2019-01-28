@@ -85,8 +85,10 @@ def routed(ctx):
             List all connected vApps in a routed org vdc network
 
 \b
-        vcd network routed add-dns vdc_routed_nw --dns1 2.2.3.1 --dns2
-        2.2.3.2 --dns-suffix domain.com
+        vcd network routed add-dns vdc_routed_nw
+                --dns1 2.2.3.1
+                --dns2 2.2.3.2
+                --dns-suffix domain.com
             Add DNS details in a routed org vdc network
 
     """

@@ -86,6 +86,16 @@ class VdcNetworkTests(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    def test_0016_remove_ip_range(self):
+        """Remove IP range of vdc routed network"""
+        result = self._runner.invoke(
+            network,
+            args=[
+                'routed', 'remove-ip-range', VdcNetworkTests._name,
+                '--ip-range', VdcNetworkTests.__ip_range2
+            ])
+        self.assertEqual(0, result.exit_code)
+
     def test_0020_list_all_routed_nw(self):
         """List available vdc routed networks in vdc."""
         result = self._runner.invoke(network, args=['routed', 'list'])

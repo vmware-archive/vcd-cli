@@ -45,19 +45,26 @@ def routed(ctx):
         Creates a routed org vdc network
 \b
         vcd network routed edit name -n/--name name1
-            --description new_description
-            --shared-enabled/--shared-disabled
-        Edit name, description and shared state of org vdc network
+                --description new_description
+                --shared-enabled/--shared-disabled
+            Edit name, description and shared state of org vdc network
 
 \b
         vcd network routed add-ip-ranges vdc_routed_nw
-            --ip-range  2.2.3.1-2.2.3.2
-            --ip-range 2.2.4.1-2.2.4.2
+                --ip-range  2.2.3.1-2.2.3.2
+                --ip-range 2.2.4.1-2.2.4.2
+            Add IP ranges to a routed org vdc network
 
 \b
         vcd network routed modify-ip-range vdc_routed_nw
-                       --ip-range 192.168.1.2-192.168.1.20
-                       --new-ip-range 192.168.1.25-192.168.1.50
+                --ip-range 192.168.1.2-192.168.1.20
+                --new-ip-range 192.168.1.25-192.168.1.50
+            Modify an IP range of a routed org vdc network
+
+\b
+        vcd network routed remove-ip-range vdc_routed_nw
+                --ip-range 192.168.1.2-192.168.1.20
+            Remove an IP range from a routed org vdc network
 
 \b
         vcd network routed list
@@ -273,7 +280,7 @@ def add_ip_ranges_of_routed_vdc_network(ctx, name, ip_ranges):
         client = ctx.obj['client']
         routed_network = vdc.get_routed_orgvdc_network(name)
         vdcNetwork = VdcNetwork(client, resource=routed_network)
-        task = vdcNetwork.add_static_ip_pool(ip_ranges)
+        task = vdcNetwork.add_static_ip_pool_and_dns(ip_ranges)
         stdout(task, ctx)
         stdout('IP ranges are added to routed org vdc network successfully.',
                ctx)
@@ -325,6 +332,32 @@ def modify_ip_range_of_routed_vdc_network(ctx, name, ip_range, new_ip_range):
         task = vdcNetwork.modify_static_ip_pool(ip_range, new_ip_range)
         stdout(task, ctx)
         stdout('IP range of routed org vdc network is modified successfully.',
+               ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@routed.command(
+    'remove-ip-range',
+    short_help='Remove an IP range from a routed org vdc network')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-i',
+    '--ip-range',
+    'ip_range',
+    required=True,
+    metavar='<ip>',
+    help='ip range in StartAddress-EndAddress format')
+def remove_ip_range(ctx, name, ip_range):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        task = vdcNetwork.remove_static_ip_pool(ip_range)
+        stdout(task, ctx)
+        stdout('IP range of routed org vdc network is removed successfully.',
                ctx)
     except Exception as e:
         stderr(e, ctx)

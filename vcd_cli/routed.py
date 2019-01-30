@@ -98,6 +98,22 @@ def routed(ctx):
                 --dns-suffix domain.com
             Add DNS details in a routed org vdc network
 
+\b
+        vcd network routed convert-to-sub-interface vdc_routed_nw
+            Convert routed org vdc network to sub interface
+
+\b
+        vcd network routed convert-to-internal-interface vdc_routed_nw
+            Convert routed org vdc network to internal interface
+
+\b
+        vcd network routed convert-to-distributed-interface vdc_routed_nw
+            Convert routed org vdc network to distributed interface
+
+\b
+        vcd network routed info vdc_routed_nw
+            Show routed vdc network details
+
     """
     pass
 
@@ -549,5 +565,94 @@ def list_connected_vapps(ctx, name):
         vdcNetwork = VdcNetwork(client, resource=routed_network)
         connected_vapps = vdcNetwork.list_connected_vapps()
         stdout(connected_vapps, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@routed.command('convert-to-sub-interface',
+                short_help='convert to sub interface')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def convert_to_sub_interface(ctx, name):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        task = vdcNetwork.convert_to_sub_interface()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@routed.command('convert-to-internal-interface',
+                short_help='convert to internal interface')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def convert_to_internal_interface(ctx, name):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        task = vdcNetwork.convert_to_internal_interface()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@routed.command('convert-to-distributed-interface',
+                short_help='convert to distributed interface')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def convert_to_distributed_interface(ctx, name):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        task = vdcNetwork.convert_to_distributed_interface()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@routed.command('info', short_help='show routed network information.')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def info(ctx, name):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        output = {}
+        output['fence_mode'] = routed_network.Configuration.FenceMode
+        output['is_retail_info'] = \
+            routed_network.Configuration.RetainNetInfoAcrossDeployments
+        if hasattr(routed_network, 'SubInterface'):
+            output['is_sub_interface'] = \
+                routed_network.Configuration.SubInterface
+        if hasattr(routed_network, 'DistributedInterface'):
+            output['is_distributed_interface'] = \
+                routed_network.Configuration.DistributedInterface
+        if hasattr(routed_network, 'GuestVlanAllowed'):
+            output['is_guest_vlan_allowed'] = \
+                routed_network.Configuration.GuestVlanAllowed
+
+        if hasattr(routed_network, 'ProviderInfo'):
+            output['provider_info'] = routed_network.ProviderInfo
+        if hasattr(routed_network, 'IsShared'):
+            output['is_shared'] = routed_network.IsShared
+        if hasattr(routed_network, 'VimPortGroupRef'):
+            output['vim_server_href'] =  \
+                routed_network.VimPortGroupRef.VimServerRef.get('href')
+            output['vim_server_id'] = \
+                routed_network.VimPortGroupRef.VimServerRef.get('id')
+            output['vim_server_type'] = \
+                routed_network.VimPortGroupRef.VimServerRef.get('type')
+            output['vim_server_moref'] = routed_network.VimPortGroupRef.MoRef
+            output['vim_server_vim_object_type'] = \
+                routed_network.VimPortGroupRef.VimObjectType
+
+        stdout(output, ctx)
     except Exception as e:
         stderr(e, ctx)

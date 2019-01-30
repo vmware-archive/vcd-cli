@@ -14,7 +14,8 @@ from pyvcloud.system_test_framework.base_test import BaseTestCase
 from pyvcloud.system_test_framework.constants.gateway_constants \
     import GatewayConstants
 from pyvcloud.system_test_framework.environment import Environment
-
+from vcd_cli.vcd import vcd  # NOQA
+from vcd_cli.gateway import gateway
 from vcd_cli.login import login, logout
 from vcd_cli.org import org
 from vcd_cli.network import network
@@ -163,6 +164,62 @@ class VdcNetworkTests(BaseTestCase):
         result = self._runner.invoke(
             network,
             args=['routed', 'list-connected-vapps', VdcNetworkTests._name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0060_convert_to_sub_interface(self):
+        """Test convert to sub interface of a routed org vdc network"""
+        result = self._runner.invoke(
+            network,
+            args=['routed', 'convert-to-sub-interface', VdcNetworkTests._name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0070_convert_to_internal_interface(self):
+        """Test convert to internal interface of a routed org vdc network"""
+        result = self._runner.invoke(
+            network,
+            args=['routed', 'convert-to-internal-interface',
+                  VdcNetworkTests._name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0075_convert_to_distributed_interface(self):
+        """Test convert to distributed interface of a routed org vdc network"""
+        try:
+            result_advanced_gateway = self._runner.invoke(
+                gateway,
+                args=['enable-distributed-routing', GatewayConstants.name,
+                      '--enable'])
+            self.assertEqual(0, result_advanced_gateway.exit_code)
+        except:
+            # Ignore the failure as we can't check if it is already enabled
+            pass
+
+        result = self._runner.invoke(
+            network,
+            args=['routed', 'convert-to-distributed-interface',
+                  VdcNetworkTests._name])
+        self.assertEqual(0, result.exit_code)
+
+        # Revert
+        result = self._runner.invoke(
+            network,
+            args=['routed', 'convert-to-internal-interface',
+                  VdcNetworkTests._name])
+        self.assertEqual(0, result.exit_code)
+
+        try:
+            result_advanced_gateway = self._runner.invoke(
+                gateway,
+                args=['enable-distributed-routing', GatewayConstants.name,
+                      '--disable'])
+            self.assertEqual(0, result_advanced_gateway.exit_code)
+        except:
+            # Ignore the failure as we can't check if it is already enabled
+            pass
+
+    def test_0075_info(self):
+        """Test info of a routed org vdc network"""
+        result = self._runner.invoke(
+            network, args=['routed', 'info', VdcNetworkTests._name])
         self.assertEqual(0, result.exit_code)
 
     def test_0098_tearDown(self):

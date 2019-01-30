@@ -35,34 +35,41 @@ def routed(ctx):
 
 \b
     Examples
-        vcd network routed create routed_network -g/--gateway-name gateway_name
-            --subnet 5.5.6.1/20 --description description
-            --primary-dns-ip 7.7.7.3 --secondary-dns-ip 7.7.7.4
-            --dns-suffix test-suffix --ip-range 5.5.6.2-5.5.6.100
-            --shared-enabled --guest-vlan-allowed-enabled
-            --sub-interface-enabled --distributed-interface-enabled
-            --retain-net-info-across-deployments-enabled
-        Creates a routed org vdc network
+        vcd network routed create routed_net1
+                --gateway-name gateway1
+                --subnet 5.5.6.1/20
+                --description 'Routed VDC network'
+                --dns1 7.7.7.3
+                --dns2 7.7.7.4
+                --dns-suffix example.com
+                --ip-range 5.5.6.2-5.5.6.100
+                --shared-enabled
+                --guest-vlan-allowed-enabled
+                --sub-interface-enabled
+                --distributed-interface-enabled
+                --retain-net-info-across-deployments-enabled
+            Creates a routed org vdc network
 \b
-        vcd network routed edit name -n/--name name1
+        vcd network routed edit routed_net1
+                --name new_name
                 --description new_description
                 --shared-enabled/--shared-disabled
             Edit name, description and shared state of org vdc network
 
 \b
-        vcd network routed add-ip-ranges vdc_routed_nw
+        vcd network routed add-ip-ranges routed_net1
                 --ip-range  2.2.3.1-2.2.3.2
                 --ip-range 2.2.4.1-2.2.4.2
             Add IP ranges to a routed org vdc network
 
 \b
-        vcd network routed modify-ip-range vdc_routed_nw
+        vcd network routed modify-ip-range routed_net1
                 --ip-range 192.168.1.2-192.168.1.20
                 --new-ip-range 192.168.1.25-192.168.1.50
             Modify an IP range of a routed org vdc network
 
 \b
-        vcd network routed remove-ip-range vdc_routed_nw
+        vcd network routed remove-ip-range routed_net1
                 --ip-range 192.168.1.2-192.168.1.20
             Remove an IP range from a routed org vdc network
 
@@ -71,38 +78,38 @@ def routed(ctx):
             List all routed org vdc networks in the selected vdc
 
 \b
-        vcd network routed set-metadata vdc_routed_nw -k key1 -v value1
+        vcd network routed set-metadata routed_net1 --key key1 --value value1
             Set a metadata entry in a routed org vdc network with default
             domain, visibility and metadata value type
 
 \b
-        vcd network routed remove-metadata vdc_routed_nw -k key1
+        vcd network routed remove-metadata routed_net1 --key key1
             Remove a metadata entry from a routed org vdc network
 
 \b
-        vcd network routed list-metadata vdc_routed_nw
+        vcd network routed list-metadata routed_net1
             List all metadata entries in a routed org vdc network
 
 \b
-        vcd network routed list-allocated-ip vdc_routed_nw
+        vcd network routed list-allocated-ip routed_net1
             List all allocated IP in a routed org vdc network
 
 \b
-        vcd network routed list-connected-vapps vdc_routed_nw
+        vcd network routed list-connected-vapps routed_net1
             List all connected vApps in a routed org vdc network
 
 \b
-        vcd network routed add-dns vdc_routed_nw
+        vcd network routed add-dns routed_net1
                 --dns1 2.2.3.1
                 --dns2 2.2.3.2
                 --dns-suffix domain.com
-            Add DNS details in a routed org vdc network
+            Add DNS details to a routed org vdc network
 
     """
     pass
 
 
-@routed.command('create', short_help='Creates a routed org vdc network.')
+@routed.command('create', short_help='create a routed org vdc network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -124,17 +131,15 @@ def routed(ctx):
     metavar='<description>',
     help='description')
 @click.option(
-    '--primary-dns-ip',
+    '--dns1',
     'primary_dns_ip',
     metavar='<IP>',
     help='primary DNS IP')
 @click.option(
-    '--secondary-dns-ip',
+    '--dns2',
     'secondary_dns_ip',
     metavar='<IP>',
     help='secondary DNS IP')
-@click.option(
-    '--dns-suffix', 'dns_suffix', metavar='<Name>', help='dns suffix')
 @click.option(
     '--dns-suffix', 'dns_suffix', metavar='<Name>', help='dns suffix')
 @click.option(
@@ -228,7 +233,7 @@ def delete_vdc_routed_network(ctx, name):
         stderr(e, ctx)
 
 
-@routed.command('edit', short_help='Edit a routed org vdc network.')
+@routed.command('edit', short_help='Edit a routed org vdc network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -269,7 +274,7 @@ def edit_routed_vdc_network(ctx,
         stderr(e, ctx)
 
 
-@routed.command('add-dns', short_help='add DNS of routed org vdc network.')
+@routed.command('add-dns', short_help='add DNS to routed org vdc network')
 @click.pass_context
 @click.argument('name', metavar='<routed network name>', required=True)
 @click.option(
@@ -308,8 +313,7 @@ def add_dns_of_routed_vdc_network(ctx, name, primary_dns_ip, secondary_dns_ip,
 
 
 @routed.command(
-    'add-ip-ranges', short_help='add IP range of '
-    'routed org vdc network.')
+    'add-ip-ranges', short_help='add IP range to routed org vdc network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -385,7 +389,7 @@ def modify_ip_range_of_routed_vdc_network(ctx, name, ip_range, new_ip_range):
 
 @routed.command(
     'remove-ip-range',
-    short_help='Remove an IP range from a routed org vdc network')
+    short_help='remove an IP range from a routed org vdc network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -410,7 +414,7 @@ def remove_ip_range(ctx, name, ip_range):
 
 
 @routed.command(
-    'list-metadata', short_help='List metadata of a routed org vdc network.')
+    'list-metadata', short_help='list metadata of a routed org vdc network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 def list_metadata(ctx, name):
@@ -438,7 +442,7 @@ def list_metadata(ctx, name):
 
 
 @routed.command(
-    'set-metadata', short_help='Set metadata to a routed org vdc network.')
+    'set-metadata', short_help='set metadata to a routed org vdc network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -492,7 +496,7 @@ def set_metadata(ctx, name, key, value, domain, visibility, value_type):
 
 @routed.command(
     'remove-metadata',
-    short_help='Remove metadata from a routed org vdc network.')
+    short_help='remove metadata from a routed org vdc network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(

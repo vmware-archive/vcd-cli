@@ -99,19 +99,19 @@ def routed(ctx):
             Add DNS details in a routed org vdc network
 
 \b
-        vcd network routed convert-to-sub-interface vdc_routed_nw
+        vcd network routed convert-to-sub-interface routed_net1
             Convert routed org vdc network to sub interface
 
 \b
-        vcd network routed convert-to-internal-interface vdc_routed_nw
+        vcd network routed convert-to-internal-interface routed_net1
             Convert routed org vdc network to internal interface
 
 \b
-        vcd network routed convert-to-distributed-interface vdc_routed_nw
+        vcd network routed convert-to-distributed-interface routed_net1
             Convert routed org vdc network to distributed interface
 
 \b
-        vcd network routed info vdc_routed_nw
+        vcd network routed info routed_net1
             Show routed vdc network details
 
     """
@@ -617,7 +617,7 @@ def convert_to_distributed_interface(ctx, name):
         stderr(e, ctx)
 
 
-@routed.command('info', short_help='show routed network information.')
+@routed.command('info', short_help='show routed network information')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 def info(ctx, name):

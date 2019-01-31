@@ -18,6 +18,7 @@ from vcd_cli.network import external
 from vcd_cli.network import network
 from vcd_cli.gateway import gateway
 from vcd_cli.org import org
+from pyvcloud.vcd.client import ApiVersion
 from pyvcloud.vcd.client import GatewayBackingConfigType
 from pyvcloud.vcd.client import NSMAP
 from pyvcloud.vcd.client import QueryResultFormat
@@ -48,7 +49,7 @@ class GatewayTest(BaseTestCase):
         default_org = self._config['vcd']['default_org_name']
         self._login()
         GatewayTest._runner.invoke(org, ['use', default_org])
-
+        GatewayTest._api_version = self._config['vcd']['api_version']
         GatewayTest._ext_network_name = self._get_first_external_network()
 
         self.client = Environment.get_sys_admin_client()
@@ -227,6 +228,9 @@ class GatewayTest(BaseTestCase):
 
         It will trigger the cli command with option convert-to-advanced
         """
+        if float(GatewayTest._api_version) >= float(
+                ApiVersion.VERSION_32.value):
+            return
         result_advanced_gateway = self._runner.invoke(
             gateway, args=['convert-to-advanced', 'test_gateway1'])
         self.assertEqual(0, result_advanced_gateway.exit_code)

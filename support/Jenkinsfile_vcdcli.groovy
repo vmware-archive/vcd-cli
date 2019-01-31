@@ -195,11 +195,11 @@ pipeline {
                 }
            }
         }
-        stage('checkout-pysdk') {
+        stage('checkout-vcd-cli') {
             steps {
                 script {
                     try {
-                        println "Checking out PyVcloud sdk code ..."
+                        println "Checking out Vcd CLI code ..."
                         if (OVERRIDE_GIT_TREEISH == '') {
                             OVERRIDE_GIT_TREEISH = 'master'
                         }
@@ -223,11 +223,11 @@ pipeline {
 
                         }
                         // Print configuration for later debugging.
-                        println "Checkout PyVcloud sdk code succeeded..."
+                        println "Checkout Vcd CLI code succeeded..."
                         sh "git config --list"
                         sh "git branch"
                     } catch (err) {
-                        throwError("Could not checkout PyVcloud sdk code.")
+                        throwError("Could not checkout Vcd CLI code.")
                     }
                 }
             }

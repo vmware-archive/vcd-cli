@@ -76,7 +76,7 @@ pipeline {
             description: 'The branch name or commit SHA to test from OVERRIDE_GIT_TREEISH.'
         )
         string(name: 'VCD_SETUP_JSON_URL', defaultValue: '',
-            description: 'The provided json will be used for running PySdk Test. No new vCD setup will be deployed.'
+            description: 'The provided json will be used for running Vcd CLI Test. No new vCD setup will be deployed.'
         )
         string(name: 'VCD_API_VERSION', defaultValue: '',
             description: 'API version for provided VCD json'
@@ -164,7 +164,7 @@ pipeline {
                                     """TESTBED_DESCRIPTOR_NAME=simple-testbed-vc6_5-nsx6_3-with-nsx-controller-postgres.json.template
                                     VCD_BUILD=${VCD_BUILD}
                                     OWNER=rajeshk
-                                    VCD_VAPP_PREFIX=python-sdk
+                                    VCD_VAPP_PREFIX=python-vcd-cli
                                     VCD_API_VERSION=VCLOUD_API_32_0
                                     CASSINI_API_VERSION=VCLOUD_API_31_0
                                     VCD_ORGANIZATION=Development

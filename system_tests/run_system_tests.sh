@@ -30,7 +30,11 @@ cd $SRCROOT
 
 # If there are tests to run use those. Otherwise use stable tests.
 STABLE_TESTS="login_and_vcd_tests.py \
+dhcp_pool_tests.py \
 extnet_tests.py \
+firewall_rule_tests.py \
+gateway_tests.py \
+nat_rule_tests.py \
 org_tests.py \
 routed_tests.py"
 

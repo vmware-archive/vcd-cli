@@ -15,6 +15,7 @@
 import click
 from pyvcloud.vcd.external_network import ExternalNetwork
 from pyvcloud.vcd.platform import Platform
+from pyvcloud.vcd.utils import netmask_to_cidr_prefix_len
 from pyvcloud.vcd.vdc import VDC
 from pyvcloud.vcd.client import NSMAP
 
@@ -57,8 +58,8 @@ def external(ctx):
                 --ip-range 192.168.1.2-192.168.1.49
                 --ip-range 192.168.1.100-192.168.1.149
                 --description 'External network'
-                --primary-dns-ip 8.8.8.8
-                --secondary-dns-ip 8.8.8.9
+                --dns1 8.8.8.8
+                --dns2 8.8.8.9
                 --dns-suffix example.com
             Create an external network.
                 Parameter --ip-range can have multiple entries.
@@ -78,8 +79,8 @@ def external(ctx):
                 --gateway-ip 192.168.1.1
                 --netmask 255.255.255.0
                 --ip-range 192.168.1.2-192.168.1.49
-                --primary-dns-ip 8.8.8.8
-                --secondary-dns-ip 8.8.8.9
+                --dns1 8.8.8.8
+                --dns2 8.8.8.9
                 --dns-suffix example.com
             Add subnet to external network.
             ip-range can have multiple entries.
@@ -162,9 +163,9 @@ def direct(ctx):
         Organization Administrators can only list direct org vdc networks.
 \b
     Examples
-        vcd network direct create direct-net1 \\
-                --description 'Directly connected VDC network' \\
-                --parent ext-net1 \\
+        vcd network direct create direct-net1
+                --description 'Directly connected VDC network'
+                --parent ext-net1
             Create an org vdc network which is directly connected
             to an external network.
 \b
@@ -188,12 +189,12 @@ def isolated(ctx):
         delete or list isolated org vdc networks.
 \b
     Examples
-        vcd network isolated create isolated-net1 --gateway-ip 192.168.1.1 \\
-                --netmask 255.255.255.0 --description 'Isolated VDC network' \\
-                --primary-dns-ip 8.8.8.8 --dns-suffix example.com \\
-                --ip-range-start 192.168.1.100 --ip-range-end 192.168.1.199 \\
-                --dhcp-enabled --default-lease-time 3600 \\
-                --max-lease-time 7200 --dhcp-ip-range-start 192.168.1.100 \\
+        vcd network isolated create isolated-net1 --gateway 192.168.1.1
+                --netmask 255.255.255.0 --description 'Isolated VDC network'
+                --dns1 8.8.8.8 --dns2 8.8.8.9 --dns-suffix example.com
+                --ip-range-start 192.168.1.100 --ip-range-end 192.168.1.199
+                --dhcp-enabled --default-lease-time 3600
+                --max-lease-time 7200 --dhcp-ip-range-start 192.168.1.100
                 --dhcp-ip-range-end 192.168.1.199
             Create an isolated org vdc network with an inbuilt dhcp service.
 \b
@@ -345,11 +346,12 @@ def create_isolated_network(ctx, name, gateway_ip, netmask, description,
         client = ctx.obj['client']
         in_use_vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=in_use_vdc_href)
+        prefix_len = netmask_to_cidr_prefix_len(gateway_ip, netmask)
+        network_cidr = gateway_ip + '/' + str(prefix_len)
 
         result = vdc.create_isolated_vdc_network(
             network_name=name,
-            gateway_ip=gateway_ip,
-            netmask=netmask,
+            network_cidr=network_cidr,
             description=description,
             primary_dns_ip=primary_dns_ip,
             secondary_dns_ip=secondary_dns_ip,

@@ -35,51 +35,97 @@ def routed(ctx):
 
 \b
     Examples
-        vcd network routed create routed_network -g/--gateway-name gateway_name
-            --subnet 5.5.6.1/20 --description description
-            --primary-dns-ip 7.7.7.3 --secondary-dns-ip 7.7.7.4
-            --dns-suffix test-suffix --ip-range 5.5.6.2-5.5.6.100
-            --shared-enabled --guest-vlan-allowed-enabled
-            --sub-interface-enabled --distributed-interface-enabled
-            --retain-net-info-across-deployments-enabled
-        Creates a routed org vdc network
+        vcd network routed create routed_net1
+                --gateway-name gateway1
+                --subnet 5.5.6.1/20
+                --description 'Routed VDC network'
+                --dns1 7.7.7.3
+                --dns2 7.7.7.4
+                --dns-suffix example.com
+                --ip-range 5.5.6.2-5.5.6.100
+                --shared-enabled
+                --guest-vlan-allowed-enabled
+                --sub-interface-enabled
+                --distributed-interface-enabled
+                --retain-net-info-across-deployments-enabled
+            Creates a routed org vdc network
 \b
-        vcd network routed edit name -n/--name name1
-            --description new_description
-            --shared-enabled/--shared-disabled
-        Edit name, description and shared state of org vdc network
+        vcd network routed edit routed_net1
+                --name new_name
+                --description new_description
+                --shared-enabled/--shared-disabled
+            Edit name, description and shared state of org vdc network
 
 \b
-        vcd network routed add-ip-ranges vdc_routed_nw
-            --ip-range  2.2.3.1-2.2.3.2
-            --ip-range 2.2.4.1-2.2.4.2
+        vcd network routed add-ip-ranges routed_net1
+                --ip-range  2.2.3.1-2.2.3.2
+                --ip-range 2.2.4.1-2.2.4.2
+            Add IP ranges to a routed org vdc network
 
 \b
-        vcd network routed modify-ip-range vdc_routed_nw
-                       --ip-range 192.168.1.2-192.168.1.20
-                       --new-ip-range 192.168.1.25-192.168.1.50
+        vcd network routed modify-ip-range routed_net1
+                --ip-range 192.168.1.2-192.168.1.20
+                --new-ip-range 192.168.1.25-192.168.1.50
+            Modify an IP range of a routed org vdc network
+
+\b
+        vcd network routed remove-ip-range routed_net1
+                --ip-range 192.168.1.2-192.168.1.20
+            Remove an IP range from a routed org vdc network
 
 \b
         vcd network routed list
             List all routed org vdc networks in the selected vdc
 
 \b
-        vcd network routed set-metadata vdc_routed_nw -k key1 -v value1
+        vcd network routed set-metadata routed_net1 --key key1 --value value1
             Set a metadata entry in a routed org vdc network with default
             domain, visibility and metadata value type
 
 \b
-        vcd network routed remove-metadata vdc_routed_nw -k key1
+        vcd network routed remove-metadata routed_net1 --key key1
             Remove a metadata entry from a routed org vdc network
 
 \b
-        vcd network routed list-metadata vdc_routed_nw
+        vcd network routed list-metadata routed_net1
             List all metadata entries in a routed org vdc network
+
+\b
+        vcd network routed list-allocated-ip routed_net1
+            List all allocated IP in a routed org vdc network
+
+\b
+        vcd network routed list-connected-vapps routed_net1
+            List all connected vApps in a routed org vdc network
+
+\b
+        vcd network routed add-dns routed_net1
+                --dns1 2.2.3.1
+                --dns2 2.2.3.2
+                --dns-suffix domain.com
+            Add DNS details to a routed org vdc network
+
+\b
+        vcd network routed convert-to-sub-interface routed_net1
+            Convert routed org vdc network to sub interface
+
+\b
+        vcd network routed convert-to-internal-interface routed_net1
+            Convert routed org vdc network to internal interface
+
+\b
+        vcd network routed convert-to-distributed-interface routed_net1
+            Convert routed org vdc network to distributed interface
+
+\b
+        vcd network routed info routed_net1
+            Show routed vdc network details
+
     """
     pass
 
 
-@routed.command('create', short_help='Creates a routed org vdc network.')
+@routed.command('create', short_help='create a routed org vdc network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -101,17 +147,15 @@ def routed(ctx):
     metavar='<description>',
     help='description')
 @click.option(
-    '--primary-dns-ip',
+    '--dns1',
     'primary_dns_ip',
     metavar='<IP>',
     help='primary DNS IP')
 @click.option(
-    '--secondary-dns-ip',
+    '--dns2',
     'secondary_dns_ip',
     metavar='<IP>',
     help='secondary DNS IP')
-@click.option(
-    '--dns-suffix', 'dns_suffix', metavar='<Name>', help='dns suffix')
 @click.option(
     '--dns-suffix', 'dns_suffix', metavar='<Name>', help='dns suffix')
 @click.option(
@@ -205,7 +249,7 @@ def delete_vdc_routed_network(ctx, name):
         stderr(e, ctx)
 
 
-@routed.command('edit', short_help='Edit a routed org vdc network.')
+@routed.command('edit', short_help='Edit a routed org vdc network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -246,9 +290,46 @@ def edit_routed_vdc_network(ctx,
         stderr(e, ctx)
 
 
+@routed.command('add-dns', short_help='add DNS to routed org vdc network')
+@click.pass_context
+@click.argument('name', metavar='<routed network name>', required=True)
+@click.option(
+    '--dns1',
+    'primary_dns_ip',
+    default=None,
+    metavar='<ip>',
+    help='ip of the primary dns server')
+@click.option(
+    '--dns2',
+    'secondary_dns_ip',
+    default=None,
+    metavar='<ip>',
+    help='ip of the secondary dns server')
+@click.option(
+    '--dns-suffix',
+    'dns_suffix',
+    default=None,
+    metavar='<name>',
+    help='dns suffix')
+def add_dns_of_routed_vdc_network(ctx, name, primary_dns_ip, secondary_dns_ip,
+                                  dns_suffix):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        task = vdcNetwork.add_static_ip_pool_and_dns(
+            primary_dns_ip=primary_dns_ip,
+            secondary_dns_ip=secondary_dns_ip,
+            dns_suffix=dns_suffix)
+        stdout(task, ctx)
+        stdout('DNS are added to routed org vdc network successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
 @routed.command(
-    'add-ip-ranges', short_help='add IP range of '
-    'routed org vdc network.')
+    'add-ip-ranges', short_help='add IP range to routed org vdc network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -265,7 +346,7 @@ def add_ip_ranges_of_routed_vdc_network(ctx, name, ip_ranges):
         client = ctx.obj['client']
         routed_network = vdc.get_routed_orgvdc_network(name)
         vdcNetwork = VdcNetwork(client, resource=routed_network)
-        task = vdcNetwork.add_static_ip_pool(ip_ranges)
+        task = vdcNetwork.add_static_ip_pool_and_dns(ip_ranges)
         stdout(task, ctx)
         stdout('IP ranges are added to routed org vdc network successfully.',
                ctx)
@@ -323,7 +404,33 @@ def modify_ip_range_of_routed_vdc_network(ctx, name, ip_range, new_ip_range):
 
 
 @routed.command(
-    'list-metadata', short_help='List metadata of a routed org vdc network.')
+    'remove-ip-range',
+    short_help='remove an IP range from a routed org vdc network')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '-i',
+    '--ip-range',
+    'ip_range',
+    required=True,
+    metavar='<ip>',
+    help='ip range in StartAddress-EndAddress format')
+def remove_ip_range(ctx, name, ip_range):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        task = vdcNetwork.remove_static_ip_pool(ip_range)
+        stdout(task, ctx)
+        stdout('IP range of routed org vdc network is removed successfully.',
+               ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@routed.command(
+    'list-metadata', short_help='list metadata of a routed org vdc network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 def list_metadata(ctx, name):
@@ -351,7 +458,7 @@ def list_metadata(ctx, name):
 
 
 @routed.command(
-    'set-metadata', short_help='Set metadata to a routed org vdc network.')
+    'set-metadata', short_help='set metadata to a routed org vdc network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -405,7 +512,7 @@ def set_metadata(ctx, name, key, value, domain, visibility, value_type):
 
 @routed.command(
     'remove-metadata',
-    short_help='Remove metadata from a routed org vdc network.')
+    short_help='remove metadata from a routed org vdc network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -447,5 +554,109 @@ def list_allocated_ip_address(ctx, name):
         vdcNetwork = VdcNetwork(client, resource=routed_network)
         allocated_ip_addresses = vdcNetwork.list_allocated_ip_address()
         stdout(allocated_ip_addresses, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@routed.command('list-connected-vapps', short_help='list connected vApps')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def list_connected_vapps(ctx, name):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        connected_vapps = vdcNetwork.list_connected_vapps()
+        stdout(connected_vapps, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@routed.command('convert-to-sub-interface',
+                short_help='convert to sub interface')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def convert_to_sub_interface(ctx, name):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        task = vdcNetwork.convert_to_sub_interface()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@routed.command('convert-to-internal-interface',
+                short_help='convert to internal interface')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def convert_to_internal_interface(ctx, name):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        task = vdcNetwork.convert_to_internal_interface()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@routed.command('convert-to-distributed-interface',
+                short_help='convert to distributed interface')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def convert_to_distributed_interface(ctx, name):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        client = ctx.obj['client']
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        vdcNetwork = VdcNetwork(client, resource=routed_network)
+        task = vdcNetwork.convert_to_distributed_interface()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@routed.command('info', short_help='show routed network information')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def info(ctx, name):
+    try:
+        vdc = _get_vdc_ref(ctx)
+        routed_network = vdc.get_routed_orgvdc_network(name)
+        output = {}
+        output['fence_mode'] = routed_network.Configuration.FenceMode
+        output['is_retail_info'] = \
+            routed_network.Configuration.RetainNetInfoAcrossDeployments
+        if hasattr(routed_network, 'SubInterface'):
+            output['is_sub_interface'] = \
+                routed_network.Configuration.SubInterface
+        if hasattr(routed_network, 'DistributedInterface'):
+            output['is_distributed_interface'] = \
+                routed_network.Configuration.DistributedInterface
+        if hasattr(routed_network, 'GuestVlanAllowed'):
+            output['is_guest_vlan_allowed'] = \
+                routed_network.Configuration.GuestVlanAllowed
+
+        if hasattr(routed_network, 'ProviderInfo'):
+            output['provider_info'] = routed_network.ProviderInfo
+        if hasattr(routed_network, 'IsShared'):
+            output['is_shared'] = routed_network.IsShared
+        if hasattr(routed_network, 'VimPortGroupRef'):
+            output['vim_server_href'] =  \
+                routed_network.VimPortGroupRef.VimServerRef.get('href')
+            output['vim_server_id'] = \
+                routed_network.VimPortGroupRef.VimServerRef.get('id')
+            output['vim_server_type'] = \
+                routed_network.VimPortGroupRef.VimServerRef.get('type')
+            output['vim_server_moref'] = routed_network.VimPortGroupRef.MoRef
+            output['vim_server_vim_object_type'] = \
+                routed_network.VimPortGroupRef.VimObjectType
+
+        stdout(output, ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -447,8 +447,8 @@ def sync_syslog_settings(ctx, name):
         stderr(e, ctx)
 
 
-@gateway.command('list-config-ip-settings', short_help=
-        'shows config ip settings.')
+@gateway.command('list-config-ip-settings',
+                 short_help='shows config ip settings.')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 def list_config_ip_settings(ctx, name):
@@ -460,7 +460,7 @@ def list_config_ip_settings(ctx, name):
         stderr(e, ctx)
 
 @gateway.group('configure-external-network',
-            short_help='configures external networks of an edge gateway')
+               short_help='configures external networks of an edge gateway')
 @click.pass_context
 def configure_external_network(ctx):
     """Configures external networks of edge gateways in vCloud Director.
@@ -593,8 +593,8 @@ def edit_gateway_config_ip_settings(ctx, name, external_networks_name,
         stderr(e, ctx)
 
 
-@gateway.group('sub-allocate-ip', short_help='configures Sub allocate ip '
-                                            'pools of gateway')
+@gateway.group('sub-allocate-ip',
+               short_help='configures Sub allocate ip pools of gateway')
 @click.pass_context
 def sub_allocate_ip(ctx):
     """Configures sub-allocate ip pools of gateway in vCloud Director.

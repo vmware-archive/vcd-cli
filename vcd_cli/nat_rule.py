@@ -13,6 +13,7 @@
 #
 
 import click
+from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
 # Don't change the order of vcd  and gateway
@@ -20,6 +21,8 @@ from vcd_cli.vcd import vcd #NOQA
 from vcd_cli.gateway import gateway # NOQA
 from vcd_cli.gateway import get_gateway
 from vcd_cli.gateway import services
+
+from pyvcloud.vcd.nat_rule import NatRule
 
 
 @services.group('snat', short_help='manage snat rules of gateway')
@@ -227,10 +230,14 @@ def create_dnat_rule(ctx, gateway_name, action, type, original_address,
 def nat(ctx):
     """Manages SNAT/DNAT Rule of gateway.
 
-    \b
+\b
         Examples
             vcd gateway services nat list test_gateway1
+                List all nat rules
 
+\b
+           vcd gateway services nat delete test_gateway1 196609
+               Deletes the nat rule
     """
 
 
@@ -242,5 +249,30 @@ def list_nat_rules(ctx, gateway_name):
         gateway_resource = get_gateway(ctx, gateway_name)
         nat_list = gateway_resource.list_nat_rules()
         stdout(nat_list, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+def get_nat_rule(ctx, gateway_name, rule_id):
+    """Get the Nat Rule resource.
+
+    It will restore sessions if expired. It will reads the client and
+    creates the Nat Rule resource object.
+    """
+    restore_session(ctx, vdc_required=True)
+    client = ctx.obj['client']
+    resource = NatRule(client, gateway_name, rule_id)
+    return resource
+
+
+@nat.command("delete", short_help="Deletes the nat rule")
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+@click.argument('rule_id', metavar='<nat rule id>', required=True)
+def delete_nat_rule(ctx, gateway_name, rule_id):
+    try:
+        resource = get_nat_rule(ctx, gateway_name, rule_id)
+        resource.delete_nat_rule()
+        stdout('Nat Rule deleted successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)

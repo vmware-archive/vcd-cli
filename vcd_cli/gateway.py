@@ -459,6 +459,7 @@ def list_config_ip_settings(ctx, name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @gateway.group('configure-external-network',
                short_help='configures external networks of an edge gateway')
 @click.pass_context

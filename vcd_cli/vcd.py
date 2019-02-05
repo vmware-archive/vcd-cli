@@ -117,6 +117,7 @@ else:
     from vcd_cli import org  # NOQA
     from vcd_cli import nat_rule  # NOQA
     from vcd_cli import dhcp_pool  # NOQA
+    from vcd_cli import static_route  # NOQA
     from vcd_cli import netpool  # NOQA
     from vcd_cli import network  # NOQA
     from vcd_cli import nsxt  # NOQA

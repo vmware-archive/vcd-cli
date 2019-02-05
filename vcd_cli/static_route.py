@@ -166,7 +166,7 @@ def delete_nat_rule(ctx, gateway_name, network_id):
     'mtu',
     default=None,
     metavar='<mtu>',
-    help='enable/disable the SNAT rule')
+    help='MTU of static route')
 @click.option(
     '--desc',
     'description',

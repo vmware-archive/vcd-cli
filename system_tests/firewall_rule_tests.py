@@ -44,7 +44,8 @@ class TestFirewallRule(BaseTestCase):
             args=[
                 'services', 'firewall', 'create', TestFirewallRule.__name,
                 '--name', TestFirewallRule.__firewall_rule_name, '--action',
-                'accept', '--type', 'User', '--enabled', '--logging-enabled'])
+                'accept', '--type', 'User', '--enabled', '--logging-enabled'
+            ])
         self.assertEqual(0, result.exit_code)
 
     def _login(self):
@@ -65,6 +66,12 @@ class TestFirewallRule(BaseTestCase):
         """Logs out current session, ignoring errors"""
         TestFirewallRule._runner.invoke(logout)
 
+    def get_row_containing_word(self, output, word):
+        rows = output.split('\n')
+        for row in rows:
+            if row.find(word) != -1:
+                return row
+
     def test_0001_list_firewall_rules(self):
         """Get information of the firewall rules.
 
@@ -74,14 +81,41 @@ class TestFirewallRule(BaseTestCase):
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=['services', 'firewall', 'list', TestFirewallRule.__name])
+        firewall_rule_row = self.get_row_containing_word(
+            result.output, TestFirewallRule.__firewall_rule_name)
+        firewall_rule_arr = firewall_rule_row.strip().split()
+        TestFirewallRule._firewall_rule_id = firewall_rule_arr[0]
+        TestFirewallRule._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
+
+    def test_0002_enabled_firewall_rules(self):
+        result = TestFirewallRule._runner.invoke(
+            gateway,
+            args=[
+                'services', 'firewall', 'enabled',
+                TestFirewallRule._firewall_rule_id, TestFirewallRule.__name
+            ])
+        TestFirewallRule._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
+
+    def test_0003_disabled_firewall_rules(self):
+        result = TestFirewallRule._runner.invoke(
+            gateway,
+            args=[
+                'services', 'firewall', 'disabled',
+                TestFirewallRule._firewall_rule_id, TestFirewallRule.__name
+            ])
         TestFirewallRule._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)
 
     def test_0011_list_object_types(self):
         """List object types."""
         result = TestFirewallRule._runner.invoke(
-            gateway, args=['services', 'firewall', 'list-object-types',
-                           TestFirewallRule.__name, '--type', 'source'])
+            gateway,
+            args=[
+                'services', 'firewall', 'list-object-types',
+                TestFirewallRule.__name, '--type', 'source'
+            ])
         TestFirewallRule._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)
 
@@ -89,9 +123,11 @@ class TestFirewallRule(BaseTestCase):
         """List objects for the provided object type."""
         result = TestFirewallRule._runner.invoke(
             gateway,
-            args=['services', 'firewall', 'list-objects',
-                  TestFirewallRule.__name, '--type', 'source',
-                  '--object-type', 'gatewayinterface'])
+            args=[
+                'services', 'firewall', 'list-objects',
+                TestFirewallRule.__name, '--type', 'source', '--object-type',
+                'gatewayinterface'
+            ])
         TestFirewallRule._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)
 

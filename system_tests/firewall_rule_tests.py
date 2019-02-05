@@ -68,11 +68,30 @@ class TestFirewallRule(BaseTestCase):
     def test_0001_list_firewall_rules(self):
         """Get information of the firewall rules.
 
-        It will trigger the cli command with option gateway services firewall list
+        It will trigger the cli command with option gateway services
+        firewall list.
         """
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=['services', 'firewall', 'list', TestFirewallRule.__name])
+        TestFirewallRule._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
+
+    def test_0011_list_object_types(self):
+        """List object types."""
+        result = TestFirewallRule._runner.invoke(
+            gateway, args=['services', 'firewall', 'list-object-types',
+                           TestFirewallRule.__name, '--type', 'source'])
+        TestFirewallRule._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
+
+    def test_0021_list_objects(self):
+        """List objects for the provided object type."""
+        result = TestFirewallRule._runner.invoke(
+            gateway,
+            args=['services', 'firewall', 'list-objects',
+                  TestFirewallRule.__name, '--type', 'source',
+                  '--object-type', 'gatewayinterface'])
         TestFirewallRule._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)
 

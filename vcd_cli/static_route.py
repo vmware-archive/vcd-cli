@@ -22,25 +22,25 @@ from vcd_cli.gateway import get_gateway
 from vcd_cli.gateway import services
 
 
-@services.group('static', short_help='manage static routes of gateway')
+@services.group('static-route', short_help='manage static routes of gateway')
 @click.pass_context
-def static(ctx):
+def static_route(ctx):
     """Manages static routes of gateway.
 
 \b
         Examples
-            vcd gateway services static create test_gateway1 --type User
+            vcd gateway services static-route create test_gateway1 --type User
             --network 192.169.1.0/24 --next-hop 2.2.3.30 --mtu 1500
             --desc "Static Route Created" -v 0
                 Create a new static route
 
 \b
-            vcd gateway services static list test_gateway1
+            vcd gateway services static-route list test_gateway1
                 List all static routes
     """
 
 
-@static.command("create", short_help="create a new static route")
+@static_route.command("create", short_help="create a new static route")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
 @click.option(
@@ -92,7 +92,7 @@ def create_static_route(ctx, gateway_name, type, network, next_hop,
         stderr(e, ctx)
 
 
-@static.command('list', short_help='List all static routes on a gateway')
+@static_route.command('list', short_help='List all static routes on a gateway')
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
 def list_static_routes(ctx, gateway_name):

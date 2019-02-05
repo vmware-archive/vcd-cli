@@ -49,7 +49,7 @@ class TestStaticRoute(BaseTestCase):
         result = TestStaticRoute._runner.invoke(
             gateway,
             args=[
-                'services', 'static', 'create', TestStaticRoute._name,
+                'services', 'static-route', 'create', TestStaticRoute._name,
                 '--type', TestStaticRoute._type, '--network',
                 TestStaticRoute._network, '--next-hop',
                 TestStaticRoute._next_hop, '--mtu', TestStaticRoute._mtu,
@@ -79,7 +79,7 @@ class TestStaticRoute(BaseTestCase):
         result = TestStaticRoute._runner.invoke(
             gateway,
             args=[
-                'services', 'static', 'list',
+                'services', 'static-route', 'list',
                 TestStaticRoute._name])
         self.assertEqual(0, result.exit_code)
 

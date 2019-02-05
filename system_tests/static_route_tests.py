@@ -35,10 +35,14 @@ class TestStaticRoute(BaseTestCase):
     _type = 'User'
     _vnic = 0
     _desc = 'Static Route created'
+    _new_network = '192.165.1.0/24'
+    _new_next_hop = '2.2.3.83'
+    _new_mtu = 1800
+    _new_desc = 'Static Route updated'
 
     def test_0000_setup(self):
         """Add Static Route in the gateway.
-        It will trigger the cli command 'services static create'
+        It will trigger the cli command 'services static-route create'
         """
         self._config = Environment.get_config()
         TestStaticRoute._logger = Environment.get_default_logger()
@@ -83,8 +87,34 @@ class TestStaticRoute(BaseTestCase):
                 TestStaticRoute._name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0030_update_static_route(self):
+        """Update the static route.
+
+        Invoke the cli command 'services static-route update'.
+        """
+        result = TestStaticRoute._runner.invoke(
+            gateway,
+            args=[
+                'services', 'static-route', 'update', TestStaticRoute._name,
+                TestStaticRoute._network, '--network',
+                TestStaticRoute._new_network, '--next-hop',
+                TestStaticRoute._new_next_hop, '--mtu',
+                TestStaticRoute._new_mtu,
+                '--desc', TestStaticRoute._new_desc, '-v',
+                TestStaticRoute._vnic])
+        self.assertEqual(0, result.exit_code)
+
     def test_0098_teardown(self):
-        """Will implement with delete."""
+        """Delete the static route.
+
+        Invoke the cli command 'services static-route delete'
+        """
+        result = TestStaticRoute._runner.invoke(
+            gateway,
+            args=[
+                'services', 'static-route', 'delete', TestStaticRoute._name,
+                TestStaticRoute._new_network])
+        self.assertEqual(0, result.exit_code)
 
     def _logout(self):
         """Logs out current session, ignoring errors"""

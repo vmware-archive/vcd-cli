@@ -108,6 +108,24 @@ class TestFirewallRule(BaseTestCase):
         TestFirewallRule._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)
 
+    def test_0011_list_object_types(self):
+        """List object types."""
+        result = TestFirewallRule._runner.invoke(
+            gateway, args=['services', 'firewall', 'list-object-types',
+                           TestFirewallRule.__name, '--type', 'source'])
+        TestFirewallRule._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
+
+    def test_0021_list_objects(self):
+        """List objects for the provided object type."""
+        result = TestFirewallRule._runner.invoke(
+            gateway,
+            args=['services', 'firewall', 'list-objects',
+                  TestFirewallRule.__name, '--type', 'source',
+                  '--object-type', 'gatewayinterface'])
+        TestFirewallRule._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
+
     def test_0099_cleanup(self):
         """Release all resources held by this object for testing purposes."""
         self._logout()

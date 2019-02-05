@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest
 from click.testing import CliRunner
 
 from pyvcloud.system_test_framework.base_test import BaseTestCase
@@ -35,15 +34,17 @@ class TestNatRule(BaseTestCase):
     _vnic = 0
     _runner = None
     _snat_action = 'snat'
-    _snat_orig_addr = '2.2.3.7'
-    _snat_trans_addr = '2.2.3.8'
+    _snat_orig_addr = '2.2.3.80'
+    _snat_trans_addr = '2.2.3.81'
     _new_snat_desc = 'SNAT Rule Edited'
     _dnat_action = 'dnat'
-    _dnat1_orig_addr = '2.2.3.10'
-    _dnat1_trans_addr = '2.2.3.11-2.2.3.12'
+    _dnat1_orig_addr = '2.2.3.82'
+    _dnat1_trans_addr = '2.2.3.83-2.2.3.85'
     _dnat1_protocol = 'tcp'
     _dnat1_orig_port = 80
     _dnat1_trans_port = 80
+    _snat_id = None
+    _dnat_id = None
 
     def test_0000_setup(self):
         """Adds new ip range present to the sub allocate pool of gateway.
@@ -117,8 +118,40 @@ class TestNatRule(BaseTestCase):
         result = TestNatRule._runner.invoke(
             gateway, args=['services', 'nat', 'list', TestNatRule._name])
         self.assertEqual(0, result.exit_code)
+        TestNatRule._snat_id = self.get_row_containing_word(
+            result.output,
+            TestNatRule._snat_action)
 
-    @unittest.skip
+        TestNatRule._dnat_id = self.get_row_containing_word(
+            result.output,
+            TestNatRule._dnat_action)
+
+    def test_0030_delete_nat_rule(self):
+        """Deletes the nat rule.
+        It will trigger the cli command services nat delete
+        """
+        # Delete the SNAT Rule
+        result = TestNatRule._runner.invoke(
+            gateway,
+            args=[
+                'services', 'nat', 'delete', TestNatRule._name,
+                TestNatRule._snat_id])
+        self.assertEqual(0, result.exit_code)
+        # Delete the DNAT Rule
+        result = TestNatRule._runner.invoke(
+            gateway,
+            args=[
+                'services', 'nat', 'delete', TestNatRule._name,
+                TestNatRule._dnat_id])
+        self.assertEqual(0, result.exit_code)
+
+    def get_row_containing_word(self, output, word):
+        rows = output.split('\n')
+        for row in rows:
+            if row.find(word) != -1:
+                result_arr = row.strip().split()
+                return result_arr[2]
+
     def test_0098_teardown(self):
         """Removes the given IP ranges from existing IP ranges.
          It will trigger the cli command sub-allocate-ip remove

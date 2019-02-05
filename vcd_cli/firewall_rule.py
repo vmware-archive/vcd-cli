@@ -32,13 +32,28 @@ def firewall(ctx):
             vcd gateway services firewall create test_gateway1 --name rule1
             --action accept --type User --enabled --logging-enabled
                 create new firewall rule
+                
     \b
             vcd gateway services firewall enabled rule_id test_gateway1
                 enabled firewall rule
+                
     \b
             vcd gateway services firewall disabled rule_id test_gateway1
                 disabled firewall rule
 
+    \b
+            vcd gateway services firewall list test_gateway1
+                List firewall rules
+
+    \b
+            vcd gateway services firewall list-object-types test_gateway1
+                    --type source
+                List of object types
+
+    \b
+            vcd gateway services firewall list-objects test_gateway1
+                    --type source --object-type gatewayinterface
+                List of object for provided object type
     """
 
 
@@ -48,6 +63,7 @@ def firewall(ctx):
 @click.option(
     '--name',
     'name',
+    required=True,
     metavar='<firewall rule name>',
     help='firewall rule name')
 @click.option(
@@ -82,7 +98,7 @@ def create_firewall_rule(ctx, gateway_name, name, action, type, enabled,
         stderr(e, ctx)
 
 
-@firewall.command('list', short_help='displays all firewall rules.')
+@firewall.command('list', short_help='displays all firewall rules')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 def rules_list(ctx, name):
@@ -119,6 +135,26 @@ def enabled_firewall_rules(ctx, name, id):
         stderr(e, ctx)
 
 
+@firewall.command('list-object-types', short_help='list object types')
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+@click.option(
+    '--type',
+    'type',
+    metavar='<source/destination>',
+    required=True,
+    type=click.Choice([
+        'source',
+        'destination'
+    ]),
+    help='type. possible value will be source/destination')
+def list_object_types(ctx, name, type):
+    try:
+        gateway_resource = get_gateway(ctx, name)
+        object_types = gateway_resource.list_firewall_object_types(type)
+        stdout(object_types, ctx)
+
+
 @firewall.command('disabled', short_help='disabled firewall rule ')
 @click.pass_context
 @click.argument('id', metavar='<id>', required=True)
@@ -130,3 +166,38 @@ def disabled_firewall_rules(ctx, name, id):
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
+ 
+
+@firewall.command('list-objects', short_help='list objects for provided '
+                                             'object type')
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+@click.option(
+    '--type',
+    'type',
+    metavar='<source/destination>',
+    required=True,
+    type=click.Choice([
+        'source',
+        'destination'
+    ]),
+    help='type. possible value will be source/destination')
+@click.option(
+    '--object-type',
+    'object_type',
+    required=True,
+    metavar='<object type>',
+    type=click.Choice([
+        'gatewayinterface',
+        'virtualmachine',
+        'network',
+        'ipset',
+        'securitygroup'
+    ]),
+    help='object type')
+def list_objects(ctx, name, type, object_type):
+    try:
+        gateway_resource = get_gateway(ctx, name)
+        objects = gateway_resource.list_firewall_objects(type, object_type)
+        stdout(objects, ctx)
+

@@ -182,12 +182,14 @@ def list_objects(ctx, name, type, object_type):
     '--source',
     'source_values',
     multiple=True,
+    default=None,
     metavar='<value:value_type>',
     help='it should be in value:value_type format. for ex: '
          'Extnw:gatewayinterface')
 @click.option(
     '--destination',
     'destination_values',
+    default=None,
     metavar='<value:value_type>',
     multiple=True,
     help='it should be in value:value_type format. for ex: '

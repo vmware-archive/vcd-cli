@@ -33,8 +33,8 @@ def static_route(ctx):
 \b
         Examples
             vcd gateway services static-route create test_gateway1 --type User
-            --network 192.169.1.0/24 --next-hop 2.2.3.30 --mtu 1500
-            --desc "Static Route Created" -v 0
+                    --network 192.169.1.0/24 --next-hop 2.2.3.30 --mtu 1500
+                    --desc "Static Route Created" -v 0
                 Create a new static route
 
 \b
@@ -43,13 +43,13 @@ def static_route(ctx):
 
 \b
             vcd gateway services static-route delete test_gateway1
-            192.169.1.0/24
+                    192.169.1.0/24
                 Delete the static route
 
 \b
             vcd gateway services static-route update test_gateway1
-            192.169.1.0/24 --network 192.165.1.0/24 --next-hop 2.2.3.35
-            --mtu 1800 --desc "Static Route Updated" -v 0
+                    192.169.1.0/24 --network 192.165.1.0/24 --next-hop 2.2.3.35
+                    --mtu 1800 --desc "Static Route Updated" -v 0
                 Update the static route
     """
 

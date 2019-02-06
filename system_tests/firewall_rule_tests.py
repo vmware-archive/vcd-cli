@@ -153,6 +153,16 @@ class TestFirewallRule(BaseTestCase):
         TestFirewallRule._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)
 
+    def test_0051_delete_firewall_rule(self):
+        result = TestFirewallRule._runner.invoke(
+            gateway,
+            args=[
+                'services', 'firewall', 'delete', TestFirewallRule.__name,
+                TestFirewallRule._rule_id.text
+            ])
+        TestFirewallRule._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
+
     def test_0099_cleanup(self):
         """Release all resources held by this object for testing purposes."""
         self._logout()

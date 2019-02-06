@@ -64,9 +64,14 @@ def firewall(ctx):
     \b
             vcd gateway services firewall enable test_gateway1 rule_id
                 enabled firewall rule
+
     \b
             vcd gateway services firewall disable test_gateway1 rule_id
                 disabled firewall rule
+
+    \b
+            vcd gateway services firewall delete test_gateway1 rule_id
+                delete firewall rule
     """
 
 
@@ -236,11 +241,11 @@ def get_firewall_rule(ctx, gateway_name, id):
     return resource
 
 
-@firewall.command('enable', short_help='enable firewall rule.')
+@firewall.command('enable', short_help='enable firewall rule')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.argument('id', metavar='<id>', required=True)
-def enabled_firewall_rules(ctx, name, id):
+def enabled_firewall_rule(ctx, name, id):
     try:
         firewall_rule_resource = get_firewall_rule(ctx, name, id)
         firewall_rule_resource.enable_disable_firewall_rule(True)
@@ -249,14 +254,27 @@ def enabled_firewall_rules(ctx, name, id):
         stderr(e, ctx)
 
 
-@firewall.command('disable', short_help='disable firewall rule ')
+@firewall.command('disable', short_help='disable firewall rule')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.argument('id', metavar='<id>', required=True)
-def disabled_firewall_rules(ctx, name, id):
+def disabled_firewall_rule(ctx, name, id):
     try:
         firewall_rule_resource = get_firewall_rule(ctx, name, id)
         firewall_rule_resource.enable_disable_firewall_rule(False)
         stdout('Firewall rule disabled successfully', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@firewall.command('delete', short_help='delete firewall rule')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('id', metavar='<id>', required=True)
+def delete_firewall_rule(ctx, name, id):
+    try:
+        firewall_rule_resource = get_firewall_rule(ctx, name, id)
+        firewall_rule_resource.delete()
+        stdout('Firewall rule deleted successfully', ctx)
     except Exception as e:
         stderr(e, ctx)

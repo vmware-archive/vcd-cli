@@ -216,7 +216,7 @@ def update_firewall(ctx, name, rule_id, source_values, destination_values,
         if destination_values:
             firewall.validate_types(destination_values, 'destination')
         application_services = []
-        if services is not None and len(services) > 0:
+        if services:
             for service in services:
                 application_services.append(tuple_to_dict([service]))
 

@@ -60,6 +60,13 @@ def firewall(ctx):
                     --source 10.20.3.2:ip
                     --service tcp any any
                 Edit firewall rule
+
+    \b
+            vcd gateway services firewall enable test_gateway1 rule_id
+                enabled firewall rule
+    \b
+            vcd gateway services firewall disable test_gateway1 rule_id
+                disabled firewall rule
     """
 
 
@@ -231,8 +238,8 @@ def get_firewall_rule(ctx, gateway_name, id):
 
 @firewall.command('enable', short_help='enable firewall rule.')
 @click.pass_context
-@click.argument('id', metavar='<id>', required=True)
 @click.argument('name', metavar='<name>', required=True)
+@click.argument('id', metavar='<id>', required=True)
 def enabled_firewall_rules(ctx, name, id):
     try:
         firewall_rule_resource = get_firewall_rule(ctx, name, id)
@@ -244,8 +251,8 @@ def enabled_firewall_rules(ctx, name, id):
 
 @firewall.command('disable', short_help='disable firewall rule ')
 @click.pass_context
-@click.argument('id', metavar='<id>', required=True)
 @click.argument('name', metavar='<name>', required=True)
+@click.argument('id', metavar='<id>', required=True)
 def disabled_firewall_rules(ctx, name, id):
     try:
         firewall_rule_resource = get_firewall_rule(ctx, name, id)

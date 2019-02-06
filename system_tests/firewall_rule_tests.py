@@ -137,8 +137,8 @@ class TestFirewallRule(BaseTestCase):
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
-                'services', 'firewall', 'enable',
-                TestFirewallRule._rule_id.text, TestFirewallRule.__name
+                'services', 'firewall', 'enable', TestFirewallRule.__name,
+                TestFirewallRule._rule_id.text
             ])
         TestFirewallRule._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)
@@ -147,8 +147,8 @@ class TestFirewallRule(BaseTestCase):
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
-                'services', 'firewall', 'disable',
-                TestFirewallRule._rule_id.text, TestFirewallRule.__name
+                'services', 'firewall', 'disable', TestFirewallRule.__name,
+                TestFirewallRule._rule_id.text
             ])
         TestFirewallRule._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)

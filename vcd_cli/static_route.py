@@ -91,6 +91,7 @@ def static_route(ctx):
     help='description')
 @click.option(
     '-v',
+    '--vnic',
     'vnic',
     default=0,
     metavar='<vnic>',
@@ -175,6 +176,7 @@ def delete_nat_rule(ctx, gateway_name, network_id):
     help='description')
 @click.option(
     '-v',
+    '--vnic',
     'vnic',
     default=None,
     metavar='<vnic>',

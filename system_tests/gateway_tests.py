@@ -18,6 +18,7 @@ from vcd_cli.network import external
 from vcd_cli.network import network
 from vcd_cli.gateway import gateway
 from vcd_cli.org import org
+from pyvcloud.vcd.client import ApiVersion
 from pyvcloud.vcd.client import GatewayBackingConfigType
 from pyvcloud.vcd.client import NSMAP
 from pyvcloud.vcd.client import QueryResultFormat
@@ -32,7 +33,7 @@ class GatewayTest(BaseTestCase):
         Be aware that this test will delete existing vcd-cli sessions.
         """
     _runner = None
-    _name = 'test_gateway1'
+    _name = ('test_gateway1' + str(uuid1()))[:34]
     _external_network_name = 'external_network_' + str(uuid1())
     _subnet_addr = None
     _ext_network_name = None
@@ -48,7 +49,7 @@ class GatewayTest(BaseTestCase):
         default_org = self._config['vcd']['default_org_name']
         self._login()
         GatewayTest._runner.invoke(org, ['use', default_org])
-
+        GatewayTest._api_version = self._config['vcd']['api_version']
         GatewayTest._ext_network_name = self._get_first_external_network()
 
         self.client = Environment.get_sys_admin_client()
@@ -227,8 +228,11 @@ class GatewayTest(BaseTestCase):
 
         It will trigger the cli command with option convert-to-advanced
         """
+        if float(GatewayTest._api_version) >= float(
+                ApiVersion.VERSION_32.value):
+            return
         result_advanced_gateway = self._runner.invoke(
-            gateway, args=['convert-to-advanced', 'test_gateway1'])
+            gateway, args=['convert-to-advanced', self._name])
         self.assertEqual(0, result_advanced_gateway.exit_code)
 
     def test_0007_enable_distributed_routing(self):
@@ -238,7 +242,7 @@ class GatewayTest(BaseTestCase):
         """
         result_advanced_gateway = self._runner.invoke(
             gateway,
-            args=['enable-distributed-routing', 'test_gateway1', '--enable'])
+            args=['enable-distributed-routing', self._name, '--enable'])
         self.assertEqual(0, result_advanced_gateway.exit_code)
 
     def test_0008_modify_form_factor(self):
@@ -249,7 +253,7 @@ class GatewayTest(BaseTestCase):
         result = self._runner.invoke(
             gateway,
             args=[
-                'modify-form-factor', 'test_gateway1',
+                'modify-form-factor', self._name,
                 GatewayBackingConfigType.FULL.value
             ])
         self.assertEqual(0, result.exit_code)
@@ -260,7 +264,7 @@ class GatewayTest(BaseTestCase):
         It will trigger the cli command with command 'info'
         """
         result_info = self._runner.invoke(
-            gateway, args=['info', 'test_gateway1'])
+            gateway, args=['info', self._name])
         self.assertEqual(0, result_info.exit_code)
 
     def test_0010_redeploy_gateway(self):
@@ -269,7 +273,7 @@ class GatewayTest(BaseTestCase):
         It will trigger the cli command with option redeploy
         """
         result = self._runner.invoke(
-            gateway, args=['redeploy', 'test_gateway1'])
+            gateway, args=['redeploy', self._name])
         self.assertEqual(0, result.exit_code)
 
     def test_0011_sync_syslog_settings(self):
@@ -277,7 +281,7 @@ class GatewayTest(BaseTestCase):
          It will trigger the cli command with option sync-syslog-settings
         """
         result = self._runner.invoke(
-            gateway, args=['sync-syslog-settings', 'test_gateway1'])
+            gateway, args=['sync-syslog-settings', self._name])
         self.assertEqual(0, result.exit_code)
 
     def test_0012_get_config_ip_settings(self):
@@ -321,10 +325,11 @@ class GatewayTest(BaseTestCase):
         result = self._runner.invoke(
             external,
             args=[
-                'create', self._external_network_name, vc_name, '--port-group',
-                _port_group, '--gateway', '10.10.30.1', '--netmask',
-                '255.255.255.0', '--ip-range', '10.10.30.101-10.10.30.150',
-                '--description', self._external_network_name, '--dns1',
+                'create', self._external_network_name, '--vc', vc_name,
+                '--port-group', _port_group, '--gateway', '10.10.30.1',
+                '--netmask', '255.255.255.0', '--ip-range',
+                '10.10.30.101-10.10.30.150', '--description',
+                self._external_network_name, '--dns1',
                 '8.8.8.8', '--dns2', '8.8.8.9', '--dns-suffix', 'example.com'
             ])
         self.assertEqual(0, result.exit_code)
@@ -346,7 +351,7 @@ class GatewayTest(BaseTestCase):
         result = self._runner.invoke(
             gateway,
             args=[
-                'configure-external-network', 'add', 'test_gateway1', '-e',
+                'configure-external-network', 'add', self._name, '-e',
                 self._external_network_name, '--configure-ip-setting',
                 '10.10.30.1/24', '10.10.30.110'
             ])
@@ -365,7 +370,7 @@ class GatewayTest(BaseTestCase):
         result = self._runner.invoke(
             gateway,
             args=[
-                'configure-external-network', 'remove', 'test_gateway1', '-e',
+                'configure-external-network', 'remove', self._name, '-e',
                 self._external_network_name
             ])
         self.assertTrue(
@@ -414,7 +419,7 @@ class GatewayTest(BaseTestCase):
         result = self._runner.invoke(
             gateway,
             args=[
-                'sub-allocate-ip', 'add', 'test_gateway1', '-e',
+                'sub-allocate-ip', 'add', self._name, '-e',
                 ext_name, '--ip-range', gateway_sub_allocated_ip_range])
         self.assertEqual(0, result.exit_code)
 
@@ -432,7 +437,7 @@ class GatewayTest(BaseTestCase):
         result = self._runner.invoke(
             gateway,
             args=[
-                'sub-allocate-ip', 'update', 'test_gateway1', '-e',
+                'sub-allocate-ip', 'update', self._name, '-e',
                 ext_name, '-o', gateway_sub_allocated_ip_range,
                 '-n', gateway_sub_allocated_ip_range1])
         self.assertEqual(0, result.exit_code)
@@ -470,6 +475,7 @@ class GatewayTest(BaseTestCase):
             args=[
                 'configure-rate-limits', 'list', self._name, '-r',
                 [(ext_name, '101.0', '101.0')]])
+        self.assertEqual(0, result.exit_code)
 
     def test_0021_list_rate_limit(self):
         """Lists rate limit of gateway.
@@ -478,6 +484,7 @@ class GatewayTest(BaseTestCase):
         result = self._runner.invoke(
             gateway,
             args=['configure-rate-limits', 'list', self._name])
+        self.assertEqual(0, result.exit_code)
 
     def test_0022_disable_rate_limit(self):
         """Disables rate limit of gateway.
@@ -490,6 +497,7 @@ class GatewayTest(BaseTestCase):
             gateway,
             args=['configure-rate-limits', 'disable', self._name, '-e',
                   ext_name])
+        self.assertEqual(0, result.exit_code)
 
     def test_0023_configure_default_gateways(self):
         """Configures gateway for provided external networks and gateway IP.
@@ -503,8 +511,8 @@ class GatewayTest(BaseTestCase):
         subnet = ip_scopes['subnet']
         ip = subnet.split('/')[0]
         GatewayTest._logger.debug("vcd gateway configure-default-gateway "
-                                  "update {0} -e {1} --gateway-ip {2}".format(
-            self._name, ext_name, ip))
+                                  "update {0} -e {1} --gateway-ip {"
+                                  "2}".format(self._name, ext_name, ip))
         result = self._runner.invoke(
             gateway,
             args=['configure-default-gateway', 'update', self._name, '-e',
@@ -547,7 +555,7 @@ class GatewayTest(BaseTestCase):
 
     def test_0098_tearDown(self):
         result_delete = self._runner.invoke(
-            gateway, args=['delete', 'test_gateway1'])
+            gateway, args=['delete', self._name])
         self.assertEqual(0, result_delete.exit_code)
         """Logout ignoring any errors to ensure test session is gone."""
         self._logout()

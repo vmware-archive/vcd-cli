@@ -14,12 +14,14 @@
 # limitations under the License.
 
 from click.testing import CliRunner
-
 from pyvcloud.system_test_framework.base_test import BaseTestCase
 from pyvcloud.system_test_framework.constants.gateway_constants \
     import GatewayConstants
+from pyvcloud.system_test_framework.constants.ovdc_network_constant import \
+    OvdcNetConstants
 from pyvcloud.system_test_framework.environment import Environment
-
+from pyvcloud.vcd.gateway import Gateway
+from uuid import uuid1
 from vcd_cli.org import org
 from vcd_cli.login import login, logout
 from vcd_cli.firewall_rule import gateway
@@ -30,14 +32,16 @@ class TestFirewallRule(BaseTestCase):
     firewall create.
     """
     __name = GatewayConstants.name
-    __firewall_rule_name = 'rule1'
+    __firewall_rule_name = 'rule1' + str(uuid1())
 
     def test_0000_setup(self):
 
         self._config = Environment.get_config()
         TestFirewallRule._logger = Environment.get_default_logger()
+        TestFirewallRule._client = Environment.get_sys_admin_client()
         TestFirewallRule._runner = CliRunner()
         default_org = self._config['vcd']['default_org_name']
+        TestFirewallRule._ext_nw = self._config['external_network']['name']
         self._login()
         TestFirewallRule._runner.invoke(org, ['use', default_org])
         result = TestFirewallRule._runner.invoke(
@@ -47,6 +51,14 @@ class TestFirewallRule(BaseTestCase):
                 '--name', TestFirewallRule.__firewall_rule_name, '--action',
                 'accept', '--type', 'User', '--enabled', '--logging-enabled'])
         self.assertEqual(0, result.exit_code)
+        gateway_res = Environment.get_test_gateway(TestFirewallRule._client)
+        gateway_obj = Gateway(TestFirewallRule._client, href=gateway_res.get(
+            'href'))
+        firewall_rules = gateway_obj.get_firewall_rules()
+        for rule in firewall_rules.firewallRules.firewallRule:
+            if rule.name == TestFirewallRule.__firewall_rule_name:
+                TestFirewallRule._rule_id = rule.id
+                break
 
     def _login(self):
         """Logs in using admin credentials"""
@@ -65,6 +77,56 @@ class TestFirewallRule(BaseTestCase):
     def _logout(self):
         """Logs out current session, ignoring errors"""
         TestFirewallRule._runner.invoke(logout)
+
+    def test_0001_list_firewall_rules(self):
+        """Get information of the firewall rules.
+
+        It will trigger the cli command with option gateway services
+        firewall list.
+        """
+        result = TestFirewallRule._runner.invoke(
+            gateway,
+            args=['services', 'firewall', 'list', TestFirewallRule.__name])
+        TestFirewallRule._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
+
+    def test_0011_list_object_types(self):
+        """List object types."""
+        result = TestFirewallRule._runner.invoke(
+            gateway, args=['services', 'firewall', 'list-object-types',
+                           TestFirewallRule.__name, '--type', 'source'])
+        TestFirewallRule._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
+
+    def test_0021_list_objects(self):
+        """List objects for the provided object type."""
+        result = TestFirewallRule._runner.invoke(
+            gateway,
+            args=['services', 'firewall', 'list-objects',
+                  TestFirewallRule.__name, '--type', 'source',
+                  '--object-type', 'gatewayinterface'])
+        TestFirewallRule._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
+
+    def test_0031_update(self):
+        """Update Firewall Rule."""
+        result = TestFirewallRule._runner.invoke(
+            gateway,
+            args=['services', 'firewall', 'update',
+                  TestFirewallRule.__name, TestFirewallRule._rule_id.text,
+                  '--source', TestFirewallRule._ext_nw + ':gatewayinterface',
+                  '--source', OvdcNetConstants.routed_net_name + ':network',
+                  '--source', '2.3.2.2:ip',
+                  '--destination', TestFirewallRule._ext_nw +
+                  ':gatewayinterface', '--destination',
+                  OvdcNetConstants.routed_net_name + ':network',
+                  '--destination', '2.3.2.2:ip',
+                  '--service', 'tcp', 'any', 'any',
+                  '--service', 'tcp', 'any', 'any',
+                  '--service', 'any', 'any', 'any',
+                  '--service', 'icmp', 'any', 'any'])
+        TestFirewallRule._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
 
     def test_0099_cleanup(self):
         """Release all resources held by this object for testing purposes."""

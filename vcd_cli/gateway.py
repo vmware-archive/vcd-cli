@@ -14,6 +14,7 @@
 
 import click
 from pyvcloud.vcd.client import ApiVersion
+from pyvcloud.vcd.client import EdgeGatewayType
 from pyvcloud.vcd.client import GatewayBackingConfigType
 from pyvcloud.vcd.vdc import VDC
 from vcd_cli.utils import restore_session
@@ -54,6 +55,7 @@ def gateway(ctx):
             --subnet 10.10.20.1/28 --ip-range 10.10.20.5-10.10.20.10
             --configure-rate-limit extnw1 100 200
             --flips-mode-disabled
+            --gateway-type
             Create gateway.
                 Parameter --external-network is a required parameter and
                 can have multiple entries.
@@ -234,12 +236,18 @@ def list_gateways(ctx):
     default=False,
     metavar='<is flip flop mode>',
     help='flip flip mode')
+@click.option(
+    '--gateway-type',
+    'gateway_type',
+    default=EdgeGatewayType.NSXV_BACKED.value,
+    metavar='NSXV_BACKED/NSXT_BACKED/NSXT_IMPORTED',
+    help='gateway type')
 def create_gateway(ctx, name, external_networks_name, description,
                    default_gateway_external_network, default_gw_ip,
                    is_dns_relay, is_ha, is_advanced, is_distributed_routing,
                    configure_ip_settings, sub_allocated_ext_net_name,
                    sub_allocated_subnet, ip_ranges, configure_rate_limits,
-                   is_flip_flop, gateway_config):
+                   is_flip_flop, gateway_config, gateway_type):
     try:
         restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
@@ -284,8 +292,8 @@ def create_gateway(ctx, name, external_networks_name, description,
                 is_sub_allocate_ip_pools_enabled,
                 ext_net_to_subnet_with_ip_range,
                 ext_net_to_rate_limit)
-        else:
-            result = vdc.create_gateway(
+        elif float(api_version) <= float(ApiVersion.VERSION_31.value):
+            result = vdc.create_gateway_api_version_31(
                 name, external_networks_name, gateway_config, description,
                 is_configured_default_gw, default_gateway_external_network,
                 default_gw_ip, is_dns_relay, is_ha, is_advanced,
@@ -294,6 +302,16 @@ def create_gateway(ctx, name, external_networks_name, description,
                 is_sub_allocate_ip_pools_enabled,
                 ext_net_to_subnet_with_ip_range, ext_net_to_rate_limit,
                 is_flip_flop)
+        else:
+            result = vdc.create_gateway_api_version_32(
+                name, external_networks_name, gateway_config, description,
+                is_configured_default_gw, default_gateway_external_network,
+                default_gw_ip, is_dns_relay, is_ha, is_advanced,
+                is_distributed_routing, is_ip_settings_configured,
+                ext_net_to_participated_subnet_with_ip_settings,
+                is_sub_allocate_ip_pools_enabled,
+                ext_net_to_subnet_with_ip_range, ext_net_to_rate_limit,
+                is_flip_flop, gateway_type)
         stdout(result.Tasks.Task[0], ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -429,8 +447,8 @@ def sync_syslog_settings(ctx, name):
         stderr(e, ctx)
 
 
-@gateway.command('list-config-ip-settings', short_help=
-        'shows config ip settings.')
+@gateway.command('list-config-ip-settings',
+                 short_help='shows config ip settings.')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 def list_config_ip_settings(ctx, name):
@@ -441,8 +459,9 @@ def list_config_ip_settings(ctx, name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @gateway.group('configure-external-network',
-            short_help='configures external networks of an edge gateway')
+               short_help='configures external networks of an edge gateway')
 @click.pass_context
 def configure_external_network(ctx):
     """Configures external networks of edge gateways in vCloud Director.
@@ -575,8 +594,8 @@ def edit_gateway_config_ip_settings(ctx, name, external_networks_name,
         stderr(e, ctx)
 
 
-@gateway.group('sub-allocate-ip', short_help='configures Sub allocate ip '
-                                            'pools of gateway')
+@gateway.group('sub-allocate-ip',
+               short_help='configures Sub allocate ip pools of gateway')
 @click.pass_context
 def sub_allocate_ip(ctx):
     """Configures sub-allocate ip pools of gateway in vCloud Director.

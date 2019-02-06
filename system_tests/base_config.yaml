@@ -52,6 +52,7 @@ vcd:
   default_ovdc_network_gateway_ip: '10.1.1.1'
   default_ovdc_network_gateway_netmask: '255.255.255.0'
   default_direct ovdc_network_name: 'test-direct-vdc-network'
+  default_ovdc_network_network_cidr: '10.1.1.1/20'
 
   default_catalog_name: 'test-cat'
   default_template_file_name: 'test_vapp_template.ova'
@@ -68,9 +69,9 @@ vc:
 
 vc2:
   vcenter_host_name: 'vc2'
-  vcenter_host_ip: '<vc ip>'
+  vcenter_host_ip: '<vc2 ip>'
   vcenter_admin_username: 'administrator@vsphere.local'
-  vcenter_admin_password: '<vc root password>'
+  vcenter_admin_password: '<vc2 root password>'
 
 nsx:
   nsx_hostname: 'nsx1'
@@ -95,6 +96,6 @@ external_network:
   ip_scopes:
     - subnet: '2.2.3.1/20'
       ip_ranges:
-        - '2.2.3.2-2.2.3.100'
-  gateway_sub_allocated_ip_range: '2.2.3.5-2.2.3.30'
-  new_gateway_sub_allocated_ip_range: '2.2.3.6-2.2.3.31'
+        - '2.2.3.2-2.2.3.160'
+  gateway_sub_allocated_ip_range: '2.2.3.70-2.2.3.99'
+  new_gateway_sub_allocated_ip_range: '2.2.3.72-2.2.3.99'

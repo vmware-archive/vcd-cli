@@ -72,6 +72,7 @@ class ExtNetTest(BaseTestCase):
         org = self._config['vcd']['sys_org_name']
         admin_user = self._config['vcd']['sys_admin_username']
         admin_pass = self._config['vcd']['sys_admin_pass']
+        ExtNetTest._vc2_host_ip = self._config['vc2']['vcenter_host_ip']
         login_args = [
             host, org, admin_user, "-i", "-w",
             "--password={0}".format(admin_pass)
@@ -184,6 +185,8 @@ class ExtNetTest(BaseTestCase):
         """Attach a portgroup to an external network.
         Invoke the command 'external attach-port-group' in network.
         """
+        if ExtNetTest._vc2_host_ip is None or ExtNetTest._vc2_host_ip == '':
+            return
         ExtNetTest._client = Environment.get_sys_admin_client()
 
         port_group_helper = PortgroupHelper(ExtNetTest._client)
@@ -202,6 +205,8 @@ class ExtNetTest(BaseTestCase):
         """Detach port group from an external network.
         Invoke the command 'external detach-port-group' in network.
         """
+        if ExtNetTest._vc2_host_ip is None or ExtNetTest._vc2_host_ip == '':
+            return
         ExtNetTest._client = Environment.get_sys_admin_client()
         port_group_helper = PortgroupHelper(ExtNetTest._client)
         vc_name = self._config['vc2']['vcenter_host_name']

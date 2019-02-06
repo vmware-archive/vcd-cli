@@ -21,6 +21,7 @@ from vcd_cli.gateway import gateway # NOQA
 from vcd_cli.gateway import get_gateway
 from vcd_cli.gateway import services
 from vcd_cli.utils import restore_session
+from vcd_cli.utils import tuple_to_dict
 
 
 @services.group('firewall', short_help='manage firewall rules of gateway')
@@ -57,6 +58,7 @@ def firewall(ctx):
                     --destination vm1:virtualmachine
                     --source ExtNw:gatewayinterface
                     --source 10.20.3.2:ip
+                    --service tcp any any
                 Edit firewall rule
     """
 
@@ -194,7 +196,17 @@ def list_objects(ctx, name, type, object_type):
     multiple=True,
     help='it should be in value:value_type format. for ex: '
          'Extnw:gatewayinterface')
-def update_firewall(ctx, name, rule_id, source_values, destination_values):
+@click.option(
+    '--service',
+    'services',
+    nargs=3,
+    type=click.Tuple([str, str, str]),
+    multiple=True,
+    default=None,
+    metavar='<protocol> <source port> <destination port>',
+    help='configure services of firewall')
+def update_firewall(ctx, name, rule_id, source_values, destination_values,
+                    services):
     try:
         restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
@@ -203,7 +215,12 @@ def update_firewall(ctx, name, rule_id, source_values, destination_values):
             firewall.validate_types(source_values, 'source')
         if destination_values:
             firewall.validate_types(destination_values, 'destination')
-        firewall.edit(source_values, destination_values)
+        application_services = []
+        if services:
+            for service in services:
+                application_services.append(tuple_to_dict([service]))
+
+        firewall.edit(source_values, destination_values, application_services)
 
         stdout('Firewall rule updated successfully.', ctx)
     except Exception as e:

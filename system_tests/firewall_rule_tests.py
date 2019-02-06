@@ -32,7 +32,7 @@ class TestFirewallRule(BaseTestCase):
     firewall create.
     """
     __name = GatewayConstants.name
-    __firewall_rule_name = 'rule1'+str(uuid1())
+    __firewall_rule_name = 'rule1' + str(uuid1())
 
     def test_0000_setup(self):
 
@@ -120,7 +120,11 @@ class TestFirewallRule(BaseTestCase):
                   '--destination', TestFirewallRule._ext_nw +
                   ':gatewayinterface', '--destination',
                   OvdcNetConstants.routed_net_name + ':network',
-                  '--destination', '2.3.2.2:ip'])
+                  '--destination', '2.3.2.2:ip',
+                  '--service', 'tcp', 'any', 'any',
+                  '--service', 'tcp', 'any', 'any',
+                  '--service', 'any', 'any', 'any',
+                  '--service', 'icmp', 'any', 'any'])
         TestFirewallRule._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)
 

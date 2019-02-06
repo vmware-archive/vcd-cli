@@ -14,11 +14,13 @@
 
 import click
 
+from pyvcloud.vcd.firewall_rule import FirewallRule
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
 from vcd_cli.gateway import gateway # NOQA
 from vcd_cli.gateway import get_gateway
 from vcd_cli.gateway import services
+from vcd_cli.utils import restore_session
 
 
 @services.group('firewall', short_help='manage firewall rules of gateway')
@@ -47,6 +49,15 @@ def firewall(ctx):
             vcd gateway services firewall list-objects test_gateway1
                     --type source --object-type gatewayinterface
                 List of object for provided object type
+
+    \b
+            vcd gateway services firewall update test_gateway1 rule_id
+                    --destination ExtNw:gatewayinterface
+                    --destination ExtNw1:gatewayinterface
+                    --destination vm1:virtualmachine
+                    --source ExtNw:gatewayinterface
+                    --source 10.20.3.2:ip
+                Edit firewall rule
     """
 
 
@@ -160,5 +171,38 @@ def list_objects(ctx, name, type, object_type):
         gateway_resource = get_gateway(ctx, name)
         objects = gateway_resource.list_firewall_objects(type, object_type)
         stdout(objects, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@firewall.command('update', short_help='update firewall rule')
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+@click.argument('rule_id', metavar='<rule id>', required=True)
+@click.option(
+    '--source',
+    'source_values',
+    multiple=True,
+    metavar='<value:value_type>',
+    help='it should be in value:value_type format. for ex: '
+         'Extnw:gatewayinterface')
+@click.option(
+    '--destination',
+    'destination_values',
+    metavar='<value:value_type>',
+    multiple=True,
+    help='it should be in value:value_type format. for ex: '
+         'Extnw:gatewayinterface')
+def update_firewall(ctx, name, rule_id, source_values, destination_values):
+    try:
+        restore_session(ctx, vdc_required=True)
+        client = ctx.obj['client']
+        firewall = FirewallRule(client, gateway_name=name, resource_id=rule_id)
+        if source_values:
+            firewall.validate_types(source_values, 'source')
+        if destination_values:
+            firewall.validate_types(destination_values, 'destination')
+        firewall.edit(source_values, destination_values)
+
+        stdout('Firewall rule updated successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)

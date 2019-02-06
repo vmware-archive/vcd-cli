@@ -13,13 +13,14 @@
 #
 
 import click
-from vcd_cli.utils import restore_session
+
 from pyvcloud.vcd.firewall_rule import FirewallRule
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
 from vcd_cli.gateway import gateway  # NOQA
 from vcd_cli.gateway import get_gateway
 from vcd_cli.gateway import services
+from vcd_cli.utils import restore_session
 
 
 @services.group('firewall', short_help='manage firewall rules of gateway')
@@ -50,12 +51,21 @@ def firewall(ctx):
                 List of object for provided object type
 
     \b
-            vcd gateway services firewall enabled rule_id test_gateway1
+            vcd gateway services firewall enable rule_id test_gateway1
                 enabled firewall rule
 
     \b
-            vcd gateway services firewall disabled rule_id test_gateway1
+            vcd gateway services firewall disable rule_id test_gateway1
                 disabled firewall rule
+
+    \b
+            vcd gateway services firewall update test_gateway1 rule_id
+                    --destination ExtNw:gatewayinterface
+                    --destination ExtNw1:gatewayinterface
+                    --destination vm1:virtualmachine
+                    --source ExtNw:gatewayinterface
+                    --source 10.20.3.2:ip
+                Edit firewall rule
     """
 
 
@@ -174,27 +184,63 @@ def get_firewall_rule(ctx, gateway_name, id):
     return resource
 
 
-@firewall.command('enabled', short_help='enabled firewall rule.')
+@firewall.command('enable', short_help='enable firewall rule.')
 @click.pass_context
 @click.argument('id', metavar='<id>', required=True)
 @click.argument('name', metavar='<name>', required=True)
 def enabled_firewall_rules(ctx, name, id):
     try:
         firewall_rule_resource = get_firewall_rule(ctx, name, id)
-        result = firewall_rule_resource.enabled_firewall_rules()
-        stdout(result, ctx)
+        firewall_rule_resource.enable_disable_firewall_rule(True)
+        stdout('Firewall rule enabled successfully', ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
-@firewall.command('disabled', short_help='disabled firewall rule ')
+@firewall.command('disable', short_help='disable firewall rule ')
 @click.pass_context
 @click.argument('id', metavar='<id>', required=True)
 @click.argument('name', metavar='<name>', required=True)
 def disabled_firewall_rules(ctx, name, id):
     try:
         firewall_rule_resource = get_firewall_rule(ctx, name, id)
-        result = firewall_rule_resource.disabled_firewall_rules()
-        stdout(result, ctx)
+        firewall_rule_resource.enable_disable_firewall_rule(False)
+        stdout('Firewall rule disabled successfully', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@firewall.command('update', short_help='update firewall rule')
+@click.pass_context
+@click.argument('name', metavar='<gateway name>', required=True)
+@click.argument('rule_id', metavar='<rule id>', required=True)
+@click.option(
+    '--source',
+    'source_values',
+    multiple=True,
+    default=None,
+    metavar='<value:value_type>',
+    help='it should be in value:value_type format. for ex: '
+    'Extnw:gatewayinterface')
+@click.option(
+    '--destination',
+    'destination_values',
+    default=None,
+    metavar='<value:value_type>',
+    multiple=True,
+    help='it should be in value:value_type format. for ex: '
+    'Extnw:gatewayinterface')
+def update_firewall(ctx, name, rule_id, source_values, destination_values):
+    try:
+        restore_session(ctx, vdc_required=True)
+        client = ctx.obj['client']
+        firewall = FirewallRule(client, gateway_name=name, resource_id=rule_id)
+        if source_values:
+            firewall.validate_types(source_values, 'source')
+        if destination_values:
+            firewall.validate_types(destination_values, 'destination')
+        firewall.edit(source_values, destination_values)
+
+        stdout('Firewall rule updated successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -79,12 +79,6 @@ class TestFirewallRule(BaseTestCase):
         """Logs out current session, ignoring errors"""
         TestFirewallRule._runner.invoke(logout)
 
-    def get_row_containing_word(self, output, word):
-        rows = output.split('\n')
-        for row in rows:
-            if row.find(word) != -1:
-                return row
-
     def test_0001_list_firewall_rules(self):
         """Get information of the firewall rules.
 
@@ -94,10 +88,6 @@ class TestFirewallRule(BaseTestCase):
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=['services', 'firewall', 'list', TestFirewallRule.__name])
-        firewall_rule_row = self.get_row_containing_word(
-            result.output, TestFirewallRule.__firewall_rule_name)
-        firewall_rule_arr = firewall_rule_row.strip().split()
-        TestFirewallRule._firewall_rule_id = firewall_rule_arr[0]
         TestFirewallRule._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)
 
@@ -106,7 +96,7 @@ class TestFirewallRule(BaseTestCase):
             gateway,
             args=[
                 'services', 'firewall', 'enable',
-                TestFirewallRule._firewall_rule_id, TestFirewallRule.__name
+                TestFirewallRule._rule_id.text, TestFirewallRule.__name
             ])
         TestFirewallRule._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)
@@ -116,7 +106,7 @@ class TestFirewallRule(BaseTestCase):
             gateway,
             args=[
                 'services', 'firewall', 'disable',
-                TestFirewallRule._firewall_rule_id, TestFirewallRule.__name
+                TestFirewallRule._rule_id.text, TestFirewallRule.__name
             ])
         TestFirewallRule._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)

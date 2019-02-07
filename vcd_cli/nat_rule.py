@@ -238,6 +238,10 @@ def nat(ctx):
 \b
            vcd gateway services nat delete test_gateway1 196609
                Deletes the nat rule
+
+\b
+           vcd gateway services nat info test_gateway1 196609
+               Get the info of nat rule
     """
 
 
@@ -274,5 +278,18 @@ def delete_nat_rule(ctx, gateway_name, rule_id):
         resource = get_nat_rule(ctx, gateway_name, rule_id)
         resource.delete_nat_rule()
         stdout('Nat Rule deleted successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@nat.command("info", short_help="Info about nat rule")
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+@click.argument('rule_id', metavar='<nat rule id>', required=True)
+def info_nat_rule(ctx, gateway_name, rule_id):
+    try:
+        resource = get_nat_rule(ctx, gateway_name, rule_id)
+        result = resource.get_nat_rule_info()
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

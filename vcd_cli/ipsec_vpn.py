@@ -13,7 +13,6 @@
 #
 
 import click
-from pyvcloud.system_test_framework.environment import Environment
 from pyvcloud.vcd.ipsec_vpn import IpsecVpn
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
@@ -210,11 +209,7 @@ def create_ipsec_vpn(ctx, gateway_name, name, local_id, peer_id,local_ip,
 @click.argument('id', metavar='<IPsec VPN id>', required=True)
 def delete_ipsec_vpn(ctx, gateway_name, id):
     try:
-        client = Environment.get_sys_admin_client()
-
-        ipsec_vpn_obj = IpsecVpn(client=client,
-                                 gateway_name=gateway_name,
-                                 ipsec_end_point=id)
+        ipsec_vpn_obj = get_ipsec_vpn(ctx,gateway_name, id)
         ipsec_vpn_obj.delete_ipsec_vpn()
         stdout('IPsec VPN deleted successfully.', ctx)
     except Exception as e:
@@ -234,11 +229,7 @@ def delete_ipsec_vpn(ctx, gateway_name, id):
     help='enable/disable IPsec VPN')
 def enable_activation_status(ctx, gateway_name, id, enabled):
     try:
-        client = Environment.get_sys_admin_client()
-
-        ipsec_vpn_obj = IpsecVpn(client=client,
-                                 gateway_name=gateway_name,
-                                 ipsec_end_point=id)
+        ipsec_vpn_obj = get_ipsec_vpn(ctx,gateway_name, id)
         ipsec_vpn_obj.enable_activation_status(enabled)
         stdout('IPsec VPN activation status changed.', ctx)
     except Exception as e:
@@ -251,11 +242,7 @@ def enable_activation_status(ctx, gateway_name, id, enabled):
 @click.argument('id', metavar='<IPsec VPN id>', required=True)
 def info_activation_status(ctx, gateway_name, id):
     try:
-        client = Environment.get_sys_admin_client()
-
-        ipsec_vpn_obj = IpsecVpn(client=client,
-                                 gateway_name=gateway_name,
-                                 ipsec_end_point=id)
+        ipsec_vpn_obj = get_ipsec_vpn(ctx,gateway_name, id)
         result = ipsec_vpn_obj.info_activation_status()
         stdout(result, ctx)
     except Exception as e:
@@ -275,11 +262,7 @@ def info_activation_status(ctx, gateway_name, id):
     help='enable/disable global logging of IPsec VPN')
 def enable_logging(ctx, gateway_name, id, enabled):
     try:
-        client = Environment.get_sys_admin_client()
-
-        ipsec_vpn_obj = IpsecVpn(client=client,
-                                 gateway_name=gateway_name,
-                                 ipsec_end_point=id)
+        ipsec_vpn_obj = get_ipsec_vpn(ctx,gateway_name, id)
         ipsec_vpn_obj.enable_logging(enabled)
         stdout('IPsec VPN logging enable status changed.', ctx)
     except Exception as e:
@@ -292,12 +275,21 @@ def enable_logging(ctx, gateway_name, id, enabled):
 @click.argument('id', metavar='<IPsec VPN id>', required=True)
 def info_logging_settings(ctx, gateway_name, id):
     try:
-        client = Environment.get_sys_admin_client()
-
-        ipsec_vpn_obj = IpsecVpn(client=client,
-                                 gateway_name=gateway_name,
-                                 ipsec_end_point=id)
+        ipsec_vpn_obj = get_ipsec_vpn(ctx,gateway_name, id)
         result = ipsec_vpn_obj.info_logging_settings()
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+def get_ipsec_vpn(ctx, gateway_name, id):
+    """Get the sdk's ipsec vpn object.
+
+    It will restore sessions if expired. It will read the client.
+    """
+    restore_session(ctx, vdc_required=True)
+    client = ctx.obj['client']
+    ipsec_vpn = IpsecVpn(client=client,
+                                 gateway_name=gateway_name,
+                                 ipsec_end_point=id)
+    return ipsec_vpn
+

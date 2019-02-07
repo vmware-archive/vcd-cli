@@ -126,7 +126,19 @@ class TestNatRule(BaseTestCase):
             result.output,
             TestNatRule._dnat_action)
 
-    def test_0030_delete_nat_rule(self):
+    def test_0030_info_nat_rule(self):
+        """Get the details of nat rule.
+
+        Invoke the cli command 'services nat info' in nat_rule.
+        """
+        result = TestNatRule._runner.invoke(
+            gateway,
+            args=[
+                'services', 'nat', 'info', TestNatRule._name,
+                TestNatRule._snat_id])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0050_delete_nat_rule(self):
         """Deletes the nat rule.
         It will trigger the cli command services nat delete
         """

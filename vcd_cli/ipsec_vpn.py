@@ -41,38 +41,38 @@ def ipsec_vpn(ctx):
             --local-id lid1 --local-ip 2.2.3.2 --peer-id pid1 --peer-ip 2.2.3.4
             --local-subnet 30.20.10.0/24 --peer-subnet 10.20.10.0/24
             --desc "IPsec VPN" --psk abcd1234 --enable
-            
-            create new IPsec VPN.
-            
+
+                create new IPsec VPN.
+
     \b
             vcd gateway services ipsec_vpn enable-activation-status 
             test_gateway1 --id local_ip-peer_ip --enable
-            
-            Enable/disable activation status.
-            
+
+                Enable/disable activation status.
+
     \b
             vcd gateway services ipsec_vpn info-activation-status 
             test_gateway1 --id local_ip-peer_ip
-            
-            Info activation status.
-            
+
+                Info activation status.
+
     \b
             vcd gateway services ipsec_vpn enable-logging 
             test_gateway1 --id local_ip-peer_ip --enable
-            
-            Enable/disable logging.
-            
+
+                Enable/disable logging.
+
     \b
             vcd gateway services ipsec_vpn info-logging-settings 
             test_gateway1 --id local_ip-peer_ip
-            
-            Info logging settings.
-    
+
+                Info logging settings.
+
     \b
             vcd gateway services ipsec_vpn delete test_gateway1 --id 
             local_ip-peer_ip
-            
-            Delete IPsec VPN. Id for this deletion is <local_ip>-<peer_ip>
+
+                Delete IPsec VPN. Id for this deletion is <local_ip>-<peer_ip>
 
     """
 

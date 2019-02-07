@@ -233,22 +233,22 @@ def nat(ctx):
 \b
         Examples
             vcd gateway services nat list test_gateway1
-                List all nat rules
+                List all NAT rules
 
 \b
            vcd gateway services nat delete test_gateway1 196609
-               Deletes the nat rule
+               Deletes the NAT rule
 
 \b
            vcd gateway services nat info test_gateway1 196609
-               Get the info of nat rule
+               Get details of NAT rule
     """
 
 
-@nat.command('list', short_help='List all nat rules on a gateway')
+@nat.command('list', short_help='List all NAT rules on a gateway')
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
-def list_nat_rules(ctx, gateway_name):
+def list(ctx, gateway_name):
     try:
         gateway_resource = get_gateway(ctx, gateway_name)
         nat_list = gateway_resource.list_nat_rules()
@@ -269,11 +269,11 @@ def get_nat_rule(ctx, gateway_name, rule_id):
     return resource
 
 
-@nat.command("delete", short_help="Deletes the nat rule")
+@nat.command("delete", short_help="Deletes the NAT rule")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
 @click.argument('rule_id', metavar='<nat rule id>', required=True)
-def delete_nat_rule(ctx, gateway_name, rule_id):
+def delete(ctx, gateway_name, rule_id):
     try:
         resource = get_nat_rule(ctx, gateway_name, rule_id)
         resource.delete_nat_rule()
@@ -282,11 +282,11 @@ def delete_nat_rule(ctx, gateway_name, rule_id):
         stderr(e, ctx)
 
 
-@nat.command("info", short_help="Info about nat rule")
+@nat.command("info", short_help="show NAT rule details")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
 @click.argument('rule_id', metavar='<nat rule id>', required=True)
-def info_nat_rule(ctx, gateway_name, rule_id):
+def info(ctx, gateway_name, rule_id):
     try:
         resource = get_nat_rule(ctx, gateway_name, rule_id)
         result = resource.get_nat_rule_info()

@@ -128,9 +128,19 @@ class TestFirewallRule(BaseTestCase):
                 '--destination', OvdcNetConstants.routed_net_name + ':network',
                 '--destination', '2.3.2.2:ip', '--service', 'tcp', 'any',
                 'any', '--service', 'tcp', 'any', 'any', '--service', 'any',
-                'any', 'any', '--service', 'icmp', 'any', 'any'
+                'any', 'any', '--service', 'icmp', 'any', 'any', '--name',
+                'new_name'
             ])
         TestFirewallRule._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
+        # revert back name change to old name
+        result = TestFirewallRule._runner.invoke(
+            gateway,
+            args=[
+                'services', 'firewall', 'update', TestFirewallRule.__name,
+                TestFirewallRule._rule_id.text, '--name',
+                TestFirewallRule.__firewall_rule_name
+            ])
         self.assertEqual(0, result.exit_code)
 
     def test_0041_enable_firewall_rule(self):

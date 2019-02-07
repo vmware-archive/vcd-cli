@@ -17,6 +17,7 @@ import click
 from pyvcloud.vcd.firewall_rule import FirewallRule
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
+from vcd_cli.vcd import vcd  #NOQA
 from vcd_cli.gateway import gateway  # NOQA
 from vcd_cli.gateway import get_gateway
 from vcd_cli.gateway import services
@@ -72,6 +73,10 @@ def firewall(ctx):
     \b
             vcd gateway services firewall delete test_gateway1 rule_id
                 delete firewall rule
+
+    \b
+            vcd gateway services firewall info test_gateway1 rule_id
+                Info firewall rule
     """
 
 
@@ -276,5 +281,18 @@ def delete_firewall_rule(ctx, name, id):
         firewall_rule_resource = get_firewall_rule(ctx, name, id)
         firewall_rule_resource.delete()
         stdout('Firewall rule deleted successfully', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@firewall.command('info', short_help='info about firewall rule')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('id', metavar='<id>', required=True)
+def info_firewall_rule(ctx, name, id):
+    try:
+        firewall_rule_resource = get_firewall_rule(ctx, name, id)
+        result = firewall_rule_resource.info_firewall_rule()
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

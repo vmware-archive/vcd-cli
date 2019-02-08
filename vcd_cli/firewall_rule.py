@@ -60,6 +60,7 @@ def firewall(ctx):
                     --source ExtNw:gatewayinterface
                     --source 10.20.3.2:ip
                     --service tcp any any
+                    --name new_name
                 Edit firewall rule
 
     \b
@@ -212,8 +213,14 @@ def list_objects(ctx, name, type, object_type):
     default=None,
     metavar='<protocol> <source port> <destination port>',
     help='configure services of firewall')
+@click.option(
+    '--name',
+    'new_name',
+    default=None,
+    metavar='<name>',
+    help='new name of the firewall rule')
 def update_firewall(ctx, name, rule_id, source_values, destination_values,
-                    services):
+                    services, new_name):
     try:
         restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
@@ -227,7 +234,8 @@ def update_firewall(ctx, name, rule_id, source_values, destination_values,
             for service in services:
                 application_services.append(tuple_to_dict([service]))
 
-        firewall.edit(source_values, destination_values, application_services)
+        firewall.edit(source_values, destination_values, application_services,
+                      new_name)
 
         stdout('Firewall rule updated successfully.', ctx)
     except Exception as e:

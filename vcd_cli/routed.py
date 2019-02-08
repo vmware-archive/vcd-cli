@@ -50,23 +50,23 @@ def routed(ctx):
                 --retain-net-info-across-deployments-enabled
             Creates a routed org vdc network
 \b
-        vcd network routed edit routed_net1
+        vcd network routed update routed_net1
                 --name new_name
                 --description new_description
                 --shared-enabled/--shared-disabled
             Edit name, description and shared state of org vdc network
 
 \b
-        vcd network routed add-ip-ranges routed_net1
+        vcd network routed add-ip-range routed_net1
                 --ip-range  2.2.3.1-2.2.3.2
                 --ip-range 2.2.4.1-2.2.4.2
-            Add IP ranges to a routed org vdc network
+            Add IP range/s to a routed org vdc network
 
 \b
-        vcd network routed modify-ip-range routed_net1
+        vcd network routed update-ip-range routed_net1
                 --ip-range 192.168.1.2-192.168.1.20
                 --new-ip-range 192.168.1.25-192.168.1.50
-            Modify an IP range of a routed org vdc network
+            Update an IP range of a routed org vdc network
 
 \b
         vcd network routed remove-ip-range routed_net1
@@ -329,7 +329,7 @@ def add_dns_of_routed_vdc_network(ctx, name, primary_dns_ip, secondary_dns_ip,
 
 
 @routed.command(
-    'add-ip-ranges', short_help='add IP range to routed org vdc network')
+    'add-ip-range', short_help='add IP range/s to routed org vdc network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -370,9 +370,8 @@ def list_routed_networks(ctx):
 
 
 @routed.command(
-    'modify-ip-range',
-    short_help='Modify IP range of '
-    'routed org vdc network.')
+    'update-ip-range',
+    short_help='Update IP range of routed org vdc network.')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(

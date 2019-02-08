@@ -37,7 +37,7 @@ class GatewayTest(BaseTestCase):
     _external_network_name = 'external_network_' + str(uuid1())
     _subnet_addr = None
     _ext_network_name = None
-    _gateway_ip = None
+    _gateway_ip = '2.2.3.1'
     _logger = None
 
     def test_0000_setup(self):

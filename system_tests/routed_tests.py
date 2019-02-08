@@ -107,7 +107,7 @@ class VdcNetworkTests(BaseTestCase):
         result = self._runner.invoke(
             network,
             args=[
-                'routed', 'remove-ip-range', VdcNetworkTests._name,
+                'routed', 'delete-ip-range', VdcNetworkTests._name,
                 '--ip-range', VdcNetworkTests.__ip_range2
             ])
         self.assertEqual(0, result.exit_code)

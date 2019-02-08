@@ -69,9 +69,9 @@ def routed(ctx):
             Update an IP range of a routed org vdc network
 
 \b
-        vcd network routed remove-ip-range routed_net1
+        vcd network routed delete-ip-range routed_net1
                 --ip-range 192.168.1.2-192.168.1.20
-            Remove an IP range from a routed org vdc network
+            Delete an IP range from a routed org vdc network
 
 \b
         vcd network routed list
@@ -403,8 +403,8 @@ def modify_ip_range_of_routed_vdc_network(ctx, name, ip_range, new_ip_range):
 
 
 @routed.command(
-    'remove-ip-range',
-    short_help='remove an IP range from a routed org vdc network')
+    'delete-ip-range',
+    short_help='delete an IP range from a routed org vdc network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(

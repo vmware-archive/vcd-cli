@@ -24,7 +24,7 @@ from vcd_cli.network import external
 
 from pyvcloud.vcd.client import QueryResultFormat
 from pyvcloud.vcd.client import ResourceType
-from system_tests.helpers.portgroup_helper import PortgroupHelper
+from helpers.portgroup_helper import PortgroupHelper
 
 
 class ExtNetTest(BaseTestCase):

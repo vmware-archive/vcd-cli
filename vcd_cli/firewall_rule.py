@@ -122,7 +122,7 @@ def create_firewall_rule(ctx, gateway_name, name, action, type, enabled,
         stderr(e, ctx)
 
 
-@firewall.command('list', short_help='displays all firewall rules')
+@firewall.command('list', short_help='show all firewall rule')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 def rules_list(ctx, name):

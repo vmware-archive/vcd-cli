@@ -34,9 +34,14 @@ dhcp_pool_test.py \
 extnet_tests.py \
 firewall_rule_tests.py \
 gateway_tests.py \
+ipsec_vpn_tests.py \
 nat_rule_tests.py \
 org_tests.py \
-routed_tests.py"
+pvdc_tests.py \
+routed_tests.py \
+static_route_tests.py \
+vapp_tests.py \
+vc_tests.py"
 
 if [ $# == 0 ]; then
   echo "No tests provided, will run stable list: ${STABLE_TESTS}"

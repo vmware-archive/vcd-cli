@@ -54,7 +54,7 @@ def routed(ctx):
                 --name new_name
                 --description new_description
                 --shared-enabled/--shared-disabled
-            Edit name, description and shared state of org vdc network
+            Update name, description and shared state of org vdc network
 
 \b
         vcd network routed add-ip-range routed_net1

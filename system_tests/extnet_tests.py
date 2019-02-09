@@ -228,34 +228,34 @@ class ExtNetTest(BaseTestCase):
         result = self._runner.invoke(
             external,
             args=[
-                'add-ip-range', self._name, '--gateway-ip', self._gateway1,
+                'add-ip-range', self._name, '--gateway', self._gateway1,
                 '--ip-range', self._ip_range3
             ])
         self.assertEqual(0, result.exit_code)
 
-    def test_0051_modify_ip_range(self):
-        """Modify an IP range of a subnet in an external network.
+    def test_0051_update_ip_range(self):
+        """Update an IP range of a subnet in an external network.
 
-        Invoke the command 'external modify-ip-range' in network.
+        Invoke the command 'external update-ip-range' in network.
         """
         result = self._runner.invoke(
             external,
             args=[
-                'modify-ip-range', self._name, '--gateway-ip', self._gateway1,
+                'update-ip-range', self._name, '--gateway', self._gateway1,
                 '--ip-range', self._ip_range1, '--new-ip-range',
                 self._ip_range2
             ])
         self.assertEqual(0, result.exit_code)
 
-    def test_0052_remove_ip_range(self):
+    def test_0052_delete_ip_range(self):
         """Remove an IP range of a subnet in an external network.
 
-        Invoke the command 'external remove-ip-range' in network.
+        Invoke the command 'external delete-ip-range' in network.
         """
         result = self._runner.invoke(
             external,
             args=[
-                'remove-ip-range', self._name, '--gateway-ip', self._gateway1,
+                'delete-ip-range', self._name, '--gateway', self._gateway1,
                 '--ip-range', self._ip_range2
             ])
         self.assertEqual(0, result.exit_code)

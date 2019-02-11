@@ -151,6 +151,10 @@ def external(ctx):
         vcd network external list-vsphere-network external-net1
                 --filter name==portgroup*
             List associated vSphere Networks
+
+\b
+        vcd network external info external-net1
+            Show external network information.
     """
     pass
 
@@ -1013,5 +1017,59 @@ def list_vsphere_network(ctx, name, filter):
         ext_net_obj = ExternalNetwork(client, resource=ext_net)
         vSphere_network_list = ext_net_obj.list_vsphere_network(filter)
         stdout(vSphere_network_list, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@external.command(
+    'info', short_help='show external network information')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def external_network_info(ctx, name):
+    try:
+        platform = _get_platform(ctx)
+        client = ctx.obj['client']
+        ext_net = platform.get_external_network(name)
+
+        config = ext_net['{' + NSMAP['vcloud'] + '}Configuration']
+        output = {}
+        count = 0
+        for ipscope in config.IpScopes.IpScope:
+            ipscope_dict = {}
+            ipscope_dict['is_inherited'] = ipscope.IsInherited
+            ipscope_dict['gateway'] = ipscope.Gateway
+            ipscope_dict['netmask'] = ipscope.Netmask
+            if hasattr(ipscope, 'Dns1'):
+                ipscope_dict['dns1'] = ipscope.Dns1
+            if hasattr(ipscope, 'Dns2'):
+                ipscope_dict['dns2'] = ipscope.Dns2
+            if hasattr(ipscope, 'DnsSuffix'):
+                ipscope_dict['dns_suffix'] = ipscope.DnsSuffix
+                ipscope_dict['Is_Enabled'] = ipscope.IsEnabled
+            if hasattr(ipscope, 'IpRanges'):
+                count_ip_range = 0
+                for ip_range in ipscope.IpRanges.IpRange:
+                    count_ip_range = count_ip_range + 1
+                    ip_range_dict = {}
+                    ip_range_dict['start_address'] = ip_range.StartAddress
+                    ip_range_dict['end_address'] = ip_range.EndAddress
+                    ipscope_dict['ip_range ' + str(count_ip_range)] = \
+                        ip_range_dict
+            count = count + 1
+            output['ipscope '+ str(count)] = ipscope_dict
+        if hasattr(config, 'FenceMode'):
+            output['fence_mode'] = config.FenceMode
+        if hasattr(config, 'RetainNetInfoAcrossDeployments'):
+            output['retain_net_info_across_deployment'] = \
+                config.RetainNetInfoAcrossDeployments
+        if hasattr(ext_net, 'VimPortGroupRef'):
+            output['vim_server_href'] = \
+                ext_net.VimPortGroupRef.VimServerRef.get('href')
+            output['vim_server_id'] = \
+                ext_net.VimPortGroupRef.VimServerRef.get('id')
+            output['vim_portgroup_moref'] = ext_net.VimPortGroupRef.MoRef
+            output['vim_object_type'] = \
+                ext_net.VimPortGroupRef.VimObjectType
+        stdout(output, ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -41,21 +41,22 @@ def gateway(ctx):
 
 \b
         vcd gateway create gateway1
-            --external_network extnw1
-            --external_network extnw2
-            --default-gateway extnw1
-            --default-gw-ip 10.10.20.1
+            --description test_gateway
+            --external-network external-net1
+            --external-network external-net2
+            --default-gateway external-net1
+            --default-gateway-ip 10.10.20.1
             --dns-relay-enabled
             --gateway-config full
             --ha-disabled
             --advanced-enabled
             --distributed-routing-enabled
-            --configure-ip-setting extnw1 10.10.20.1/24 10.10.20.3
-            --sub-allocate-ip extnw1
+            --configure-ip-setting external-net1 10.10.20.1/24 10.10.20.3
+            --sub-allocate-ip external-net1
             --subnet 10.10.20.1/28 --ip-range 10.10.20.5-10.10.20.10
-            --configure-rate-limit extnw1 100 200
-            --flips-mode-disabled
-            --gateway-type
+            --configure-rate-limit external-net1 100 200
+            --flip-flop-disabled
+            --gateway-type NSXT_BACKED
             Create gateway.
                 Parameter --external-network is a required parameter and
                 can have multiple entries.
@@ -65,13 +66,13 @@ def gateway(ctx):
              Delete gateway by providing gateway name.
 
 \b
-        vcd gateway enable-distributed-routing  gateway1 --disable
+        vcd gateway enable-distributed-routing gateway1 --disable
             Enable/Disable Distributed routing for gateway.
 
 \b
-        vcd gateway modify-form-factor  gateway1 full4
-            Possible value for gatewy configuration are
-            compact/full/full4/x-large
+        vcd gateway modify-form-factor gateway1 full4
+            Possible value for gateway configuration are
+            compact/full/x-large/full4
 
 \b
         vcd gateway convert-to-advanced gateway1
@@ -91,16 +92,17 @@ def gateway(ctx):
 
 \b
         vcd gateway list-config-ip-settings gateway1
-             lists the config ip settings of the gateway with given name
+             Lists the config ip settings of the gateway with given name
 \b
-        vcd gateway edit_gateway_name gateway1 --n gateway2
-             edits the gateway name
+        vcd gateway edit_gateway_name gateway1 -n gateway2 --description
+            gateway desc --enable_ha
+            Edits the gateway name
 
 \b
         vcd gateway configure-ip-settings gateway1 --external-network
             extNetwork --subnet-available 10.20.30.1/24 True 10.20.30.3
 
-             edits the config ip settings of the gateway with given name
+             Edits the config ip settings of the gateway with given name
              --subnet-available is a required parameter and
                 can have multiple entries
     """
@@ -135,7 +137,7 @@ def list_gateways(ctx):
     required=True,
     help='list of external networks to which the new gateway can connect.')
 @click.option(
-    '--desc',
+    '--description',
     'description',
     default=None,
     metavar='<description>',
@@ -545,15 +547,15 @@ def remove_external_network(ctx, name, external_network_name):
     metavar='<new-name>',
     help='new name of the gateway')
 @click.option(
-    '--desc',
+    '--description',
     'desc',
-    metavar='<new-name>',
+    metavar='<str>',
     help='description of the gateway')
 @click.option(
-    '--enable_ha/--disable_ha',
+    '--enable-ha/--disable-ha',
     'is_enabled',
     default=False,
-    metavar='<is_enabled>',
+    metavar='<bool>',
     help='enable/disable HA for gateway.')
 def edit_gateway(ctx, name, new_name, desc, is_enabled):
     try:

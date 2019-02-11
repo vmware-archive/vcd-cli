@@ -58,7 +58,7 @@ def gateway(ctx):
                 --flip-flop-disabled
                 --gateway-type NSXT_BACKED
             Create gateway.
-                Parameter:
+                Parameters:
                     --external-network is a required parameter and can have
                     multiple entries.
                    --gateway-config values can be compact/full/x-large/full4.

@@ -41,28 +41,29 @@ def gateway(ctx):
 
 \b
         vcd gateway create gateway1
-            --description test_gateway
-            --external-network external-net1
-            --external-network external-net2
-            --default-gateway external-net1
-            --default-gateway-ip 10.10.20.1
-            --dns-relay-enabled
-            --gateway-config full
-            --ha-disabled
-            --advanced-enabled
-            --distributed-routing-enabled
-            --configure-ip-setting external-net1 10.10.20.1/24 10.10.20.3
-            --sub-allocate-ip external-net1
-            --subnet 10.10.20.1/28 --ip-range 10.10.20.5-10.10.20.10
-            --configure-rate-limit external-net1 100 200
-            --flip-flop-disabled
-            --gateway-type NSXT_BACKED
+                --description test_gateway
+                --external-network external-net1
+                --external-network external-net2
+                --default-gateway external-net1
+                --default-gateway-ip 10.10.20.1
+                --dns-relay-enabled
+                --gateway-config full
+                --ha-disabled
+                --advanced-enabled
+                --distributed-routing-enabled
+                --configure-ip-setting external-net1 10.10.20.1/24 10.10.20.3
+                --sub-allocate-ip external-net1
+                --subnet 10.10.20.1/28 --ip-range 10.10.20.5-10.10.20.10
+                --configure-rate-limit external-net1 100 200
+                --flip-flop-disabled
+                --gateway-type NSXT_BACKED
             Create gateway.
-                Parameter --external-network is a required parameter and
-                can have multiple entries.
-                --gateway-config values can be compact/full/x-large/full4.
-                --gateway-type values can be
-                NSXV_BACKED/NSXT_BACKED/NSXT_IMPORTED.
+                Parameter:
+                    --external-network is a required parameter and can have
+                    multiple entries.
+                   --gateway-config values can be compact/full/x-large/full4.
+                   --gateway-type values can be
+                   NSXV_BACKED/NSXT_BACKED/NSXT_IMPORTED.
 
 \b
         vcd gateway delete gateway1
@@ -98,16 +99,16 @@ def gateway(ctx):
              Lists the config ip settings of the gateway with given name
 \b
         vcd gateway update gateway1 -n gateway2 --description description
-            --ha-enabled
+                --ha-enabled
             Edits the gateway name
 
 \b
         vcd gateway configure-ip-settings gateway1 --external-network
-            extNetwork --subnet-available 10.20.30.1/24 True 10.20.30.3
-
+                extNetwork --subnet-available 10.20.30.1/24 True 10.20.30.3
              Edits the config ip settings of the gateway with given name
-             --subnet-available is a required parameter and can have
-             multiple entries
+             Parameter:
+                 --subnet-available is a required parameter and can have
+                 multiple entries
     """
     pass
 

@@ -60,6 +60,9 @@ def gateway(ctx):
             Create gateway.
                 Parameter --external-network is a required parameter and
                 can have multiple entries.
+                --gateway-config values can be compact/full/x-large/full4.
+                --gateway-type values can be
+                NSXV_BACKED/NSXT_BACKED/NSXT_IMPORTED.
 
 \b
         vcd gateway delete gateway1
@@ -94,8 +97,8 @@ def gateway(ctx):
         vcd gateway list-config-ip-settings gateway1
              Lists the config ip settings of the gateway with given name
 \b
-        vcd gateway edit_gateway_name gateway1 -n gateway2 --description
-            gateway desc --enable_ha
+        vcd gateway update gateway1 -n gateway2 --description description
+            --ha-enabled
             Edits the gateway name
 
 \b
@@ -103,8 +106,8 @@ def gateway(ctx):
             extNetwork --subnet-available 10.20.30.1/24 True 10.20.30.3
 
              Edits the config ip settings of the gateway with given name
-             --subnet-available is a required parameter and
-                can have multiple entries
+             --subnet-available is a required parameter and can have
+             multiple entries
     """
     pass
 
@@ -552,7 +555,7 @@ def remove_external_network(ctx, name, external_network_name):
     metavar='<str>',
     help='description of the gateway')
 @click.option(
-    '--enable-ha/--disable-ha',
+    '--ha-enabled/--ha-disabled',
     'is_enabled',
     default=False,
     metavar='<bool>',

@@ -542,13 +542,23 @@ def remove_external_network(ctx, name, external_network_name):
     '-n',
     '--new-name',
     'new_name',
-    required=True,
     metavar='<new-name>',
     help='new name of the gateway')
-def edit_gateway_name(ctx, name, new_name):
+@click.option(
+    '--desc',
+    'desc',
+    metavar='<new-name>',
+    help='description of the gateway')
+@click.option(
+    '--enable_ha/--disable_ha',
+    'is_enabled',
+    default=False,
+    metavar='<is_enabled>',
+    help='enable/disable HA for gateway.')
+def edit_gateway(ctx, name, new_name, desc, is_enabled):
     try:
         gateway_resource = get_gateway(ctx, name)
-        task = gateway_resource.edit_gateway_name(new_name)
+        task = gateway_resource.edit_gateway(new_name, desc, is_enabled)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

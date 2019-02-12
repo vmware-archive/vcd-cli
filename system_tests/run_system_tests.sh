@@ -37,7 +37,6 @@ gateway_tests.py \
 ipsec_vpn_tests.py \
 nat_rule_tests.py \
 org_tests.py \
-pvdc_tests.py \
 routed_tests.py \
 static_route_tests.py \
 vapp_tests.py \

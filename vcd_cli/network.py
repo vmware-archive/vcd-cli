@@ -154,7 +154,7 @@ def external(ctx):
 
 \b
         vcd network external info external-net1
-            Show external network information.
+            Show external network details.
     """
     pass
 
@@ -1022,7 +1022,7 @@ def list_vsphere_network(ctx, name, filter):
 
 
 @external.command(
-    'info', short_help='show external network information')
+    'info', short_help='show external network details')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 def external_network_info(ctx, name):

@@ -78,6 +78,10 @@ def firewall(ctx):
     \b
             vcd gateway services firewall info test_gateway1 rule_id
                 Info firewall rule
+
+    \b
+            vcd gateway services firewall list-source test_gateway1 rule_id
+                List firewall rule's source
     """
 
 
@@ -301,6 +305,19 @@ def info_firewall_rule(ctx, name, id):
     try:
         firewall_rule_resource = get_firewall_rule(ctx, name, id)
         result = firewall_rule_resource.info_firewall_rule()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@firewall.command('list-source', short_help='list of firewall rule\'s source')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('id', metavar='<id>', required=True)
+def list_firewall_rule_source(ctx, name, id):
+    try:
+        firewall_rule_resource = get_firewall_rule(ctx, name, id)
+        result = firewall_rule_resource.list_firewall_rule_source()
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

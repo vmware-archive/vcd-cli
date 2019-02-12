@@ -100,7 +100,7 @@ def gateway(ctx):
 \b
         vcd gateway update gateway1 -n gateway2 --description description
                 --ha-enabled
-            Edits the gateway name
+            Update name, description and ha of gateway
 
 \b
         vcd gateway configure-ip-settings gateway1 --external-network
@@ -541,7 +541,9 @@ def remove_external_network(ctx, name, external_network_name):
         stderr(e, ctx)
 
 
-@gateway.command('update', short_help='update gateway name.')
+@gateway.command(
+    'update',
+    short_help='update name, description and ha of gateway.')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(

@@ -313,6 +313,15 @@ class ExtNetTest(BaseTestCase):
             external, args=['list-vsphere-network', self._name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0090_info(self):
+        """Show external network details.
+
+        Invoke the command 'external info' in network.
+        """
+        result = self._runner.invoke(
+            external, args=['info', self._name])
+        self.assertEqual(0, result.exit_code)
+
     def test_0100_delete(self):
         """Delete the external network created.
 

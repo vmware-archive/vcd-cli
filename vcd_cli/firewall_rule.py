@@ -80,8 +80,8 @@ def firewall(ctx):
                 Info firewall rule
 
     \b
-            vcd gateway services firewall source-list test_gateway1 rule_id
-                List firewall rule source
+            vcd gateway services firewall list-source test_gateway1 rule_id
+                List firewall rule's source
     """
 
 
@@ -310,7 +310,7 @@ def info_firewall_rule(ctx, name, id):
         stderr(e, ctx)
 
 
-@firewall.command('source-list', short_help='list of firewall rule source')
+@firewall.command('list-source', short_help='list of firewall rule\'s source')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.argument('id', metavar='<id>', required=True)

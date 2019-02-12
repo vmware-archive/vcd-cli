@@ -177,7 +177,7 @@ class TestFirewallRule(BaseTestCase):
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
-                'services', 'firewall', 'source-list', TestFirewallRule.__name,
+                'services', 'firewall', 'list-source', TestFirewallRule.__name,
                 TestFirewallRule._rule_id.text
             ])
         TestFirewallRule._logger.debug('result output {0}'.format(result))

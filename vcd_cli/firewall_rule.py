@@ -82,6 +82,11 @@ def firewall(ctx):
     \b
             vcd gateway services firewall list-source test_gateway1 rule_id
                 List firewall rule's source
+
+    \b
+            vcd gateway services firewall update-sequence test_gateway1 rule_id
+                    --index new_index
+                Change sequence of firewall rule
     """
 
 
@@ -319,5 +324,25 @@ def list_firewall_rule_source(ctx, name, id):
         firewall_rule_resource = get_firewall_rule(ctx, name, id)
         result = firewall_rule_resource.list_firewall_rule_source()
         stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@firewall.command(
+    'update-sequence', short_help='update sequence of firewall rule')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('id', metavar='<id>', required=True)
+@click.option(
+    '--index',
+    'new_index',
+    required=True,
+    metavar='<int>',
+    help='new index of the firewall rule')
+def update_firewall_rule_sequence(ctx, name, id, new_index):
+    try:
+        firewall_rule_resource = get_firewall_rule(ctx, name, id)
+        firewall_rule_resource.update_firewall_rule_sequence(new_index)
+        stdout('Firewall rule sequence updated successfully', ctx)
     except Exception as e:
         stderr(e, ctx)

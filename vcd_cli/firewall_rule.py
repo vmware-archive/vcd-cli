@@ -84,7 +84,7 @@ def firewall(ctx):
                 List firewall rule's source
 
     \b
-            vcd gateway services firewall sequence test_gateway1 rule_id
+            vcd gateway services firewall update-sequence test_gateway1 rule_id
                     --index new_index
                 Change sequence of firewall rule
     """
@@ -328,7 +328,8 @@ def list_firewall_rule_source(ctx, name, id):
         stderr(e, ctx)
 
 
-@firewall.command('sequence', short_help='update sequence of firewall rule')
+@firewall.command(
+    'update-sequence', short_help='update sequence of firewall rule')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.argument('id', metavar='<id>', required=True)

@@ -187,7 +187,7 @@ class TestFirewallRule(BaseTestCase):
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
-                'services', 'firewall', 'sequence', '--index', '1',
+                'services', 'firewall', 'update-sequence', '--index', '1',
                 TestFirewallRule.__name, TestFirewallRule._rule_id.text
             ])
         TestFirewallRule._logger.debug('result output {0}'.format(result))

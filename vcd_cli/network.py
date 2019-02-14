@@ -1021,8 +1021,7 @@ def list_vsphere_network(ctx, name, filter):
         stderr(e, ctx)
 
 
-@external.command(
-    'info', short_help='show external network details')
+@external.command('info', short_help='show external network details')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 def external_network_info(ctx, name):
@@ -1056,7 +1055,7 @@ def external_network_info(ctx, name):
                     ipscope_dict['ip_range ' + str(count_ip_range)] = \
                         ip_range_dict
             count = count + 1
-            output['ipscope '+ str(count)] = ipscope_dict
+            output['ipscope ' + str(count)] = ipscope_dict
         if hasattr(config, 'FenceMode'):
             output['fence_mode'] = config.FenceMode
         if hasattr(config, 'RetainNetInfoAcrossDeployments'):

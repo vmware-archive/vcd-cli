@@ -74,6 +74,29 @@ class VAppTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    def test_0020_update_vapp(self):
+        """Update a vApp name and description."""
+        new_name = VAppTest._test_vapp_name + 'updated'
+        new_desc = 'vapp description'
+        self._update_vapp_name_desc(VAppTest._test_vapp_name, new_name,
+                                    new_desc)
+        vapp_resource = VAppTest._client.get_resource(VAppTest._test_vapp)
+        self.assertEqual(vapp_resource.Description.text, new_desc)
+        self.assertEqual(vapp_resource.get('name'), new_name)
+        # reset back to orignal name
+        self._update_vapp_name_desc(new_name, VAppTest._test_vapp_name, '')
+        vapp_resource = VAppTest._client.get_resource(VAppTest._test_vapp)
+        self.assertEqual(vapp_resource.get('name'), VAppTest._test_vapp_name)
+
+    def _update_vapp_name_desc(self, current_name, new_name, new_desc):
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'update', current_name, '--name', new_name, '--description',
+                new_desc
+            ])
+        self.assertEqual(0, result.exit_code)
+
     def test_0098_tearDown(self):
         """Delete vApp and logout from the session."""
         result_delete = VAppTest._runner.invoke(

@@ -82,6 +82,9 @@ def vapp(ctx):
                  --storage-profile '*'
             Instantiate a vApp with customized settings.
 \b
+        vcd vapp update vapp1 --name vapp-new-name --description new name
+            Updates vApp name and description.
+\b
         vcd vapp delete vapp1 --yes --force
             Delete a vApp.
 \b
@@ -1139,5 +1142,35 @@ def list_acl(ctx, vapp_name):
         stdout(
             access_settings_to_list(
                 acl, ctx.obj['profiles'].get('org_in_use')), ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('update', short_help='updates vapp\'s name and description.')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>')
+@click.option(
+    'name',
+    '-n',
+    '--name',
+    required=True,
+    metavar='<name>',
+    help='new name of the vapp.')
+@click.option(
+    'description',
+    '-d',
+    '--description',
+    metavar='<description>',
+    help='new description of the vapp.')
+def update_vapp(ctx, vapp_name, name, description):
+    try:
+        restore_session(ctx, vdc_required=True)
+        client = ctx.obj['client']
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        vdc = VDC(client, href=vdc_href)
+        vapp = VApp(client, resource=vdc.get_vapp(vapp_name))
+
+        task = vapp.edit_name_and_description(name, description)
+        stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

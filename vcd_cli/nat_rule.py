@@ -32,7 +32,7 @@ def nat(ctx):
 
 \b
         Examples
-            vcd gateway services create-snat test_gateway1
+            vcd gateway services nat create-snat test_gateway1
                     --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
                     "SNAT Created" --vnic 0 --enabled --logging-enabled
                 create new SNAT rule

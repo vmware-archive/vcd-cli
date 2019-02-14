@@ -159,7 +159,7 @@ class TestNatRule(BaseTestCase):
 
     def test_0040_update_dnat_rule(self):
         """Update DNAT Rule in the gateway.
-        It will trigger the cli command 'services dnat update'
+        It will trigger the cli command 'services nat update-dnat'
         """
         result = TestNatRule._runner.invoke(
             gateway,

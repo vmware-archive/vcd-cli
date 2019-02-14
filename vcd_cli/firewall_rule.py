@@ -368,3 +368,17 @@ def delete_firewall_rule_source(ctx, name, id, source_value):
         stdout('Firewall rule source deleted successfully', ctx)
     except Exception as e:
         stderr(e, ctx)
+
+
+@firewall.command(
+    'list-destination', short_help='list of firewall rule\'s destination')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('id', metavar='<id>', required=True)
+def list_firewall_rule_destination(ctx, name, id):
+    try:
+        firewall_rule_resource = get_firewall_rule(ctx, name, id)
+        result = firewall_rule_resource.list_firewall_rule_destination()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)

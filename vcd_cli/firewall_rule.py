@@ -87,6 +87,11 @@ def firewall(ctx):
             vcd gateway services firewall update-sequence test_gateway1 rule_id
                     --index new_index
                 Change sequence of firewall rule
+
+    \b
+            vcd gateway services firewall delete-source test_gateway1 rule_id
+                    source_value
+                Delete source value of firewall rule
     """
 
 
@@ -344,5 +349,21 @@ def update_firewall_rule_sequence(ctx, name, id, new_index):
         firewall_rule_resource = get_firewall_rule(ctx, name, id)
         firewall_rule_resource.update_firewall_rule_sequence(new_index)
         stdout('Firewall rule sequence updated successfully', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@firewall.command(
+    'delete-source',
+    short_help='delete firewall rule\'s source value of gateway')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('id', metavar='<id>', required=True)
+@click.argument('source_value', metavar='<source_value>', required=True)
+def delete_firewall_rule_source(ctx, name, id, source_value):
+    try:
+        firewall_rule_resource = get_firewall_rule(ctx, name, id)
+        firewall_rule_resource.delete_firewall_rule_source(source_value)
+        stdout('Firewall rule source deleted successfully', ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -75,7 +75,7 @@ See the [vcd-cli site](https://vmware.github.io/vcd-cli) for detailed documentat
 
 Please note that this project is under development, the commands, parameters and options might change over time.
 
-`vcd-cli` uses [pyvcloud](https://github.com/vmware/pyvcloud "Title"), the Python SDK for VMware vCloud Director. It requires Python 3.
+`vcd-cli` uses [pyvcloud](https://github.com/vmware/pyvcloud "Title"), the Python SDK for VMware vCloud Director. It requires Python 3.6 or higher.
 
 Previous versions and deprecated code can be found in this repository under [tag 19.2.3](https://github.com/vmware/vcd-cli/tree/19.2.3).
 

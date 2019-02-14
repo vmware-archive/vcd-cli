@@ -25,27 +25,102 @@ from vcd_cli.gateway import services
 from pyvcloud.vcd.nat_rule import NatRule
 
 
-@services.group('snat', short_help='manage snat rules of gateway')
+@services.group('nat', short_help='manage snat/dnat rules of gateway')
 @click.pass_context
-def snat(ctx):
-    """Manages SNAT Rule of gateway.
+def nat(ctx):
+    """Manages SNAT/DNAT Rule of gateway.
 
 \b
         Examples
-            vcd gateway services snat create test_gateway1 --type User
+            vcd gateway services create-snat test_gateway1
                     --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
                     "SNAT Created" --vnic 0 --enabled --logging-enabled
                 create new SNAT rule
 
 \b
-             vcd gateway services snat update test_gateway1 196609
+             vcd gateway services nat update-dnat test_gateway1 196609
                      --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
                      "SNAT Updated" --vnic 0
                  update SNAT rule
+
+\b
+            vcd gateway services nat create-dnat test_gateway1
+                    --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
+                    "DNAT Created" --vnic 0 --protocol tcp -op 80 -tp 80
+                    --enabled --logging-enabled
+                create new DNAT rule
+
+\b
+            vcd gateway services nat update-dnat test_gateway1 196609
+                     --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
+                     "DNAT Updated" --vnic 0 --protocol udp -op 80 -tp 80
+                update DNAT rule
+
+\b
+            vcd gateway services nat list test_gateway1
+                List all NAT rules
+
+\b
+           vcd gateway services nat delete test_gateway1 196609
+               Deletes the NAT rule
+
+\b
+           vcd gateway services nat info test_gateway1 196609
+               Get details of NAT rule
     """
 
 
-@snat.command("create", short_help="create new snat rule")
+@nat.command('list', short_help='List all NAT rules on a gateway')
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+def list(ctx, gateway_name):
+    try:
+        gateway_resource = get_gateway(ctx, gateway_name)
+        nat_list = gateway_resource.list_nat_rules()
+        stdout(nat_list, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+def get_nat_rule(ctx, gateway_name, rule_id):
+    """Get the Nat Rule resource.
+
+    It will restore sessions if expired. It will reads the client and
+    creates the Nat Rule resource object.
+    """
+    restore_session(ctx, vdc_required=True)
+    client = ctx.obj['client']
+    resource = NatRule(client, gateway_name, rule_id)
+    return resource
+
+
+@nat.command("delete", short_help="Deletes the NAT rule")
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+@click.argument('rule_id', metavar='<nat rule id>', required=True)
+def delete(ctx, gateway_name, rule_id):
+    try:
+        resource = get_nat_rule(ctx, gateway_name, rule_id)
+        resource.delete_nat_rule()
+        stdout('Nat Rule deleted successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@nat.command("info", short_help="show NAT rule details")
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+@click.argument('rule_id', metavar='<nat rule id>', required=True)
+def info(ctx, gateway_name, rule_id):
+    try:
+        resource = get_nat_rule(ctx, gateway_name, rule_id)
+        result = resource.get_nat_rule_info()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@nat.command("create-snat", short_help="create new SNAT rule")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
 @click.option(
@@ -119,7 +194,7 @@ def create_snat_rule(ctx, gateway_name, action, type, original_address,
         stderr(e, ctx)
 
 
-@snat.command("update", short_help="update snat rule")
+@nat.command("update-snat", short_help="update SNAT rule")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
 @click.argument('rule_id', metavar='<nat rule id>', required=True)
@@ -178,28 +253,7 @@ def update_snat_rule(ctx, gateway_name, rule_id, original_address,
         stderr(e, ctx)
 
 
-@services.group('dnat', short_help='manage dnat rules of gateway')
-@click.pass_context
-def dnat(ctx):
-    """Manages DNAT Rule of gateway.
-
-\b
-        Examples
-            vcd gateway services dnat create test_gateway1 --type User
-                    --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
-                    "DNAT Created" --vnic 0 --protocol tcp -op 80 -tp 80
-                    --enabled --logging-enabled
-                create new DNAT rule
-
-\b
-            vcd gateway services dnat update test_gateway1 196609
-                     --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
-                     "DNAT Updated" --vnic 0 --protocol udp -op 80 -tp 80
-                update DNAT rule
-    """
-
-
-@dnat.command("create", short_help="create new dnat rule")
+@nat.command("create-dnat", short_help="create new DNAT rule")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
 @click.option(
@@ -299,7 +353,7 @@ def create_dnat_rule(ctx, gateway_name, action, type, original_address,
         stderr(e, ctx)
 
 
-@dnat.command("update", short_help="update dnat rule")
+@nat.command("update-dnat", short_help="update DNAT rule")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
 @click.argument('rule_id', metavar='<nat rule id>', required=True)
@@ -377,75 +431,5 @@ def update_dnat_rule(ctx, gateway_name, rule_id, original_address,
             original_port=original_Port,
             translated_port=translated_Port)
         stdout('DNAT rule updated successfully.', ctx)
-    except Exception as e:
-        stderr(e, ctx)
-
-
-@services.group('nat', short_help='manage snat/dnat rules of gateway')
-@click.pass_context
-def nat(ctx):
-    """Manages SNAT/DNAT Rule of gateway.
-
-\b
-        Examples
-            vcd gateway services nat list test_gateway1
-                List all NAT rules
-
-\b
-           vcd gateway services nat delete test_gateway1 196609
-               Deletes the NAT rule
-
-\b
-           vcd gateway services nat info test_gateway1 196609
-               Get details of NAT rule
-    """
-
-
-@nat.command('list', short_help='List all NAT rules on a gateway')
-@click.pass_context
-@click.argument('gateway_name', metavar='<gateway name>', required=True)
-def list(ctx, gateway_name):
-    try:
-        gateway_resource = get_gateway(ctx, gateway_name)
-        nat_list = gateway_resource.list_nat_rules()
-        stdout(nat_list, ctx)
-    except Exception as e:
-        stderr(e, ctx)
-
-
-def get_nat_rule(ctx, gateway_name, rule_id):
-    """Get the Nat Rule resource.
-
-    It will restore sessions if expired. It will reads the client and
-    creates the Nat Rule resource object.
-    """
-    restore_session(ctx, vdc_required=True)
-    client = ctx.obj['client']
-    resource = NatRule(client, gateway_name, rule_id)
-    return resource
-
-
-@nat.command("delete", short_help="Deletes the NAT rule")
-@click.pass_context
-@click.argument('gateway_name', metavar='<gateway name>', required=True)
-@click.argument('rule_id', metavar='<nat rule id>', required=True)
-def delete(ctx, gateway_name, rule_id):
-    try:
-        resource = get_nat_rule(ctx, gateway_name, rule_id)
-        resource.delete_nat_rule()
-        stdout('Nat Rule deleted successfully.', ctx)
-    except Exception as e:
-        stderr(e, ctx)
-
-
-@nat.command("info", short_help="show NAT rule details")
-@click.pass_context
-@click.argument('gateway_name', metavar='<gateway name>', required=True)
-@click.argument('rule_id', metavar='<nat rule id>', required=True)
-def info(ctx, gateway_name, rule_id):
-    try:
-        resource = get_nat_rule(ctx, gateway_name, rule_id)
-        result = resource.get_nat_rule_info()
-        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

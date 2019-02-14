@@ -89,12 +89,12 @@ class TestNatRule(BaseTestCase):
 
     def test_0010_add_snat_rule(self):
         """Add SNAT Rule in the gateway.
-        It will trigger the cli command services snat create
+        It will trigger the cli command 'services nat create-snat'
         """
         result = TestNatRule._runner.invoke(
             gateway,
             args=[
-                'services', 'snat', 'create', TestNatRule._name, '--type',
+                'services', 'nat', 'create-snat', TestNatRule._name, '--type',
                 TestNatRule._type, '-o', TestNatRule._snat_orig_addr, '-t',
                 TestNatRule._snat_trans_addr, '--desc', TestNatRule._desc,
                 '--vnic', TestNatRule._vnic, '--enabled', '--logging-enabled'])
@@ -102,12 +102,12 @@ class TestNatRule(BaseTestCase):
 
     def test_0020_add_snat_rule(self):
         """Add DNAT Rule in the gateway.
-        It will trigger the cli command services dnat create
+        It will trigger the cli command 'services nat create-dnat'
         """
         result = TestNatRule._runner.invoke(
             gateway,
             args=[
-                'services', 'dnat', 'create', TestNatRule._name, '--type',
+                'services', 'nat', 'create-dnat', TestNatRule._name, '--type',
                 TestNatRule._type, '-o', TestNatRule._dnat1_orig_addr, '-t',
                 TestNatRule._dnat1_trans_addr, '--desc', TestNatRule._desc,
                 '--vnic', TestNatRule._vnic, '--protocol',
@@ -146,12 +146,12 @@ class TestNatRule(BaseTestCase):
 
     def test_0035_update_snat_rule(self):
         """Update SNAT Rule in the gateway.
-        It will trigger the cli command 'services snat update'
+        It will trigger the cli command 'services nat update-snat'
         """
         result = TestNatRule._runner.invoke(
             gateway,
             args=[
-                'services', 'snat', 'update', TestNatRule._name,
+                'services', 'nat', 'update-snat', TestNatRule._name,
                 TestNatRule._snat_id, '-o', TestNatRule._new_snat_orig_addr,
                 '-t', TestNatRule._new_snat_trans_addr, '--desc',
                 TestNatRule._new_snat_desc, '--logging-disable'])
@@ -164,7 +164,7 @@ class TestNatRule(BaseTestCase):
         result = TestNatRule._runner.invoke(
             gateway,
             args=[
-                'services', 'dnat', 'update', TestNatRule._name,
+                'services', 'nat', 'update-dnat', TestNatRule._name,
                 TestNatRule._dnat_id, '-o', TestNatRule._new_dnat1_orig_addr,
                 '-t', TestNatRule._new_dnat1_trans_addr, '-p',
                 TestNatRule._new_dnat1_protocol, '--desc',

@@ -8,9 +8,9 @@ Usage: vcd network direct [OPTIONS] COMMAND [ARGS]...
           Organization Administrators can only list direct org vdc networks.
   
       Examples
-          vcd network direct create direct-net1 \
-                  --description 'Directly connected VDC network' \
-                  --parent ext-net1 \
+          vcd network direct create direct-net1
+                  --description 'Directly connected VDC network'
+                  --parent ext-net1
               Create an org vdc network which is directly connected
               to an external network.
   

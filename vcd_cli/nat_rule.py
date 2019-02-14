@@ -30,13 +30,18 @@ from pyvcloud.vcd.nat_rule import NatRule
 def snat(ctx):
     """Manages SNAT Rule of gateway.
 
-    \b
+\b
         Examples
             vcd gateway services snat create test_gateway1 --type User
-            --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
-            "SNAT Created" -v 0
-            create new snat rule
+                    --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
+                    "SNAT Created" --vnic 0 --enabled --logging-enabled
+                create new SNAT rule
 
+\b
+             vcd gateway services snat update test_gateway1 196609
+                     --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
+                     "SNAT Updated" --vnic 0
+                 update SNAT rule
     """
 
 
@@ -74,12 +79,14 @@ def snat(ctx):
     'enabled',
     is_flag=True,
     default=True,
+    metavar='<bool>',
     help='enable/disable the SNAT rule')
 @click.option(
     '--logging-enabled/--logging-disable',
     'logging_enabled',
     is_flag=True,
     default=True,
+    metavar='<bool>',
     help='enable logging')
 @click.option(
     '--desc',
@@ -88,7 +95,7 @@ def snat(ctx):
     metavar='<description>',
     help='description')
 @click.option(
-    '-v',
+    '--vnic',
     'vnic',
     default=0,
     metavar='<vnic>',
@@ -112,18 +119,83 @@ def create_snat_rule(ctx, gateway_name, action, type, original_address,
         stderr(e, ctx)
 
 
+@snat.command("update", short_help="update snat rule")
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+@click.argument('rule_id', metavar='<nat rule id>', required=True)
+@click.option(
+    '-o',
+    '--original-ip',
+    'original_address',
+    default=None,
+    metavar='<ip/ip range>',
+    help='original IP address/Range of SNAT Rule')
+@click.option(
+    '-t',
+    '--translated-ip',
+    'translated_address',
+    default=None,
+    metavar='<ip/ip range>',
+    help='translated IP address/Range of SNAT Rule')
+@click.option(
+    '--enabled/--disable',
+    'enabled',
+    default=None,
+    metavar='<bool>',
+    help='enable/disable the SNAT rule')
+@click.option(
+    '--logging-enabled/--logging-disable',
+    'logging_enabled',
+    default=None,
+    metavar='<bool>',
+    help='enable logging')
+@click.option(
+    '--desc',
+    'description',
+    default=None,
+    metavar='<str>',
+    help='description of SNAT Rule')
+@click.option(
+    '--vnic',
+    'vnic',
+    default=None,
+    metavar='<vnic>',
+    help='interface of gateway')
+def update_snat_rule(ctx, gateway_name, rule_id, original_address,
+                     translated_address, enabled, logging_enabled,
+                     description, vnic):
+    try:
+        resource = get_nat_rule(ctx, gateway_name, rule_id)
+        resource.update_nat_rule(
+            original_address=original_address,
+            translated_address=translated_address,
+            description=description,
+            logging_enabled=logging_enabled,
+            enabled=enabled,
+            vnic=vnic)
+        stdout('SNAT rule updated successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
 @services.group('dnat', short_help='manage dnat rules of gateway')
 @click.pass_context
 def dnat(ctx):
     """Manages DNAT Rule of gateway.
 
-    \b
+\b
         Examples
             vcd gateway services dnat create test_gateway1 --type User
-            --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
-             "DNAT Created" -v 0 --protocol tcp -op 80 -tp 80
-            create new dnat rule
+                    --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
+                    "DNAT Created" --vnic 0 --protocol tcp -op 80 -tp 80
+                    --enabled --logging-enabled
+                create new DNAT rule
 
+\b
+            vcd gateway services dnat update test_gateway1 196609
+                     --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
+                     "DNAT Updated" --vnic 0 --protocol udp -op 80 -tp 80
+                update DNAT rule
     """
 
 
@@ -161,12 +233,14 @@ def dnat(ctx):
     'enabled',
     is_flag=True,
     default=True,
+    metavar='<bool>',
     help='enable/disable the DNAT rule')
 @click.option(
     '--logging-enabled/--logging-disable',
     'logging_enabled',
     is_flag=True,
     default=True,
+    metavar='<bool>',
     help='enable logging')
 @click.option(
     '--desc',
@@ -175,7 +249,7 @@ def dnat(ctx):
     metavar='<description>',
     help='description')
 @click.option(
-    '-v',
+    '--vnic',
     'vnic',
     default=0,
     metavar='<vnic>',
@@ -221,6 +295,88 @@ def create_dnat_rule(ctx, gateway_name, action, type, original_address,
             translated_port=translated_Port)
 
         stdout('DNAT rule created successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@dnat.command("update", short_help="update dnat rule")
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+@click.argument('rule_id', metavar='<nat rule id>', required=True)
+@click.option(
+    '-o',
+    '--original-ip',
+    'original_address',
+    default=None,
+    metavar='<ip/ip range>',
+    help='Original IP address/Range of DNAT Rule')
+@click.option(
+    '-t',
+    '--translated-ip',
+    'translated_address',
+    default=None,
+    metavar='<ip/ip range>',
+    help='Translated IP address/Range of DNAT Rule')
+@click.option(
+    '--enabled/--disable',
+    'enabled',
+    default=None,
+    help='enable/disable the DNAT rule')
+@click.option(
+    '--logging-enabled/--logging-disable',
+    'logging_enabled',
+    default=None,
+    help='enable logging')
+@click.option(
+    '--desc',
+    'description',
+    default=None,
+    metavar='<description>',
+    help='description')
+@click.option(
+    '--vnic',
+    'vnic',
+    default=None,
+    metavar='<vnic>',
+    help='interface of gateway')
+@click.option(
+    '-p',
+    '--protocol',
+    'protocol',
+    default=None,
+    metavar='<tcp/udp/icmp>',
+    help='interface of gateway')
+@click.option(
+    '-op',
+    '--original-Port',
+    'original_Port',
+    default=None,
+    metavar='<vnic>',
+    help='original port')
+@click.option(
+    '-tp',
+    '--translated-Port',
+    'translated_Port',
+    default=None,
+    metavar='<vnic>',
+    help='translated port')
+def update_dnat_rule(ctx, gateway_name, rule_id, original_address,
+                     translated_address, enabled, logging_enabled,
+                     description, vnic, protocol, original_Port,
+                     translated_Port):
+    try:
+        resource = get_nat_rule(ctx, gateway_name, rule_id)
+        resource.update_nat_rule(
+            original_address=original_address,
+            translated_address=translated_address,
+            description=description,
+            logging_enabled=logging_enabled,
+            enabled=enabled,
+            vnic=vnic,
+            protocol=protocol,
+            original_port=original_Port,
+            translated_port=translated_Port)
+        stdout('DNAT rule updated successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)
 

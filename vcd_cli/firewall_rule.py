@@ -92,6 +92,7 @@ def firewall(ctx):
             vcd gateway services firewall delete-source test_gateway1 rule_id
                     source_value
                 Delete source value of firewall rule
+                It will delete all source value of given source_value
     """
 
 

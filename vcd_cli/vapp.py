@@ -82,7 +82,7 @@ def vapp(ctx):
                  --storage-profile '*'
             Instantiate a vApp with customized settings.
 \b
-        vcd vapp update vapp1 --name vapp-new-name --description new name
+        vcd vapp update vapp1 -n vapp-new-name -d "new description"
             Updates vApp name and description.
 \b
         vcd vapp delete vapp1 --yes --force
@@ -1146,22 +1146,22 @@ def list_acl(ctx, vapp_name):
         stderr(e, ctx)
 
 
-@vapp.command('update', short_help='updates vapp\'s name and description.')
+@vapp.command('update', short_help='update vapp\'s name and description')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>')
 @click.option(
-    'name',
     '-n',
     '--name',
+    'name',
     required=True,
     metavar='<name>',
-    help='new name of the vapp.')
+    help='new name of the vapp')
 @click.option(
-    'description',
     '-d',
     '--description',
+    'description',
     metavar='<description>',
-    help='new description of the vapp.')
+    help='new description of the vapp')
 def update_vapp(ctx, vapp_name, name, description):
     try:
         restore_session(ctx, vdc_required=True)

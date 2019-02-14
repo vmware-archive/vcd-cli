@@ -38,10 +38,10 @@ Usage: vcd vapp [OPTIONS] COMMAND [ARGS]...
           vcd vapp create vapp1 -c catalog1 -t template1
               Instantiate a vApp from a catalog template.
   
-          vcd vapp create vapp1 -c catalog1 -t template1 \
-                   --cpu 4 --memory 4096 --disk-size 20000 \
-                   --network net1 --ip-allocation-mode pool \
-                   --hostname myhost --vm-name vm1 --accept-all-eulas \
+          vcd vapp create vapp1 -c catalog1 -t template1
+                   --cpu 4 --memory 4096 --disk-size 20000
+                   --network net1 --ip-allocation-mode pool
+                   --hostname myhost --vm-name vm1 --accept-all-eulas
                    --storage-profile '*'
               Instantiate a vApp with customized settings.
   
@@ -121,33 +121,45 @@ Usage: vcd vapp [OPTIONS] COMMAND [ARGS]...
 
           vdc vapp disconnect vapp1 org-vdc-network1
               Disconnects the network org-vdc-network1 from vapp1.
+  
+          vdc vapp create-vapp-network vapp1 vapp-network1
+                  --subnet 192.168.1.1/24
+                  --description 'vApp network'
+                  --dns1 8.8.8.8
+                  --dns2 8.8.8.9
+                  --dns-suffix example.com
+                  --ip-range 192.168.1.2-192.168.1.49
+                  --ip-range 192.168.1.100-192.168.1.149
+                  --guest-vlan-allowed-enabled
+              Create a vApp network.
       
 
 Options:
   -h, --help  Show this message and exit.
 
 Commands:
-  acl           work with vapp acl
-  add-disk      add disk to vm
-  add-vm        add VM to vApp
-  attach        attach disk to VM in vApp
-  capture       save a vApp as a template
-  change-owner  change vApp owner
-  connect       connect an ovdc network to a vapp
-  create        create a vApp
-  delete        delete a vApp or VM(s)
-  deploy        Deploy a vApp or VM(s)
-  detach        detach disk from VM in vApp
-  disconnect    disconnect an ovdc network from a vapp
-  info          show vApp details
-  list          list vApps
-  power-off     power off a vApp
-  power-on      power on a vApp or VM(s)
-  reboot        Reboot a vApp or VM(s)
-  reset         Reset a vApp or VM(s)
-  shutdown      shutdown a vApp
-  undeploy      undeploy a vApp or VM(s)
-  update-lease  update vApp lease
-  use           set active vApp
+  acl                  work with vapp acl
+  add-disk             add disk to vm
+  add-vm               add VM to vApp
+  attach               attach disk to VM in vApp
+  capture              save a vApp as a template
+  change-owner         change vApp owner
+  connect              connect an ovdc network to a vapp
+  create               create a vApp
+  create-vapp-network  create a vApp network
+  delete               delete a vApp or VM(s)
+  deploy               Deploy a vApp or VM(s)
+  detach               detach disk from VM in vApp
+  disconnect           disconnect an ovdc network from a vapp
+  info                 show vApp details
+  list                 list vApps
+  power-off            power off a vApp
+  power-on             power on a vApp or VM(s)
+  reboot               Reboot a vApp or VM(s)
+  reset                Reset a vApp or VM(s)
+  shutdown             shutdown a vApp
+  undeploy             undeploy a vApp or VM(s)
+  update-lease         update vApp lease
+  use                  set active vApp
 
 ```

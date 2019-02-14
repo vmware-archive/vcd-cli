@@ -32,7 +32,95 @@
 </ul></li>
 <li>
 <a href="vcd_gateway">gateway</a><ul><li>
-<a href="vcd_gateway_list">list</a></li>
+<a href="vcd_gateway_configure-default-gateway">configure-default-gateway</a><ul><li>
+<a href="vcd_gateway_configure-default-gateway_enable-dns-relay">enable-dns-relay</a></li><li>
+<a href="vcd_gateway_configure-default-gateway_list">list</a></li><li>
+<a href="vcd_gateway_configure-default-gateway_update">update</a></li>
+</ul></li>
+<li>
+<a href="vcd_gateway_configure-external-network">configure-external-network</a><ul><li>
+<a href="vcd_gateway_configure-external-network_add">add</a></li><li>
+<a href="vcd_gateway_configure-external-network_remove">remove</a></li>
+</ul></li>
+<li>
+<a href="vcd_gateway_configure-ip-settings">configure-ip-settings</a></li><li>
+<a href="vcd_gateway_configure-rate-limits">configure-rate-limits</a><ul><li>
+<a href="vcd_gateway_configure-rate-limits_disable">disable</a></li><li>
+<a href="vcd_gateway_configure-rate-limits_list">list</a></li><li>
+<a href="vcd_gateway_configure-rate-limits_update">update</a></li>
+</ul></li>
+<li>
+<a href="vcd_gateway_convert-to-advanced">convert-to-advanced</a></li><li>
+<a href="vcd_gateway_create">create</a></li><li>
+<a href="vcd_gateway_delete">delete</a></li><li>
+<a href="vcd_gateway_enable-distributed-routing">enable-distributed-routing</a></li><li>
+<a href="vcd_gateway_info">info</a></li><li>
+<a href="vcd_gateway_list">list</a></li><li>
+<a href="vcd_gateway_list-config-ip-settings">list-config-ip-settings</a></li><li>
+<a href="vcd_gateway_list-syslog-server">list-syslog-server</a></li><li>
+<a href="vcd_gateway_modify-form-factor">modify-form-factor</a></li><li>
+<a href="vcd_gateway_redeploy">redeploy</a></li><li>
+<a href="vcd_gateway_services">services</a><ul><li>
+<a href="vcd_gateway_services_dhcp-pool">dhcp-pool</a><ul><li>
+<a href="vcd_gateway_services_dhcp-pool_create">create</a></li><li>
+<a href="vcd_gateway_services_dhcp-pool_delete">delete</a></li><li>
+<a href="vcd_gateway_services_dhcp-pool_info">info</a></li><li>
+<a href="vcd_gateway_services_dhcp-pool_list">list</a></li>
+</ul></li>
+<li>
+<a href="vcd_gateway_services_dnat">dnat</a><ul><li>
+<a href="vcd_gateway_services_dnat_create">create</a></li>
+</ul></li>
+<li>
+<a href="vcd_gateway_services_firewall">firewall</a><ul><li>
+<a href="vcd_gateway_services_firewall_create">create</a></li><li>
+<a href="vcd_gateway_services_firewall_delete">delete</a></li><li>
+<a href="vcd_gateway_services_firewall_disable">disable</a></li><li>
+<a href="vcd_gateway_services_firewall_enable">enable</a></li><li>
+<a href="vcd_gateway_services_firewall_info">info</a></li><li>
+<a href="vcd_gateway_services_firewall_list">list</a></li><li>
+<a href="vcd_gateway_services_firewall_list-object-types">list-object-types</a></li><li>
+<a href="vcd_gateway_services_firewall_list-objects">list-objects</a></li><li>
+<a href="vcd_gateway_services_firewall_list-source">list-source</a></li><li>
+<a href="vcd_gateway_services_firewall_update">update</a></li><li>
+<a href="vcd_gateway_services_firewall_update-sequence">update-sequence</a></li>
+</ul></li>
+<li>
+<a href="vcd_gateway_services_ipsec_vpn">ipsec_vpn</a><ul><li>
+<a href="vcd_gateway_services_ipsec_vpn_create">create</a></li><li>
+<a href="vcd_gateway_services_ipsec_vpn_delete">delete</a></li><li>
+<a href="vcd_gateway_services_ipsec_vpn_enable-activation-status">enable-activation-status</a></li><li>
+<a href="vcd_gateway_services_ipsec_vpn_enable-logging">enable-logging</a></li><li>
+<a href="vcd_gateway_services_ipsec_vpn_info-activation-status">info-activation-status</a></li><li>
+<a href="vcd_gateway_services_ipsec_vpn_info-logging-settings">info-logging-settings</a></li>
+</ul></li>
+<li>
+<a href="vcd_gateway_services_nat">nat</a><ul><li>
+<a href="vcd_gateway_services_nat_delete">delete</a></li><li>
+<a href="vcd_gateway_services_nat_info">info</a></li><li>
+<a href="vcd_gateway_services_nat_list">list</a></li>
+</ul></li>
+<li>
+<a href="vcd_gateway_services_snat">snat</a><ul><li>
+<a href="vcd_gateway_services_snat_create">create</a></li>
+</ul></li>
+<li>
+<a href="vcd_gateway_services_static-route">static-route</a><ul><li>
+<a href="vcd_gateway_services_static-route_create">create</a></li><li>
+<a href="vcd_gateway_services_static-route_delete">delete</a></li><li>
+<a href="vcd_gateway_services_static-route_list">list</a></li><li>
+<a href="vcd_gateway_services_static-route_update">update</a></li>
+</ul></li>
+</ul></li>
+<li>
+<a href="vcd_gateway_sub-allocate-ip">sub-allocate-ip</a><ul><li>
+<a href="vcd_gateway_sub-allocate-ip_add">add</a></li><li>
+<a href="vcd_gateway_sub-allocate-ip_remove">remove</a></li><li>
+<a href="vcd_gateway_sub-allocate-ip_update">update</a></li>
+</ul></li>
+<li>
+<a href="vcd_gateway_sync-syslog-settings">sync-syslog-settings</a></li><li>
+<a href="vcd_gateway_update">update</a></li>
 </ul></li>
 <li>
 <a href="vcd_help">help</a></li><li>
@@ -51,13 +139,50 @@
 </ul></li>
 <li>
 <a href="vcd_network_external">external</a><ul><li>
-<a href="vcd_network_external_list">list</a></li>
+<a href="vcd_network_external_add-ip-range">add-ip-range</a></li><li>
+<a href="vcd_network_external_add-subnet">add-subnet</a></li><li>
+<a href="vcd_network_external_attach-port-group">attach-port-group</a></li><li>
+<a href="vcd_network_external_create">create</a></li><li>
+<a href="vcd_network_external_delete">delete</a></li><li>
+<a href="vcd_network_external_delete-ip-range">delete-ip-range</a></li><li>
+<a href="vcd_network_external_detach-port-group">detach-port-group</a></li><li>
+<a href="vcd_network_external_enable-subnet">enable-subnet</a></li><li>
+<a href="vcd_network_external_info">info</a></li><li>
+<a href="vcd_network_external_list">list</a></li><li>
+<a href="vcd_network_external_list-allocated-ip">list-allocated-ip</a></li><li>
+<a href="vcd_network_external_list-direct-org-vdc-network">list-direct-org-vdc-network</a></li><li>
+<a href="vcd_network_external_list-gateway">list-gateway</a></li><li>
+<a href="vcd_network_external_list-pvdc">list-pvdc</a></li><li>
+<a href="vcd_network_external_list-sub-allocated-ip">list-sub-allocated-ip</a></li><li>
+<a href="vcd_network_external_list-vsphere-network">list-vsphere-network</a></li><li>
+<a href="vcd_network_external_update">update</a></li><li>
+<a href="vcd_network_external_update-ip-range">update-ip-range</a></li>
 </ul></li>
 <li>
 <a href="vcd_network_isolated">isolated</a><ul><li>
 <a href="vcd_network_isolated_create">create</a></li><li>
 <a href="vcd_network_isolated_delete">delete</a></li><li>
 <a href="vcd_network_isolated_list">list</a></li>
+</ul></li>
+<li>
+<a href="vcd_network_routed">routed</a><ul><li>
+<a href="vcd_network_routed_add-dns">add-dns</a></li><li>
+<a href="vcd_network_routed_add-ip-range">add-ip-range</a></li><li>
+<a href="vcd_network_routed_convert-to-distributed-interface">convert-to-distributed-interface</a></li><li>
+<a href="vcd_network_routed_convert-to-internal-interface">convert-to-internal-interface</a></li><li>
+<a href="vcd_network_routed_convert-to-sub-interface">convert-to-sub-interface</a></li><li>
+<a href="vcd_network_routed_create">create</a></li><li>
+<a href="vcd_network_routed_delete">delete</a></li><li>
+<a href="vcd_network_routed_delete-ip-range">delete-ip-range</a></li><li>
+<a href="vcd_network_routed_edit">edit</a></li><li>
+<a href="vcd_network_routed_info">info</a></li><li>
+<a href="vcd_network_routed_list">list</a></li><li>
+<a href="vcd_network_routed_list-allocated-ip">list-allocated-ip</a></li><li>
+<a href="vcd_network_routed_list-connected-vapps">list-connected-vapps</a></li><li>
+<a href="vcd_network_routed_list-metadata">list-metadata</a></li><li>
+<a href="vcd_network_routed_remove-metadata">remove-metadata</a></li><li>
+<a href="vcd_network_routed_set-metadata">set-metadata</a></li><li>
+<a href="vcd_network_routed_update-ip-range">update-ip-range</a></li>
 </ul></li>
 </ul></li>
 <li>
@@ -87,8 +212,10 @@
 </ul></li>
 <li>
 <a href="vcd_pvdc">pvdc</a><ul><li>
+<a href="vcd_pvdc_add-sp">add-sp</a></li><li>
 <a href="vcd_pvdc_attach-rp">attach-rp</a></li><li>
 <a href="vcd_pvdc_create">create</a></li><li>
+<a href="vcd_pvdc_del-sp">del-sp</a></li><li>
 <a href="vcd_pvdc_detach-rp">detach-rp</a></li><li>
 <a href="vcd_pvdc_info">info</a></li><li>
 <a href="vcd_pvdc_list">list</a></li><li>
@@ -163,6 +290,7 @@
 <a href="vcd_vapp_change-owner">change-owner</a></li><li>
 <a href="vcd_vapp_connect">connect</a></li><li>
 <a href="vcd_vapp_create">create</a></li><li>
+<a href="vcd_vapp_create-vapp-network">create-vapp-network</a></li><li>
 <a href="vcd_vapp_delete">delete</a></li><li>
 <a href="vcd_vapp_deploy">deploy</a></li><li>
 <a href="vcd_vapp_detach">detach</a></li><li>
@@ -185,7 +313,8 @@
 <a href="vcd_vc_disable">disable</a></li><li>
 <a href="vcd_vc_enable">enable</a></li><li>
 <a href="vcd_vc_info">info</a></li><li>
-<a href="vcd_vc_list">list</a></li>
+<a href="vcd_vc_list">list</a></li><li>
+<a href="vcd_vc_list-available-port-groups">list-available-port-groups</a></li>
 </ul></li>
 <li>
 <a href="vcd_vdc">vdc</a><ul><li>

@@ -31,15 +31,19 @@ Usage: vcd vc [OPTIONS] COMMAND [ARGS]...
           vcd vc detach vc-name             Detach (unregister) Virtual
           Center.
 
+          vcd vc list-available-port-groups vc-name             lists the
+          available portgroups in a particular vCenter
+
 Options:
   -h, --help  Show this message and exit.
 
 Commands:
-  attach   attach vCenter Server
-  detach   detach vCenter
-  disable  disable vCenter
-  enable   enable vCenter
-  info     show vCenter details
-  list     list vCenter Servers
+  attach                      attach vCenter Server
+  detach                      detach vCenter
+  disable                     disable vCenter
+  enable                      enable vCenter
+  info                        show vCenter details
+  list                        list vCenter Servers
+  list-available-port-groups  list avaliable portgroups in vc
 
 ```

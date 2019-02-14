@@ -38,7 +38,7 @@ def nat(ctx):
                 create new SNAT rule
 
 \b
-             vcd gateway services nat update-dnat test_gateway1 196609
+             vcd gateway services nat update-snat test_gateway1 196609
                      --original-ip 2.2.3.12 --translated-ip 2.2.3.14 --desc
                      "SNAT Updated" --vnic 0
                  update SNAT rule

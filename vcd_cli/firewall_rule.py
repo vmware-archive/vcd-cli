@@ -328,7 +328,8 @@ def info_firewall_rule(ctx, name, id):
 def list_firewall_rule_source(ctx, name, id):
     try:
         firewall_rule_resource = get_firewall_rule(ctx, name, id)
-        result = firewall_rule_resource.list_firewall_rule_source()
+        result = firewall_rule_resource.list_firewall_rule_source_destination(
+            'source')
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -378,7 +379,8 @@ def delete_firewall_rule_source(ctx, name, id, source_value):
 def list_firewall_rule_destination(ctx, name, id):
     try:
         firewall_rule_resource = get_firewall_rule(ctx, name, id)
-        result = firewall_rule_resource.list_firewall_rule_destination()
+        result = firewall_rule_resource.list_firewall_rule_source_destination(
+            'destination')
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

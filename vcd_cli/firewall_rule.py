@@ -84,6 +84,11 @@ def firewall(ctx):
                 List firewall rule's source
 
     \b
+            vcd gateway services firewall list-destination test_gateway1
+                    rule_id
+                List firewall rule's destination
+
+    \b
             vcd gateway services firewall update-sequence test_gateway1 rule_id
                     --index new_index
                 Change sequence of firewall rule
@@ -328,7 +333,8 @@ def info_firewall_rule(ctx, name, id):
 def list_firewall_rule_source(ctx, name, id):
     try:
         firewall_rule_resource = get_firewall_rule(ctx, name, id)
-        result = firewall_rule_resource.list_firewall_rule_source()
+        result = firewall_rule_resource.list_firewall_rule_source_destination(
+            'source')
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -366,5 +372,20 @@ def delete_firewall_rule_source(ctx, name, id, source_value):
         firewall_rule_resource = get_firewall_rule(ctx, name, id)
         firewall_rule_resource.delete_firewall_rule_source(source_value)
         stdout('Firewall rule source deleted successfully', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@firewall.command(
+    'list-destination', short_help='list of firewall rule\'s destination')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('id', metavar='<id>', required=True)
+def list_firewall_rule_destination(ctx, name, id):
+    try:
+        firewall_rule_resource = get_firewall_rule(ctx, name, id)
+        result = firewall_rule_resource.list_firewall_rule_source_destination(
+            'destination')
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

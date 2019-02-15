@@ -51,6 +51,7 @@ class TestNatRule(BaseTestCase):
     _new_dnat1_desc = 'Updated DNAT Rule'
     _snat_id = None
     _dnat_id = None
+    _index = 1
 
     def test_0000_setup(self):
         """Adds new ip range present to the sub allocate pool of gateway.
@@ -169,6 +170,18 @@ class TestNatRule(BaseTestCase):
                 '-t', TestNatRule._new_dnat1_trans_addr, '-p',
                 TestNatRule._new_dnat1_protocol, '--desc',
                 TestNatRule._new_dnat1_desc, '--logging-disable'])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0045_reorder_nat_rule(self):
+        """Reorder the NAT rule position on gateway.
+
+        Invoke the cli command 'services nat reorder'.
+        """
+        result = TestNatRule._runner.invoke(
+            gateway,
+            args=[
+                'services', 'nat', 'reorder', TestNatRule._name,
+                TestNatRule._snat_id, '--index', TestNatRule._index])
         self.assertEqual(0, result.exit_code)
 
     def test_0050_delete_nat_rule(self):

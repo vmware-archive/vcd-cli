@@ -84,6 +84,11 @@ def firewall(ctx):
                 List firewall rule's source
 
     \b
+            vcd gateway services firewall list-destination test_gateway1
+                    rule_id
+                List firewall rule's source
+
+    \b
             vcd gateway services firewall update-sequence test_gateway1 rule_id
                     --index new_index
                 Change sequence of firewall rule

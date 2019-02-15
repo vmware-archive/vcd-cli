@@ -6,3 +6,4 @@ pycryptodome >= 3.4.7,<3.5
 pypiwin32 >= 223;platform_system=="Windows"
 pyvcloud >= 20.0.4.dev19
 tabulate >= 0.7.5
+unittest-xml-reporting >= 2.2.1

@@ -984,6 +984,42 @@ def create_vapp_network(ctx, vapp_name, name, subnet, description,
         stderr(e, ctx)
 
 
+@vapp.command('reset-vapp-network', short_help='reset a vApp network')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('network-name', metavar='<network-name>', required=True)
+def reset_vapp_network(ctx, vapp_name, network_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        client = ctx.obj['client']
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        vdc = VDC(client, href=vdc_href)
+        vapp_resource = vdc.get_vapp(vapp_name)
+        vapp = VApp(client, resource=vapp_resource)
+        task = vapp.reset_vapp_network(network_name)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('delete-vapp-network', short_help='delete a vApp network')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('network-name', metavar='<network-name>', required=True)
+def delete_vapp_network(ctx, vapp_name, network_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        client = ctx.obj['client']
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        vdc = VDC(client, href=vdc_href)
+        vapp_resource = vdc.get_vapp(vapp_name)
+        vapp = VApp(client, resource=vapp_resource)
+        task = vapp.delete_vapp_network(network_name)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
 @vapp.group(short_help='work with vapp acl')
 @click.pass_context
 def acl(ctx):

@@ -185,6 +185,18 @@ class TestFirewallRule(BaseTestCase):
         TestFirewallRule._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)
 
+    def test_0072_delete_firewall_rule_destination(self):
+        destination_value = 'vnic-0'
+        result = TestFirewallRule._runner.invoke(
+            gateway,
+            args=[
+                'services', 'firewall', 'delete-destination',
+                TestFirewallRule.__name, TestFirewallRule._rule_id.text,
+                destination_value
+            ])
+        TestFirewallRule._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
+
     def test_0081_list_firewall_rule_source(self):
         result = TestFirewallRule._runner.invoke(
             gateway,
@@ -209,7 +221,7 @@ class TestFirewallRule(BaseTestCase):
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
-                'services', 'firewall', 'update-sequence', '--index', '1',
+                'services', 'firewall', 'reorder', '--index', '1',
                 TestFirewallRule.__name, TestFirewallRule._rule_id.text
             ])
         TestFirewallRule._logger.debug('result output {0}'.format(result))

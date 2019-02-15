@@ -89,15 +89,22 @@ def firewall(ctx):
                 List firewall rule's destination
 
     \b
-            vcd gateway services firewall update-sequence test_gateway1 rule_id
+            vcd gateway services firewall reorder test_gateway1 rule_id
                     --index new_index
-                Change sequence of firewall rule
+                Reorder the firewall rule position on gateway
 
     \b
             vcd gateway services firewall delete-source test_gateway1 rule_id
                     source_value
                 Delete source value of firewall rule
-                It will delete all source value of given source_value
+                It will delete all source values of given source_value
+
+    \b
+            vcd gateway services firewall delete-destination test_gateway1
+                    rule_id destination_value
+                Delete destination value of firewall rule
+                It will delete all destination values of given
+                    destination_value
     """
 
 
@@ -341,7 +348,7 @@ def list_firewall_rule_source(ctx, name, id):
 
 
 @firewall.command(
-    'update-sequence', short_help='update sequence of firewall rule')
+    'reorder', short_help='reorder firewall rule position on gateway')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.argument('id', metavar='<id>', required=True)
@@ -370,7 +377,8 @@ def update_firewall_rule_sequence(ctx, name, id, new_index):
 def delete_firewall_rule_source(ctx, name, id, source_value):
     try:
         firewall_rule_resource = get_firewall_rule(ctx, name, id)
-        firewall_rule_resource.delete_firewall_rule_source(source_value)
+        firewall_rule_resource.delete_firewall_rule_source_destination(
+            source_value, 'source')
         stdout('Firewall rule source deleted successfully', ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -387,5 +395,23 @@ def list_firewall_rule_destination(ctx, name, id):
         result = firewall_rule_resource.list_firewall_rule_source_destination(
             'destination')
         stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@firewall.command(
+    'delete-destination',
+    short_help='delete firewall rule\'s destination value of gateway')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('id', metavar='<id>', required=True)
+@click.argument(
+    'destination_value', metavar='<destination_value>', required=True)
+def delete_firewall_rule_destination(ctx, name, id, destination_value):
+    try:
+        firewall_rule_resource = get_firewall_rule(ctx, name, id)
+        firewall_rule_resource.delete_firewall_rule_source_destination(
+            destination_value, 'destination')
+        stdout('Firewall rule destination deleted successfully', ctx)
     except Exception as e:
         stderr(e, ctx)

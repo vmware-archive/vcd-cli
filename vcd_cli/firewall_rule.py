@@ -86,7 +86,7 @@ def firewall(ctx):
     \b
             vcd gateway services firewall list-destination test_gateway1
                     rule_id
-                List firewall rule's source
+                List firewall rule's destination
 
     \b
             vcd gateway services firewall update-sequence test_gateway1 rule_id

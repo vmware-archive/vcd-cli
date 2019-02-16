@@ -1,6 +1,14 @@
 CHANGES
 =======
 
+* Add more VM commands
+* [VP-1184, VP-1201] Provided command line support for convert to advanced gateway and enable distributed routing (#260)
+* Support added for Create gateway and delete gateway (#252)
+
+21.0.0
+------
+
+* [VCDA-764] Update OSL files for vcd-cli (#247)
 * [VCDA-752] Updated docs as of SHA ee2c3c3 (#248)
 * [VCDA-761] Fix command vcd login session list chrome for Windows (#246)
 * added migrate-vms CLI (#241)

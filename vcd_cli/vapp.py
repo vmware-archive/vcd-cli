@@ -158,7 +158,6 @@ def vapp(ctx):
 \b
         vdc vapp connect vapp1 org-vdc-network1
             Connects the network org-vdc-network1 to vapp1.
-
 \b
         vdc vapp disconnect vapp1 org-vdc-network1
             Disconnects the network org-vdc-network1 from vapp1.
@@ -173,6 +172,12 @@ def vapp(ctx):
                 --ip-range 192.168.1.100-192.168.1.149
                 --guest-vlan-allowed-enabled
             Create a vApp network.
+\b
+        vdc vapp reset-vapp-network vapp1 vapp-network1
+            Reset a vApp network.
+\b
+        vdc vapp delete-vapp-network vapp1 vapp-network1
+            Delete a vApp network.
     """
     pass
 
@@ -971,11 +976,7 @@ def create_vapp_network(ctx, vapp_name, name, subnet, description,
                         ip_ranges, is_guest_vlan_allowed):
     try:
         restore_session(ctx, vdc_required=True)
-        client = ctx.obj['client']
-        vdc_href = ctx.obj['profiles'].get('vdc_href')
-        vdc = VDC(client, href=vdc_href)
-        vapp_resource = vdc.get_vapp(vapp_name)
-        vapp = VApp(client, resource=vapp_resource)
+        vapp = _get_vapp(ctx, vapp_name)
         task = vapp.create_vapp_network(
             name, subnet, description, primary_dns_ip, secondary_dns_ip,
             dns_suffix, ip_ranges, is_guest_vlan_allowed)
@@ -991,11 +992,7 @@ def create_vapp_network(ctx, vapp_name, name, subnet, description,
 def reset_vapp_network(ctx, vapp_name, network_name):
     try:
         restore_session(ctx, vdc_required=True)
-        client = ctx.obj['client']
-        vdc_href = ctx.obj['profiles'].get('vdc_href')
-        vdc = VDC(client, href=vdc_href)
-        vapp_resource = vdc.get_vapp(vapp_name)
-        vapp = VApp(client, resource=vapp_resource)
+        vapp = _get_vapp(ctx, vapp_name)
         task = vapp.reset_vapp_network(network_name)
         stdout(task, ctx)
     except Exception as e:
@@ -1009,11 +1006,7 @@ def reset_vapp_network(ctx, vapp_name, network_name):
 def delete_vapp_network(ctx, vapp_name, network_name):
     try:
         restore_session(ctx, vdc_required=True)
-        client = ctx.obj['client']
-        vdc_href = ctx.obj['profiles'].get('vdc_href')
-        vdc = VDC(client, href=vdc_href)
-        vapp_resource = vdc.get_vapp(vapp_name)
-        vapp = VApp(client, resource=vapp_resource)
+        vapp = _get_vapp(ctx, vapp_name)
         task = vapp.delete_vapp_network(network_name)
         stdout(task, ctx)
     except Exception as e:
@@ -1201,12 +1194,16 @@ def list_acl(ctx, vapp_name):
 def update_vapp(ctx, vapp_name, name, description):
     try:
         restore_session(ctx, vdc_required=True)
-        client = ctx.obj['client']
-        vdc_href = ctx.obj['profiles'].get('vdc_href')
-        vdc = VDC(client, href=vdc_href)
-        vapp = VApp(client, resource=vdc.get_vapp(vapp_name))
+        vapp = _get_vapp(ctx, vapp_name)
 
         task = vapp.edit_name_and_description(name, description)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+
+def _get_vapp(ctx, vapp_name):
+    client = ctx.obj['client']
+    vdc_href = ctx.obj['profiles'].get('vdc_href')
+    vdc = VDC(client, href=vdc_href)
+    return VApp(client, resource=vdc.get_vapp(vapp_name))

@@ -105,6 +105,10 @@ def firewall(ctx):
                 Delete destination value of firewall rule
                 It will delete all destination values of given
                     destination_value
+
+    \b
+            vcd gateway services firewall list-service test_gateway1 rule_id
+                List firewall rule's services
     """
 
 
@@ -413,5 +417,18 @@ def delete_firewall_rule_destination(ctx, name, id, destination_value):
         firewall_rule_resource.delete_firewall_rule_source_destination(
             destination_value, 'destination')
         stdout('Firewall rule destination deleted successfully', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@firewall.command('list-service', short_help='list firewall rule\'s services')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('id', metavar='<id>', required=True)
+def list_firewall_rule_service(ctx, name, id):
+    try:
+        firewall_rule_resource = get_firewall_rule(ctx, name, id)
+        result = firewall_rule_resource.list_firewall_rule_service()
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

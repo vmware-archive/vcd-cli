@@ -217,6 +217,16 @@ class TestFirewallRule(BaseTestCase):
         TestFirewallRule._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)
 
+    def test_0083_list_firewall_rule_service(self):
+        result = TestFirewallRule._runner.invoke(
+            gateway,
+            args=[
+                'services', 'firewall', 'list-service',
+                TestFirewallRule.__name, TestFirewallRule._rule_id.text
+            ])
+        TestFirewallRule._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
+
     def test_0091_update_firewall_rule_sequence(self):
         result = TestFirewallRule._runner.invoke(
             gateway,

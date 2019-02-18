@@ -421,8 +421,7 @@ def delete_firewall_rule_destination(ctx, name, id, destination_value):
         stderr(e, ctx)
 
 
-@firewall.command(
-    'list-service', short_help='list of firewall rule\'s services')
+@firewall.command('list-service', short_help='list firewall rule\'s services')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.argument('id', metavar='<id>', required=True)

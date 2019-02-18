@@ -67,7 +67,7 @@ class VAppTest(BaseTestCase):
         result = VAppTest._runner.invoke(
             vapp,
             args=[
-                'create-vapp-network', VAppTest._test_vapp_name,
+                'network', 'create', VAppTest._test_vapp_name,
                 VAppTest._vapp_network_name, '--subnet',
                 VAppTest._vapp_network_cidr, '--description',
                 VAppTest._vapp_network_description, '--dns1',
@@ -89,7 +89,7 @@ class VAppTest(BaseTestCase):
         result = VAppTest._runner.invoke(
             vapp,
             args=[
-                'reset-vapp-network', VAppTest._test_vapp_name,
+                'network', 'reset', VAppTest._test_vapp_name,
                 VAppTest._vapp_network_name
             ])
         self.assertEqual(0, result.exit_code)
@@ -99,7 +99,7 @@ class VAppTest(BaseTestCase):
         result = VAppTest._runner.invoke(
             vapp,
             args=[
-                'delete-vapp-network', VAppTest._test_vapp_name,
+                'network', 'delete', VAppTest._test_vapp_name,
                 VAppTest._vapp_network_name
             ])
         self.assertEqual(0, result.exit_code)

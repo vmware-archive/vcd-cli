@@ -161,23 +161,6 @@ def vapp(ctx):
 \b
         vdc vapp disconnect vapp1 org-vdc-network1
             Disconnects the network org-vdc-network1 from vapp1.
-\b
-        vdc vapp create-vapp-network vapp1 vapp-network1
-                --subnet 192.168.1.1/24
-                --description 'vApp network'
-                --dns1 8.8.8.8
-                --dns2 8.8.8.9
-                --dns-suffix example.com
-                --ip-range 192.168.1.2-192.168.1.49
-                --ip-range 192.168.1.100-192.168.1.149
-                --guest-vlan-allowed-enabled
-            Create a vApp network.
-\b
-        vdc vapp reset-vapp-network vapp1 vapp-network1
-            Reset a vApp network.
-\b
-        vdc vapp delete-vapp-network vapp1 vapp-network1
-            Delete a vApp network.
     """
     pass
 
@@ -942,7 +925,36 @@ def add_vm(ctx, name, source_vapp, source_vm, catalog, target_vm, hostname,
         stderr(e, ctx)
 
 
-@vapp.command('create-vapp-network', short_help='create a vApp network')
+@vapp.group(short_help='work with vapp network')
+@click.pass_context
+def network(ctx):
+    """Work with vapp network.
+
+\b
+   Description
+        Work with the vapp networks.
+\b
+        vdc vapp network create vapp1 vapp-network1
+                --subnet 192.168.1.1/24
+                --description 'vApp network'
+                --dns1 8.8.8.8
+                --dns2 8.8.8.9
+                --dns-suffix example.com
+                --ip-range 192.168.1.2-192.168.1.49
+                --ip-range 192.168.1.100-192.168.1.149
+                --guest-vlan-allowed-enabled
+            Create a vApp network.
+\b
+        vdc vapp network reset vapp1 vapp-network1
+            Reset a vApp network.
+\b
+        vdc vapp network delete vapp1 vapp-network1
+            Delete a vApp network.
+    """
+    pass
+
+
+@network.command('create', short_help='create a vApp network')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('name', metavar='<name>', required=True)
@@ -985,7 +997,7 @@ def create_vapp_network(ctx, vapp_name, name, subnet, description,
         stderr(e, ctx)
 
 
-@vapp.command('reset-vapp-network', short_help='reset a vApp network')
+@network.command('reset', short_help='reset a vApp network')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('network-name', metavar='<network-name>', required=True)
@@ -999,7 +1011,7 @@ def reset_vapp_network(ctx, vapp_name, network_name):
         stderr(e, ctx)
 
 
-@vapp.command('delete-vapp-network', short_help='delete a vApp network')
+@network.command('delete', short_help='delete a vApp network')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('network-name', metavar='<network-name>', required=True)

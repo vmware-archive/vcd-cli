@@ -102,14 +102,14 @@ def ipsec_vpn(ctx):
     'local_ip',
     required=True,
     metavar='<local-ip>',
-    help='Local ip/Local end point of IPsec VPN.')
+    help='Local IP/Local end point of IPsec VPN.')
 @click.option(
     '-pip',
     '--peer-ip',
     'peer_ip',
     required=True,
     metavar='<peer-ip>',
-    help='Peer ip/Peer end point of IPsec VPN.')
+    help='Peer IP/Peer end point of IPsec VPN.')
 @click.option(
     '-lsubnet',
     '--local-subnet',
@@ -203,7 +203,7 @@ def create_ipsec_vpn(ctx, gateway_name, name, local_id, peer_id,local_ip,
 @ipsec_vpn.command("delete", short_help="Deletes the IPsec VPN")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
-@click.argument('id', metavar='<IPsec VPN id as local_end_point-peer_end_point>'
+@click.argument('id', metavar='<local end point-peer end point>'
     ,required=True)
 def delete_ipsec_vpn(ctx, gateway_name, id):
     try:

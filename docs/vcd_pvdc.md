@@ -41,6 +41,12 @@ Usage: vcd pvdc [OPTIONS] COMMAND [ARGS]...
           name their RPs appropriately. This limitation will be fixed in a future
           version of these functions.
   
+          vcd pvdc add-sp pvdc-name sp1 sp2 ... (one or more storage profiles)
+              Add one or more storage profiles to a Provider vDC.
+  
+          vcd pvdc del-sp pvdc-name sp1 sp2 ... (one or more storage profiles)
+              Delete one or more storage profiles from a Provider vDC.
+  
           vcd pvdc migrate-vms pvdc-name rp1 vm1 vm2 ... --target-rp rp2
               Migrate one or more VMs from the source resource pool (rp1)
               to the target-rp (rp2 in this example, which is the target
@@ -52,8 +58,10 @@ Options:
   -h, --help  Show this message and exit.
 
 Commands:
+  add-sp       add storage profiles to a pvdc
   attach-rp    attach resource pools to a pvdc
   create       create pvdc
+  del-sp       delete storage profiles from a pvdc
   detach-rp    detach resource pools from a pvdc
   info         show pvdc details
   list         list of provider virtual datacenters

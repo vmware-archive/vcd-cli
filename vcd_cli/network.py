@@ -53,7 +53,7 @@ def external(ctx):
         vcd network external create external-net1
                 --vc vc1
                 --port-group pg1
-                --gateway-ip 192.168.1.1
+                --gateway 192.168.1.1
                 --netmask 255.255.255.0
                 --ip-range 192.168.1.2-192.168.1.49
                 --ip-range 192.168.1.100-192.168.1.149
@@ -76,78 +76,85 @@ def external(ctx):
 
 \b
         vcd network external add-subnet external-net1
-                --gateway-ip 192.168.1.1
+                --gateway 192.168.1.1
                 --netmask 255.255.255.0
                 --ip-range 192.168.1.2-192.168.1.49
                 --dns1 8.8.8.8
                 --dns2 8.8.8.9
                 --dns-suffix example.com
             Add subnet to external network.
-            ip-range can have multiple entries.
+                Parameter ip-range can have multiple entries.
 
 \b
         vcd network external enable-subnet external-net1
-                --gateway-ip 192.168.1.1
+                --gateway 192.168.1.1
                 --enable/--disable
             Enable/Disable subnet of an external network.
 
 \b
-       vcd network external add-ip-range external-net1
-               --gateway-ip 192.168.1.1
-               --ip-range 192.168.1.2-192.168.1.20
+        vcd network external add-ip-range external-net1
+                --gateway 192.168.1.1
+                --ip-range 192.168.1.2-192.168.1.20
+            Add an IP range to an external network.
 
 \b
-       vcd network external modify-ip-range external-net1
-               --gateway-ip 192.168.1.1
-               --ip-range 192.168.1.2-192.168.1.20
-               --new-ip-range 192.168.1.25-192.168.1.50
+        vcd network external update-ip-range external-net1
+                --gateway 192.168.1.1
+                --ip-range 192.168.1.2-192.168.1.20
+                --new-ip-range 192.168.1.25-192.168.1.50
+            Update an IP range in an external network.
 
 \b
-       vcd network external remove-ip-range external-net1
-               --gateway-ip 192.168.1.1
-               --ip-range 192.168.1.2-192.168.1.20
+        vcd network external delete-ip-range external-net1
+                --gateway 192.168.1.1
+                --ip-range 192.168.1.2-192.168.1.20
+            Delete an IP range from an external network.
 
 \b
-       vcd network external attach-port-group external-net1
-               --vc vc1
-               --port-group pg1
+        vcd network external attach-port-group external-net1
+                --vc vc1
+                --port-group pg1
+            Attach a port group to an external network.
 
 \b
-       vcd network external detach-port-group external-net1
-               --vc vc1
-               --port-group pg1
+        vcd network external detach-port-group external-net1
+                --vc vc1
+                --port-group pg1
+            Detach a port group from an external network.
 
 \b
-       vcd network external list-pvdc ExtNw --filter name==pvdc*
-
-        List available provider vdcs
-
-\b
-       vcd network external list-gateway ExtNw --filter name==gateway*
-
-       List associated gateways
+        vcd network external list-pvdc external-net1
+                --filter name==pvdc*
+            List available provider vdcs
 
 \b
-       vcd network external list-allocated-ip ExtNw --filter name==gateway*
-
-       List allocated ip
-
-\b
-       vcd network external list-sub-allocated-ip ExtNw --filter name==gateway*
-
-       List sub allocated ip
-\b
-       vcd network external list-direct-org-vdc-network ExtNw
-               --filter connectedTo==Ext*
-
-       List associated direct org vDC networks
+        vcd network external list-gateway external-net1
+                --filter name==gateway*
+            List associated gateways
 
 \b
-       vcd network external list-vsphere-network ExtNw
-               --filter networkName==Ext*
+        vcd network external list-allocated-ip external-net1
+                --filter name==gateway*
+            List allocated ip
 
-       List associated vSphere Networks
+\b
+        vcd network external list-sub-allocated-ip external-net1
+                --filter name==gateway*
+            List sub allocated ip
 
+\b
+        vcd network external list-direct-org-vdc-network external-net1
+                --filter name==org-vdc-net*
+            List associated direct org vDC networks
+
+\b
+        vcd network external list-vsphere-network external-net1
+                --filter name==portgroup*
+            List associated vSphere Networks
+
+\b
+        vcd network external info external-net1
+            Show external network details.
     """
     pass
 
@@ -621,7 +628,7 @@ def update_external_network(ctx, name, new_name, new_description):
         stderr(e, ctx)
 
 
-@external.command('add-subnet', short_help='Add subnet to external network.')
+@external.command('add-subnet', short_help='add subnet to an external network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -679,7 +686,7 @@ def add_subnet_external_network(ctx, name, gateway_ip, netmask, ip_range,
 
 
 @external.command(
-    'enable-subnet', short_help='Enable subnet of an external network.')
+    'enable-subnet', short_help='enable subnet of an external network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -703,9 +710,9 @@ def enable_subnet_external_network(ctx, name, gateway_ip, is_enabled):
 
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
         if is_enabled:
-            stdout('subnet is enabled successfully.', ctx)
+            stdout('Subnet is enabled successfully.', ctx)
         else:
-            stdout('subnet is disabled successfully.', ctx)
+            stdout('Subnet is disabled successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -727,12 +734,12 @@ def _get_platform(ctx):
 
 @external.command(
     'add-ip-range',
-    short_help='Adds an IP range to a subnet in an external network.')
+    short_help='add an IP range to a subnet in an external network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
     '-g',
-    '--gateway-ip',
+    '--gateway',
     'gateway_ip',
     required=True,
     metavar='<ip>',
@@ -758,13 +765,13 @@ def add_ip_range_external_network(ctx, name, gateway_ip, ip_range):
 
 
 @external.command(
-    'modify-ip-range',
-    short_help='Modifies an IP range of a subnet in an external network.')
+    'update-ip-range',
+    short_help='update an IP range of a subnet in an external network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
     '-g',
-    '--gateway-ip',
+    '--gateway',
     'gateway_ip',
     required=True,
     metavar='<ip>',
@@ -793,19 +800,19 @@ def modify_ip_range_external_network(ctx, name, gateway_ip, ip_range,
             old_ip_range=ip_range,
             new_ip_range=new_ip_range)
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
-        stdout('Ip Range of a subnet modified successfully.', ctx)
+        stdout('IP Range of a subnet modified successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
 @external.command(
-    'remove-ip-range',
-    short_help='Removes an IP range of a subnet in an external network.')
+    'delete-ip-range',
+    short_help='delete an IP range of a subnet in an external network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
     '-g',
-    '--gateway-ip',
+    '--gateway',
     'gateway_ip',
     required=True,
     metavar='<ip>',
@@ -818,21 +825,21 @@ def modify_ip_range_external_network(ctx, name, gateway_ip, ip_range,
     multiple=True,
     metavar='<ip>',
     help='ip range in StartAddress-EndAddress format')
-def remove_ip_range_external_network(ctx, name, gateway_ip, ip_range):
+def delete_ip_range_external_network(ctx, name, gateway_ip, ip_range):
     try:
         extnet_obj = _get_ext_net_obj(ctx, name)
 
         ext_net = extnet_obj.delete_ip_range(
             gateway_ip=gateway_ip, ip_ranges=ip_range)
         stdout(ext_net['{' + NSMAP['vcloud'] + '}Tasks'].Task[0], ctx)
-        stdout('Ip Range of a subnet removed successfully.', ctx)
+        stdout('IP Range of a subnet removed successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
 @external.command(
     'detach-port-group',
-    short_help='Detach port group from an external network.')
+    short_help='detach port group from an external network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -853,7 +860,7 @@ def detach_port_group_external_network(ctx, name, vc_name, pg_name):
 
 @external.command(
     'attach-port-group',
-    short_help='Attach a portgroup to an external network.')
+    short_help='attach a port group to an external network')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -876,7 +883,7 @@ def attach_port_group_external_network(ctx, name, vc_name, pg_name):
         stderr(e, ctx)
 
 
-@external.command('list-pvdc', short_help='list associated pvdcs.')
+@external.command('list-pvdc', short_help='list associated pvdcs')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -899,7 +906,7 @@ def list_available_pvdcs(ctx, name, filter):
         stderr(e, ctx)
 
 
-@external.command('list-gateway', short_help='list associated gateways.')
+@external.command('list-gateway', short_help='list associated gateways')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -914,15 +921,16 @@ def list_available_gateways(ctx, name, filter):
         client = ctx.obj['client']
         ext_net = platform.get_external_network(name)
         ext_net_obj = ExternalNetwork(client, resource=ext_net)
-        assoc_edge_gateways_name = ext_net_obj.list_extnw_gateways(filter)
+        gateway_names = ext_net_obj.list_extnw_gateways(filter)
         result = []
-        result.append({'Gateways': assoc_edge_gateways_name})
+        for gatway_name in gateway_names:
+            result.append({'Edge Gateway': gatway_name})
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
-@external.command('list-allocated-ip', short_help='list allocated ip.')
+@external.command('list-allocated-ip', short_help='list allocated IP')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -943,7 +951,7 @@ def list_allocated_ip(ctx, name, filter):
         stderr(e, ctx)
 
 
-@external.command('list-sub-allocated-ip', short_help='list sub allocated ip.')
+@external.command('list-sub-allocated-ip', short_help='list sub allocated IP')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -973,7 +981,7 @@ def list_sub_allocated_ip(ctx, name, filter):
     '--filter',
     'filter',
     default=None,
-    metavar='<connectedTo==Ext*>',
+    metavar='<name==org-vdc-net*>',
     help='filter for org vDC network')
 def list_direct_org_vdc_networks(ctx, name, filter):
     try:
@@ -984,21 +992,22 @@ def list_direct_org_vdc_networks(ctx, name, filter):
         direct_ovdc_networks = \
             ext_net_obj.list_associated_direct_org_vdc_networks(filter)
         result = []
-        result.append({'Direct Org VDC Networks': direct_ovdc_networks})
+        for direct_ovdc_network in direct_ovdc_networks:
+            result.append({'Direct Org VDC Networks': direct_ovdc_network})
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
 
 
 @external.command(
-    'list-vsphere-network', short_help='List associated vSphere Networks.')
+    'list-vsphere-network', short_help='list associated vSphere networks')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
     '--filter',
     'filter',
     default=None,
-    metavar='<networkName==Ext*>',
+    metavar='<name==portgroup*>',
     help='filter for vSphere Network')
 def list_vsphere_network(ctx, name, filter):
     try:
@@ -1008,5 +1017,58 @@ def list_vsphere_network(ctx, name, filter):
         ext_net_obj = ExternalNetwork(client, resource=ext_net)
         vSphere_network_list = ext_net_obj.list_vsphere_network(filter)
         stdout(vSphere_network_list, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@external.command('info', short_help='show external network details')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+def external_network_info(ctx, name):
+    try:
+        platform = _get_platform(ctx)
+        client = ctx.obj['client']
+        ext_net = platform.get_external_network(name)
+
+        config = ext_net['{' + NSMAP['vcloud'] + '}Configuration']
+        output = {}
+        count = 0
+        for ipscope in config.IpScopes.IpScope:
+            ipscope_dict = {}
+            ipscope_dict['is_inherited'] = ipscope.IsInherited
+            ipscope_dict['gateway'] = ipscope.Gateway
+            ipscope_dict['netmask'] = ipscope.Netmask
+            if hasattr(ipscope, 'Dns1'):
+                ipscope_dict['dns1'] = ipscope.Dns1
+            if hasattr(ipscope, 'Dns2'):
+                ipscope_dict['dns2'] = ipscope.Dns2
+            if hasattr(ipscope, 'DnsSuffix'):
+                ipscope_dict['dns_suffix'] = ipscope.DnsSuffix
+                ipscope_dict['Is_Enabled'] = ipscope.IsEnabled
+            if hasattr(ipscope, 'IpRanges'):
+                count_ip_range = 0
+                for ip_range in ipscope.IpRanges.IpRange:
+                    count_ip_range = count_ip_range + 1
+                    ip_range_dict = {}
+                    ip_range_dict['start_address'] = ip_range.StartAddress
+                    ip_range_dict['end_address'] = ip_range.EndAddress
+                    ipscope_dict['ip_range ' + str(count_ip_range)] = \
+                        ip_range_dict
+            count = count + 1
+            output['ipscope ' + str(count)] = ipscope_dict
+        if hasattr(config, 'FenceMode'):
+            output['fence_mode'] = config.FenceMode
+        if hasattr(config, 'RetainNetInfoAcrossDeployments'):
+            output['retain_net_info_across_deployment'] = \
+                config.RetainNetInfoAcrossDeployments
+        if hasattr(ext_net, 'VimPortGroupRef'):
+            output['vim_server_href'] = \
+                ext_net.VimPortGroupRef.VimServerRef.get('href')
+            output['vim_server_id'] = \
+                ext_net.VimPortGroupRef.VimServerRef.get('id')
+            output['vim_portgroup_moref'] = ext_net.VimPortGroupRef.MoRef
+            output['vim_object_type'] = \
+                ext_net.VimPortGroupRef.VimObjectType
+        stdout(output, ctx)
     except Exception as e:
         stderr(e, ctx)

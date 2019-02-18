@@ -6,7 +6,7 @@ Usage: vcd vapp acl [OPTIONS] COMMAND [ARGS]...
      Description
           Work with vapp access control list in the current Organization.
   
-          vcd vapp acl add my-vapp 'user:TestUser1:Change'  \
+          vcd vapp acl add my-vapp 'user:TestUser1:Change'
               'user:TestUser2:FullControl' 'user:TestUser3'
               Add one or more access setting to the specified vapp.
               access-list is specified in the format
@@ -29,8 +29,7 @@ Usage: vcd vapp acl [OPTIONS] COMMAND [ARGS]...
   
           vcd vapp acl list my-vapp
               List acl of a vapp.
-
-
+      
 
 Options:
   -h, --help  Show this message and exit.

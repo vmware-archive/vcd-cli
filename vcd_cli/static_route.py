@@ -71,7 +71,6 @@ def static_route(ctx):
     metavar='<ip>',
     help='IP address of network in CIDR format')
 @click.option(
-    '-h',
     '--next-hop',
     'next_hop',
     default=None,
@@ -156,7 +155,6 @@ def delete_nat_rule(ctx, gateway_name, network_id):
     metavar='<ip>',
     help='IP address of network in CIDR format')
 @click.option(
-    '-h',
     '--next-hop',
     'next_hop',
     default=None,

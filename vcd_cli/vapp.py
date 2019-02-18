@@ -75,12 +75,15 @@ def vapp(ctx):
         vcd vapp create vapp1 -c catalog1 -t template1
             Instantiate a vApp from a catalog template.
 \b
-        vcd vapp create vapp1 -c catalog1 -t template1 \\
-                 --cpu 4 --memory 4096 --disk-size 20000 \\
-                 --network net1 --ip-allocation-mode pool \\
-                 --hostname myhost --vm-name vm1 --accept-all-eulas \\
+        vcd vapp create vapp1 -c catalog1 -t template1
+                 --cpu 4 --memory 4096 --disk-size 20000
+                 --network net1 --ip-allocation-mode pool
+                 --hostname myhost --vm-name vm1 --accept-all-eulas
                  --storage-profile '*'
             Instantiate a vApp with customized settings.
+\b
+        vcd vapp update vapp1 -n vapp-new-name -d "new description"
+            Updates vApp name and description.
 \b
         vcd vapp delete vapp1 --yes --force
             Delete a vApp.
@@ -159,6 +162,17 @@ def vapp(ctx):
 \b
         vdc vapp disconnect vapp1 org-vdc-network1
             Disconnects the network org-vdc-network1 from vapp1.
+\b
+        vdc vapp create-vapp-network vapp1 vapp-network1
+                --subnet 192.168.1.1/24
+                --description 'vApp network'
+                --dns1 8.8.8.8
+                --dns2 8.8.8.9
+                --dns-suffix example.com
+                --ip-range 192.168.1.2-192.168.1.49
+                --ip-range 192.168.1.100-192.168.1.149
+                --guest-vlan-allowed-enabled
+            Create a vApp network.
     """
     pass
 
@@ -923,6 +937,53 @@ def add_vm(ctx, name, source_vapp, source_vm, catalog, target_vm, hostname,
         stderr(e, ctx)
 
 
+@vapp.command('create-vapp-network', short_help='create a vApp network')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('name', metavar='<name>', required=True)
+@click.option(
+    '--subnet', 'subnet', required=True, metavar='<CIDR>', help='Network CIDR')
+@click.option(
+    '--description',
+    'description',
+    metavar='<description>',
+    help='description')
+@click.option(
+    '--dns1', 'primary_dns_ip', metavar='<IP>', help='primary DNS IP')
+@click.option(
+    '--dns2', 'secondary_dns_ip', metavar='<IP>', help='secondary DNS IP')
+@click.option(
+    '--dns-suffix', 'dns_suffix', metavar='<Name>', help='dns suffix')
+@click.option(
+    '--ip-range',
+    'ip_ranges',
+    multiple=True,
+    metavar='<ip-range-start-ip-range-end>',
+    help='IP range')
+@click.option(
+    '--guest-vlan-allowed-enabled/--guest-vlan-allowed-disabled',
+    'is_guest_vlan_allowed',
+    default=False,
+    metavar='<bool>',
+    help='guest vlan allowed')
+def create_vapp_network(ctx, vapp_name, name, subnet, description,
+                        primary_dns_ip, secondary_dns_ip, dns_suffix,
+                        ip_ranges, is_guest_vlan_allowed):
+    try:
+        restore_session(ctx, vdc_required=True)
+        client = ctx.obj['client']
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        vdc = VDC(client, href=vdc_href)
+        vapp_resource = vdc.get_vapp(vapp_name)
+        vapp = VApp(client, resource=vapp_resource)
+        task = vapp.create_vapp_network(
+            name, subnet, description, primary_dns_ip, secondary_dns_ip,
+            dns_suffix, ip_ranges, is_guest_vlan_allowed)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
 @vapp.group(short_help='work with vapp acl')
 @click.pass_context
 def acl(ctx):
@@ -932,7 +993,7 @@ def acl(ctx):
    Description
         Work with vapp access control list in the current Organization.
 \b
-        vcd vapp acl add my-vapp 'user:TestUser1:Change'  \\
+        vcd vapp acl add my-vapp 'user:TestUser1:Change'
             'user:TestUser2:FullControl' 'user:TestUser3'
             Add one or more access setting to the specified vapp.
             access-list is specified in the format
@@ -955,8 +1016,6 @@ def acl(ctx):
 \b
         vcd vapp acl list my-vapp
             List acl of a vapp.
-
-
     """
     pass
 
@@ -1041,8 +1100,9 @@ def share(ctx, vapp_name, access_level):
         vapp = VApp(client, resource=vdc.get_vapp(vapp_name))
 
         vapp.share_with_org_members(everyone_access_level=access_level)
-        stdout('Vapp \'%s\' shared to all members of the org \'%s\'.' %
-               (vapp_name, ctx.obj['profiles'].get('org_in_use')), ctx)
+        stdout(
+            'Vapp \'%s\' shared to all members of the org \'%s\'.' %
+            (vapp_name, ctx.obj['profiles'].get('org_in_use')), ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -1060,8 +1120,9 @@ def unshare(ctx, vapp_name):
         vapp = VApp(client, resource=vdc.get_vapp(vapp_name))
 
         vapp.unshare_from_org_members()
-        stdout('Vapp \'%s\' unshared from all members of the org \'%s\'.' %
-               (vapp_name, ctx.obj['profiles'].get('org_in_use')), ctx)
+        stdout(
+            'Vapp \'%s\' unshared from all members of the org \'%s\'.' %
+            (vapp_name, ctx.obj['profiles'].get('org_in_use')), ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -1079,8 +1140,37 @@ def list_acl(ctx, vapp_name):
 
         acl = vapp.get_access_settings()
         stdout(
-            access_settings_to_list(acl,
-                                    ctx.obj['profiles'].get('org_in_use')),
-            ctx)
+            access_settings_to_list(
+                acl, ctx.obj['profiles'].get('org_in_use')), ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('update', short_help='update vapp\'s name and description')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>')
+@click.option(
+    '-n',
+    '--name',
+    'name',
+    required=True,
+    metavar='<name>',
+    help='new name of the vapp')
+@click.option(
+    '-d',
+    '--description',
+    'description',
+    metavar='<description>',
+    help='new description of the vapp')
+def update_vapp(ctx, vapp_name, name, description):
+    try:
+        restore_session(ctx, vdc_required=True)
+        client = ctx.obj['client']
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        vdc = VDC(client, href=vdc_href)
+        vapp = VApp(client, resource=vdc.get_vapp(vapp_name))
+
+        task = vapp.edit_name_and_description(name, description)
+        stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

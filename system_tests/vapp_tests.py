@@ -1,0 +1,123 @@
+# VMware vCloud Director vCD CLI
+# Copyright (c) 2019 VMware, Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+from uuid import uuid1
+from click.testing import CliRunner
+
+from pyvcloud.system_test_framework.base_test import BaseTestCase
+from pyvcloud.system_test_framework.environment import CommonRoles
+from pyvcloud.system_test_framework.environment import Environment
+from pyvcloud.system_test_framework.utils import create_vapp_from_template
+
+from vcd_cli.login import login, logout
+from vcd_cli.org import org
+from vcd_cli.vapp import vapp
+
+
+class VAppTest(BaseTestCase):
+    """Test vApp related commands
+
+    Be aware that this test will delete existing vcd-cli sessions.
+    """
+    _test_vapp_name = 'test_vApp_' + str(uuid1())
+
+    _vapp_network_name = 'vapp_network_' + str(uuid1())
+    _vapp_network_description = 'Test vApp network'
+    _vapp_network_cidr = '90.80.70.1/24'
+    _vapp_network_dns1 = '8.8.8.8'
+    _vapp_network_dns2 = '8.8.8.9'
+    _vapp_network_dns_suffix = 'example.com'
+    _vapp_network_ip_range = '90.80.70.2-90.80.70.100'
+
+    def test_0000_setup(self):
+        """Load configuration and create a click runner to invoke CLI."""
+        VAppTest._config = Environment.get_config()
+        VAppTest._logger = Environment.get_default_logger()
+        VAppTest._client = Environment.get_client_in_default_org(
+            CommonRoles.ORGANIZATION_ADMINISTRATOR)
+
+        VAppTest._runner = CliRunner()
+        default_org = VAppTest._config['vcd']['default_org_name']
+        VAppTest._login(self)
+        VAppTest._runner.invoke(org, ['use', default_org])
+        VAppTest._test_vdc = Environment.get_test_vdc(VAppTest._client)
+        VAppTest._test_vapp = create_vapp_from_template(
+            VAppTest._client, VAppTest._test_vdc, VAppTest._test_vapp_name,
+            VAppTest._config['vcd']['default_catalog_name'],
+            VAppTest._config['vcd']['default_template_file_name'])
+
+    def test_0001_create_vapp_network(self):
+        """Create a vApp network as per configuration stated above."""
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'create-vapp-network', VAppTest._test_vapp_name,
+                VAppTest._vapp_network_name, '--subnet',
+                VAppTest._vapp_network_cidr, '--description',
+                VAppTest._vapp_network_description, '--dns1',
+                VAppTest._vapp_network_dns1, '--dns2',
+                VAppTest._vapp_network_dns2, '--dns-suffix',
+                VAppTest._vapp_network_dns_suffix, '--ip-range',
+                VAppTest._vapp_network_ip_range
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0020_update_vapp(self):
+        """Update a vApp name and description."""
+        new_name = VAppTest._test_vapp_name + 'updated'
+        new_desc = 'vapp description'
+        self._update_vapp_name_desc(VAppTest._test_vapp_name, new_name,
+                                    new_desc)
+        vapp_resource = VAppTest._client.get_resource(VAppTest._test_vapp)
+        self.assertEqual(vapp_resource.Description.text, new_desc)
+        self.assertEqual(vapp_resource.get('name'), new_name)
+        # reset back to orignal name
+        self._update_vapp_name_desc(new_name, VAppTest._test_vapp_name, '')
+        vapp_resource = VAppTest._client.get_resource(VAppTest._test_vapp)
+        self.assertEqual(vapp_resource.get('name'), VAppTest._test_vapp_name)
+
+    def _update_vapp_name_desc(self, current_name, new_name, new_desc):
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'update', current_name, '--name', new_name, '--description',
+                new_desc
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0098_tearDown(self):
+        """Delete vApp and logout from the session."""
+        result_delete = VAppTest._runner.invoke(
+            vapp,
+            args=['delete', VAppTest._test_vapp_name, '--yes', '--force'])
+        self.assertEqual(0, result_delete.exit_code)
+        VAppTest._logout(self)
+
+    def _login(self):
+        org = VAppTest._config['vcd']['default_org_name']
+        user = Environment.get_username_for_role_in_test_org(
+            CommonRoles.ORGANIZATION_ADMINISTRATOR)
+        password = VAppTest._config['vcd']['default_org_user_password']
+        login_args = [
+            VAppTest._config['vcd']['host'], org, user, "-i", "-w",
+            "--password={0}".format(password)
+        ]
+        result = VAppTest._runner.invoke(login, args=login_args)
+        self.assertEqual(0, result.exit_code)
+        self.assertTrue("logged in" in result.output)
+
+    def _logout(self):
+        """Logs out current session, ignoring errors"""
+        VAppTest._runner.invoke(logout)

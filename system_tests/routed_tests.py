@@ -73,7 +73,7 @@ class VdcNetworkTests(BaseTestCase):
         result = self._runner.invoke(
             network,
             args=[
-                'routed', 'add-ip-ranges', VdcNetworkTests._name, '--ip-range',
+                'routed', 'add-ip-range', VdcNetworkTests._name, '--ip-range',
                 VdcNetworkTests.__ip_range1, '--ip-range',
                 VdcNetworkTests.__ip_range2
             ])
@@ -96,7 +96,7 @@ class VdcNetworkTests(BaseTestCase):
         result = self._runner.invoke(
             network,
             args=[
-                'routed', 'modify-ip-range', VdcNetworkTests._name,
+                'routed', 'update-ip-range', VdcNetworkTests._name,
                 '--ip-range', VdcNetworkTests.__ip_range1, '--new-ip-range',
                 VdcNetworkTests.__new_ip_range
             ])
@@ -107,7 +107,7 @@ class VdcNetworkTests(BaseTestCase):
         result = self._runner.invoke(
             network,
             args=[
-                'routed', 'remove-ip-range', VdcNetworkTests._name,
+                'routed', 'delete-ip-range', VdcNetworkTests._name,
                 '--ip-range', VdcNetworkTests.__ip_range2
             ])
         self.assertEqual(0, result.exit_code)

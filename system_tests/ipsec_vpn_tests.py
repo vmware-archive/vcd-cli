@@ -80,7 +80,7 @@ class TestIpSecVpn(BaseTestCase):
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
-                'services', 'ipsec_vpn', 'create', TestIpSecVpn._name,
+                'services', 'ipsec-vpn', 'create', TestIpSecVpn._name,
                 '--name', TestIpSecVpn._ipsec_vpn_name,
                 '--local-id',TestIpSecVpn._local_id,
                 '--peer-id',TestIpSecVpn._peer_id,
@@ -97,13 +97,11 @@ class TestIpSecVpn(BaseTestCase):
         It will trigger the cli command services ipsec_vpn
         enable-activation-status
         """
-        id=TestIpSecVpn._local_ip+'-'+TestIpSecVpn._peer_ip
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
-                'services', 'ipsec_vpn', 'enable-activation-status',
-                TestIpSecVpn._name,
-                    id,'--enable'])
+                'services', 'ipsec-vpn', 'enable-activation-status',
+                TestIpSecVpn._name,'--enable'])
         self.assertEqual(0, result.exit_code)
 
     def test_0025_info_activation_status(self):
@@ -112,13 +110,11 @@ class TestIpSecVpn(BaseTestCase):
         It will trigger the cli command services ipsec_vpn
         info-activation-status
         """
-        id=TestIpSecVpn._local_ip+'-'+TestIpSecVpn._peer_ip
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
-                'services', 'ipsec_vpn', 'enable-activation-status',
-                TestIpSecVpn._name,
-                    id])
+                'services', 'ipsec-vpn', 'enable-activation-status',
+                TestIpSecVpn._name])
         self.assertEqual(0, result.exit_code)
 
     def test_0025_enable_logging(self):
@@ -127,13 +123,11 @@ class TestIpSecVpn(BaseTestCase):
         It will trigger the cli command services ipsec_vpn
         enable-logging
         """
-        id=TestIpSecVpn._local_ip+'-'+TestIpSecVpn._peer_ip
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
-                'services', 'ipsec_vpn', 'enable-logging',
-                TestIpSecVpn._name,
-                    id,'--enable'])
+                'services', 'ipsec-vpn', 'enable-logging',
+                TestIpSecVpn._name,'--enable'])
         self.assertEqual(0, result.exit_code)
 
     def test_0030_info_logging_settings(self):
@@ -142,13 +136,11 @@ class TestIpSecVpn(BaseTestCase):
         It will trigger the cli command services ipsec_vpn
         info-logging-settings
         """
-        id=TestIpSecVpn._local_ip+'-'+TestIpSecVpn._peer_ip
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
-                'services', 'ipsec_vpn', 'info-logging-settings',
-                TestIpSecVpn._name,
-                    id])
+                'services', 'ipsec-vpn', 'info-logging-settings',
+                TestIpSecVpn._name])
         self.assertEqual(0, result.exit_code)
 
     def test_0090_delete_ipsec_vpn(self):
@@ -160,7 +152,7 @@ class TestIpSecVpn(BaseTestCase):
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
-                'services', 'ipsec_vpn', 'delete', TestIpSecVpn._name,
+                'services', 'ipsec-vpn', 'delete', TestIpSecVpn._name,
                     id])
         self.assertEqual(0, result.exit_code)
 

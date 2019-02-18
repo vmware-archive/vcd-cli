@@ -96,14 +96,13 @@ def firewall(ctx):
     \b
             vcd gateway services firewall delete-source test_gateway1 rule_id
                     source_value
-                Delete source value of firewall rule
-                It will delete all source values of given source_value
+                Delete all source value of firewall rule by providing
+                    source_value
 
     \b
             vcd gateway services firewall delete-destination test_gateway1
                     rule_id destination_value
-                Delete destination value of firewall rule
-                It will delete all destination values of given
+                Delete all destination value of firewall rule by providing
                     destination_value
 
     \b
@@ -113,7 +112,7 @@ def firewall(ctx):
     \b
             vcd gateway services firewall delete-service test_gateway1 rule_id
                     protocol
-                It will delete all services of given protocol
+                Delete all services of firewall rule by providing protocol.
     """
 
 
@@ -378,7 +377,7 @@ def update_firewall_rule_sequence(ctx, name, id, new_index):
 
 @firewall.command(
     'delete-source',
-    short_help='delete firewall rule\'s source value of gateway')
+    short_help='delete firewall rule\'s source value of a firewall rule')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.argument('id', metavar='<id>', required=True)
@@ -410,7 +409,7 @@ def list_firewall_rule_destination(ctx, name, id):
 
 @firewall.command(
     'delete-destination',
-    short_help='delete firewall rule\'s destination value of gateway')
+    short_help='delete firewall rule\'s destination value of a firewall rule')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.argument('id', metavar='<id>', required=True)
@@ -441,7 +440,7 @@ def list_firewall_rule_service(ctx, name, id):
 
 @firewall.command(
     'delete-service',
-    short_help='delete firewall rule\'s service from gateway')
+    short_help='delete firewall rule\'s service of a firewall rule')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.argument('id', metavar='<id>', required=True)

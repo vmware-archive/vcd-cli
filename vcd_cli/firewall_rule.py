@@ -109,6 +109,11 @@ def firewall(ctx):
     \b
             vcd gateway services firewall list-service test_gateway1 rule_id
                 List firewall rule's services
+
+    \b
+            vcd gateway services firewall delete-service test_gateway1 rule_id
+                    protocol
+                It will delete all services of given protocol
     """
 
 
@@ -430,5 +435,21 @@ def list_firewall_rule_service(ctx, name, id):
         firewall_rule_resource = get_firewall_rule(ctx, name, id)
         result = firewall_rule_resource.list_firewall_rule_service()
         stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@firewall.command(
+    'delete-service',
+    short_help='delete firewall rule\'s service from gateway')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('id', metavar='<id>', required=True)
+@click.argument('protocol', metavar='<protocol>', required=True)
+def delete_firewall_rule_service(ctx, name, id, protocol):
+    try:
+        firewall_rule_resource = get_firewall_rule(ctx, name, id)
+        firewall_rule_resource.delete_firewall_rule_service(protocol)
+        stdout('Firewall rule\'s service deleted successfully', ctx)
     except Exception as e:
         stderr(e, ctx)

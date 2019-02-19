@@ -18,10 +18,11 @@ from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
 # Don't change the order of vcd  and gateway
-from vcd_cli.vcd import vcd #NOQA
-from vcd_cli.gateway import gateway # NOQA
+from vcd_cli.vcd import vcd  # NOQA
+from vcd_cli.gateway import gateway  # NOQA
 from vcd_cli.gateway import get_gateway
 from vcd_cli.gateway import services
+
 
 @services.group('ipsec-vpn', short_help='Manage ipsec vpn of gateway')
 @click.pass_context
@@ -62,6 +63,19 @@ def ipsec_vpn(ctx):
                 Info logging settings.
 
     \b
+            vcd gateway services ipsec-vpn set-log-level test_gateway1 warning
+                Set global log level for IPsec VPN.
+
+    \b
+            vcd gateway services ipsec-vpn list-ipsec-vpn test_gateway1
+                List IPsec VPN of a gateway.
+
+    \b
+            vcd gateway services ipsec-vpn change-shared-key test_gateway1
+                new_shared_key
+                Change shared key of IPsec VPN.
+
+    \b
             vcd gateway services ipsec-vpn delete test_gateway1 <ipsec_vpn_id>
                 Deletes IPsec VPN. ipsec_vpn_id is local_end_point-peer_end_point
 
@@ -72,6 +86,7 @@ def ipsec_vpn(ctx):
     __DEFAULT_MTU = '1500'
     __DEFAULT_IP_SEC_ENABLE = True
     __DEFAULT_ENABLE_PFS = False
+
 
 @ipsec_vpn.command("create", short_help="create new IPsec VPN")
 @click.pass_context
@@ -175,10 +190,10 @@ def ipsec_vpn(ctx):
     metavar='<bool>',
     is_flag=True,
     help='enable/disable PFS of IPsec VPN')
-def create_ipsec_vpn(ctx, gateway_name, name, local_id, peer_id,local_ip,
-                     peer_ip,local_subnet,peer_subnet,pre_shared_key,
-                     description,encryption_protocol,authentication_mode,
-                     dh_group,mtu,enabled,enable_pfs):
+def create_ipsec_vpn(ctx, gateway_name, name, local_id, peer_id, local_ip,
+                     peer_ip, local_subnet, peer_subnet, pre_shared_key,
+                     description, encryption_protocol, authentication_mode,
+                     dh_group, mtu, enabled, enable_pfs):
     try:
         gateway_resource = get_gateway(ctx, gateway_name)
         gateway_resource.add_ipsec_vpn(name=name,
@@ -200,18 +215,20 @@ def create_ipsec_vpn(ctx, gateway_name, name, local_id, peer_id,local_ip,
     except Exception as e:
         stderr(e, ctx)
 
+
 @ipsec_vpn.command("delete", short_help="Deletes the IPsec VPN")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
 @click.argument('id', metavar='<local end point-peer end point>'
-    ,required=True)
+    , required=True)
 def delete_ipsec_vpn(ctx, gateway_name, id):
     try:
-        ipsec_vpn_obj = get_ipsec_vpn(ctx,gateway_name, id)
+        ipsec_vpn_obj = get_ipsec_vpn(ctx, gateway_name, id)
         ipsec_vpn_obj.delete_ipsec_vpn()
         stdout('IPsec VPN deleted successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @ipsec_vpn.command("enable-activation-status",
                    short_help="enable activation status")
@@ -232,6 +249,7 @@ def enable_activation_status(ctx, gateway_name, enabled):
     except Exception as e:
         stderr(e, ctx)
 
+
 @ipsec_vpn.command("info-activation-status",
                    short_help="info activation status")
 @click.pass_context
@@ -243,6 +261,7 @@ def info_activation_status(ctx, gateway_name):
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @ipsec_vpn.command("enable-logging",
                    short_help="enable logging of IPsec VPN.")
@@ -263,6 +282,7 @@ def enable_logging(ctx, gateway_name, enabled):
     except Exception as e:
         stderr(e, ctx)
 
+
 @ipsec_vpn.command("info-logging-settings",
                    short_help="info logging settings")
 @click.pass_context
@@ -275,6 +295,45 @@ def info_logging_settings(ctx, gateway_name):
     except Exception as e:
         stderr(e, ctx)
 
+@ipsec_vpn.command("set-log-level",
+                   short_help="set log level of IPsec VPN. It's value should be"
+                              " from the domain:{emergency, alert, critical, "
+                              "error, warning, notice, info, debug)")
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+@click.argument('log_level', metavar='<log level>', required=True)
+def set_log_level(ctx, gateway_name, log_level):
+    try:
+        gateway_resource = get_gateway(ctx, gateway_name)
+        gateway_resource.set_log_level_ipsec_vpn(log_level)
+        stdout('IPsec VPN log level changed.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@ipsec_vpn.command("list-ipsec-vpn",
+                   short_help="list ipsec vpn")
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+def list_ipsec_vpn(ctx, gateway_name):
+    try:
+        gateway_resource = get_gateway(ctx, gateway_name)
+        result = gateway_resource.list_ipsec_vpn()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@ipsec_vpn.command("change-shared-key", short_help="list ipsec vpn")
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+@click.argument('new_shared_key', metavar='<new shared key>', required=True)
+def change_shared_key(ctx, gateway_name, new_shared_key):
+    try:
+        gateway_resource = get_gateway(ctx, gateway_name)
+        gateway_resource.change_shared_key_ipsec_vpn(new_shared_key)
+        stdout('IPsec VPN shared key changed.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
 def get_ipsec_vpn(ctx, gateway_name, id):
     """Get the sdk's ipsec vpn object.
 
@@ -283,7 +342,6 @@ def get_ipsec_vpn(ctx, gateway_name, id):
     restore_session(ctx, vdc_required=True)
     client = ctx.obj['client']
     ipsec_vpn = IpsecVpn(client=client,
-                                 gateway_name=gateway_name,
-                                 ipsec_end_point=id)
+                         gateway_name=gateway_name,
+                         ipsec_end_point=id)
     return ipsec_vpn
-

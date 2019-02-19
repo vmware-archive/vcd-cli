@@ -143,6 +143,45 @@ class TestIpSecVpn(BaseTestCase):
                 TestIpSecVpn._name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0040_set_log_level(self):
+        """Set log level of ipsec vpn.
+
+        It will trigger the cli command services ipsec_vpn
+        set-log-level
+        """
+        result = TestIpSecVpn._runner.invoke(
+            gateway,
+            args=[
+                'services', 'ipsec-vpn', 'set-log-level',
+                TestIpSecVpn._name,'warning'])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0045_list_ipsec_vpn(self):
+        """List IPsec VPN of a gateway.
+
+        It will trigger the cli command services ipsec_vpn
+        list-ipsec-vpn
+        """
+        result = TestIpSecVpn._runner.invoke(
+            gateway,
+            args=[
+                'services', 'ipsec-vpn', 'list-ipsec-vpn',
+                TestIpSecVpn._name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0050_change_shared_key(self):
+        """Change shared key of ipsec vpn.
+
+        It will trigger the cli command services ipsec_vpn
+        change-shared-key
+        """
+        result = TestIpSecVpn._runner.invoke(
+            gateway,
+            args=[
+                'services', 'ipsec-vpn', 'change-shared-key',
+                TestIpSecVpn._name,'newsharedkey'])
+        self.assertEqual(0, result.exit_code)
+
     def test_0090_delete_ipsec_vpn(self):
         """Deletes the ipsec vpn.
 

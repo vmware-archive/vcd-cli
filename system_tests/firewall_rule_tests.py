@@ -197,6 +197,18 @@ class TestFirewallRule(BaseTestCase):
         TestFirewallRule._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)
 
+    def test_0073_delete_firewall_rule_service(self):
+        protocol_to_delete = 'tcp'
+        result = TestFirewallRule._runner.invoke(
+            gateway,
+            args=[
+                'services', 'firewall', 'delete-service',
+                TestFirewallRule.__name, TestFirewallRule._rule_id.text,
+                protocol_to_delete
+            ])
+        TestFirewallRule._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
+
     def test_0081_list_firewall_rule_source(self):
         result = TestFirewallRule._runner.invoke(
             gateway,

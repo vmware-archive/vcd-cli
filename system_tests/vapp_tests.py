@@ -54,16 +54,20 @@ class VAppTest(BaseTestCase):
         VAppTest._runner.invoke(org, ['use', default_org])
         VAppTest._test_vdc = Environment.get_test_vdc(VAppTest._client)
         VAppTest._test_vapp = create_vapp_from_template(
-            VAppTest._client, VAppTest._test_vdc, VAppTest._test_vapp_name,
+            VAppTest._client,
+            VAppTest._test_vdc,
+            VAppTest._test_vapp_name,
             VAppTest._config['vcd']['default_catalog_name'],
-            VAppTest._config['vcd']['default_template_file_name'])
+            VAppTest._config['vcd']['default_template_file_name'],
+            power_on=False,
+            deploy=False)
 
-    def test_0001_create_vapp_network(self):
+    def test_0010_create_vapp_network(self):
         """Create a vApp network as per configuration stated above."""
         result = VAppTest._runner.invoke(
             vapp,
             args=[
-                'create-vapp-network', VAppTest._test_vapp_name,
+                'network', 'create', VAppTest._test_vapp_name,
                 VAppTest._vapp_network_name, '--subnet',
                 VAppTest._vapp_network_cidr, '--description',
                 VAppTest._vapp_network_description, '--dns1',
@@ -74,7 +78,33 @@ class VAppTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
-    def test_0020_update_vapp(self):
+    def test_0020_poweron_vapp(self):
+        """Power on the vapp."""
+        result = VAppTest._runner.invoke(
+            vapp, args=['power-on', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0030_reset_vapp_network(self):
+        """Reset a vapp network."""
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'network', 'reset', VAppTest._test_vapp_name,
+                VAppTest._vapp_network_name
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0040_delete_vapp_network(self):
+        """Delete a vapp network."""
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'network', 'delete', VAppTest._test_vapp_name,
+                VAppTest._vapp_network_name
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0050_update_vapp(self):
         """Update a vApp name and description."""
         new_name = VAppTest._test_vapp_name + 'updated'
         new_desc = 'vapp description'

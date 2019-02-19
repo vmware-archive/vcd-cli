@@ -570,15 +570,15 @@ class GatewayTest(BaseTestCase):
         self.assertTrue(
             self._validate_result_for_unclosed_sslsocket_warning(result_info))
 
-        def test_0031_set_tenant_syslog_ip(self):
-            """Set information of the gateway tenant syslog ip server.
+    def test_0031_set_tenant_syslog_ip(self):
+        """Set information of the gateway tenant syslog ip server.
 
-            It will trigger the cli command with option set-syslog-server
-            """
-            result = self._runner.invoke(
-                gateway, args=['set-syslog-server', self._name, '192.168.5.6'])
-            GatewayTest._logger.debug('result output {0}'.format(result))
-            self.assertEqual(0, result.exit_code)
+        It will trigger the cli command with option set-syslog-server
+        """
+        result = self._runner.invoke(
+            gateway, args=['set-syslog-server', self._name, '192.168.5.6'])
+        GatewayTest._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
 
     def test_0098_tearDown(self):
         result_delete = self._runner.invoke(

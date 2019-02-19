@@ -575,8 +575,9 @@ class GatewayTest(BaseTestCase):
 
         It will trigger the cli command with option set-syslog-server
         """
+        ip = '192.168.5.6'
         result = self._runner.invoke(
-            gateway, args=['set-syslog-server', self._name, '192.168.5.6'])
+            gateway, args=['set-syslog-server', self._name, ip])
         GatewayTest._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)
 

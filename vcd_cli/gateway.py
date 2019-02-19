@@ -91,7 +91,7 @@ def gateway(ctx):
              Synchronizes syslog settings of the gateway with given name
 
 \b
-        vcd gateway set-syslog-server gateway1 ip_address
+        vcd gateway set-syslog-server gateway1 10.11.11.11
              Set syslog server ip address of the gateway
 
 \b

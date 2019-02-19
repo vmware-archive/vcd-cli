@@ -72,7 +72,7 @@ def ipsec_vpn(ctx):
 
     \b
             vcd gateway services ipsec-vpn change-shared-key test_gateway1
-                new_shared_key
+                    new_shared_key
                 Change shared key of IPsec VPN.
 
     \b

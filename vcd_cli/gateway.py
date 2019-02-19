@@ -91,6 +91,10 @@ def gateway(ctx):
              Synchronizes syslog settings of the gateway with given name
 
 \b
+        vcd gateway set-syslog-server gateway1 ip_address
+             Set syslog server ip address of the gateway
+
+\b
         vcd gateway list-syslog-server gateway1
              List syslog server of the gateway with given name
 
@@ -296,8 +300,7 @@ def create_gateway(ctx, name, external_networks_name, description,
                 is_distributed_routing, is_ip_settings_configured,
                 ext_net_to_participated_subnet_with_ip_settings,
                 is_sub_allocate_ip_pools_enabled,
-                ext_net_to_subnet_with_ip_range,
-                ext_net_to_rate_limit)
+                ext_net_to_subnet_with_ip_range, ext_net_to_rate_limit)
         elif float(api_version) <= float(ApiVersion.VERSION_31.value):
             result = vdc.create_gateway_api_version_31(
                 name, external_networks_name, gateway_config, description,
@@ -453,8 +456,8 @@ def sync_syslog_settings(ctx, name):
         stderr(e, ctx)
 
 
-@gateway.command('list-config-ip-settings',
-                 short_help='shows config ip settings.')
+@gateway.command(
+    'list-config-ip-settings', short_help='shows config ip settings.')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 def list_config_ip_settings(ctx, name):
@@ -466,8 +469,24 @@ def list_config_ip_settings(ctx, name):
         stderr(e, ctx)
 
 
-@gateway.group('configure-external-network',
-               short_help='configures external networks of an edge gateway')
+@gateway.command(
+    'set-syslog-server',
+    short_help='set syslog server ip of the given gateway')
+@click.pass_context
+@click.argument('name', metavar='<name>', required=True)
+@click.argument('ip', metavar='<ip>', required=True)
+def set_syslog_server(ctx, name, ip):
+    try:
+        gateway_resource = get_gateway(ctx, name)
+        gateway_resource.set_tenant_syslog_server_ip(ip)
+        stdout('Syslog server ip set succesfully', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@gateway.group(
+    'configure-external-network',
+    short_help='configures external networks of an edge gateway')
 @click.pass_context
 def configure_external_network(ctx):
     """Configures external networks of edge gateways in vCloud Director.
@@ -542,8 +561,7 @@ def remove_external_network(ctx, name, external_network_name):
 
 
 @gateway.command(
-    'update',
-    short_help='update name, description and HA of gateway.')
+    'update', short_help='update name, description and HA of gateway.')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -572,8 +590,8 @@ def edit_gateway(ctx, name, new_name, desc, is_enabled):
         stderr(e, ctx)
 
 
-@gateway.command('configure-ip-settings', short_help='edit config ip settings.'
-                 )
+@gateway.command(
+    'configure-ip-settings', short_help='edit config ip settings.')
 @click.pass_context
 @click.argument('name', metavar='<gateway name>', required=True)
 @click.option(
@@ -612,8 +630,9 @@ def edit_gateway_config_ip_settings(ctx, name, external_networks_name,
         stderr(e, ctx)
 
 
-@gateway.group('sub-allocate-ip',
-               short_help='configures Sub allocate ip pools of gateway')
+@gateway.group(
+    'sub-allocate-ip',
+    short_help='configures Sub allocate ip pools of gateway')
 @click.pass_context
 def sub_allocate_ip(ctx):
     """Configures sub-allocate ip pools of gateway in vCloud Director.
@@ -659,8 +678,7 @@ def sub_allocate_ip(ctx):
     multiple=True,
     required=True,
     help='ip ranges used for static pool allocation in the network.')
-def add_sub_allocated_ip_pools(ctx, name, external_network_name,
-                               ip_range):
+def add_sub_allocated_ip_pools(ctx, name, external_network_name, ip_range):
     try:
         gateway_resource = get_gateway(ctx, name)
         task = gateway_resource.add_sub_allocated_ip_pools(
@@ -739,8 +757,9 @@ def remove_sub_allocated_ip_pools(ctx, name, external_network_name, ip_range):
         stderr(e, ctx)
 
 
-@gateway.group('configure-rate-limits', short_help='configures rate limits of'
-                                                   ' gateway')
+@gateway.group(
+    'configure-rate-limits', short_help='configures rate limits of'
+    ' gateway')
 @click.pass_context
 def configure_rate_limits(ctx):
     """Configures rate limit of gateway in vCloud Director.
@@ -758,8 +777,9 @@ def configure_rate_limits(ctx):
     pass
 
 
-@configure_rate_limits.command('update', short_help='updates rate limit of '
-                                                    'gateway.')
+@configure_rate_limits.command(
+    'update', short_help='updates rate limit of '
+    'gateway.')
 @click.pass_context
 @click.argument('name', metavar='<gateway name>', required=True)
 @click.option(
@@ -784,8 +804,8 @@ def update_configure_rate_limits(ctx, name, rate_limit_config):
         stderr(e, ctx)
 
 
-@configure_rate_limits.command('list', short_help='list rate limit of gateway.'
-                               )
+@configure_rate_limits.command(
+    'list', short_help='list rate limit of gateway.')
 @click.pass_context
 @click.argument('name', metavar='<gateway name>', required=True)
 def list_rate_limits(ctx, name):
@@ -797,8 +817,9 @@ def list_rate_limits(ctx, name):
         stderr(e, ctx)
 
 
-@configure_rate_limits.command('disable', short_help=' Disable rate limit of '
-                                                     'gateway.')
+@configure_rate_limits.command(
+    'disable', short_help=' Disable rate limit of '
+    'gateway.')
 @click.pass_context
 @click.argument('name', metavar='<gateway name>', required=True)
 @click.option(
@@ -832,8 +853,9 @@ def list_syslog_server(ctx, name):
         stderr(e, ctx)
 
 
-@gateway.group('configure-default-gateway', short_help='configures the default'
-                                                       'gateway')
+@gateway.group(
+    'configure-default-gateway', short_help='configures the default'
+    'gateway')
 @click.pass_context
 def configure_default_gateway(ctx):
     """Configures the default gateway in vCloud Director.
@@ -855,8 +877,9 @@ def configure_default_gateway(ctx):
     pass
 
 
-@configure_default_gateway.command('update', short_help='configures the '
-                                                        'default gateway')
+@configure_default_gateway.command(
+    'update', short_help='configures the '
+    'default gateway')
 @click.pass_context
 @click.argument('name', metavar='<gateway name>', required=True)
 @click.option(
@@ -892,8 +915,8 @@ def configure_default_gateways(ctx, name, external_network_name, gateway_ip,
         stderr(e, ctx)
 
 
-@configure_default_gateway.command('enable-dns-relay',
-                                   short_help='enables/disables the dns relay')
+@configure_default_gateway.command(
+    'enable-dns-relay', short_help='enables/disables the dns relay')
 @click.pass_context
 @click.argument('name', metavar='<gateway name>', required=True)
 @click.option(
@@ -911,9 +934,9 @@ def enable_dns_relay(ctx, name, is_enable):
         stderr(e, ctx)
 
 
-@configure_default_gateway.command('list',
-                                   short_help='lists the configure default'
-                                              ' gateway')
+@configure_default_gateway.command(
+    'list', short_help='lists the configure default'
+    ' gateway')
 @click.pass_context
 @click.argument('name', metavar='<gateway name>', required=True)
 def list_configure_default_gateways(ctx, name):

@@ -67,6 +67,11 @@ def vm(ctx):
 \b
         vcd vm list-nics vapp1 vm1
             Lists the nics of the VM.
+
+\b
+        vcd vm delete-nic vapp1 vm1
+                --index 1
+            Deletes the nic at given index.
     """
     pass
 

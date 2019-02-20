@@ -34,26 +34,36 @@ def vm(ctx):
     Examples
         vcd vm list
             Get list of VMs in current virtual datacenter.
+
 \b
         vcd vm info vapp1 vm1
             Get details of the VM 'vm1' in vApp 'vapp1'.
+
 \b
         vcd vm update vapp1 vm1 --cpu 2 --core 2
             Modifies the VM 'vm1' in vApp 'vapp1' to be configured
             with 2 cpu and 2 cores .
+
 \b
         vcd vm update vapp1 vm1 --memory 512
             Modifies the VM 'vm1' in vApp 'vapp1' to be configured
             with the specified memory .
+
 \b
         vcd vm update vapp1 vm1 --cpu 2 --memory 512
             Modifies the VM 'vm1' in vApp 'vapp1' to be configured
             with 2 cpu and the specified memory .
+
 \b
-        vcd vm add-nic vapp1 vm1 --adapter-type VMXNET3
-            --primary --connect --network network_name
-            --ip-address-mode MANUAL --ip-address 192.168.1.10
+        vcd vm add-nic vapp1 vm1
+                --adapter-type VMXNET3
+                --primary
+                --connect
+                --network network_name
+                --ip-address-mode MANUAL
+                --ip-address 192.168.1.10
             Adds a nic to the VM.
+
 \b
         vcd vm list-nics vapp1 vm1
             Lists the nics of the VM.
@@ -156,28 +166,28 @@ def update(ctx, vapp_name, vm_name, cpu, cores, memory):
         NetworkAdapterType.VMXNET2.value, NetworkAdapterType.VMXNET3.value,
         NetworkAdapterType.E1000.value
     ]),
-    help='Adapter type of the nic. One of VLANCE|VMXNET|VMXNET2|VMXNET3|E1000')
+    help='adapter type of nic - one of VLANCE|VMXNET|VMXNET2|VMXNET3|E1000')
 @click.option(
     'primary',
     '--primary',
     required=False,
     is_flag=True,
     metavar='<primary>',
-    help='Whether nic has to be a primary.')
+    help='whether nic has to be a primary')
 @click.option(
     'connect',
     '--connect',
     required=False,
     is_flag=True,
     metavar='<connect>',
-    help='Whether nic has to be connected.')
+    help='whether nic has to be connected')
 @click.option(
     'network',
     '--network',
     required=False,
     default='none',
     metavar='<network>',
-    help='Network to connect to.')
+    help='network to connect to')
 @click.option(
     'ip_address_mode',
     '--ip-address-mode',
@@ -188,13 +198,13 @@ def update(ctx, vapp_name, vm_name, cpu, cores, memory):
         IpAddressMode.DHCP.value, IpAddressMode.POOL.value,
         IpAddressMode.MANUAL.value
     ]),
-    help='IP address allocation mode. One of DHCP|POOL|MANUAL|NONE.')
+    help='IP address allocation mode - one of DHCP|POOL|MANUAL|NONE')
 @click.option(
     'ip_address',
     '--ip-address',
     required=False,
     metavar='<ip-address>',
-    help='Manual IP address that needs to  be allocated to the nic.')
+    help='nanual IP address that needs to be allocated to the nic')
 def add_nic(ctx, vapp_name, vm_name, adapter_type, primary, connect, network,
             ip_address_mode, ip_address):
     try:

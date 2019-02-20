@@ -32,6 +32,8 @@ class VmTest(BaseTestCase):
 
     Be aware that this test will delete existing vcd-cli sessions.
     """
+    DEFAULT_ADAPTER_TYPE = 'VMXNET3'
+    DEFAULT_IP_MODE = 'POOL'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -57,9 +59,9 @@ class VmTest(BaseTestCase):
             vm,
             args=[
                 'add-nic', VAppConstants.name, VAppConstants.vm1_name,
-                '--adapter-type', 'VMXNET3', '--connect', '--primary',
-                '--network', VAppConstants.network1_name, '--ip-address-mode',
-                'POOL'
+                '--adapter-type', VmTest.DEFAULT_ADAPTER_TYPE, '--connect',
+                '--primary', '--network', VAppConstants.network1_name,
+                '--ip-address-mode', VmTest.DEFAULT_IP_MODE
             ])
         self.assertEqual(0, result.exit_code)
 

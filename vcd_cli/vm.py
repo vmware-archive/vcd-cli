@@ -13,6 +13,8 @@
 #
 
 import click
+from pyvcloud.vcd.client import IpAddressMode
+from pyvcloud.vcd.client import NetworkAdapterType
 from pyvcloud.vcd.vapp import VApp
 from pyvcloud.vcd.vdc import VDC
 from pyvcloud.vcd.vm import VM
@@ -32,21 +34,39 @@ def vm(ctx):
     Examples
         vcd vm list
             Get list of VMs in current virtual datacenter.
+
 \b
         vcd vm info vapp1 vm1
             Get details of the VM 'vm1' in vApp 'vapp1'.
+
 \b
         vcd vm update vapp1 vm1 --cpu 2 --core 2
             Modifies the VM 'vm1' in vApp 'vapp1' to be configured
             with 2 cpu and 2 cores .
+
 \b
         vcd vm update vapp1 vm1 --memory 512
             Modifies the VM 'vm1' in vApp 'vapp1' to be configured
             with the specified memory .
+
 \b
         vcd vm update vapp1 vm1 --cpu 2 --memory 512
             Modifies the VM 'vm1' in vApp 'vapp1' to be configured
             with 2 cpu and the specified memory .
+
+\b
+        vcd vm add-nic vapp1 vm1
+                --adapter-type VMXNET3
+                --primary
+                --connect
+                --network network_name
+                --ip-address-mode MANUAL
+                --ip-address 192.168.1.10
+            Adds a nic to the VM.
+
+\b
+        vcd vm list-nics vapp1 vm1
+            Lists the nics of the VM.
     """
     pass
 
@@ -60,6 +80,21 @@ def list_vms(ctx):
         stderr(e, ctx)
 
 
+def _get_vapp(ctx, vapp_name):
+    client = ctx.obj['client']
+    vdc_href = ctx.obj['profiles'].get('vdc_href')
+    vdc = VDC(client, href=vdc_href)
+    vapp_resource = vdc.get_vapp(vapp_name)
+    return VApp(client, resource=vapp_resource)
+
+
+def _get_vm(ctx, vapp_name, vm_name):
+    client = ctx.obj['client']
+    vapp = _get_vapp(ctx, vapp_name)
+    vm_resource = vapp.get_vm(vm_name)
+    return VM(client, resource=vm_resource)
+
+
 @vm.command(short_help='show VM details')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
@@ -67,11 +102,7 @@ def list_vms(ctx):
 def info(ctx, vapp_name, vm_name):
     try:
         restore_session(ctx, vdc_required=True)
-        client = ctx.obj['client']
-        vdc_href = ctx.obj['profiles'].get('vdc_href')
-        vdc = VDC(client, href=vdc_href)
-        vapp_resource = vdc.get_vapp(vapp_name)
-        vapp = VApp(client, resource=vapp_resource)
+        vapp = _get_vapp(ctx, vapp_name)
         result = {}
         result['primary_ip'] = vapp.get_primary_ip(vm_name)
         stdout(result, ctx)
@@ -108,13 +139,7 @@ def info(ctx, vapp_name, vm_name):
 def update(ctx, vapp_name, vm_name, cpu, cores, memory):
     try:
         restore_session(ctx, vdc_required=True)
-        client = ctx.obj['client']
-        vdc_href = ctx.obj['profiles'].get('vdc_href')
-        vdc = VDC(client, href=vdc_href)
-        vapp_resource = vdc.get_vapp(vapp_name)
-        vapp = VApp(client, resource=vapp_resource)
-        vm_resource = vapp.get_vm(vm_name)
-        vm = VM(client, resource=vm_resource)
+        vm = _get_vm(ctx, vapp_name, vm_name)
         if cpu is not None:
             task_cpu_update = vm.modify_cpu(cpu, cores)
             stdout("Updating cpu (and core(s) if specified) for the VM")
@@ -123,5 +148,84 @@ def update(ctx, vapp_name, vm_name, cpu, cores, memory):
             task_memory_update = vm.modify_memory(memory)
             stdout("Updating memory for the VM")
             stdout(task_memory_update, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('add-nic', short_help='Add a nic to the VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'adapter_type',
+    '--adapter-type',
+    required=False,
+    metavar='<adapter-type>',
+    type=click.Choice([
+        NetworkAdapterType.VLANCE.value, NetworkAdapterType.VMXNET.value,
+        NetworkAdapterType.VMXNET2.value, NetworkAdapterType.VMXNET3.value,
+        NetworkAdapterType.E1000.value
+    ]),
+    help='adapter type of nic - one of VLANCE|VMXNET|VMXNET2|VMXNET3|E1000')
+@click.option(
+    'primary',
+    '--primary',
+    required=False,
+    is_flag=True,
+    metavar='<primary>',
+    help='whether nic has to be a primary')
+@click.option(
+    'connect',
+    '--connect',
+    required=False,
+    is_flag=True,
+    metavar='<connect>',
+    help='whether nic has to be connected')
+@click.option(
+    'network',
+    '--network',
+    required=False,
+    default='none',
+    metavar='<network>',
+    help='network to connect to')
+@click.option(
+    'ip_address_mode',
+    '--ip-address-mode',
+    required=False,
+    default=IpAddressMode.DHCP.value,
+    metavar='<ip-address-mode>',
+    type=click.Choice([
+        IpAddressMode.DHCP.value, IpAddressMode.POOL.value,
+        IpAddressMode.MANUAL.value
+    ]),
+    help='IP address allocation mode - one of DHCP|POOL|MANUAL|NONE')
+@click.option(
+    'ip_address',
+    '--ip-address',
+    required=False,
+    metavar='<ip-address>',
+    help='nanual IP address that needs to be allocated to the nic')
+def add_nic(ctx, vapp_name, vm_name, adapter_type, primary, connect, network,
+            ip_address_mode, ip_address):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.add_nic(adapter_type, primary, connect, network,
+                          ip_address_mode, ip_address)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('list-nics', short_help='List all the nics of the VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def list_nics(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        nics = vm.list_nics()
+        stdout(nics, ctx)
     except Exception as e:
         stderr(e, ctx)

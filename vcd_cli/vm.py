@@ -229,3 +229,24 @@ def list_nics(ctx, vapp_name, vm_name):
         stdout(nics, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+
+@vm.command('delete-nic', short_help='Delete the nic with the index')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'index',
+    '--index',
+    required=True,
+    metavar='<index>',
+    type=click.INT,
+    help='index of the nic to be deleted')
+def delete_nic(ctx, vapp_name, vm_name, index):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.delete_nic(index)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)

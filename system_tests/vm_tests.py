@@ -65,10 +65,20 @@ class VmTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
-    def test_0100_list_nics(self):
-        """Add a nic to the VM."""
+    def test_0101_list_nics(self):
+        """List all nisc of the VM."""
         result = VmTest._runner.invoke(
             vm, args=['list-nics', VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0105_delete_nic(self):
+        """Delete a nic of the VM."""
+        result = VmTest._runner.invoke(
+            vm,
+            args=[
+                'delete-nic', VAppConstants.name, VAppConstants.vm1_name,
+                '--index', 0
+            ])
         self.assertEqual(0, result.exit_code)
 
     def test_9998_tearDown(self):

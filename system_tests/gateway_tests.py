@@ -109,8 +109,9 @@ class GatewayTest(BaseTestCase):
             args=['create', self._name, '-e', GatewayTest._ext_network_name])
         GatewayTest._logger.debug("vcd gateway create <name> -e <ext nw>: {"
                                   "0}".format(result_create1.output))
-        self.assertTrue(self._validate_result_for_unclosed_sslsocket_warning(
-            result_create1))
+        self.assertTrue(
+            self._validate_result_for_unclosed_sslsocket_warning(
+                result_create1))
         self._delete_gateway()
 
     def _validate_result_for_unclosed_sslsocket_warning(self, result):
@@ -137,8 +138,9 @@ class GatewayTest(BaseTestCase):
                                       GatewayTest._ext_network_name,
                                       GatewayTest._subnet_addr,
                                       result_create2.output))
-        self.assertTrue(self._validate_result_for_unclosed_sslsocket_warning(
-            result_create2))
+        self.assertTrue(
+            self._validate_result_for_unclosed_sslsocket_warning(
+                result_create2))
         self._delete_gateway()
 
     def _get_ip_range(self):
@@ -170,8 +172,9 @@ class GatewayTest(BaseTestCase):
                                       GatewayTest._ext_network_name,
                                       GatewayTest._subnet_addr, ip_range,
                                       result_create3.output))
-        self.assertTrue(self._validate_result_for_unclosed_sslsocket_warning(
-            result_create3))
+        self.assertTrue(
+            self._validate_result_for_unclosed_sslsocket_warning(
+                result_create3))
         self._delete_gateway()
 
     def test_0004_create_gateway_with_default_gateway_and_dns_relay_enabled(
@@ -195,8 +198,9 @@ class GatewayTest(BaseTestCase):
             "--default-gateway-ip {0} --dns-relay-enabled "
             "--advanced-enabled : {"
             "1}".format(GatewayTest._gateway_ip, result_create5.output))
-        self.assertTrue(self._validate_result_for_unclosed_sslsocket_warning(
-            result_create5))
+        self.assertTrue(
+            self._validate_result_for_unclosed_sslsocket_warning(
+                result_create5))
         self._delete_gateway()
 
     def test_0005_create_gateway_with_configure_rate_limit(self):
@@ -263,8 +267,7 @@ class GatewayTest(BaseTestCase):
 
         It will trigger the cli command with command 'info'
         """
-        result_info = self._runner.invoke(
-            gateway, args=['info', self._name])
+        result_info = self._runner.invoke(gateway, args=['info', self._name])
         self.assertEqual(0, result_info.exit_code)
 
     def test_0010_redeploy_gateway(self):
@@ -272,8 +275,7 @@ class GatewayTest(BaseTestCase):
 
         It will trigger the cli command with option redeploy
         """
-        result = self._runner.invoke(
-            gateway, args=['redeploy', self._name])
+        result = self._runner.invoke(gateway, args=['redeploy', self._name])
         self.assertEqual(0, result.exit_code)
 
     def test_0011_sync_syslog_settings(self):
@@ -292,8 +294,8 @@ class GatewayTest(BaseTestCase):
         result_info = self._runner.invoke(
             gateway, args=['list-config-ip-settings', self._name])
         GatewayTest._logger.debug('result output {0}'.format(result_info))
-        self.assertTrue(self._validate_result_for_unclosed_sslsocket_warning(
-            result_info))
+        self.assertTrue(
+            self._validate_result_for_unclosed_sslsocket_warning(result_info))
 
     def _create_external_network(self):
         """Create an external network as per configuration stated above.
@@ -329,8 +331,8 @@ class GatewayTest(BaseTestCase):
                 '--port-group', _port_group, '--gateway', '10.10.30.1',
                 '--netmask', '255.255.255.0', '--ip-range',
                 '10.10.30.101-10.10.30.150', '--description',
-                self._external_network_name, '--dns1',
-                '8.8.8.8', '--dns2', '8.8.8.9', '--dns-suffix', 'example.com'
+                self._external_network_name, '--dns1', '8.8.8.8', '--dns2',
+                '8.8.8.9', '--dns-suffix', 'example.com'
             ])
         self.assertEqual(0, result.exit_code)
 
@@ -382,13 +384,11 @@ class GatewayTest(BaseTestCase):
          It will trigger the cli command update
         """
         result = self._runner.invoke(
-            gateway,
-            args=['update', self._name, '-n', 'gateway2'])
+            gateway, args=['update', self._name, '-n', 'gateway2'])
         self.assertEqual(0, result.exit_code)
         """ resetting back to original name"""
         result = self._runner.invoke(
-            gateway,
-            args=['update', 'gateway2', '-n', self._name])
+            gateway, args=['update', 'gateway2', '-n', self._name])
         self.assertEqual(0, result.exit_code)
 
     @unittest.skip("Its running for base gateway and not for other "
@@ -399,21 +399,18 @@ class GatewayTest(BaseTestCase):
 
         It will trigger the cli command with option config-ip-settings
         """
-        GatewayTest._logger.debug("vcd gateway configure-ip-settings {} -e {} "
-                                  "-s {} True {}".format(self._name,
-                                                         GatewayTest.
-                                                         _ext_network_name,
-                                                         GatewayTest.
-                                                         _subnet_addr,
-                                                         GatewayTest.
-                                                         _new_config_ip))
+        GatewayTest._logger.debug(
+            "vcd gateway configure-ip-settings {} -e {} "
+            "-s {} True {}".format(self._name, GatewayTest._ext_network_name,
+                                   GatewayTest._subnet_addr,
+                                   GatewayTest._new_config_ip))
         result = self._runner.invoke(
             gateway,
             args=[
-                'configure-ip-settings', self._name,
-                '--external-network', GatewayTest._ext_network_name,
-                '--subnet-available', GatewayTest._subnet_addr, True,
-                GatewayTest._new_config_ip])
+                'configure-ip-settings', self._name, '--external-network',
+                GatewayTest._ext_network_name, '--subnet-available',
+                GatewayTest._subnet_addr, True, GatewayTest._new_config_ip
+            ])
         GatewayTest._logger.debug("result {} ".format(result.output))
         self.assertEqual(0, result.exit_code)
 
@@ -429,8 +426,9 @@ class GatewayTest(BaseTestCase):
         result = self._runner.invoke(
             gateway,
             args=[
-                'sub-allocate-ip', 'add', self._name, '-e',
-                ext_name, '--ip-range', gateway_sub_allocated_ip_range])
+                'sub-allocate-ip', 'add', self._name, '-e', ext_name,
+                '--ip-range', gateway_sub_allocated_ip_range
+            ])
         self.assertEqual(0, result.exit_code)
 
     def test_0018_edit_sub_allocated_ip_pools(self):
@@ -447,9 +445,10 @@ class GatewayTest(BaseTestCase):
         result = self._runner.invoke(
             gateway,
             args=[
-                'sub-allocate-ip', 'update', self._name, '-e',
-                ext_name, '-o', gateway_sub_allocated_ip_range,
-                '-n', gateway_sub_allocated_ip_range1])
+                'sub-allocate-ip', 'update', self._name, '-e', ext_name, '-o',
+                gateway_sub_allocated_ip_range, '-n',
+                gateway_sub_allocated_ip_range1
+            ])
         self.assertEqual(0, result.exit_code)
 
     def test_0019_remove_sub_allocated_ip_pools(self):
@@ -464,13 +463,14 @@ class GatewayTest(BaseTestCase):
         result = self._runner.invoke(
             gateway,
             args=[
-                'sub-allocate-ip', 'remove', self._name, '-e',
-                ext_name, '-i', gateway_sub_allocated_ip_range])
+                'sub-allocate-ip', 'remove', self._name, '-e', ext_name, '-i',
+                gateway_sub_allocated_ip_range
+            ])
 
-        GatewayTest._logger.debug(
-            "vcd gateway sub-allocate-ip remove {0}"
-            "-e {1} -i {2}".format(
-                self._name, ext_name, gateway_sub_allocated_ip_range))
+        GatewayTest._logger.debug("vcd gateway sub-allocate-ip remove {0}"
+                                  "-e {1} -i {2}".format(
+                                      self._name, ext_name,
+                                      gateway_sub_allocated_ip_range))
         self.assertEqual(0, result.exit_code)
 
     @unittest.skip("Its running for base gateway and not for other "
@@ -487,7 +487,8 @@ class GatewayTest(BaseTestCase):
             gateway,
             args=[
                 'configure-rate-limits', 'list', self._name, '-r',
-                [(ext_name, '101.0', '101.0')]])
+                [(ext_name, '101.0', '101.0')]
+            ])
         self.assertEqual(0, result.exit_code)
 
     def test_0021_list_rate_limit(self):
@@ -495,8 +496,7 @@ class GatewayTest(BaseTestCase):
          It will trigger the cli command configure-rate-limits update
         """
         result = self._runner.invoke(
-            gateway,
-            args=['configure-rate-limits', 'list', self._name])
+            gateway, args=['configure-rate-limits', 'list', self._name])
         self.assertEqual(0, result.exit_code)
 
     def test_0022_disable_rate_limit(self):
@@ -508,8 +508,9 @@ class GatewayTest(BaseTestCase):
         ext_name = config['name']
         result = self._runner.invoke(
             gateway,
-            args=['configure-rate-limits', 'disable', self._name, '-e',
-                  ext_name])
+            args=[
+                'configure-rate-limits', 'disable', self._name, '-e', ext_name
+            ])
         self.assertEqual(0, result.exit_code)
 
     def test_0023_configure_default_gateways(self):
@@ -528,9 +529,10 @@ class GatewayTest(BaseTestCase):
                                   "2}".format(self._name, ext_name, ip))
         result = self._runner.invoke(
             gateway,
-            args=['configure-default-gateway', 'update', self._name, '-e',
-                  ext_name, '--gateway-ip', ip,
-                  '--enable'])
+            args=[
+                'configure-default-gateway', 'update', self._name, '-e',
+                ext_name, '--gateway-ip', ip, '--enable'
+            ])
         self.assertEqual(0, result.exit_code)
 
     def test_0024_enable_dns_relay(self):
@@ -540,8 +542,10 @@ class GatewayTest(BaseTestCase):
         """
         result = self._runner.invoke(
             gateway,
-            args=['configure-default-gateway', 'enable-dns-relay', self._name,
-                  '--enable'])
+            args=[
+                'configure-default-gateway', 'enable-dns-relay', self._name,
+                '--enable'
+            ])
         self.assertEqual(0, result.exit_code)
 
     def test_0025_list_configure_default_gateways(self):
@@ -563,8 +567,19 @@ class GatewayTest(BaseTestCase):
         result_info = self._runner.invoke(
             gateway, args=['list-syslog-server', self._name])
         GatewayTest._logger.debug('result output {0}'.format(result_info))
-        self.assertTrue(self._validate_result_for_unclosed_sslsocket_warning(
-            result_info))
+        self.assertTrue(
+            self._validate_result_for_unclosed_sslsocket_warning(result_info))
+
+    def test_0031_set_tenant_syslog_ip(self):
+        """Set information of the gateway tenant syslog ip server.
+
+        It will trigger the cli command with option set-syslog-server
+        """
+        ip = '192.168.5.6'
+        result = self._runner.invoke(
+            gateway, args=['set-syslog-server', self._name, ip])
+        GatewayTest._logger.debug('result output {0}'.format(result))
+        self.assertEqual(0, result.exit_code)
 
     def test_0098_tearDown(self):
         result_delete = self._runner.invoke(

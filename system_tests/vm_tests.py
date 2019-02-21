@@ -66,7 +66,7 @@ class VmTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0101_list_nics(self):
-        """List all nisc of the VM."""
+        """List all nics of the VM."""
         result = VmTest._runner.invoke(
             vm, args=['list-nics', VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)

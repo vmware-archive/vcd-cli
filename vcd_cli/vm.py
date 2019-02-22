@@ -15,6 +15,7 @@
 import click
 from pyvcloud.vcd.client import IpAddressMode
 from pyvcloud.vcd.client import NetworkAdapterType
+from pyvcloud.vcd.utils import vm_to_dict
 from pyvcloud.vcd.vapp import VApp
 from pyvcloud.vcd.vdc import VDC
 from pyvcloud.vcd.vm import VM
@@ -97,7 +98,7 @@ def _get_vm(ctx, vapp_name, vm_name):
     client = ctx.obj['client']
     vapp = _get_vapp(ctx, vapp_name)
     vm_resource = vapp.get_vm(vm_name)
-    return VM(client, resource=vm_resource)
+    return VM(client, href=vm_resource.get('href'))
 
 
 @vm.command(short_help='show VM details')
@@ -107,9 +108,9 @@ def _get_vm(ctx, vapp_name, vm_name):
 def info(ctx, vapp_name, vm_name):
     try:
         restore_session(ctx, vdc_required=True)
-        vapp = _get_vapp(ctx, vapp_name)
-        result = {}
-        result['primary_ip'] = vapp.get_primary_ip(vm_name)
+        vm = _get_vm(ctx, vapp_name, vm_name).get_resource()
+        result = vm_to_dict(vm)
+        result['vapp'] = vapp_name
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

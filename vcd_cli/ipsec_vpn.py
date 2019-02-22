@@ -73,7 +73,7 @@ def ipsec_vpn(ctx):
                 Set global log level for IPsec VPN.
 
     \b
-            vcd gateway services ipsec-vpn list-ipsec-vpn test_gateway1
+            vcd gateway services ipsec-vpn list test_gateway1
                 List IPsec VPN of a gateway.
 
     \b
@@ -82,7 +82,7 @@ def ipsec_vpn(ctx):
                 Change shared key of IPsec VPN.
 
     \b
-            vcd gateway services ipsec-vpn info-ipsec-vpn test_gateway1
+            vcd gateway services ipsec-vpn info test_gateway1
                     <ipsec_vpn_id>
                 Info IPsec VPN. ipsec_vpn_id is local_end_point-peer_end_point
 
@@ -436,7 +436,7 @@ def set_log_level(ctx, gateway_name, log_level):
         stderr(e, ctx)
 
 
-@ipsec_vpn.command("list-ipsec-vpn",
+@ipsec_vpn.command("list",
                    short_help="list ipsec vpn")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
@@ -462,7 +462,7 @@ def change_shared_key(ctx, gateway_name, new_shared_key):
         stderr(e, ctx)
 
 
-@ipsec_vpn.command("info-ipsec-vpn", short_help="info ipsec vpn")
+@ipsec_vpn.command("info", short_help="info ipsec vpn")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
 @click.argument('id', metavar='<local end point-peer end point>', required=True)

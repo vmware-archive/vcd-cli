@@ -26,6 +26,8 @@ from vcd_cli.login import login, logout
 from vcd_cli.org import org
 from vcd_cli.vm import vm
 
+import re
+
 
 class VmTest(BaseTestCase):
     """Test VM related commands
@@ -52,6 +54,18 @@ class VmTest(BaseTestCase):
         VmTest._test_vm = VM(
             VmTest._client,
             href=VmTest._test_vapp.get_vm(VAppConstants.vm1_name).get('href'))
+
+    def test_0090_info(self):
+        """Get info of the VM."""
+        result = VmTest._runner.invoke(
+            vm, args=['info', VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+        # verify output
+        vm_name_regex = r"name\s*%s" % VAppConstants.vm1_name
+        vapp_regex = r"vapp\s*%s" % VAppConstants.name
+        # finall returns a list. checking that list is not empty.
+        self.assertTrue(re.findall(vm_name_regex, result.output))
+        self.assertTrue(re.findall(vapp_regex, result.output))
 
     def test_0100_add_nic(self):
         """Add a nic to the VM."""

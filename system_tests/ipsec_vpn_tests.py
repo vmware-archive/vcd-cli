@@ -106,6 +106,20 @@ class TestIpSecVpn(BaseTestCase):
                 '--new-name', TestIpSecVpn._new_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0015_info_ipsec_vpn(self):
+        """Update given ipsec vpn.
+
+        It will trigger the cli command services ipsec_vpn
+        info-ipsec-vpn
+        """
+        id = TestIpSecVpn._local_ip + '-' + TestIpSecVpn._peer_ip
+        result = TestIpSecVpn._runner.invoke(
+            gateway,
+            args=[
+                'services', 'ipsec-vpn', 'info-ipsec-vpn', TestIpSecVpn._name,
+                id])
+        self.assertEqual(0, result.exit_code)
+
     def test_0020_enable_activation_status(self):
         """Enables activation status of ipsec vpn.
 

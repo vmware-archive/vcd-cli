@@ -45,7 +45,7 @@ def ipsec_vpn(ctx):
                 Creates new IPsec VPN.
 
     \b
-            vcd gateway services ipsec-vpn update test_gateway1 ipsec_vpn_id
+            vcd gateway services ipsec-vpn update test_gateway1 2.2.3.2-2.2.3.3
                     --new-name new_name
                     --enable
                 Updates IPsec VPN with new values.
@@ -83,12 +83,12 @@ def ipsec_vpn(ctx):
 
     \b
             vcd gateway services ipsec-vpn info test_gateway1
-                    <ipsec_vpn_id>
-                Info IPsec VPN. ipsec_vpn_id is local_end_point-peer_end_point
+                    2.2.3.2-2.2.3.3
+                Info IPsec VPN.
 
     \b
-            vcd gateway services ipsec-vpn delete test_gateway1 <ipsec_vpn_id>
-                Deletes IPsec VPN. ipsec_vpn_id is local_end_point-peer_end_point
+            vcd gateway services ipsec-vpn delete test_gateway1 2.2.3.2-2.2.3.3
+                Deletes IPsec VPN.
 
     """
     __DEFAULT_ENCRYPTION_PROTOCOL = 'aes'

@@ -116,7 +116,7 @@ class TestIpSecVpn(BaseTestCase):
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
-                'services', 'ipsec-vpn', 'info-ipsec-vpn', TestIpSecVpn._name,
+                'services', 'ipsec-vpn', 'info', TestIpSecVpn._name,
                 id])
         self.assertEqual(0, result.exit_code)
 
@@ -194,7 +194,7 @@ class TestIpSecVpn(BaseTestCase):
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
-                'services', 'ipsec-vpn', 'list-ipsec-vpn',
+                'services', 'ipsec-vpn', 'list',
                 TestIpSecVpn._name])
         self.assertEqual(0, result.exit_code)
 

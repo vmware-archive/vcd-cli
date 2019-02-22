@@ -45,6 +45,12 @@ def ipsec_vpn(ctx):
                 Creates new IPsec VPN.
 
     \b
+            vcd gateway services ipsec-vpn update test_gateway1 ipsec_vpn_id
+                    --name new_name
+                    --enable
+                Updates IPsec VPN with new values.
+
+    \b
             vcd gateway services ipsec-vpn enable-activation-status test_gateway1
                     --enable
                 Enable/disable activation status.
@@ -216,11 +222,124 @@ def create_ipsec_vpn(ctx, gateway_name, name, local_id, peer_id, local_ip,
         stderr(e, ctx)
 
 
+@ipsec_vpn.command("update", short_help="update IPsec VPN")
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+@click.argument('id', metavar='<local end point-peer end point>', required=True)
+@click.option(
+    '--new-name',
+    'name',
+    metavar='<IPsec VPN name>',
+    help='IPsec VPN name')
+@click.option(
+    '-lid',
+    '--local-id',
+    'local_id',
+    metavar='<local-id>',
+    help='Local id of IPsec VPN.')
+@click.option(
+    '-pid',
+    '--peer-id',
+    'peer_id',
+    metavar='<peer-id>',
+    help='Peer id of IPsec VPN.')
+@click.option(
+    '-lip',
+    '--local-ip',
+    'local_ip',
+    metavar='<local-ip>',
+    help='Local IP/Local end point of IPsec VPN.')
+@click.option(
+    '-pip',
+    '--peer-ip',
+    'peer_ip',
+    metavar='<peer-ip>',
+    help='Peer IP/Peer end point of IPsec VPN.')
+@click.option(
+    '-lsubnet',
+    '--local-subnet',
+    'local_subnet',
+    metavar='<local-subnet>',
+    help='Local subnets of IPsec VPN.These should be given comma separated.')
+@click.option(
+    '-psubnet',
+    '--peer-subnet',
+    'peer_subnet',
+    metavar='<peer-subnet>',
+    help='Peer subnets of IPsec VPN.These should be given comma separated.')
+@click.option(
+    '-psk',
+    '--pre-shared-key',
+    'pre_shared_key',
+    metavar='<pre-shared-key>',
+    help='Pre shared key of IPsec VPN.')
+@click.option(
+    '--description',
+    'description',
+    metavar='<description>',
+    help='Description of IPsec VPN.')
+@click.option(
+    '--encryption-protocol',
+    'encryption_protocol',
+    metavar='<encryption protocol>',
+    help='encryption protocol of IPsec VPN.')
+@click.option(
+    '--authentication-mode',
+    'authentication_mode',
+    metavar='<authentication_mode>',
+    help='authentication_mode of IPsec VPN.')
+@click.option(
+    '--dh-group',
+    'dh_group',
+    metavar='<dh group>',
+    help='dh group for IPsec VPN.')
+@click.option(
+    '--mtu',
+    'mtu',
+    metavar='<mtu>',
+    help='mtu for IPsec VPN.')
+@click.option(
+    '--enable/--disable',
+    'enabled',
+    metavar='<bool>',
+    is_flag=True,
+    help='enable/disable IPsec VPN')
+@click.option(
+    '--enable_pfs/--disable_pfs',
+    'enable_pfs',
+    metavar='<bool>',
+    is_flag=True,
+    help='enable/disable PFS of IPsec VPN')
+def update_ipsec_vpn(ctx, gateway_name, id, name, local_id, peer_id, local_ip,
+                     peer_ip, local_subnet, peer_subnet, pre_shared_key,
+                     description, encryption_protocol, authentication_mode,
+                     dh_group, mtu, enabled, enable_pfs):
+    try:
+        ipsec_vpn_obj = get_ipsec_vpn(ctx, gateway_name, id)
+        ipsec_vpn_obj.update_ipsec_vpn(name=name,
+                                       peer_id=peer_id,
+                                       peer_ip_address=peer_ip,
+                                       local_id=local_id,
+                                       local_ip_address=local_ip,
+                                       local_subnet=local_subnet,
+                                       peer_subnet=peer_subnet,
+                                       shared_secret_encrypted=pre_shared_key,
+                                       encryption_protocol=encryption_protocol,
+                                       authentication_mode=authentication_mode,
+                                       dh_group=dh_group,
+                                       mtu=mtu,
+                                       description=description,
+                                       is_enabled=enabled,
+                                       enable_pfs=enable_pfs)
+        stdout('IPsec VPN updated successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
 @ipsec_vpn.command("delete", short_help="Deletes the IPsec VPN")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
-@click.argument('id', metavar='<local end point-peer end point>'
-    , required=True)
+@click.argument('id', metavar='<local end point-peer end point>', required=True)
 def delete_ipsec_vpn(ctx, gateway_name, id):
     try:
         ipsec_vpn_obj = get_ipsec_vpn(ctx, gateway_name, id)
@@ -295,6 +414,7 @@ def info_logging_settings(ctx, gateway_name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @ipsec_vpn.command("set-log-level",
                    short_help="set log level of IPsec VPN. It's value should be"
                               " from the domain:{emergency, alert, critical, "
@@ -310,6 +430,7 @@ def set_log_level(ctx, gateway_name, log_level):
     except Exception as e:
         stderr(e, ctx)
 
+
 @ipsec_vpn.command("list-ipsec-vpn",
                    short_help="list ipsec vpn")
 @click.pass_context
@@ -322,6 +443,7 @@ def list_ipsec_vpn(ctx, gateway_name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @ipsec_vpn.command("change-shared-key", short_help="list ipsec vpn")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
@@ -333,6 +455,7 @@ def change_shared_key(ctx, gateway_name, new_shared_key):
         stdout('IPsec VPN shared key changed.', ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 def get_ipsec_vpn(ctx, gateway_name, id):
     """Get the sdk's ipsec vpn object.

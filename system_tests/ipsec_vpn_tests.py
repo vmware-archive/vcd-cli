@@ -46,6 +46,7 @@ class TestIpSecVpn(BaseTestCase):
     _psk = 'abcd1234'
     _changed_psk = "abcdefghijkl"
     _log_level = "warning"
+    _new_name = "updated_ipsec"
 
     def test_0000_setup(self):
         """Add one orgvdc, one gateways and one routed orgvdc networks.
@@ -82,13 +83,27 @@ class TestIpSecVpn(BaseTestCase):
             args=[
                 'services', 'ipsec-vpn', 'create', TestIpSecVpn._name,
                 '--name', TestIpSecVpn._ipsec_vpn_name,
-                '--local-id',TestIpSecVpn._local_id,
-                '--peer-id',TestIpSecVpn._peer_id,
-                '--local-ip',TestIpSecVpn._local_ip,
-                '--peer-ip' ,TestIpSecVpn._peer_ip,
+                '--local-id', TestIpSecVpn._local_id,
+                '--peer-id', TestIpSecVpn._peer_id,
+                '--local-ip', TestIpSecVpn._local_ip,
+                '--peer-ip', TestIpSecVpn._peer_ip,
                 '--local-subnet', TestIpSecVpn._local_subnet,
                 '--peer-subnet', TestIpSecVpn._peer_subnet,
-                '--pre-shared-key',TestIpSecVpn._psk,'--enable'])
+                '--pre-shared-key', TestIpSecVpn._psk, '--enable'])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0010_update_ipsec_vpn(self):
+        """Update given ipsec vpn.
+
+        It will trigger the cli command services ipsec_vpn
+        update
+        """
+        id = TestIpSecVpn._local_ip + '-' + TestIpSecVpn._peer_ip
+        result = TestIpSecVpn._runner.invoke(
+            gateway,
+            args=[
+                'services', 'ipsec-vpn', 'update', TestIpSecVpn._name, id,
+                '--new-name', TestIpSecVpn._new_name])
         self.assertEqual(0, result.exit_code)
 
     def test_0020_enable_activation_status(self):
@@ -101,7 +116,7 @@ class TestIpSecVpn(BaseTestCase):
             gateway,
             args=[
                 'services', 'ipsec-vpn', 'enable-activation-status',
-                TestIpSecVpn._name,'--enable'])
+                TestIpSecVpn._name, '--enable'])
         self.assertEqual(0, result.exit_code)
 
     def test_0025_info_activation_status(self):
@@ -127,7 +142,7 @@ class TestIpSecVpn(BaseTestCase):
             gateway,
             args=[
                 'services', 'ipsec-vpn', 'enable-logging',
-                TestIpSecVpn._name,'--enable'])
+                TestIpSecVpn._name, '--enable'])
         self.assertEqual(0, result.exit_code)
 
     def test_0030_info_logging_settings(self):
@@ -153,7 +168,7 @@ class TestIpSecVpn(BaseTestCase):
             gateway,
             args=[
                 'services', 'ipsec-vpn', 'set-log-level',
-                TestIpSecVpn._name,'warning'])
+                TestIpSecVpn._name, 'warning'])
         self.assertEqual(0, result.exit_code)
 
     def test_0045_list_ipsec_vpn(self):
@@ -179,7 +194,7 @@ class TestIpSecVpn(BaseTestCase):
             gateway,
             args=[
                 'services', 'ipsec-vpn', 'change-shared-key',
-                TestIpSecVpn._name,'newsharedkey'])
+                TestIpSecVpn._name, 'newsharedkey'])
         self.assertEqual(0, result.exit_code)
 
     def test_0090_delete_ipsec_vpn(self):
@@ -187,12 +202,12 @@ class TestIpSecVpn(BaseTestCase):
 
         It will trigger the cli command services ipsec_vpn delete
         """
-        id=TestIpSecVpn._local_ip+'-'+TestIpSecVpn._peer_ip
+        id = TestIpSecVpn._local_ip + '-' + TestIpSecVpn._peer_ip
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
                 'services', 'ipsec-vpn', 'delete', TestIpSecVpn._name,
-                    id])
+                id])
         self.assertEqual(0, result.exit_code)
 
     def _login(self):
@@ -363,5 +378,5 @@ class TestIpSecVpn(BaseTestCase):
         TestIpSecVpn._routednet_obj = VdcNetwork(TestIpSecVpn._client,
                                                  href=TestIpSecVpn.
                                                  _routednet_href)
-        TestIpSecVpn._routednet_resource = TestIpSecVpn.\
+        TestIpSecVpn._routednet_resource = TestIpSecVpn. \
             _routednet_obj.get_resource()

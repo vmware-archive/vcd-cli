@@ -107,10 +107,10 @@ class TestIpSecVpn(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0015_info_ipsec_vpn(self):
-        """Update given ipsec vpn.
+        """Get details of given ipsec vpn.
 
         It will trigger the cli command services ipsec_vpn
-        info-ipsec-vpn
+        info
         """
         id = TestIpSecVpn._local_ip + '-' + TestIpSecVpn._peer_ip
         result = TestIpSecVpn._runner.invoke(
@@ -189,7 +189,7 @@ class TestIpSecVpn(BaseTestCase):
         """List IPsec VPN of a gateway.
 
         It will trigger the cli command services ipsec_vpn
-        list-ipsec-vpn
+        list
         """
         result = TestIpSecVpn._runner.invoke(
             gateway,

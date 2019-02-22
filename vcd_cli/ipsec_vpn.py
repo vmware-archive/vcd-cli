@@ -84,7 +84,7 @@ def ipsec_vpn(ctx):
     \b
             vcd gateway services ipsec-vpn info test_gateway1
                     2.2.3.2-2.2.3.3
-                Info IPsec VPN.
+                Get details of IPsec VPN.
 
     \b
             vcd gateway services ipsec-vpn delete test_gateway1 2.2.3.2-2.2.3.3
@@ -462,7 +462,7 @@ def change_shared_key(ctx, gateway_name, new_shared_key):
         stderr(e, ctx)
 
 
-@ipsec_vpn.command("info", short_help="info ipsec vpn")
+@ipsec_vpn.command("info", short_help="get details of ipsec vpn")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
 @click.argument('id', metavar='<local end point-peer end point>', required=True)

@@ -353,9 +353,17 @@ def list_vapps(ctx, name):
     is_flag=True,
     default=False,
     help='Accept all EULAs')
+@click.option(
+    '-z',
+    '--clone_mode',
+    'clone_mode',
+    required=False,
+    default=None,
+    metavar='name',
+    help='Clone mode')
 def create(ctx, name, description, catalog, template, network, memory, cpu,
            disk_size, ip_allocation_mode, vm_name, hostname, storage_profile,
-           accept_all_eulas):
+           accept_all_eulas, clone_mode):
     try:
         restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
@@ -367,6 +375,15 @@ def create(ctx, name, description, catalog, template, network, memory, cpu,
                 description=description,
                 network=network,
                 accept_all_eulas=accept_all_eulas)
+        elif clone_mode == 'exact_copy':
+            vapp_resource = vdc.instantiate_vapp(
+                name,
+                catalog,
+                template,
+                description=description,
+                network=network,
+                accept_all_eulas=accept_all_eulas,
+                clone_mode=clone_mode)
         else:
             vapp_resource = vdc.instantiate_vapp(
                 name,

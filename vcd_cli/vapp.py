@@ -925,106 +925,6 @@ def add_vm(ctx, name, source_vapp, source_vm, catalog, target_vm, hostname,
         stderr(e, ctx)
 
 
-@vapp.group(short_help='work with vapp network')
-@click.pass_context
-def network(ctx):
-    """Work with vapp network.
-
-\b
-   Description
-        Work with the vapp networks.
-\b
-        vdc vapp network create vapp1 vapp-network1
-                --subnet 192.168.1.1/24
-                --description 'vApp network'
-                --dns1 8.8.8.8
-                --dns2 8.8.8.9
-                --dns-suffix example.com
-                --ip-range 192.168.1.2-192.168.1.49
-                --ip-range 192.168.1.100-192.168.1.149
-                --guest-vlan-allowed-enabled
-            Create a vApp network.
-\b
-        vdc vapp network reset vapp1 vapp-network1
-            Reset a vApp network.
-\b
-        vdc vapp network delete vapp1 vapp-network1
-            Delete a vApp network.
-    """
-    pass
-
-
-@network.command('create', short_help='create a vApp network')
-@click.pass_context
-@click.argument('vapp-name', metavar='<vapp-name>', required=True)
-@click.argument('name', metavar='<name>', required=True)
-@click.option(
-    '--subnet', 'subnet', required=True, metavar='<CIDR>', help='Network CIDR')
-@click.option(
-    '--description',
-    'description',
-    metavar='<description>',
-    help='description')
-@click.option(
-    '--dns1', 'primary_dns_ip', metavar='<IP>', help='primary DNS IP')
-@click.option(
-    '--dns2', 'secondary_dns_ip', metavar='<IP>', help='secondary DNS IP')
-@click.option(
-    '--dns-suffix', 'dns_suffix', metavar='<Name>', help='dns suffix')
-@click.option(
-    '--ip-range',
-    'ip_ranges',
-    multiple=True,
-    metavar='<ip-range-start-ip-range-end>',
-    help='IP range')
-@click.option(
-    '--guest-vlan-allowed-enabled/--guest-vlan-allowed-disabled',
-    'is_guest_vlan_allowed',
-    default=False,
-    metavar='<bool>',
-    help='guest vlan allowed')
-def create_vapp_network(ctx, vapp_name, name, subnet, description,
-                        primary_dns_ip, secondary_dns_ip, dns_suffix,
-                        ip_ranges, is_guest_vlan_allowed):
-    try:
-        restore_session(ctx, vdc_required=True)
-        vapp = _get_vapp(ctx, vapp_name)
-        task = vapp.create_vapp_network(
-            name, subnet, description, primary_dns_ip, secondary_dns_ip,
-            dns_suffix, ip_ranges, is_guest_vlan_allowed)
-        stdout(task, ctx)
-    except Exception as e:
-        stderr(e, ctx)
-
-
-@network.command('reset', short_help='reset a vApp network')
-@click.pass_context
-@click.argument('vapp-name', metavar='<vapp-name>', required=True)
-@click.argument('network-name', metavar='<network-name>', required=True)
-def reset_vapp_network(ctx, vapp_name, network_name):
-    try:
-        restore_session(ctx, vdc_required=True)
-        vapp = _get_vapp(ctx, vapp_name)
-        task = vapp.reset_vapp_network(network_name)
-        stdout(task, ctx)
-    except Exception as e:
-        stderr(e, ctx)
-
-
-@network.command('delete', short_help='delete a vApp network')
-@click.pass_context
-@click.argument('vapp-name', metavar='<vapp-name>', required=True)
-@click.argument('network-name', metavar='<network-name>', required=True)
-def delete_vapp_network(ctx, vapp_name, network_name):
-    try:
-        restore_session(ctx, vdc_required=True)
-        vapp = _get_vapp(ctx, vapp_name)
-        task = vapp.delete_vapp_network(network_name)
-        stdout(task, ctx)
-    except Exception as e:
-        stderr(e, ctx)
-
-
 @vapp.group(short_help='work with vapp acl')
 @click.pass_context
 def acl(ctx):
@@ -1206,7 +1106,7 @@ def list_acl(ctx, vapp_name):
 def update_vapp(ctx, vapp_name, name, description):
     try:
         restore_session(ctx, vdc_required=True)
-        vapp = _get_vapp(ctx, vapp_name)
+        vapp = get_vapp(ctx, vapp_name)
 
         task = vapp.edit_name_and_description(name, description)
         stdout(task, ctx)
@@ -1214,7 +1114,7 @@ def update_vapp(ctx, vapp_name, name, description):
         stderr(e, ctx)
 
 
-def _get_vapp(ctx, vapp_name):
+def get_vapp(ctx, vapp_name):
     client = ctx.obj['client']
     vdc_href = ctx.obj['profiles'].get('vdc_href')
     vdc = VDC(client, href=vdc_href)

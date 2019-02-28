@@ -34,6 +34,7 @@ class GatewayTest(BaseTestCase):
         """
     _runner = None
     _name = ('test_gateway1' + str(uuid1()))[:34]
+    _new_name = ('test_gateway2' + str(uuid1()))[:34]
     _external_network_name = 'external_network_' + str(uuid1())
     _subnet_addr = None
     _ext_network_name = None
@@ -384,11 +385,11 @@ class GatewayTest(BaseTestCase):
          It will trigger the cli command update
         """
         result = self._runner.invoke(
-            gateway, args=['update', self._name, '-n', 'gateway2'])
+            gateway, args=['update', self._name, '-n', self._new_name])
         self.assertEqual(0, result.exit_code)
         """ resetting back to original name"""
         result = self._runner.invoke(
-            gateway, args=['update', 'gateway2', '-n', self._name])
+            gateway, args=['update', self._new_name, '-n', self._name])
         self.assertEqual(0, result.exit_code)
 
     @unittest.skip("Its running for base gateway and not for other "

@@ -129,7 +129,7 @@ def delete_vapp_network(ctx, vapp_name, network_name):
         stderr(e, ctx)
 
 
-@network.command('add-ip-range', short_help='add a ip range in network')
+@network.command('add-ip-range', short_help='add IP range/s to the network')
 @click.pass_context
 @click.argument('vapp_name', metavar='<vapp-name>', required=True)
 @click.argument('network_name', metavar='<network-name>', required=True)
@@ -153,7 +153,7 @@ def add_ip_range(ctx, vapp_name, network_name, ip_range):
         stderr(e, ctx)
 
 
-@network.command('delete-ip-range', short_help='delete a ip range in network')
+@network.command('delete-ip-range', short_help='delete an IP range in network')
 @click.pass_context
 @click.argument('vapp_name', metavar='<vapp-name>', required=True)
 @click.argument('network_name', metavar='<network-name>', required=True)

@@ -33,7 +33,6 @@ class TestCertificates(BaseTestCase):
 
     def test_0000_setup(self):
         TestCertificates._client = Environment.get_sys_admin_client()
-        TestCertificates._logger = Environment.get_default_logger()
         TestCertificates._config = Environment.get_config()
         TestCertificates._org = Environment.get_test_org(TestCertificates._client)
         test_gateway = Environment.get_test_gateway(TestCertificates._client)
@@ -54,10 +53,10 @@ class TestCertificates(BaseTestCase):
         result = TestCertificates._runner.invoke(
             gateway,
             args=[
-                'services', 'certificates', 'add-service-certificate',
-                TestCertificates._name, '--certificate-file-path',
+                'services', 'service-certificate', 'add',
+                TestCertificates._name, '--certificate-path',
                 TestCertificates._certificate_file_path,
-                '--private-key-file-path',
+                '--private-key-path',
                 TestCertificates._private_key_file_path])
         self.assertEqual(0, result.exit_code)
 

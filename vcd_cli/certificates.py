@@ -23,14 +23,15 @@ from vcd_cli.gateway import get_gateway
 from vcd_cli.gateway import services
 
 
-@services.group('certificates', short_help='Manage certificates of gateway')
+@services.group('service-certificate', short_help='Manage '
+                                                  'certificates of gateway')
 @click.pass_context
 def certificates(ctx):
     """Manages certificates of gateway.
 
     \b
         Examples
-            vcd gateway services certificates add-service-certificate test_gateway1
+            vcd gateway services service-certificate add test_gateway1
                     --certificate-file-path certificate.pem
                     --private-key-file-path private_key.pem
                     --pass-phrase 123234dkfs
@@ -39,18 +40,17 @@ def certificates(ctx):
 
     """
 
-@certificates.command("add-service-certificate", short_help="adds new service "
-                                                            "certificate")
+@certificates.command("add", short_help="adds new service certificate")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
 @click.option(
-    '--certificate-file-path',
+    '--certificate-path',
     'certificate_file_path',
     required=True,
     metavar='<>',
     help='certificate file path')
 @click.option(
-    '--private-key-file-path',
+    '--private-key-path',
     'private_key_file_path',
     required=True,
     metavar='<>',

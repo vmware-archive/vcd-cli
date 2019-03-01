@@ -21,6 +21,7 @@ from vcd_cli.vcd import vcd  # NOQA
 from vcd_cli.vapp import vapp  # NOQA
 from vcd_cli.vapp import get_vapp
 
+
 @vapp.group(short_help='work with vapp network')
 @click.pass_context
 def network(ctx):
@@ -46,6 +47,9 @@ def network(ctx):
 \b
         vdc vapp network delete vapp1 vapp-network1
             Delete a vApp network.
+\b
+        vdc vapp network update vapp1 vapp-network1 -n NewName -d Description
+            Update a vApp network.
 \b
         vdc vapp network add-ip-range vapp1 vapp-network1
                 --ip-range 6.6.5.2-6.6.5.20
@@ -124,6 +128,36 @@ def delete_vapp_network(ctx, vapp_name, network_name):
         restore_session(ctx, vdc_required=True)
         vapp = get_vapp(ctx, vapp_name)
         task = vapp.delete_vapp_network(network_name)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@network.command(
+    'update', short_help='update vapp network\'s name and description')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('network-name', metavar='<network-name>', required=True)
+@click.option(
+    '-n',
+    '--name',
+    'name',
+    default=None,
+    metavar='<name>',
+    help='new name of the network')
+@click.option(
+    '-d',
+    '--description',
+    'description',
+    default=None,
+    metavar='<description>',
+    help='new description of the network')
+def update_vapp_network(ctx, vapp_name, network_name, name, description):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+
+        task = vapp.update_vapp_network(network_name, name, description)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

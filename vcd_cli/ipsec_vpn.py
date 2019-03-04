@@ -45,8 +45,8 @@ def ipsec_vpn(ctx):
                 Creates new IPsec VPN.
 
     \b
-            vcd gateway services ipsec-vpn update test_gateway1 ipsec_vpn_id
-                    --name new_name
+            vcd gateway services ipsec-vpn update test_gateway1 2.2.3.2-2.2.3.3
+                    --new-name new_name
                     --enable
                 Updates IPsec VPN with new values.
 
@@ -73,7 +73,7 @@ def ipsec_vpn(ctx):
                 Set global log level for IPsec VPN.
 
     \b
-            vcd gateway services ipsec-vpn list-ipsec-vpn test_gateway1
+            vcd gateway services ipsec-vpn list test_gateway1
                 List IPsec VPN of a gateway.
 
     \b
@@ -82,8 +82,13 @@ def ipsec_vpn(ctx):
                 Change shared key of IPsec VPN.
 
     \b
-            vcd gateway services ipsec-vpn delete test_gateway1 <ipsec_vpn_id>
-                Deletes IPsec VPN. ipsec_vpn_id is local_end_point-peer_end_point
+            vcd gateway services ipsec-vpn info test_gateway1
+                    2.2.3.2-2.2.3.3
+                Get details of IPsec VPN.
+
+    \b
+            vcd gateway services ipsec-vpn delete test_gateway1 2.2.3.2-2.2.3.3
+                Deletes IPsec VPN.
 
     """
     __DEFAULT_ENCRYPTION_PROTOCOL = 'aes'
@@ -431,7 +436,7 @@ def set_log_level(ctx, gateway_name, log_level):
         stderr(e, ctx)
 
 
-@ipsec_vpn.command("list-ipsec-vpn",
+@ipsec_vpn.command("list",
                    short_help="list ipsec vpn")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
@@ -444,7 +449,7 @@ def list_ipsec_vpn(ctx, gateway_name):
         stderr(e, ctx)
 
 
-@ipsec_vpn.command("change-shared-key", short_help="list ipsec vpn")
+@ipsec_vpn.command("change-shared-key", short_help="change shared key")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
 @click.argument('new_shared_key', metavar='<new shared key>', required=True)
@@ -453,6 +458,19 @@ def change_shared_key(ctx, gateway_name, new_shared_key):
         gateway_resource = get_gateway(ctx, gateway_name)
         gateway_resource.change_shared_key_ipsec_vpn(new_shared_key)
         stdout('IPsec VPN shared key changed.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@ipsec_vpn.command("info", short_help="get details of ipsec vpn")
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+@click.argument('id', metavar='<local end point-peer end point>', required=True)
+def info_ipsec_vpn(ctx, gateway_name, id):
+    try:
+        ipsec_vpn_obj = get_ipsec_vpn(ctx, gateway_name, id)
+        result = ipsec_vpn_obj.get_vpn_site_info()
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
 

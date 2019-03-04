@@ -24,6 +24,7 @@ from pyvcloud.system_test_framework.utils import create_vapp_from_template
 from vcd_cli.login import login, logout
 from vcd_cli.org import org
 from vcd_cli.vapp import vapp
+from vcd_cli.vapp_network import network  # NOQA
 
 
 class VAppTest(BaseTestCase):
@@ -35,11 +36,13 @@ class VAppTest(BaseTestCase):
 
     _vapp_network_name = 'vapp_network_' + str(uuid1())
     _vapp_network_description = 'Test vApp network'
-    _vapp_network_cidr = '90.80.70.1/24'
+    _vapp_network_cidr = '90.80.70.1/20'
     _vapp_network_dns1 = '8.8.8.8'
     _vapp_network_dns2 = '8.8.8.9'
     _vapp_network_dns_suffix = 'example.com'
     _vapp_network_ip_range = '90.80.70.2-90.80.70.100'
+    _vapp_network_new_ip_range = '90.80.70.104-90.80.70.110'
+    _vapp_network_description = 'This is test network'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -94,7 +97,43 @@ class VAppTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
-    def test_0040_delete_vapp_network(self):
+    def test_0031_update_vapp_network(self):
+        """Update a vapp network's name and description."""
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'network', 'update', VAppTest._test_vapp_name,
+                VAppTest._vapp_network_name, '-d',
+                VAppTest._vapp_network_description
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0035_add_ip_range_to_vapp_network(self):
+        """Add I{ range to vapp network."""
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'network',
+                'add-ip-range',
+                VAppTest._test_vapp_name,
+                VAppTest._vapp_network_name,
+                '--ip-range',
+                VAppTest._vapp_network_new_ip_range,
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0040_delete_ip_range_to_vapp_network(self):
+        """Delete IP range of vapp network."""
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'network', 'delete-ip-range', VAppTest._test_vapp_name,
+                VAppTest._vapp_network_name, '--ip-range',
+                VAppTest._vapp_network_new_ip_range
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0045_delete_vapp_network(self):
         """Delete a vapp network."""
         result = VAppTest._runner.invoke(
             vapp,

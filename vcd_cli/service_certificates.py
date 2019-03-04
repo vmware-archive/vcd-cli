@@ -13,6 +13,7 @@
 #
 
 import click
+from pyvcloud.vcd.certificate import Certificate
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
@@ -27,17 +28,24 @@ from vcd_cli.gateway import services
                                                   'certificates of gateway')
 @click.pass_context
 def certificates(ctx):
-    """Manages certificates of gateway.
+    """Manages service certificates of gateway.
 
     \b
         Examples
             vcd gateway services service-certificate add test_gateway1
-                    --certificate-file-path certificate.pem
-                    --private-key-file-path private_key.pem
+                    --certificate-path certificate.pem
+                    --private-key-path private_key.pem
                     --pass-phrase 123234dkfs
                     --description description12
                 Adds new service certificate.
 
+    \b
+            vcd gateway services service-certificate list test_gateway1
+                Lists service certificates.
+
+    \b
+            vcd gateway services service-certificate delete test_gateway1 ca-1
+                Deletes service certificate.
     """
 
 @certificates.command("add", short_help="adds new service certificate")
@@ -79,3 +87,42 @@ def add_service_certificate(ctx, gateway_name, certificate_file_path,
         stdout('Service certificate added successfully', ctx)
     except Exception as e:
         stderr(e, ctx)
+
+
+@certificates.command("list",
+                   short_help="list service certificates")
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+def list_service_certificate(ctx, gateway_name):
+    try:
+        gateway_resource = get_gateway(ctx, gateway_name)
+        result = gateway_resource.list_service_certificates()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@certificates.command("delete", short_help="Deletes the service certificate")
+@click.pass_context
+@click.argument('gateway_name', metavar='<gateway name>', required=True)
+@click.argument('id', metavar='certificate-id', required=True)
+def delete_service_certificate(ctx, gateway_name, id):
+    try:
+        certificate_obj = get_service_certificate(ctx, gateway_name, id)
+        certificate_obj.delete_certificate()
+        stdout('Service certificate deleted successfully.', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+def get_service_certificate(ctx, gateway_name, id):
+    """Get the sdk's certificate object.
+
+    It will restore sessions if expired. It will read the client.
+    """
+    restore_session(ctx, vdc_required=True)
+    client = ctx.obj['client']
+    certificate = Certificate(client=client,
+                         gateway_name=gateway_name,
+                         resource_id=id)
+    return certificate
+

@@ -42,6 +42,7 @@ class VAppTest(BaseTestCase):
     _vapp_network_dns_suffix = 'example.com'
     _vapp_network_ip_range = '90.80.70.2-90.80.70.100'
     _vapp_network_new_ip_range = '90.80.70.104-90.80.70.110'
+    _vapp_network_description = 'This is test network'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -96,13 +97,27 @@ class VAppTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    def test_0031_update_vapp_network(self):
+        """Update a vapp network's name and description."""
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'network', 'update', VAppTest._test_vapp_name,
+                VAppTest._vapp_network_name, '-d',
+                VAppTest._vapp_network_description
+            ])
+        self.assertEqual(0, result.exit_code)
+
     def test_0035_add_ip_range_to_vapp_network(self):
         """Add I{ range to vapp network."""
         result = VAppTest._runner.invoke(
             vapp,
             args=[
-                'network', 'add-ip-range', VAppTest._test_vapp_name,
-                VAppTest._vapp_network_name, '--ip-range',
+                'network',
+                'add-ip-range',
+                VAppTest._test_vapp_name,
+                VAppTest._vapp_network_name,
+                '--ip-range',
                 VAppTest._vapp_network_new_ip_range,
             ])
         self.assertEqual(0, result.exit_code)
@@ -114,7 +129,7 @@ class VAppTest(BaseTestCase):
             args=[
                 'network', 'delete-ip-range', VAppTest._test_vapp_name,
                 VAppTest._vapp_network_name, '--ip-range',
-                 VAppTest._vapp_network_new_ip_range
+                VAppTest._vapp_network_new_ip_range
             ])
         self.assertEqual(0, result.exit_code)
 

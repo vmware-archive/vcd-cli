@@ -43,6 +43,10 @@ class VAppTest(BaseTestCase):
     _vapp_network_ip_range = '90.80.70.2-90.80.70.100'
     _vapp_network_new_ip_range = '90.80.70.104-90.80.70.110'
     _vapp_network_description = 'This is test network'
+    _vapp_network_update_ip_range = '90.80.70.20-90.80.70.40'
+    _new_vapp_network_dns1 = '8.8.8.10'
+    _new_vapp_network_dns2 = '8.8.8.11'
+    _new_vapp_network_dns_suffix = 'example1.com'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -122,7 +126,19 @@ class VAppTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
-    def test_0040_delete_ip_range_to_vapp_network(self):
+    def test_0036_update_ip_range_to_vapp_network(self):
+        """Update IP range to vapp network."""
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'network', 'update-ip-range', VAppTest._test_vapp_name,
+                VAppTest._vapp_network_name, '--ip-range',
+                VAppTest._vapp_network_ip_range, '--new-ip-range',
+                VAppTest._vapp_network_update_ip_range
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0037_delete_ip_range_to_vapp_network(self):
         """Delete IP range of vapp network."""
         result = VAppTest._runner.invoke(
             vapp,
@@ -130,6 +146,19 @@ class VAppTest(BaseTestCase):
                 'network', 'delete-ip-range', VAppTest._test_vapp_name,
                 VAppTest._vapp_network_name, '--ip-range',
                 VAppTest._vapp_network_new_ip_range
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0038_add_dns_to_vapp_network(self):
+        """Add DNS details to vapp network."""
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'network', 'add-dns', VAppTest._test_vapp_name,
+                VAppTest._vapp_network_name, '--dns1',
+                VAppTest._new_vapp_network_dns1, '--dns2',
+                VAppTest._new_vapp_network_dns2, '--dns-suffix',
+                VAppTest._new_vapp_network_dns_suffix
             ])
         self.assertEqual(0, result.exit_code)
 

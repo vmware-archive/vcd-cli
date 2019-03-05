@@ -34,7 +34,8 @@ class TestCertificates(BaseTestCase):
     def test_0000_setup(self):
         TestCertificates._client = Environment.get_sys_admin_client()
         TestCertificates._config = Environment.get_config()
-        TestCertificates._org = Environment.get_test_org(TestCertificates._client)
+        TestCertificates._org = Environment.get_test_org(
+            TestCertificates._client)
         test_gateway = Environment.get_test_gateway(TestCertificates._client)
         gateway_obj1 = Gateway(TestCertificates._client, GatewayConstants.name,
                                href=test_gateway.get('href'))
@@ -47,8 +48,7 @@ class TestCertificates(BaseTestCase):
     def test_0010_add_service_certificate(self):
         """Adds service certificate.
 
-        It will trigger the cli command services certificates
-        add-service-certificate
+        It will trigger the cli command services service-certificate add
         """
         result = TestCertificates._runner.invoke(
             gateway,
@@ -58,6 +58,34 @@ class TestCertificates(BaseTestCase):
                 TestCertificates._certificate_file_path,
                 '--private-key-path',
                 TestCertificates._private_key_file_path])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0015_list_service_certificate(self):
+        """Lists service certificate.
+
+        It will trigger the cli command services service-certificat list
+        """
+        result = TestCertificates._runner.invoke(
+            gateway,
+            args=[
+                'services', 'service-certificate', 'list',
+                TestCertificates._name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0020_delete_service_certificate(self):
+        """Delete service certificate.
+
+        It will trigger the cli command services service-certificat delete
+        """
+        gateway_obj1 = TestCertificates.gateway_obj
+        certificate_list = gateway_obj1.list_service_certificates()
+        certificate = certificate_list[0]
+        id = certificate["Object_Id"]
+
+        result = TestCertificates._runner.invoke(
+            gateway,
+            args=['services', 'service-certificate', 'delete',
+                  TestCertificates._name, id])
         self.assertEqual(0, result.exit_code)
 
     def _login(self):

@@ -57,7 +57,16 @@ def network(ctx):
 \b
         vdc vapp network delete-ip-range vapp1 vapp-network1
                 --ip-range 6.6.5.2-6.6.5.20
-            Delete IP range of the vApp network.
+            Delete IP range from vApp network.
+\b
+        vdc vapp network update-ip-range vapp1 vapp-network1
+                --ip-range 6.6.5.2-6.6.5.20 --new-ip-range 6.6.5.10-6.6.5.18
+            Update IP range of vApp network.
+\b
+        vdc vapp network add-dns vapp1 vapp-network1
+                --dns1 6.6.5.2 --dns2 6.6.5.10-6.6.5.18
+                --dns-suffix example.com
+            Add DNS detail to vApp network.
     """
     pass
 
@@ -204,6 +213,72 @@ def delete_ip_range(ctx, vapp_name, network_name, ip_range):
         vapp = get_vapp(ctx, vapp_name)
         ranges = ip_range.split('-')
         task = vapp.delete_ip_range(network_name, ranges[0], ranges[1])
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@network.command(
+    'update-ip-range', short_help='update IP range/s to the network')
+@click.pass_context
+@click.argument('vapp_name', metavar='<vapp-name>', required=True)
+@click.argument('network_name', metavar='<network-name>', required=True)
+@click.option(
+    '-i',
+    '--ip-range',
+    'ip_range',
+    required=True,
+    metavar='<ip>',
+    help='IP range in StartAddress-EndAddress format')
+@click.option(
+    '-n',
+    '--new-ip-range',
+    'new_ip_range',
+    required=True,
+    metavar='<ip>',
+    help='new IP range in StartAddress-EndAddress format')
+def update_ip_range(ctx, vapp_name, network_name, ip_range, new_ip_range):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        range = ip_range.split('-')
+        new_range = new_ip_range.split('-')
+        task = vapp.update_ip_range(network_name, range[0], range[1],
+                                    new_range[0], new_range[1])
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@network.command('add-dns', short_help='add DNS to vapp network')
+@click.pass_context
+@click.argument('vapp_name', metavar='<vapp-name>', required=True)
+@click.argument('network_name', metavar='<network-name>', required=True)
+@click.option(
+    '--dns1',
+    'primary_dns_ip',
+    default=None,
+    metavar='<ip>',
+    help='IP of the primary dns server')
+@click.option(
+    '--dns2',
+    'secondary_dns_ip',
+    default=None,
+    metavar='<ip>',
+    help='IP of the secondary dns server')
+@click.option(
+    '--dns-suffix',
+    'dns_suffix',
+    default=None,
+    metavar='<name>',
+    help='dns suffix')
+def add_dns_to_vapp_network(ctx, vapp_name, network_name, primary_dns_ip,
+                            secondary_dns_ip, dns_suffix):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        task = vapp.update_dns_vapp_network(network_name, primary_dns_ip,
+                                            secondary_dns_ip, dns_suffix)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

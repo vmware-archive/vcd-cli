@@ -57,16 +57,16 @@ def network(ctx):
 \b
         vdc vapp network delete-ip-range vapp1 vapp-network1
                 --ip-range 6.6.5.2-6.6.5.20
-            Delete IP range of the vApp network.
+            Delete IP range from vApp network.
 \b
         vdc vapp network update-ip-range vapp1 vapp-network1
                 --ip-range 6.6.5.2-6.6.5.20 --new-ip-range 6.6.5.10-6.6.5.18
-            Update IP range of the vApp network.
+            Update IP range of vApp network.
 \b
         vdc vapp network add-dns vapp1 vapp-network1
                 --dns1 6.6.5.2 --dns2 6.6.5.10-6.6.5.18
                 --dns-suffix example.com
-            Update IP range of the vApp network.
+            Add DNS detail to vApp network.
     """
     pass
 

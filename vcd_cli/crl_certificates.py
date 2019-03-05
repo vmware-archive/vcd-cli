@@ -34,7 +34,7 @@ def crl_certificates(ctx):
         Examples
             vcd gateway services crl-certificate add test_gateway1
                     --certificate-path certificate.pem
-                    --description description12
+                    --description CRL_certificate
                 Adds new CRL certificate.
 
     \b

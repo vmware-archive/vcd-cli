@@ -34,7 +34,7 @@ def ca_certificates(ctx):
         Examples
             vcd gateway services ca-certificate add test_gateway1
                     --certificate-path certificate.pem
-                    --description description12
+                    --description CA_certificate
                 Adds new CA certificate.
 
     \b

@@ -33,7 +33,6 @@ def dhcp(ctx):
 
     \b
             vcd vapp network services dhcp enable vapp_name network_name
-                --e False
             Enable DHCP service.
     """
 

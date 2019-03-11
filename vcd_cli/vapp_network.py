@@ -219,7 +219,7 @@ def delete_ip_range(ctx, vapp_name, network_name, ip_range):
 
 
 @network.command(
-    'update-ip-range', short_help='update IP range/s to the network')
+    'update-ip-range', short_help='update IP range/s of the network')
 @click.pass_context
 @click.argument('vapp_name', metavar='<vapp-name>', required=True)
 @click.argument('network_name', metavar='<network-name>', required=True)
@@ -282,3 +282,10 @@ def add_dns_to_vapp_network(ctx, vapp_name, network_name, primary_dns_ip,
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+
+@network.group('services', short_help='manage vapp network services')
+@click.pass_context
+def services(ctx):
+    """Configure services of vapp network."""
+    pass

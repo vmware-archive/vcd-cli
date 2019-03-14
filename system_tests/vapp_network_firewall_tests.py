@@ -18,32 +18,40 @@ from pyvcloud.system_test_framework.base_test import BaseTestCase
 from pyvcloud.system_test_framework.vapp_constants import VAppConstants
 from pyvcloud.system_test_framework.environment import Environment
 from pyvcloud.system_test_framework.environment import developerModeAware
+
+from pyvcloud.vcd.client import FenceMode
 from pyvcloud.vcd.client import TaskStatus
+
 from vcd_cli.login import login, logout
 from vcd_cli.vapp import vapp
 from vcd_cli.org import org
 
 
-class TestVappDhcp(BaseTestCase):
-    """Test vapp dhcp functionalities implemented in pyvcloud."""
+class TestVappFirewall(BaseTestCase):
+    """Test vapp firewall functionalities implemented in pyvcloud."""
     _vapp_name = VAppConstants.name
     _vapp_network_name = VAppConstants.network1_name
-    _vapp_network_dhcp_ip_range = '90.80.70.101-90.80.70.120'
-    _vapp_network_start_dhcp_ip = '90.80.70.101'
-    _vapp_network_end_dhcp_ip = '90.80.70.120'
-    _vapp_network_dhcp_default_lease_time = 3600
-    _vapp_network_dhcp_max_lease_time = 7200
 
     def test_0000_setup(self):
         self._config = Environment.get_config()
-        TestVappDhcp._logger = Environment.get_default_logger()
-        TestVappDhcp._client = Environment.get_sys_admin_client()
-        TestVappDhcp._runner = CliRunner()
+        TestVappFirewall._logger = Environment.get_default_logger()
+        TestVappFirewall._client = Environment.get_sys_admin_client()
+        TestVappFirewall._runner = CliRunner()
         default_org = self._config['vcd']['default_org_name']
         self._login()
-        TestVappDhcp._runner.invoke(org, ['use', default_org])
-        vapp = Environment.get_test_vapp_with_network(TestVappDhcp._client)
-        self.assertIsNotNone(vapp)
+        TestVappFirewall._runner.invoke(org, ['use', default_org])
+
+        vapp = Environment.get_test_vapp_with_network(TestVappFirewall._client)
+        vapp.reload()
+
+        TestVappFirewall._vapp_network_name = \
+            Environment.get_default_orgvdc_network_name()
+        task = vapp.connect_org_vdc_network(
+            TestVappFirewall._vapp_network_name,
+            fence_mode=FenceMode.NAT_ROUTED.value)
+        result = TestVappFirewall._client.get_task_monitor().wait_for_success(
+            task)
+        self.assertEqual(result.get('status'), TaskStatus.SUCCESS.value)
 
     def _login(self):
         """Logs in using admin credentials"""
@@ -55,39 +63,37 @@ class TestVappDhcp(BaseTestCase):
             host, org, admin_user, "-i", "-w",
             "--password={0}".format(admin_pass)
         ]
-        result = TestVappDhcp._runner.invoke(login, args=login_args)
+        result = TestVappFirewall._runner.invoke(login, args=login_args)
         self.assertEqual(0, result.exit_code)
         self.assertTrue("logged in" in result.output)
 
     def _logout(self):
         """Logs out current session, ignoring errors"""
-        TestVappDhcp._runner.invoke(logout)
+        TestVappFirewall._runner.invoke(logout)
 
-    def test_0011_set_dhcp_service(self):
-        result = TestVappDhcp._runner.invoke(
+    def test_0011_enable_firewall_service(self):
+        result = TestVappFirewall._runner.invoke(
             vapp,
             args=[
-                'network', 'services', 'dhcp', 'set', TestVappDhcp._vapp_name,
-                TestVappDhcp._vapp_network_name, '-i',
-                TestVappDhcp._vapp_network_dhcp_ip_range
+                'network',
+                'services',
+                'firewall',
+                'enable-firewall',
+                TestVappFirewall._vapp_name,
+                TestVappFirewall._vapp_network_name,
+                '--disable',
             ])
         self.assertEqual(0, result.exit_code)
-
-    def test_0012_enable_dhcp_service(self):
-        result = TestVappDhcp._runner.invoke(
+        result = TestVappFirewall._runner.invoke(
             vapp,
             args=[
-                'network', 'services', 'dhcp', 'enable-dhcp',
-                TestVappDhcp._vapp_name, TestVappDhcp._vapp_network_name,
-                '--disable'
-            ])
-        self.assertEqual(0, result.exit_code)
-        result = TestVappDhcp._runner.invoke(
-            vapp,
-            args=[
-                'network', 'services', 'dhcp', 'enable-dhcp',
-                TestVappDhcp._vapp_name, TestVappDhcp._vapp_network_name,
-                '--enable'
+                'network',
+                'services',
+                'firewall',
+                'enable-firewall',
+                TestVappFirewall._vapp_name,
+                TestVappFirewall._vapp_network_name,
+                '--enable',
             ])
         self.assertEqual(0, result.exit_code)
 
@@ -99,9 +105,10 @@ class TestVappDhcp(BaseTestCase):
 
         This test passes if all the tasks for deleting the vApps succeed.
         """
-        vdc = Environment.get_test_vdc(TestVappDhcp._client)
-        task = vdc.delete_vapp(name=TestVappDhcp._vapp_name, force=True)
-        result = TestVappDhcp._client.get_task_monitor().wait_for_success(task)
+        vdc = Environment.get_test_vdc(TestVappFirewall._client)
+        task = vdc.delete_vapp(name=TestVappFirewall._vapp_name, force=True)
+        result = TestVappFirewall._client.get_task_monitor().wait_for_success(
+            task)
         self.assertEqual(result.get('status'), TaskStatus.SUCCESS.value)
 
     def test_0099_cleanup(self):

@@ -18,6 +18,9 @@ from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
 from vcd_cli.vapp_network import services
 
+DEFAULT_LEASE_TIME = '3600'
+MAX_LEASE_TIME = '7200'
+
 
 @services.group('dhcp', short_help='manage DHCP service of vapp network')
 @click.pass_context
@@ -27,13 +30,13 @@ def dhcp(ctx):
     \b
         Examples
             vcd vapp network services dhcp set vapp_name network_name --i
-                10.11.11.1-10.11.11.100 --default-lease-time 4500
-                --max-lease-time 7000
-            Set dhcp service information
+                    10.11.11.1-10.11.11.100 --default-lease-time 4500
+                    --max-lease-time 7000
+                Set dhcp service information
 
     \b
             vcd vapp network services dhcp enable vapp_name network_name
-            Enable DHCP service.
+                Enable DHCP service.
     """
 
 
@@ -64,14 +67,14 @@ def get_vapp_network_dhcp(ctx, vapp_name, network_name):
     '-dlt',
     '--default-lease-time',
     'default_lease_time',
-    default='3600',
+    default=DEFAULT_LEASE_TIME,
     metavar='<ip>',
     help='default lease time')
 @click.option(
     '-mlt',
     '--max-lease-time',
     'max_lease_time',
-    default='7200',
+    default=MAX_LEASE_TIME,
     metavar='<ip>',
     help='max lease time')
 def set(ctx, vapp_name, network_name, ip_range, default_lease_time,
@@ -85,18 +88,16 @@ def set(ctx, vapp_name, network_name, ip_range, default_lease_time,
         stderr(e, ctx)
 
 
-@dhcp.command('enable', short_help='Enable DHCP Service')
+@dhcp.command('enable-dhcp', short_help='Enable DHCP Service')
 @click.pass_context
 @click.argument('vapp_name', metavar='<vapp-name>', required=True)
 @click.argument('network_name', metavar='<network-name>', required=True)
-@click.option('--e', '--enable', 'enable', default=True, metavar='<bool>')
-def enable_dhcp_service(ctx, vapp_name, network_name, enable):
+@click.option(
+    '--enable/--disable', 'is_enabled', default=True, metavar='<is_dhcp>')
+def enable_dhcp_service(ctx, vapp_name, network_name, is_enabled):
     try:
         vapp_dhcp = get_vapp_network_dhcp(ctx, vapp_name, network_name)
-        if enable == 'False' or enable is False:
-            result = vapp_dhcp.enable_dhcp_service(False)
-        else:
-            result = vapp_dhcp.enable_dhcp_service(True)
+        result = vapp_dhcp.enable_dhcp_service(is_enabled)
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

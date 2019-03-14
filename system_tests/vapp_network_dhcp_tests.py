@@ -79,14 +79,17 @@ class TestVappDhcp(BaseTestCase):
         result = TestVappDhcp._runner.invoke(
             vapp,
             args=[
-                'network',
-                'services',
-                'dhcp',
-                'enable',
-                TestVappDhcp._vapp_name,
-                TestVappDhcp._vapp_network_name,
-                '--enable',
-                False,
+                'network', 'services', 'dhcp', 'enable-dhcp',
+                TestVappDhcp._vapp_name, TestVappDhcp._vapp_network_name,
+                '--disable'
+            ])
+        self.assertEqual(0, result.exit_code)
+        result = TestVappDhcp._runner.invoke(
+            vapp,
+            args=[
+                'network', 'services', 'dhcp', 'enable-dhcp',
+                TestVappDhcp._vapp_name, TestVappDhcp._vapp_network_name,
+                '--enable'
             ])
         self.assertEqual(0, result.exit_code)
 

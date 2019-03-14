@@ -35,7 +35,8 @@ def dhcp(ctx):
                 Set dhcp service information
 
     \b
-            vcd vapp network services dhcp enable vapp_name network_name
+            vcd vapp network services dhcp enable-dhcp vapp_name network_name
+                    --enable
                 Enable DHCP service.
     """
 

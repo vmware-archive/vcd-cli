@@ -67,6 +67,34 @@ class VmTest(BaseTestCase):
         self.assertTrue(re.findall(vm_name_regex, result.output))
         self.assertTrue(re.findall(vapp_regex, result.output))
 
+    def test_0091_power_on(self):
+        """Power on the VM."""
+        result = VmTest._runner.invoke(
+            vm, args=['power-on', VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0092_power_off(self):
+        """Power off the VM."""
+        result = VmTest._runner.invoke(
+            vm, args=['power-off', VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+        # Again power on VM for further test cases.
+        result = VmTest._runner.invoke(
+            vm, args=['power-on', VAppConstants.name, VAppConstants.vm1_name])
+
+    def test_0093_suspend(self):
+        """Suspend the VM."""
+        result = VmTest._runner.invoke(
+            vm, args=['suspend', VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0094_discard_suspended_state(self):
+        """Discard suspended state of the VM."""
+        result = VmTest._runner.invoke(
+            vm, args=['discard-suspend', VAppConstants.name,
+                      VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_0100_add_nic(self):
         """Add a nic to the VM."""
         result = VmTest._runner.invoke(

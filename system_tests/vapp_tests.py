@@ -162,6 +162,16 @@ class VAppTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    def test_0039_list_allocated_ip(self):
+        """List allocated IP of vapp network."""
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'network', 'list-allocated-ip', VAppTest._test_vapp_name,
+                VAppTest._vapp_network_name
+            ])
+        self.assertEqual(0, result.exit_code)
+
     def test_0045_delete_vapp_network(self):
         """Delete a vapp network."""
         result = VAppTest._runner.invoke(

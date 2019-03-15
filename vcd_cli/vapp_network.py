@@ -67,6 +67,9 @@ def network(ctx):
                 --dns1 6.6.5.2 --dns2 6.6.5.10-6.6.5.18
                 --dns-suffix example.com
             Add DNS detail to vApp network.
+\b
+        vcd vapp network list-allocated-ip vapp1 vapp-network1
+            List allocated ip
     """
     pass
 
@@ -279,6 +282,20 @@ def add_dns_to_vapp_network(ctx, vapp_name, network_name, primary_dns_ip,
         vapp = get_vapp(ctx, vapp_name)
         task = vapp.update_dns_vapp_network(network_name, primary_dns_ip,
                                             secondary_dns_ip, dns_suffix)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@network.command('list-allocated-ip', short_help='list allocated IP')
+@click.pass_context
+@click.argument('vapp_name', metavar='<vapp-name>', required=True)
+@click.argument('network_name', metavar='<network-name>', required=True)
+def list_allocated_ip(ctx, vapp_name, network_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        task = vapp.list_ip_allocations(network_name)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

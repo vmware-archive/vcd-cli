@@ -256,3 +256,59 @@ def delete_nic(ctx, vapp_name, vm_name, index):
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+
+@vm.command('power-off', short_help='power off a VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def power_off(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.power_off()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('power-on', short_help='power on a VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def power_on(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.power_on()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('suspend', short_help='suspend a VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def suspend(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.suspend()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('discard-suspend', short_help='discard suspend state of a VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def discard_suspend(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.discard_suspended_state()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)

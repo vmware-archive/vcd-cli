@@ -30,6 +30,7 @@ def network(ctx):
 \b
    Description
         Work with the vapp networks.
+
 \b
         vdc vapp network create vapp1 vapp-network1
                 --subnet 192.168.1.1/24
@@ -41,32 +42,40 @@ def network(ctx):
                 --ip-range 192.168.1.100-192.168.1.149
                 --guest-vlan-allowed-enabled
             Create a vApp network.
+
 \b
         vdc vapp network reset vapp1 vapp-network1
             Reset a vApp network.
+
 \b
         vdc vapp network delete vapp1 vapp-network1
             Delete a vApp network.
+
 \b
         vdc vapp network update vapp1 vapp-network1 -n NewName -d Description
             Update a vApp network.
+
 \b
         vdc vapp network add-ip-range vapp1 vapp-network1
                 --ip-range 6.6.5.2-6.6.5.20
             Add IP range to the vApp network.
+
 \b
         vdc vapp network delete-ip-range vapp1 vapp-network1
                 --ip-range 6.6.5.2-6.6.5.20
             Delete IP range from vApp network.
+
 \b
         vdc vapp network update-ip-range vapp1 vapp-network1
                 --ip-range 6.6.5.2-6.6.5.20 --new-ip-range 6.6.5.10-6.6.5.18
             Update IP range of vApp network.
+
 \b
         vdc vapp network add-dns vapp1 vapp-network1
                 --dns1 6.6.5.2 --dns2 6.6.5.10-6.6.5.18
                 --dns-suffix example.com
             Add DNS detail to vApp network.
+
 \b
         vcd vapp network list-allocated-ip vapp1 vapp-network1
             List allocated ip

@@ -109,8 +109,8 @@ if __name__ == '__main__':
 else:
     load_user_plugins()
     from vcd_cli import catalog  # NOQA
-#    from vcd_cli import ca_certificates  # NOQA
-#    from vcd_cli import crl_certificates  # NOQA
+    from vcd_cli import ca_certificates  # NOQA
+    from vcd_cli import crl_certificates  # NOQA
     from vcd_cli import disk  # NOQA
     from vcd_cli import dhcp_pool  # NOQA
     from vcd_cli import firewall_rule  # NOQA
@@ -127,7 +127,7 @@ else:
     from vcd_cli import pvdc  # NOQA
     from vcd_cli import role  # NOQA
     from vcd_cli import right  # NOQA
-    from vcd_cli import routed # NOQA
+    from vcd_cli import routed  # NOQA
     from vcd_cli import static_route  # NOQA
     from vcd_cli import search  # NOQA
     from vcd_cli import service_certificates  # NOQA
@@ -136,6 +136,8 @@ else:
     from vcd_cli import user  # NOQA
     from vcd_cli import vapp  # NOQA
     from vcd_cli import vapp_network  # NOQA
+    from vcd_cli import vapp_network_dhcp  # NOQA
+    from vcd_cli import vapp_network_firewall  # NOQA
     from vcd_cli import vc  # NOQA
     from vcd_cli import vdc  # NOQA
     from vcd_cli import vm  # NOQA

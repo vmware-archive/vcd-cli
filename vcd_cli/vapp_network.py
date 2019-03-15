@@ -30,6 +30,7 @@ def network(ctx):
 \b
    Description
         Work with the vapp networks.
+
 \b
         vdc vapp network create vapp1 vapp-network1
                 --subnet 192.168.1.1/24
@@ -41,32 +42,43 @@ def network(ctx):
                 --ip-range 192.168.1.100-192.168.1.149
                 --guest-vlan-allowed-enabled
             Create a vApp network.
+
 \b
         vdc vapp network reset vapp1 vapp-network1
             Reset a vApp network.
+
 \b
         vdc vapp network delete vapp1 vapp-network1
             Delete a vApp network.
+
 \b
         vdc vapp network update vapp1 vapp-network1 -n NewName -d Description
             Update a vApp network.
+
 \b
         vdc vapp network add-ip-range vapp1 vapp-network1
                 --ip-range 6.6.5.2-6.6.5.20
             Add IP range to the vApp network.
+
 \b
         vdc vapp network delete-ip-range vapp1 vapp-network1
                 --ip-range 6.6.5.2-6.6.5.20
             Delete IP range from vApp network.
+
 \b
         vdc vapp network update-ip-range vapp1 vapp-network1
                 --ip-range 6.6.5.2-6.6.5.20 --new-ip-range 6.6.5.10-6.6.5.18
             Update IP range of vApp network.
+
 \b
         vdc vapp network add-dns vapp1 vapp-network1
                 --dns1 6.6.5.2 --dns2 6.6.5.10-6.6.5.18
                 --dns-suffix example.com
             Add DNS detail to vApp network.
+
+\b
+        vcd vapp network list-allocated-ip vapp1 vapp-network1
+            List allocated ip
     """
     pass
 
@@ -219,7 +231,7 @@ def delete_ip_range(ctx, vapp_name, network_name, ip_range):
 
 
 @network.command(
-    'update-ip-range', short_help='update IP range/s to the network')
+    'update-ip-range', short_help='update IP range/s of the network')
 @click.pass_context
 @click.argument('vapp_name', metavar='<vapp-name>', required=True)
 @click.argument('network_name', metavar='<network-name>', required=True)
@@ -282,3 +294,24 @@ def add_dns_to_vapp_network(ctx, vapp_name, network_name, primary_dns_ip,
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+
+@network.command('list-allocated-ip', short_help='list allocated IP')
+@click.pass_context
+@click.argument('vapp_name', metavar='<vapp-name>', required=True)
+@click.argument('network_name', metavar='<network-name>', required=True)
+def list_allocated_ip(ctx, vapp_name, network_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        task = vapp.list_ip_allocations(network_name)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@network.group('services', short_help='manage vapp network services')
+@click.pass_context
+def services(ctx):
+    """Configure services of vapp network."""
+    pass

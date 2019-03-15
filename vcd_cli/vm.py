@@ -73,6 +73,23 @@ def vm(ctx):
         vcd vm delete-nic vapp1 vm1
                 --index 1
             Deletes the nic at given index.
+
+\b
+        vcd vm power-on vapp1 vm1
+            Power on the VM.
+
+\b
+        vcd vm power-off vapp1 vm1
+            Power off the VM.
+
+\b
+        vcd vm suspend vapp1 vm1
+            Suspend the VM.
+
+\b
+        vcd vm discard-suspend vapp1 vm1
+            Discard suspended state of the VM.
+
     """
     pass
 

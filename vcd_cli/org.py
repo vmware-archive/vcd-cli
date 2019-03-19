@@ -170,29 +170,25 @@ def create(ctx, name, full_name, enabled):
     is_flag=True,
     help='pass this option along with --recursive to remove an Org'
     ' and any objects it contains, regardless of their state')
-@click.option(
-    '-y',
-    '--yes',
-    is_flag=True,
-    callback=abort_if_false,
-    expose_value=False,
-    prompt='Are you sure you want to delete the Org?')
 def delete(ctx, name, recursive, force):
     try:
-        restore_session(ctx)
-        client = ctx.obj['client']
-        sys_admin_resource = client.get_admin()
-        system = System(client, admin_resource=sys_admin_resource)
-        if force and recursive:
-            click.confirm(
-                'Do you want to force delete \'%s\' and all '
-                'its objects recursively?' % name,
-                abort=True)
-        elif force:
-            click.confirm(
-                'Do you want to force delete \'%s\'' % name, abort=True)
-        task = system.delete_org(name, force, recursive)
-        stdout(task, ctx)
+        if click.confirm('Are you sure you want to delete the Org?'):
+            restore_session(ctx)
+            client = ctx.obj['client']
+            sys_admin_resource = client.get_admin()
+            system = System(client, admin_resource=sys_admin_resource)
+            if force and recursive:
+                click.confirm(
+                    'Do you want to force delete \'%s\' and all '
+                    'its objects recursively?' % name,
+                    abort=True)
+            elif force:
+                click.confirm(
+                    'Do you want to force delete \'%s\'' % name, abort=True)
+            task = system.delete_org(name, force, recursive)
+            stdout(task, ctx)
+        else:
+            stdout('Aborted!', ctx)
     except Exception as e:
         stderr(e, ctx)
 

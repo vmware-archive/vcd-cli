@@ -26,6 +26,7 @@ from pygments import formatters
 from pygments import highlight
 from pygments import lexers
 from pyvcloud.vcd.client import Client
+from pyvcloud.vcd.client import get_logger
 from pyvcloud.vcd.client import EntityType
 from pyvcloud.vcd.client import NSMAP
 from pyvcloud.vcd.client import TaskStatus
@@ -40,8 +41,7 @@ from tabulate import tabulate
 
 from vcd_cli.profiles import Profiles
 
-LOGGER = logging.getLogger(__name__)
-LOGGER.addHandler(logging.FileHandler('vcd.log'))
+LOGGER = get_logger(file_name='vcd_cli_error.log')
 
 
 def is_sysadmin(ctx):

@@ -40,6 +40,7 @@ class GatewayTest(BaseTestCase):
     _ext_network_name = None
     _gateway_ip = '2.2.3.1'
     _logger = None
+    _sub_allocate_ip = '2.2.3.70'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -162,9 +163,7 @@ class GatewayTest(BaseTestCase):
             gateway,
             args=[
                 'create', self._name, '-e', GatewayTest._ext_network_name,
-                '--sub-allocate-ip', GatewayTest._ext_network_name, '--subnet',
-                GatewayTest._subnet_addr, '--ip-range', ip_range,
-                '--sub-allocate-ip', GatewayTest._ext_network_name, '--subnet',
+                '--sub-allocate-ip', GatewayTest._sub_allocate_ip, '--subnet',
                 GatewayTest._subnet_addr, '--ip-range', ip_range
             ])
         GatewayTest._logger.debug("vcd gateway create <name> -e <ext nw> "

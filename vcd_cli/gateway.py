@@ -478,8 +478,8 @@ def list_config_ip_settings(ctx, name):
 def set_syslog_server(ctx, name, ip):
     try:
         gateway_resource = get_gateway(ctx, name)
-        gateway_resource.set_tenant_syslog_server_ip(ip)
-        stdout('Syslog server ip set succesfully', ctx)
+        result = gateway_resource.set_tenant_syslog_server_ip(ip)
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
 

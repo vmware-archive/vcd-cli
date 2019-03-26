@@ -31,6 +31,10 @@ from vcd_cli.vcd import vcd
 def network(ctx):
     """Work with networks in vCloud Director.
 
+\b
+    Examples
+        vcd network list
+            List all org vdc networks available in the system
     """
     pass
 
@@ -494,6 +498,10 @@ def list_direct_networks(ctx):
             result.append({'name': direct_net.get('name')})
         stdout(result, ctx)
     except Exception as e:
+        if type(e).__name__ == 'AccessForbiddenException':
+            message = "Access denied.\nPlease try following command"
+            message += '\nvcd network list'
+            stdout(message, ctx)
         stderr(e, ctx)
 
 
@@ -515,6 +523,10 @@ def list_isolated_networks(ctx):
             result.append({'name': isolated_net.get('name')})
         stdout(result, ctx)
     except Exception as e:
+        if type(e).__name__ == 'AccessForbiddenException':
+            message = "Access denied.\nPlease try following command"
+            message += '\nvcd network list'
+            stdout(message, ctx)
         stderr(e, ctx)
 
 
@@ -1070,5 +1082,20 @@ def external_network_info(ctx, name):
             output['vim_object_type'] = \
                 ext_net.VimPortGroupRef.VimObjectType
         stdout(output, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@network.command('list', short_help='list all org VDC networks in the system')
+@click.pass_context
+def list_orgvdc_networks(ctx):
+    try:
+        restore_session(ctx, vdc_required=True)
+        client = ctx.obj['client']
+        in_use_vdc_href = ctx.obj['profiles'].get('vdc_href')
+        vdc = VDC(client, href=in_use_vdc_href)
+
+        result = vdc.list_orgvdc_network_records()
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

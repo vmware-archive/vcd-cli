@@ -147,15 +147,9 @@ def routed(ctx):
     metavar='<description>',
     help='description')
 @click.option(
-    '--dns1',
-    'primary_dns_ip',
-    metavar='<IP>',
-    help='primary DNS IP')
+    '--dns1', 'primary_dns_ip', metavar='<IP>', help='primary DNS IP')
 @click.option(
-    '--dns2',
-    'secondary_dns_ip',
-    metavar='<IP>',
-    help='secondary DNS IP')
+    '--dns2', 'secondary_dns_ip', metavar='<IP>', help='secondary DNS IP')
 @click.option(
     '--dns-suffix', 'dns_suffix', metavar='<Name>', help='dns suffix')
 @click.option(
@@ -366,12 +360,15 @@ def list_routed_networks(ctx):
             result.append({'name': routed_net.get('name')})
         stdout(result, ctx)
     except Exception as e:
+        if type(e).__name__ == 'AccessForbiddenException':
+            message = "Access denied.\nPlease try following command"
+            message += '\nvcd network list'
+            stdout(message, ctx)
         stderr(e, ctx)
 
 
 @routed.command(
-    'update-ip-range',
-    short_help='Update IP range of routed org vdc network.')
+    'update-ip-range', short_help='Update IP range of routed org vdc network.')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.option(
@@ -572,8 +569,8 @@ def list_connected_vapps(ctx, name):
         stderr(e, ctx)
 
 
-@routed.command('convert-to-sub-interface',
-                short_help='convert to sub interface')
+@routed.command(
+    'convert-to-sub-interface', short_help='convert to sub interface')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 def convert_to_sub_interface(ctx, name):
@@ -588,8 +585,9 @@ def convert_to_sub_interface(ctx, name):
         stderr(e, ctx)
 
 
-@routed.command('convert-to-internal-interface',
-                short_help='convert to internal interface')
+@routed.command(
+    'convert-to-internal-interface',
+    short_help='convert to internal interface')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 def convert_to_internal_interface(ctx, name):
@@ -604,8 +602,9 @@ def convert_to_internal_interface(ctx, name):
         stderr(e, ctx)
 
 
-@routed.command('convert-to-distributed-interface',
-                short_help='convert to distributed interface')
+@routed.command(
+    'convert-to-distributed-interface',
+    short_help='convert to distributed interface')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 def convert_to_distributed_interface(ctx, name):

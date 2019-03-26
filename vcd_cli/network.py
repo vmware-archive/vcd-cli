@@ -34,7 +34,7 @@ def network(ctx):
 \b
     Examples
         vcd network list
-            List all org vdc networks available in the system
+            List all org vdc networks available in a org.
     """
     pass
 
@@ -1086,7 +1086,7 @@ def external_network_info(ctx, name):
         stderr(e, ctx)
 
 
-@network.command('list', short_help='list all org VDC networks in the system')
+@network.command('list', short_help='list all org VDC networks in a org')
 @click.pass_context
 def list_orgvdc_networks(ctx):
     try:

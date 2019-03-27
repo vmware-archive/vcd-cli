@@ -176,6 +176,7 @@ def create(ctx, name, full_name, enabled):
     is_flag=True,
     callback=abort_if_false,
     expose_value=False,
+    hidden=True,
     prompt='Are you sure you want to delete the Org?')
 def delete(ctx, name, recursive, force):
     try:

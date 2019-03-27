@@ -91,6 +91,14 @@ class VAppTest(BaseTestCase):
             vapp, args=['power-on', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0025_stop_vapp(self):
+        result = VAppTest._runner.invoke(
+            vapp, args=['stop', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+        result = VAppTest._runner.invoke(
+            vapp, args=['power-on', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_0030_reset_vapp_network(self):
         """Reset a vapp network."""
         result = VAppTest._runner.invoke(

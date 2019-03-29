@@ -200,6 +200,22 @@ def vapp(ctx):
 \b
         vdc vapp disconnect vapp1 org-vdc-network1
             Disconnects the network org-vdc-network1 from vapp1.
+
+\b
+        vcd vapp suspend vapp1
+            Suspend a vapp.
+
+\b
+        vcd vapp discard-suspended-state vapp1
+            Discard suspended state of vapp.
+
+\b
+        vcd vapp enter-maintenance-mode vapp1
+            Place a vApp in Maintenance Mode.
+
+\b
+        vcd vapp exit-maintenance-mode vapp1
+            Exit maintenance mode a vapp.
     """
     pass
 
@@ -678,15 +694,11 @@ def undeploy(ctx, name, vm_names, action):
 
 @vapp.command('stop', short_help='stop a vApp')
 @click.pass_context
-@click.argument('name', required=True)
-def stopVapp(ctx, name):
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
+def stop_vapp(ctx, vapp_name):
     try:
         restore_session(ctx, vdc_required=True)
-        client = ctx.obj['client']
-        vdc_href = ctx.obj['profiles'].get('vdc_href')
-        vdc = VDC(client, href=vdc_href)
-        vapp_resource = vdc.get_vapp(name)
-        vapp = VApp(client, resource=vapp_resource)
+        vapp = get_vapp(ctx, vapp_name)
         task = vapp.undeploy()
         stdout(task, ctx)
     except Exception as e:
@@ -746,6 +758,61 @@ def shutdown(ctx, name, vm_names):
                 vm.reload()
                 task = vm.shutdown()
                 stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('suspend', short_help='suspend a vApp')
+@click.pass_context
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
+def suspend_vapp(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        task = vapp.suspend_vapp()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command(
+    'discard-suspended-state', short_help='discard suspended state of vApp')
+@click.pass_context
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
+def discard_suspended_state_vapp(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        task = vapp.discard_suspended_state_vapp()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command(
+    'enter-maintenance-mode', short_help='Place a vApp in Maintenance Mode')
+@click.pass_context
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
+def enter_maintenance_mode(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        vapp.enter_maintenance_mode()
+        stdout('Entered maintenance mode successfully', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command(
+    'exit-maintenance-mode', short_help='exit maintenance mode a vApp')
+@click.pass_context
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
+def exit_maintenance_mode(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        vapp.exit_maintenance_mode()
+        stdout('exited maintenance mode successfully', ctx)
     except Exception as e:
         stderr(e, ctx)
 

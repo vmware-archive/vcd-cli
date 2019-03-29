@@ -99,6 +99,26 @@ class VAppTest(BaseTestCase):
             vapp, args=['power-on', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0026_suspend_vapp(self):
+        result = VAppTest._runner.invoke(
+            vapp, args=['suspend', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0027_discard_suspended_state_vapp(self):
+        result = VAppTest._runner.invoke(
+            vapp, args=['discard-suspended-state', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0028_enter_maintenance_mode(self):
+        result = VAppTest._runner.invoke(
+            vapp, args=['enter-maintenance-mode', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0029_exit_maintenance_mode(self):
+        result = VAppTest._runner.invoke(
+            vapp, args=['exit-maintenance-mode', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_0030_reset_vapp_network(self):
         """Reset a vapp network."""
         result = VAppTest._runner.invoke(
@@ -222,10 +242,9 @@ class VAppTest(BaseTestCase):
         VAppTest._logout(self)
 
     def _login(self):
-        org = VAppTest._config['vcd']['default_org_name']
-        user = Environment.get_username_for_role_in_test_org(
-            CommonRoles.ORGANIZATION_ADMINISTRATOR)
-        password = VAppTest._config['vcd']['default_org_user_password']
+        org = VAppTest._config['vcd']['sys_org_name']
+        user = self._config['vcd']['sys_admin_username']
+        password = VAppTest._config['vcd']['sys_admin_pass']
         login_args = [
             VAppTest._config['vcd']['host'], org, user, "-i", "-w",
             "--password={0}".format(password)

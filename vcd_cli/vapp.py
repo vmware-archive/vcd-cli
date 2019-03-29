@@ -211,7 +211,7 @@ def vapp(ctx):
 
 \b
         vcd vapp enter-maintenance-mode vapp1
-            Enter maintenance mode a vapp.
+            Place a vApp in Maintenance Mode.
 
 \b
         vcd vapp exit-maintenance-mode vapp1
@@ -694,7 +694,7 @@ def undeploy(ctx, name, vm_names, action):
 
 @vapp.command('stop', short_help='stop a vApp')
 @click.pass_context
-@click.argument('vapp_name', required=True, metavar='<vapp-name>')
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
 def stop_vapp(ctx, vapp_name):
     try:
         restore_session(ctx, vdc_required=True)
@@ -764,7 +764,7 @@ def shutdown(ctx, name, vm_names):
 
 @vapp.command('suspend', short_help='suspend a vApp')
 @click.pass_context
-@click.argument('vapp-name', required=True, metavar='<vapp-name>')
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
 def suspend_vapp(ctx, vapp_name):
     try:
         restore_session(ctx, vdc_required=True)
@@ -778,7 +778,7 @@ def suspend_vapp(ctx, vapp_name):
 @vapp.command(
     'discard-suspended-state', short_help='discard suspended state of vApp')
 @click.pass_context
-@click.argument('vapp-name', required=True, metavar='<vapp-name>')
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
 def discard_suspended_state_vapp(ctx, vapp_name):
     try:
         restore_session(ctx, vdc_required=True)
@@ -790,9 +790,9 @@ def discard_suspended_state_vapp(ctx, vapp_name):
 
 
 @vapp.command(
-    'enter-maintenance-mode', short_help='enter maintenance mode a vApp')
+    'enter-maintenance-mode', short_help='Place a vApp in Maintenance Mode')
 @click.pass_context
-@click.argument('vapp-name', required=True, metavar='<vapp-name>')
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
 def enter_maintenance_mode(ctx, vapp_name):
     try:
         restore_session(ctx, vdc_required=True)
@@ -806,7 +806,7 @@ def enter_maintenance_mode(ctx, vapp_name):
 @vapp.command(
     'exit-maintenance-mode', short_help='exit maintenance mode a vApp')
 @click.pass_context
-@click.argument('vapp-name', required=True, metavar='<vapp-name>')
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
 def exit_maintenance_mode(ctx, vapp_name):
     try:
         restore_session(ctx, vdc_required=True)

@@ -57,6 +57,7 @@ class VAppTest(BaseTestCase):
 
         VAppTest._runner = CliRunner()
         default_org = VAppTest._config['vcd']['default_org_name']
+        VAppTest._default_org = default_org
         VAppTest._login(self)
         VAppTest._runner.invoke(org, ['use', default_org])
         VAppTest._test_vdc = Environment.get_test_vdc(VAppTest._client)
@@ -110,6 +111,9 @@ class VAppTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0028_enter_maintenance_mode(self):
+        VAppTest._logout(self)
+        VAppTest._sys_admin_login(self)
+        VAppTest._runner.invoke(org, ['use', VAppTest._default_org])
         result = VAppTest._runner.invoke(
             vapp, args=['enter-maintenance-mode', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
@@ -118,6 +122,9 @@ class VAppTest(BaseTestCase):
         result = VAppTest._runner.invoke(
             vapp, args=['exit-maintenance-mode', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
+        VAppTest._logout(self)
+        VAppTest._login(self)
+        VAppTest._runner.invoke(org, ['use', VAppTest._default_org])
 
     def test_0030_reset_vapp_network(self):
         """Reset a vapp network."""
@@ -242,6 +249,19 @@ class VAppTest(BaseTestCase):
         VAppTest._logout(self)
 
     def _login(self):
+        org = VAppTest._config['vcd']['default_org_name']
+        user = Environment.get_username_for_role_in_test_org(
+            CommonRoles.ORGANIZATION_ADMINISTRATOR)
+        password = VAppTest._config['vcd']['default_org_user_password']
+        login_args = [
+            VAppTest._config['vcd']['host'], org, user, "-i", "-w",
+            "--password={0}".format(password)
+        ]
+        result = VAppTest._runner.invoke(login, args=login_args)
+        self.assertEqual(0, result.exit_code)
+        self.assertTrue("logged in" in result.output)
+
+    def _sys_admin_login(self):
         org = VAppTest._config['vcd']['sys_org_name']
         user = self._config['vcd']['sys_admin_username']
         password = VAppTest._config['vcd']['sys_admin_pass']

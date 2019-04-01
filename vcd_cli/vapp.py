@@ -874,7 +874,8 @@ def disconnect(ctx, name, network):
         stderr(e, ctx)
 
 
-@vapp.command(short_help='save a vApp as a template')
+@vapp.command(
+    'capture', short_help='Capture a vApp as a template in a catalog')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.argument('catalog', metavar='<catalog>', required=True)
@@ -892,7 +893,8 @@ def disconnect(ctx, name, network):
     flag_value='customizable',
     default=True,
     help='Make copy customizable during instantiation')
-def capture(ctx, name, catalog, template, customizable):
+@click.option('-d', '--description', default='', help='Description')
+def capture(ctx, name, catalog, template, customizable, description):
     try:
         restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
@@ -902,14 +904,18 @@ def capture(ctx, name, catalog, template, customizable):
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
         vapp_resource = vdc.get_vapp(name)
+        overwrite = False
         if template is None:
             template = vapp_resource.get('name')
+        else:
+            overwrite = True
         task = org.capture_vapp(
             catalog_resource,
             vapp_href=vapp_resource.get('href'),
             catalog_item_name=template,
-            description='',
-            customize_on_instantiate=customizable == 'customizable')
+            description=description,
+            customize_on_instantiate=customizable == 'customizable',
+            overwrite=overwrite)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

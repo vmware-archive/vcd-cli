@@ -874,8 +874,7 @@ def disconnect(ctx, name, network):
         stderr(e, ctx)
 
 
-@vapp.command(
-    'capture', short_help='Capture a vApp as a template in a catalog')
+@vapp.command('capture', short_help='Capture a vApp as template')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.argument('catalog', metavar='<catalog>', required=True)

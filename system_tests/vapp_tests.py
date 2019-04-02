@@ -47,6 +47,7 @@ class VAppTest(BaseTestCase):
     _new_vapp_network_dns1 = '8.8.8.10'
     _new_vapp_network_dns2 = '8.8.8.11'
     _new_vapp_network_dns_suffix = 'example1.com'
+    _description = 'capturing vapp in catalog'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -69,6 +70,8 @@ class VAppTest(BaseTestCase):
             VAppTest._config['vcd']['default_template_file_name'],
             power_on=False,
             deploy=False)
+        VAppTest._catalog_name = VAppTest._config['vcd'][
+            'default_catalog_name']
 
     def test_0010_create_vapp_network(self):
         """Create a vApp network as per configuration stated above."""
@@ -92,9 +95,18 @@ class VAppTest(BaseTestCase):
             vapp, args=['power-on', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
 
-    def test_0025_stop_vapp(self):
+    def test_0024_stop_vapp(self):
         result = VAppTest._runner.invoke(
             vapp, args=['stop', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0025_capture(self):
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'capture', VAppTest._test_vapp_name, VAppTest._catalog_name,
+                '-d', VAppTest._description
+            ])
         self.assertEqual(0, result.exit_code)
         result = VAppTest._runner.invoke(
             vapp, args=['power-on', VAppTest._test_vapp_name])

@@ -177,7 +177,7 @@ def vapp(ctx):
             Capture a vApp as a template in a catalog.
 
 \b
-        vcd vapp download vapp1
+        vcd vapp download vapp1 file.ova
             Download a vapp.
 
 \b
@@ -829,8 +829,7 @@ def exit_maintenance_mode(ctx, vapp_name):
     'file_name',
     type=click.Path(exists=False),
     metavar='[file-name]',
-    default=None,
-    required=False)
+    required=True)
 @click.option(
     '-o',
     '--overwrite',

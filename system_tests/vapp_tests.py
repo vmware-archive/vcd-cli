@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 from uuid import uuid1
 from click.testing import CliRunner
 
@@ -48,6 +50,7 @@ class VAppTest(BaseTestCase):
     _new_vapp_network_dns2 = '8.8.8.11'
     _new_vapp_network_dns_suffix = 'example1.com'
     _description = 'capturing vapp in catalog'
+    _ova_file_name = 'test.ova'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -251,6 +254,24 @@ class VAppTest(BaseTestCase):
                 new_desc
             ])
         self.assertEqual(0, result.exit_code)
+
+    def test_0060_download_ova(self):
+        result = VAppTest._runner.invoke(
+            vapp, args=['stop', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'download', VAppTest._test_vapp_name, VAppTest._ova_file_name,
+                '-o'
+            ])
+        self.assertEqual(0, result.exit_code)
+        result = VAppTest._runner.invoke(
+            vapp, args=['deploy', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+        # Remove downloaded vapp file
+        os.remove(VAppTest._ova_file_name)
 
     def test_0098_tearDown(self):
         """Delete vApp and logout from the session."""

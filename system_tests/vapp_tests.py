@@ -252,6 +252,18 @@ class VAppTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    def test_0060_download_ova(self):
+        result = VAppTest._runner.invoke(
+            vapp, args=['stop', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=['download', VAppTest._test_vapp_name, 'test.ova', '-o'])
+        self.assertEqual(0, result.exit_code)
+        result = VAppTest._runner.invoke(
+            vapp, args=['deploy', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_0098_tearDown(self):
         """Delete vApp and logout from the session."""
         result_delete = VAppTest._runner.invoke(

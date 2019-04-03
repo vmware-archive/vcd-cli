@@ -12,6 +12,7 @@
 # conditions of the subcomponent's license, as noted in the LICENSE file.
 #
 
+import os
 import click
 from pyvcloud.vcd.client import QueryResultFormat
 from pyvcloud.vcd.client import ResourceType
@@ -174,6 +175,10 @@ def vapp(ctx):
 \b
         vcd vapp capture vapp1 catalog1
             Capture a vApp as a template in a catalog.
+
+\b
+        vcd vapp download vapp1
+            Download a vapp.
 
 \b
         vcd vapp attach vapp1 vm1 disk1
@@ -813,6 +818,37 @@ def exit_maintenance_mode(ctx, vapp_name):
         vapp = get_vapp(ctx, vapp_name)
         vapp.exit_maintenance_mode()
         stdout('exited maintenance mode successfully', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('download', short_help='Download a vApp')
+@click.pass_context
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
+@click.argument(
+    'file_name',
+    type=click.Path(exists=False),
+    metavar='[file-name]',
+    default=None,
+    required=False)
+@click.option(
+    '-o',
+    '--overwrite',
+    is_flag=True,
+    required=False,
+    default=False,
+    help='overwrite')
+def download_ova(ctx, vapp_name, file_name, overwrite):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        if file_name is not None:
+            save_as_name = file_name
+        if not overwrite and os.path.isfile(save_as_name):
+            raise Exception('File exists.')
+        bytes_written = vapp.download_ova(save_as_name)
+        result = {'file': save_as_name, 'size': bytes_written}
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
 

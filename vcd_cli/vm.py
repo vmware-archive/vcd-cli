@@ -345,3 +345,55 @@ def reset(ctx, vapp_name, vm_name):
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+@vm.command('install-vmware-tools', short_help='instal vmware tools')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def reset(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.install_vmware_tools()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('insert-cd', short_help='insert CD from catalog')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'media_href',
+    '--media-href',
+    required=True,
+    metavar='<media-href>',
+    help='media hred to be inserted')
+def reset(ctx, vapp_name, vm_name, media_href):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.insert_cd_from_catalog(media_href)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('eject-cd', short_help='eject CD from VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'media_href',
+    '--media-href',
+    required=True,
+    metavar='<media-href>',
+    help='media hred to be ejected')
+def reset(ctx, vapp_name, vm_name, media_href):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.eject_cd(media_href)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)

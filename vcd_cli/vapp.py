@@ -67,6 +67,25 @@ def vapp(ctx):
 \b
         vcd vapp list vapp1
             Get list of VMs in vApp 'vapp1'.
+\b
+        vcd vapp list --filter name==vapp1
+            Get list of vApp with name vapp1.
+
+\b
+        vcd vapp list --filter status==POWERED_ON
+            Get list of vApp with VM status POWERED_ON.
+
+\b
+        vcd vapp list --filter ownerName==user1
+            Get list of vApp with ownername 'user1'.
+
+\b
+        vcd vapp list --filter numberOfVMs==7
+            Get list of vApp with numberOfVMs 7.
+
+\b
+        vcd vapp list --filter vdcName==ovdc1
+            Get list of vApp with vdcName 'ovdc1'.
 
 \b
         vcd vapp info vapp1
@@ -298,7 +317,13 @@ def detach(ctx, vapp_name, vm_name, disk_name):
 @vapp.command('list', short_help='list vApps')
 @click.pass_context
 @click.argument('name', metavar='[name]', required=False)
-def list_vapps(ctx, name):
+@click.option(
+    '--filter',
+    'filter',
+    default=None,
+    metavar='<ownerName==system*>',
+    help='filter for vapp')
+def list_vapps(ctx, name, filter):
     try:
         restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
@@ -317,25 +342,36 @@ def list_vapps(ctx, name):
                 resource_type = ResourceType.VM.value
             name_filter = ('containerName', name)
             attributes = [
-                'name', 'containerName', 'ipAddress', 'status', 'memoryMB',
+                'name', 'containerName', 'ownerName', 'ipAddress', 'status', 'memoryMB',
                 'numberOfCpus'
             ]
-        q = client.get_typed_query(
-            resource_type,
-            query_result_format=QueryResultFormat.ID_RECORDS,
-            equality_filter=name_filter)
-        records = list(q.execute())
+
+        if filter is None:
+            q = client.get_typed_query(
+                resource_type,
+                query_result_format=QueryResultFormat.ID_RECORDS,
+                equality_filter=name_filter)
+            records = list(q.execute())
+        else:
+            vdc_href = ctx.obj['profiles'].get('vdc_href')
+            vdc = VDC(client, href=vdc_href)
+            records = vdc.list_vapp_details(filter)
+
         if len(records) == 0:
             if name is None:
                 result = 'No vApps were found.'
             else:
                 result = 'No vms were found.'
         else:
-            for r in records:
-                result.append(
-                    to_dict(
-                        r, resource_type=resource_type, attributes=attributes))
-        stdout(result, ctx, show_id=False)
+            if filter is None:
+                for r in records:
+                    result.append(
+                        to_dict(
+                            r, resource_type=resource_type, attributes=attributes))
+                stdout(result, ctx, show_id=False)
+            else:
+                stdout(records, ctx, show_id=False)
+
     except Exception as e:
         stderr(e, ctx)
 

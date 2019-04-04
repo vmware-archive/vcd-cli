@@ -221,6 +221,10 @@ def vapp(ctx):
 \b
         vcd vapp exit-maintenance-mode vapp1
             Exit maintenance mode a vapp.
+
+\b
+        vcd vapp upgrade-virtual-hardware vapp1
+            Upgrade virtual hardware of vapp.
     """
     pass
 
@@ -818,6 +822,22 @@ def exit_maintenance_mode(ctx, vapp_name):
         vapp = get_vapp(ctx, vapp_name)
         vapp.exit_maintenance_mode()
         stdout('exited maintenance mode successfully', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command(
+    'upgrade-virtual-hardware',
+    short_help='upgrade virtual hardware of a vApp')
+@click.pass_context
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
+def upgrade_virtual_hardware(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        no_of_vm_upgraded = vapp.upgrade_virtual_hardware()
+        result = {'No of vm upgraded': no_of_vm_upgraded}
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
 

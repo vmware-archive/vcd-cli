@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 from uuid import uuid1
 from click.testing import CliRunner
 
@@ -47,6 +49,8 @@ class VAppTest(BaseTestCase):
     _new_vapp_network_dns1 = '8.8.8.10'
     _new_vapp_network_dns2 = '8.8.8.11'
     _new_vapp_network_dns_suffix = 'example1.com'
+    _description = 'capturing vapp in catalog'
+    _ova_file_name = 'test.ova'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -57,6 +61,7 @@ class VAppTest(BaseTestCase):
 
         VAppTest._runner = CliRunner()
         default_org = VAppTest._config['vcd']['default_org_name']
+        VAppTest._default_org = default_org
         VAppTest._login(self)
         VAppTest._runner.invoke(org, ['use', default_org])
         VAppTest._test_vdc = Environment.get_test_vdc(VAppTest._client)
@@ -68,6 +73,8 @@ class VAppTest(BaseTestCase):
             VAppTest._config['vcd']['default_template_file_name'],
             power_on=False,
             deploy=False)
+        VAppTest._catalog_name = VAppTest._config['vcd'][
+            'default_catalog_name']
 
     def test_0010_create_vapp_network(self):
         """Create a vApp network as per configuration stated above."""
@@ -91,13 +98,48 @@ class VAppTest(BaseTestCase):
             vapp, args=['power-on', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
 
-    def test_0025_stop_vapp(self):
+    def test_0024_stop_vapp(self):
         result = VAppTest._runner.invoke(
             vapp, args=['stop', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0025_capture(self):
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'capture', VAppTest._test_vapp_name, VAppTest._catalog_name,
+                '-d', VAppTest._description
+            ])
         self.assertEqual(0, result.exit_code)
         result = VAppTest._runner.invoke(
             vapp, args=['power-on', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
+
+    def test_0026_suspend_vapp(self):
+        result = VAppTest._runner.invoke(
+            vapp, args=['suspend', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0027_discard_suspended_state_vapp(self):
+        result = VAppTest._runner.invoke(
+            vapp, args=['discard-suspended-state', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0028_enter_maintenance_mode(self):
+        VAppTest._logout(self)
+        VAppTest._sys_admin_login(self)
+        VAppTest._runner.invoke(org, ['use', VAppTest._default_org])
+        result = VAppTest._runner.invoke(
+            vapp, args=['enter-maintenance-mode', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0029_exit_maintenance_mode(self):
+        result = VAppTest._runner.invoke(
+            vapp, args=['exit-maintenance-mode', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+        VAppTest._logout(self)
+        VAppTest._login(self)
+        VAppTest._runner.invoke(org, ['use', VAppTest._default_org])
 
     def test_0030_reset_vapp_network(self):
         """Reset a vapp network."""
@@ -213,6 +255,24 @@ class VAppTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    def test_0060_download_ova(self):
+        result = VAppTest._runner.invoke(
+            vapp, args=['stop', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'download', VAppTest._test_vapp_name, VAppTest._ova_file_name,
+                '-o'
+            ])
+        self.assertEqual(0, result.exit_code)
+        result = VAppTest._runner.invoke(
+            vapp, args=['deploy', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+        # Remove downloaded vapp file
+        os.remove(VAppTest._ova_file_name)
+
     def test_0098_tearDown(self):
         """Delete vApp and logout from the session."""
         result_delete = VAppTest._runner.invoke(
@@ -226,6 +286,18 @@ class VAppTest(BaseTestCase):
         user = Environment.get_username_for_role_in_test_org(
             CommonRoles.ORGANIZATION_ADMINISTRATOR)
         password = VAppTest._config['vcd']['default_org_user_password']
+        login_args = [
+            VAppTest._config['vcd']['host'], org, user, "-i", "-w",
+            "--password={0}".format(password)
+        ]
+        result = VAppTest._runner.invoke(login, args=login_args)
+        self.assertEqual(0, result.exit_code)
+        self.assertTrue("logged in" in result.output)
+
+    def _sys_admin_login(self):
+        org = VAppTest._config['vcd']['sys_org_name']
+        user = self._config['vcd']['sys_admin_username']
+        password = VAppTest._config['vcd']['sys_admin_pass']
         login_args = [
             VAppTest._config['vcd']['host'], org, user, "-i", "-w",
             "--password={0}".format(password)

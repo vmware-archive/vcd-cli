@@ -12,6 +12,7 @@
 # conditions of the subcomponent's license, as noted in the LICENSE file.
 #
 
+import os
 import click
 from pyvcloud.vcd.client import QueryResultFormat
 from pyvcloud.vcd.client import ResourceType
@@ -176,6 +177,10 @@ def vapp(ctx):
             Capture a vApp as a template in a catalog.
 
 \b
+        vcd vapp download vapp1 file.ova
+            Download a vapp.
+
+\b
         vcd vapp attach vapp1 vm1 disk1
             Attach a disk to a VM in the given vApp.
 
@@ -200,6 +205,22 @@ def vapp(ctx):
 \b
         vdc vapp disconnect vapp1 org-vdc-network1
             Disconnects the network org-vdc-network1 from vapp1.
+
+\b
+        vcd vapp suspend vapp1
+            Suspend a vapp.
+
+\b
+        vcd vapp discard-suspended-state vapp1
+            Discard suspended state of vapp.
+
+\b
+        vcd vapp enter-maintenance-mode vapp1
+            Place a vApp in Maintenance Mode.
+
+\b
+        vcd vapp exit-maintenance-mode vapp1
+            Exit maintenance mode a vapp.
     """
     pass
 
@@ -678,15 +699,11 @@ def undeploy(ctx, name, vm_names, action):
 
 @vapp.command('stop', short_help='stop a vApp')
 @click.pass_context
-@click.argument('name', required=True)
-def stopVapp(ctx, name):
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
+def stop_vapp(ctx, vapp_name):
     try:
         restore_session(ctx, vdc_required=True)
-        client = ctx.obj['client']
-        vdc_href = ctx.obj['profiles'].get('vdc_href')
-        vdc = VDC(client, href=vdc_href)
-        vapp_resource = vdc.get_vapp(name)
-        vapp = VApp(client, resource=vapp_resource)
+        vapp = get_vapp(ctx, vapp_name)
         task = vapp.undeploy()
         stdout(task, ctx)
     except Exception as e:
@@ -750,6 +767,91 @@ def shutdown(ctx, name, vm_names):
         stderr(e, ctx)
 
 
+@vapp.command('suspend', short_help='suspend a vApp')
+@click.pass_context
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
+def suspend_vapp(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        task = vapp.suspend_vapp()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command(
+    'discard-suspended-state', short_help='discard suspended state of vApp')
+@click.pass_context
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
+def discard_suspended_state_vapp(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        task = vapp.discard_suspended_state_vapp()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command(
+    'enter-maintenance-mode', short_help='Place a vApp in Maintenance Mode')
+@click.pass_context
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
+def enter_maintenance_mode(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        vapp.enter_maintenance_mode()
+        stdout('Entered maintenance mode successfully', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command(
+    'exit-maintenance-mode', short_help='exit maintenance mode a vApp')
+@click.pass_context
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
+def exit_maintenance_mode(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        vapp.exit_maintenance_mode()
+        stdout('exited maintenance mode successfully', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('download', short_help='Download a vApp')
+@click.pass_context
+@click.argument('vapp_name', required=True, metavar='<vapp_name>')
+@click.argument(
+    'file_name',
+    type=click.Path(exists=False),
+    metavar='[file-name]',
+    required=True)
+@click.option(
+    '-o',
+    '--overwrite',
+    is_flag=True,
+    required=False,
+    default=False,
+    help='overwrite')
+def download_ova(ctx, vapp_name, file_name, overwrite):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        if file_name is not None:
+            save_as_name = file_name
+        if not overwrite and os.path.isfile(save_as_name):
+            raise Exception('File exists.')
+        bytes_written = vapp.download_ova(save_as_name)
+        result = {'file': save_as_name, 'size': bytes_written}
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
 @vapp.command('connect', short_help='connect an ovdc network to a vapp')
 @click.pass_context
 @click.argument('name', required=True, metavar='<vapp-name>')
@@ -807,7 +909,7 @@ def disconnect(ctx, name, network):
         stderr(e, ctx)
 
 
-@vapp.command(short_help='save a vApp as a template')
+@vapp.command('capture', short_help='Capture a vApp as template')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
 @click.argument('catalog', metavar='<catalog>', required=True)
@@ -825,7 +927,8 @@ def disconnect(ctx, name, network):
     flag_value='customizable',
     default=True,
     help='Make copy customizable during instantiation')
-def capture(ctx, name, catalog, template, customizable):
+@click.option('-d', '--description', default='', help='Description')
+def capture(ctx, name, catalog, template, customizable, description):
     try:
         restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
@@ -835,14 +938,18 @@ def capture(ctx, name, catalog, template, customizable):
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
         vapp_resource = vdc.get_vapp(name)
+        overwrite = False
         if template is None:
             template = vapp_resource.get('name')
+        else:
+            overwrite = True
         task = org.capture_vapp(
             catalog_resource,
             vapp_href=vapp_resource.get('href'),
             catalog_item_name=template,
-            description='',
-            customize_on_instantiate=customizable == 'customizable')
+            description=description,
+            customize_on_instantiate=customizable == 'customizable',
+            overwrite=overwrite)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

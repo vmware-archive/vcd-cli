@@ -90,6 +90,9 @@ def vm(ctx):
         vcd vm discard-suspend vapp1 vm1
             Discard suspended state of the VM.
 
+\b
+        vcd vm reset vapp1 vm1
+            Reset the VM.
     """
     pass
 
@@ -326,6 +329,19 @@ def discard_suspend(ctx, vapp_name, vm_name):
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
         task = vm.discard_suspended_state()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('reset', short_help='reset a VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def reset(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.power_reset()
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -82,13 +82,19 @@ class VmTest(BaseTestCase):
         result = VmTest._runner.invoke(
             vm, args=['power-on', VAppConstants.name, VAppConstants.vm1_name])
 
-    def test_0093_suspend(self):
+    def test_0093_reset(self):
+        """Reset the VM."""
+        result = VmTest._runner.invoke(
+            vm, args=['reset', VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0094_suspend(self):
         """Suspend the VM."""
         result = VmTest._runner.invoke(
             vm, args=['suspend', VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
-    def test_0094_discard_suspended_state(self):
+    def test_0095_discard_suspended_state(self):
         """Discard suspended state of the VM."""
         result = VmTest._runner.invoke(
             vm, args=['discard-suspend', VAppConstants.name,

@@ -384,7 +384,7 @@ def reset(ctx, vapp_name, vm_name):
     '--media-href',
     required=True,
     metavar='<media-href>',
-    help='media hred to be inserted')
+    help='media href to be inserted')
 def reset(ctx, vapp_name, vm_name, media_href):
     try:
         restore_session(ctx, vdc_required=True)
@@ -403,7 +403,7 @@ def reset(ctx, vapp_name, vm_name, media_href):
     '--media-href',
     required=True,
     metavar='<media-href>',
-    help='media hred to be ejected')
+    help='media href to be ejected')
 def reset(ctx, vapp_name, vm_name, media_href):
     try:
         restore_session(ctx, vdc_required=True)

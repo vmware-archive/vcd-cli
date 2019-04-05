@@ -93,6 +93,21 @@ def vm(ctx):
 \b
         vcd vm reset vapp1 vm1
             Reset the VM.
+
+\b
+        vcd vm install-vmware-tools vapp1 vm1
+            Install vmware tools in the VM.
+
+\b
+        vcd vm insert-cd vapp1 vm1
+                --media-href https://10.11.200.00/api/media/76e53c34-1845-43ca-bd5a-759c0d537433
+            Insert CD from catalog to the VM.
+
+\b
+        \b
+        vcd vm eject-cd vapp1 vm1
+                --media-href https://10.11.200.00/api/media/76e53c34-1845-43ca-bd5a-759c0d537433
+            Eject CD from the VM.
     """
     pass
 

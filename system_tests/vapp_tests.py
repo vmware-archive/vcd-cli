@@ -273,6 +273,19 @@ class VAppTest(BaseTestCase):
         # Remove downloaded vapp file
         os.remove(VAppTest._ova_file_name)
 
+    def test_0070_upgrade_virtual_hardware(self):
+        result = VAppTest._runner.invoke(
+            vapp, args=['stop', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+        result = VAppTest._runner.invoke(
+            vapp, args=['upgrade-virtual-hardware', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+        result = VAppTest._runner.invoke(
+            vapp, args=['deploy', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_0098_tearDown(self):
         """Delete vApp and logout from the session."""
         result_delete = VAppTest._runner.invoke(

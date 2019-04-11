@@ -75,6 +75,10 @@ class VmTest(BaseTestCase):
         result = VmTest._runner.invoke(
             vm, args=['consolidate', VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
+        #logging out sys_client
+        self._logout()
+        #logging with org admin user
+        self._login()
 
     def test_0030_power_on(self):
         """Power on the VM."""

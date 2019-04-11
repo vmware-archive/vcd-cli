@@ -43,6 +43,7 @@ class VmTest(BaseTestCase):
         VmTest._logger = Environment.get_default_logger()
         VmTest._client = Environment.get_client_in_default_org(
             CommonRoles.ORGANIZATION_ADMINISTRATOR)
+        VmTest._media_resource = Environment.get_test_media_resource()
 
         VmTest._runner = CliRunner()
         default_org = VmTest._config['vcd']['default_org_name']
@@ -99,6 +100,32 @@ class VmTest(BaseTestCase):
         result = VmTest._runner.invoke(
             vm, args=['discard-suspend', VAppConstants.name,
                       VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0096_install_vmware_tools(self):
+        """Install vmware tools in the VM."""
+        result = VmTest._runner.invoke(
+            vm, args=['power-on', VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+        result = VmTest._runner.invoke(
+            vm, args=['install-vmware-tools', VAppConstants.name,
+                      VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0097_insert_cd(self):
+        """Insert CD in the VM."""
+        media_href = VmTest._media_resource.Entity.get('href')
+        result = VmTest._runner.invoke(
+            vm, args=['insert-cd', VAppConstants.name, VAppConstants.vm1_name,
+                      '--media-href', media_href])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0098_eject_cd(self):
+        """Eject CD from the VM."""
+        media_href = VmTest._media_resource.Entity.get('href')
+        result = VmTest._runner.invoke(
+            vm, args=['eject-cd', VAppConstants.name, VAppConstants.vm1_name,
+                      '--media-href', media_href])
         self.assertEqual(0, result.exit_code)
 
     def test_0100_add_nic(self):

@@ -19,7 +19,6 @@ from pyvcloud.system_test_framework.base_test import BaseTestCase
 from pyvcloud.system_test_framework.vapp_constants import VAppConstants
 from pyvcloud.system_test_framework.environment import CommonRoles
 from pyvcloud.system_test_framework.environment import Environment
-
 from pyvcloud.vcd.vm import VM
 
 from vcd_cli.login import login, logout
@@ -56,7 +55,7 @@ class VmTest(BaseTestCase):
             VmTest._client,
             href=VmTest._test_vapp.get_vm(VAppConstants.vm1_name).get('href'))
 
-    def test_0090_info(self):
+    def test_0010_info(self):
         """Get info of the VM."""
         result = VmTest._runner.invoke(
             vm, args=['info', VAppConstants.name, VAppConstants.vm1_name])
@@ -68,13 +67,26 @@ class VmTest(BaseTestCase):
         self.assertTrue(re.findall(vm_name_regex, result.output))
         self.assertTrue(re.findall(vapp_regex, result.output))
 
-    def test_0091_power_on(self):
+    def test_0020_consolidate(self):
+        """Consolidate the VM."""
+        default_org = self._config['vcd']['default_org_name']
+        self._sys_login()
+        VmTest._runner.invoke(org, ['use', default_org])
+        result = VmTest._runner.invoke(
+            vm, args=['consolidate', VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+        #logging out sys_client
+        self._logout()
+        #logging with org admin user
+        self._login()
+
+    def test_0030_power_on(self):
         """Power on the VM."""
         result = VmTest._runner.invoke(
             vm, args=['power-on', VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
-    def test_0092_power_off(self):
+    def test_0040_power_off(self):
         """Power off the VM."""
         result = VmTest._runner.invoke(
             vm, args=['power-off', VAppConstants.name, VAppConstants.vm1_name])
@@ -83,26 +95,26 @@ class VmTest(BaseTestCase):
         result = VmTest._runner.invoke(
             vm, args=['power-on', VAppConstants.name, VAppConstants.vm1_name])
 
-    def test_0093_reset(self):
+    def test_0050_reset(self):
         """Reset the VM."""
         result = VmTest._runner.invoke(
             vm, args=['reset', VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
-    def test_0094_suspend(self):
+    def test_0060_suspend(self):
         """Suspend the VM."""
         result = VmTest._runner.invoke(
             vm, args=['suspend', VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
-    def test_0095_discard_suspended_state(self):
+    def test_0070_discard_suspended_state(self):
         """Discard suspended state of the VM."""
         result = VmTest._runner.invoke(
             vm, args=['discard-suspend', VAppConstants.name,
                       VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
-    def test_0096_install_vmware_tools(self):
+    def test_0080_install_vmware_tools(self):
         """Install vmware tools in the VM."""
         result = VmTest._runner.invoke(
             vm, args=['power-on', VAppConstants.name, VAppConstants.vm1_name])
@@ -112,7 +124,7 @@ class VmTest(BaseTestCase):
                       VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
-    def test_0097_insert_cd(self):
+    def test_0090_insert_cd(self):
         """Insert CD in the VM."""
         media_href = VmTest._media_resource.Entity.get('href')
         result = VmTest._runner.invoke(
@@ -120,7 +132,7 @@ class VmTest(BaseTestCase):
                       '--media-href', media_href])
         self.assertEqual(0, result.exit_code)
 
-    def test_0098_eject_cd(self):
+    def test_0100_eject_cd(self):
         """Eject CD from the VM."""
         media_href = VmTest._media_resource.Entity.get('href')
         result = VmTest._runner.invoke(
@@ -128,7 +140,7 @@ class VmTest(BaseTestCase):
                       '--media-href', media_href])
         self.assertEqual(0, result.exit_code)
 
-    def test_0100_add_nic(self):
+    def test_0110_add_nic(self):
         """Add a nic to the VM."""
         result = VmTest._runner.invoke(
             vm,
@@ -140,13 +152,13 @@ class VmTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
-    def test_0101_list_nics(self):
+    def test_0120_list_nics(self):
         """List all nics of the VM."""
         result = VmTest._runner.invoke(
             vm, args=['list-nics', VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
-    def test_0105_delete_nic(self):
+    def test_0130_delete_nic(self):
         """Delete a nic of the VM."""
         result = VmTest._runner.invoke(
             vm,
@@ -168,6 +180,20 @@ class VmTest(BaseTestCase):
         login_args = [
             VmTest._config['vcd']['host'], org, user, "-i", "-w",
             "--password={0}".format(password)
+        ]
+        result = VmTest._runner.invoke(login, args=login_args)
+        self.assertEqual(0, result.exit_code)
+        self.assertTrue("logged in" in result.output)
+
+    def _sys_login(self):
+        """Logs in using admin credentials"""
+        host = self._config['vcd']['host']
+        org = self._config['vcd']['sys_org_name']
+        admin_user = self._config['vcd']['sys_admin_username']
+        admin_pass = self._config['vcd']['sys_admin_pass']
+        login_args = [
+            host, org, admin_user, "-i", "-w",
+            "--password={0}".format(admin_pass)
         ]
         result = VmTest._runner.invoke(login, args=login_args)
         self.assertEqual(0, result.exit_code)

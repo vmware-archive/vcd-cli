@@ -314,52 +314,6 @@ def detach(ctx, vapp_name, vm_name, disk_name):
     except Exception as e:
         stderr(e, ctx)
 
-"""
-@vapp.command('list', short_help='list vApps')
-@click.pass_context
-@click.argument('name', metavar='[name]', required=False)
-def list_vapps(ctx, name):
-    try:
-        restore_session(ctx, vdc_required=True)
-        client = ctx.obj['client']
-        result = []
-        if name is None:
-            if is_sysadmin(ctx):
-                resource_type = ResourceType.ADMIN_VAPP.value
-            else:
-                resource_type = ResourceType.VAPP.value
-            name_filter = None
-            attributes = None
-        else:
-            if is_sysadmin(ctx):
-                resource_type = ResourceType.ADMIN_VM.value
-            else:
-                resource_type = ResourceType.VM.value
-            name_filter = ('containerName', name)
-            attributes = [
-                'name', 'containerName', 'ipAddress', 'status', 'memoryMB',
-                'numberOfCpus'
-            ]
-        q = client.get_typed_query(
-            resource_type,
-            query_result_format=QueryResultFormat.ID_RECORDS,
-            equality_filter=name_filter)
-        records = list(q.execute())
-        if len(records) == 0:
-            if name is None:
-                result = 'No vApps were found.'
-            else:
-                result = 'No vms were found.'
-        else:
-            for r in records:
-                result.append(
-                    to_dict(
-                        r, resource_type=resource_type, attributes=attributes))
-        stdout(result, ctx, show_id=False)
-    except Exception as e:
-        stderr(e, ctx)
-"""
-
 
 @vapp.command('list', short_help='list vApps')
 @click.pass_context

@@ -222,6 +222,16 @@ class VAppTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    def test_0040_list_available_vapps(self):
+        """List available vapps.
+        Invoke the command 'vapp list' in
+        """
+        result = self._runner.invoke(vapp, args=['list'])
+        self.assertEqual(0, result.exit_code)
+
+        result = self._runner.invoke(vapp, args=['list', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_0045_delete_vapp_network(self):
         """Delete a vapp network."""
         result = VAppTest._runner.invoke(

@@ -104,10 +104,13 @@ def vm(ctx):
             Insert CD from catalog to the VM.
 
 \b
-        \b
         vcd vm eject-cd vapp1 vm1
                 --media-href https://10.11.200.00/api/media/76e53c34-1845-43ca-bd5a-759c0d537433
             Eject CD from the VM.
+
+\b
+        vcd vm consolidate vapp1 vm1
+            Consolidate the VM.
     """
     pass
 
@@ -365,7 +368,7 @@ def reset(ctx, vapp_name, vm_name):
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)
-def reset(ctx, vapp_name, vm_name):
+def install_vmware_tools(ctx, vapp_name, vm_name):
     try:
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
@@ -385,7 +388,7 @@ def reset(ctx, vapp_name, vm_name):
     required=True,
     metavar='<media-href>',
     help='media href to be inserted')
-def reset(ctx, vapp_name, vm_name, media_href):
+def insert_cd(ctx, vapp_name, vm_name, media_href):
     try:
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
@@ -404,11 +407,24 @@ def reset(ctx, vapp_name, vm_name, media_href):
     required=True,
     metavar='<media-href>',
     help='media href to be ejected')
-def reset(ctx, vapp_name, vm_name, media_href):
+def eject_cd(ctx, vapp_name, vm_name, media_href):
     try:
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
         task = vm.eject_cd(media_href)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('consolidate', short_help='consolidate VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def consolidate(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.consolidate()
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

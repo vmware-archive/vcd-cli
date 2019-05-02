@@ -68,13 +68,10 @@ def vapp(ctx):
 \b
         vcd vapp list vapp1
             Get list of VMs in vApp 'vapp1'.
+
 \b
         vcd vapp list --filter name==vapp1
             Get list of vApp with name vapp1.
-
-\b
-        vcd vapp list --filter status==POWERED_ON
-            Get list of vApp with VM status POWERED_ON.
 
 \b
         vcd vapp list --filter ownerName==user1
@@ -321,7 +318,7 @@ def detach(ctx, vapp_name, vm_name, disk_name):
 @click.option(
     '--filter',
     'filter',
-    metavar='<ownerName==system*>',
+    metavar='<filter>',
     help='filter for vapp')
 def list_vapps(ctx, name, filter):
     try:

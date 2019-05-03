@@ -35,6 +35,7 @@ class VAppTest(BaseTestCase):
     Be aware that this test will delete existing vcd-cli sessions.
     """
     _test_vapp_name = 'test_vApp_' + str(uuid1())
+    _test_ownername = 'org_admin'
 
     _vapp_network_name = 'vapp_network_' + str(uuid1())
     _vapp_network_description = 'Test vApp network'
@@ -90,6 +91,22 @@ class VAppTest(BaseTestCase):
                 VAppTest._vapp_network_dns_suffix, '--ip-range',
                 VAppTest._vapp_network_ip_range
             ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0011_list_available_vapps(self):
+        """List available vapps.
+        Invoke the command 'vapp list' in
+        """
+        result = self._runner.invoke(vapp, args=['list'])
+        self.assertEqual(0, result.exit_code)
+
+        result = self._runner.invoke(vapp, args=['list', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+        result = self._runner.invoke(vapp, args=['list', '--filter', 'ownerName==' + VAppTest._test_ownername])
+        self.assertEqual(0, result.exit_code)
+
+        result = self._runner.invoke(vapp, args=['list', '--filter', 'name==' + VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
 
     def test_0020_poweron_vapp(self):

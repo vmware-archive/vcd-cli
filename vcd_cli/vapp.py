@@ -14,6 +14,7 @@
 
 import os
 import click
+import re
 from pyvcloud.vcd.client import QueryResultFormat
 from pyvcloud.vcd.client import ResourceType
 from pyvcloud.vcd.org import Org
@@ -67,6 +68,22 @@ def vapp(ctx):
 \b
         vcd vapp list vapp1
             Get list of VMs in vApp 'vapp1'.
+
+\b
+        vcd vapp list --filter name==vapp1
+            Get list of vApp with name vapp1.
+
+\b
+        vcd vapp list --filter ownerName==user1
+            Get list of vApp with ownername 'user1'.
+
+\b
+        vcd vapp list --filter numberOfVMs==7
+            Get list of vApp with numberOfVMs 7.
+
+\b
+        vcd vapp list --filter vdcName==ovdc1
+            Get list of vApp with vdcName 'ovdc1'.
 
 \b
         vcd vapp info vapp1
@@ -301,45 +318,62 @@ def detach(ctx, vapp_name, vm_name, disk_name):
 
 @vapp.command('list', short_help='list vApps')
 @click.pass_context
-@click.argument('name', metavar='[name]', required=False)
-def list_vapps(ctx, name):
+@click.argument('name', metavar='<vapp-name>', default=None, required=False)
+@click.option(
+    '--filter',
+    'filter',
+    metavar='<filter>',
+    help='filter for vapp')
+def list_vapps(ctx, name, filter):
     try:
         restore_session(ctx, vdc_required=True)
         client = ctx.obj['client']
         result = []
+        records = []
         if name is None:
             if is_sysadmin(ctx):
                 resource_type = ResourceType.ADMIN_VAPP.value
             else:
                 resource_type = ResourceType.VAPP.value
-            name_filter = None
+            name = None
             attributes = None
         else:
-            if is_sysadmin(ctx):
-                resource_type = ResourceType.ADMIN_VM.value
-            else:
-                resource_type = ResourceType.VM.value
-            name_filter = ('containerName', name)
-            attributes = [
+            if name is not None:
+                if is_sysadmin(ctx):
+                    resource_type = ResourceType.ADMIN_VM.value
+                else:
+                    resource_type = ResourceType.VM.value
+            if filter is None:
+                filter = 'containerName==' + name
+                attributes = [
                 'name', 'containerName', 'ipAddress', 'status', 'memoryMB',
                 'numberOfCpus'
-            ]
-        q = client.get_typed_query(
-            resource_type,
-            query_result_format=QueryResultFormat.ID_RECORDS,
-            equality_filter=name_filter)
-        records = list(q.execute())
+                ]
+            else:
+                filter = 'name==' + name + ';' + filter
+                resource_type = ResourceType.ADMIN_VAPP.value
+                attributes = [
+                'isDeployed', 'isEnabled', 'memoryAllocationMB', 'name', 'numberOfCpus', 'numberOfVMs', 'ownerName',
+                'status', 'storageKB', 'vdcName'
+                ]
+
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        vdc = VDC(client, href=vdc_href)
+        records = vdc.list_vapp_details(resource_type, filter)
+
         if len(records) == 0:
             if name is None:
                 result = 'No vApps were found.'
             else:
                 result = 'No vms were found.'
+
         else:
             for r in records:
                 result.append(
                     to_dict(
                         r, resource_type=resource_type, attributes=attributes))
-        stdout(result, ctx, show_id=False)
+
+            stdout(result, ctx, show_id=False)
     except Exception as e:
         stderr(e, ctx)
 

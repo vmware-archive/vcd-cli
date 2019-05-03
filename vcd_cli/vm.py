@@ -83,6 +83,10 @@ def vm(ctx):
             Power off the VM.
 
 \b
+        vcd vm reboot vapp1 vm1
+            reboot the VM.
+
+\b
         vcd vm suspend vapp1 vm1
             Suspend the VM.
 
@@ -152,7 +156,6 @@ def info(ctx, vapp_name, vm_name):
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
-
 
 @vm.command('update', short_help='Update the VM properties and configurations')
 @click.pass_context
@@ -323,6 +326,18 @@ def power_on(ctx, vapp_name, vm_name):
     except Exception as e:
         stderr(e, ctx)
 
+@vm.command('reboot', short_help='reboot a VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def reboot(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.reboot()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
 
 @vm.command('suspend', short_help='suspend a VM')
 @click.pass_context

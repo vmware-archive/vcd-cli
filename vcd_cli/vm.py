@@ -84,7 +84,7 @@ def vm(ctx):
 
 \b
         vcd vm reboot vapp1 vm1
-            reboot the VM.
+            Reboot the VM.
 
 \b
         vcd vm suspend vapp1 vm1

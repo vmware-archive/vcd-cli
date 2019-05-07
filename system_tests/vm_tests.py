@@ -92,6 +92,15 @@ class VmTest(BaseTestCase):
             vm, args=['reboot', VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0034_shutdown(self):
+        """Shutdown the VM."""
+        result = VmTest._runner.invoke(
+            vm, args=['shutdown', VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+        # Again power on VM for further test cases.
+        result = VmTest._runner.invoke(
+            vm, args=['power-on', VAppConstants.name, VAppConstants.vm1_name])
+
     def test_0040_power_off(self):
         """Power off the VM."""
         result = VmTest._runner.invoke(

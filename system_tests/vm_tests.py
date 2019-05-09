@@ -110,13 +110,6 @@ class VmTest(BaseTestCase):
         result = VmTest._runner.invoke(
             vm, args=['power-on', VAppConstants.name, VAppConstants.vm1_name])
 
-    def test_0042_create_snapshot(self):
-        """Create snapshot of VM"""
-        result = VmTest._runner.invoke(
-            vm, args=['create-snapshot', VAppConstants.name,
-                      VAppConstants.vm1_name])
-        self.assertEqual(0, result.exit_code)
-
     def test_0050_reset(self):
         """Reset the VM."""
         result = VmTest._runner.invoke(
@@ -188,6 +181,13 @@ class VmTest(BaseTestCase):
                 'delete-nic', VAppConstants.name, VAppConstants.vm1_name,
                 '--index', 0
             ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0140_create_snapshot(self):
+        """Create snapshot of VM"""
+        result = VmTest._runner.invoke(
+            vm, args=['create-snapshot', VAppConstants.name,
+                      VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
     def test_9998_tearDown(self):

@@ -190,6 +190,13 @@ class VmTest(BaseTestCase):
                       VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0150_revert_to_snapshot(self):
+        """Revert VM to current snapshot."""
+        result = VmTest._runner.invoke(
+            vm, args=['revert-to-snapshot', VAppConstants.name,
+                      VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """logout from the session."""
         VmTest._logout(self)

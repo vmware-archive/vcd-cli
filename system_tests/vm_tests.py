@@ -183,6 +183,13 @@ class VmTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    def test_0140_create_snapshot(self):
+        """Create snapshot of VM"""
+        result = VmTest._runner.invoke(
+            vm, args=['create-snapshot', VAppConstants.name,
+                      VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """logout from the session."""
         VmTest._logout(self)

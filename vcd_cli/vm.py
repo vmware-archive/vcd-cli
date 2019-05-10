@@ -119,6 +119,10 @@ def vm(ctx):
 \b
         vcd vm consolidate vapp1 vm1
             Consolidate the VM.
+
+\b
+        vcd vm create-snapshot vapp1 vm1
+            Create snapshot of the VM.
     """
     pass
 
@@ -457,6 +461,42 @@ def consolidate(ctx, vapp_name, vm_name):
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
         task = vm.consolidate()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('create-snapshot', short_help='create snapshot of a VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'is_memory',
+    '--is-include-memory',
+    required=False,
+    metavar='<is_memory>',
+    type=click.BOOL,
+    help='Include the virtual machine memory')
+@click.option(
+    'quiesce',
+    '--quiesce',
+    required=False,
+    metavar='<quiesce>',
+    type=click.BOOL,
+    help='file system of the vm should be quiesced')
+@click.option(
+    'name',
+    '--name',
+    required=False,
+    metavar='<name>',
+    type=click.STRING,
+    help='snapshot name')
+def create_snapshot(ctx, vapp_name, vm_name, is_memory, quiesce, name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.snapshot_create(memory = is_memory,
+                                  quiesce = quiesce,
+                                  name = name)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

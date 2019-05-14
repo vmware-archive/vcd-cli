@@ -127,6 +127,10 @@ def vm(ctx):
 \b
         vcd vm revert-to-snapshot vapp1 vm1
             Revert VM to current snapshot.
+
+\b
+        vcd vm copy vapp1 vm1 vapp2 vm2
+            Copy VM from one vapp to another vapp.
     """
     pass
 
@@ -518,3 +522,29 @@ def revert_to_snapshot(ctx, vapp_name, vm_name):
     except Exception as e:
         stderr(e, ctx)
 
+@vm.command('copy', short_help='copy vm from one vapp to another vapp')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'target_vapp_name',
+    '--target-vapp-name',
+    required=True,
+    metavar='<target-vapp>',
+    help='target vapp name')
+@click.option(
+    'target_vm_name',
+    '--target-vm-name',
+    required=True,
+    metavar='<target-vm>',
+    help='target vm name')
+def copy_to(ctx, vapp_name, vm_name, target_vapp_name, target_vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.copy_to(source_vapp_name=vapp_name,
+                          target_vapp_name=target_vapp_name,
+                          target_vm_name=target_vm_name)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)

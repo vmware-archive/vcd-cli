@@ -106,6 +106,13 @@ class VmTest(BaseTestCase):
                       '--target-vm-name', VmTest._target_vm_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0028_delete(self):
+        """Delete VM from empty vApp"""
+        result = VmTest._runner.invoke(
+            vm, args=['delete', VmTest._empty_vapp_name,
+                      VmTest._target_vm_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_0030_power_on(self):
         """Power on the VM."""
         result = VmTest._runner.invoke(

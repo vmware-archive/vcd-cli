@@ -131,6 +131,10 @@ def vm(ctx):
 \b
         vcd vm copy vapp1 vm1 vapp2 vm2
             Copy VM from one vapp to another vapp.
+
+\b
+        vcd vm delete vapp1 vm1
+            Delete VM.
     """
     pass
 
@@ -545,6 +549,19 @@ def copy_to(ctx, vapp_name, vm_name, target_vapp_name, target_vm_name):
         task = vm.copy_to(source_vapp_name=vapp_name,
                           target_vapp_name=target_vapp_name,
                           target_vm_name=target_vm_name)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('delete', short_help='delete VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def delete(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.delete()
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

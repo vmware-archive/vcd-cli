@@ -19,8 +19,10 @@ from pyvcloud.system_test_framework.base_test import BaseTestCase
 from pyvcloud.system_test_framework.vapp_constants import VAppConstants
 from pyvcloud.system_test_framework.environment import CommonRoles
 from pyvcloud.system_test_framework.environment import Environment
+from pyvcloud.system_test_framework.utils import create_empty_vapp
+from pyvcloud.vcd.client import TaskStatus
 from pyvcloud.vcd.vm import VM
-
+from uuid import uuid1
 from vcd_cli.login import login, logout
 from vcd_cli.org import org
 from vcd_cli.vm import vm
@@ -35,6 +37,13 @@ class VmTest(BaseTestCase):
     """
     DEFAULT_ADAPTER_TYPE = 'VMXNET3'
     DEFAULT_IP_MODE = 'POOL'
+    _empty_vapp_name = 'empty_vApp_' + str(uuid1())
+    _empty_vapp_description = 'empty vApp description'
+    _empty_vapp_runtime_lease = 86400  # in seconds
+    _empty_vapp_storage_lease = 86400  # in seconds
+    _empty_vapp_owner_name = None
+    _empty_vapp_href = None
+    _target_vm_name = 'target_vm'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -54,6 +63,15 @@ class VmTest(BaseTestCase):
         VmTest._test_vm = VM(
             VmTest._client,
             href=VmTest._test_vapp.get_vm(VAppConstants.vm1_name).get('href'))
+        logger = Environment.get_default_logger()
+
+        vdc = Environment.get_test_vdc(VmTest._client)
+        logger.debug('Creating empty vApp.')
+        VmTest._empty_vapp_href = \
+            create_empty_vapp(client=VmTest._client,
+                              vdc=vdc,
+                              name=VmTest._empty_vapp_name,
+                              description=VmTest._empty_vapp_description)
 
     def test_0010_info(self):
         """Get info of the VM."""
@@ -79,6 +97,14 @@ class VmTest(BaseTestCase):
         self._logout()
         #logging with org admin user
         self._login()
+
+    def test_0025_copy_to(self):
+        """Copy VM from one vApp to another."""
+        result = VmTest._runner.invoke(
+            vm, args=['copy', VAppConstants.name, VAppConstants.vm1_name,
+                      '--target-vapp-name', VmTest._empty_vapp_name,
+                      '--target-vm-name', VmTest._target_vm_name])
+        self.assertEqual(0, result.exit_code)
 
     def test_0030_power_on(self):
         """Power on the VM."""
@@ -198,8 +224,22 @@ class VmTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_9998_tearDown(self):
-        """logout from the session."""
-        VmTest._logout(self)
+        """Delete the vApp created during setup.
+
+        This test passes if the task for deleting the vApp succeed.
+        """
+        vapps_to_delete = []
+
+        if VmTest._empty_vapp_href is not None:
+            vapps_to_delete.append(VmTest._empty_vapp_name)
+
+        vdc = Environment.get_test_vdc(VmTest._client)
+
+        for vapp_name in vapps_to_delete:
+            task = vdc.delete_vapp(name=vapp_name, force=True)
+            result = VmTest._client.get_task_monitor().wait_for_success(task)
+            self.assertEqual(result.get('status'), TaskStatus.SUCCESS.value)
+
 
     def _login(self):
         org = VmTest._config['vcd']['default_org_name']

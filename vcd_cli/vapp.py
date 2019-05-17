@@ -246,7 +246,7 @@ def vapp(ctx):
             Upgrade virtual hardware of vapp.
 
 \b
-        vcd vapp copy-to vapp1 -n new_vapp_name -v target_vdc -d description
+        vcd vapp copy vapp1 -n new_vapp_name -v target_vdc -d description
             Copy a vapp to target vdc.
     """
     pass
@@ -1337,7 +1337,7 @@ def update_vapp(ctx, vapp_name, name, description):
         stderr(e, ctx)
 
 
-@vapp.command('copy-to', short_help='copy a vapp')
+@vapp.command('copy', short_help='copy a vapp')
 @click.pass_context
 @click.argument('vapp_name', metavar='<vapp_name>')
 @click.option(

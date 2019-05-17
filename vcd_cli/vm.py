@@ -119,6 +119,22 @@ def vm(ctx):
 \b
         vcd vm consolidate vapp1 vm1
             Consolidate the VM.
+
+\b
+        vcd vm create-snapshot vapp1 vm1
+            Create snapshot of the VM.
+
+\b
+        vcd vm revert-to-snapshot vapp1 vm1
+            Revert VM to current snapshot.
+
+\b
+        vcd vm copy vapp1 vm1 vapp2 vm2
+            Copy VM from one vapp to another vapp.
+
+\b
+        vcd vm delete vapp1 vm1
+            Delete VM.
     """
     pass
 
@@ -457,6 +473,95 @@ def consolidate(ctx, vapp_name, vm_name):
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
         task = vm.consolidate()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('create-snapshot', short_help='create snapshot of a VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'is_memory',
+    '--is-include-memory',
+    required=False,
+    metavar='<is_memory>',
+    type=click.BOOL,
+    help='Include the virtual machine memory')
+@click.option(
+    'quiesce',
+    '--quiesce',
+    required=False,
+    metavar='<quiesce>',
+    type=click.BOOL,
+    help='file system of the vm should be quiesced')
+@click.option(
+    'name',
+    '--name',
+    required=False,
+    metavar='<name>',
+    type=click.STRING,
+    help='snapshot name')
+def create_snapshot(ctx, vapp_name, vm_name, is_memory, quiesce, name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.snapshot_create(memory = is_memory,
+                                  quiesce = quiesce,
+                                  name = name)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('revert-to-snapshot', short_help='revert VM to current snapshot')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def revert_to_snapshot(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.snapshot_revert_to_current()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('copy', short_help='copy vm from one vapp to another vapp')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'target_vapp_name',
+    '--target-vapp-name',
+    required=True,
+    metavar='<target-vapp>',
+    help='target vapp name')
+@click.option(
+    'target_vm_name',
+    '--target-vm-name',
+    required=True,
+    metavar='<target-vm>',
+    help='target vm name')
+def copy_to(ctx, vapp_name, vm_name, target_vapp_name, target_vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.copy_to(source_vapp_name=vapp_name,
+                          target_vapp_name=target_vapp_name,
+                          target_vm_name=target_vm_name)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('delete', short_help='delete VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def delete(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.delete()
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

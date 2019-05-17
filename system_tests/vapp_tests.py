@@ -309,7 +309,7 @@ class VAppTest(BaseTestCase):
         result = VAppTest._runner.invoke(
             vapp,
             args=[
-                'copy-to', VAppTest._test_vapp_name, '-n',
+                'copy', VAppTest._test_vapp_name, '-n',
                 VAppTest._vapp_copy_name, '-d', VAppTest._copy_description
             ])
         self.assertEqual(0, result.exit_code)

@@ -52,6 +52,8 @@ class VAppTest(BaseTestCase):
     _new_vapp_network_dns_suffix = 'example1.com'
     _description = 'capturing vapp in catalog'
     _ova_file_name = 'test.ova'
+    _vapp_copy_name = 'customized_vApp_copy_' + str(uuid1())
+    _copy_description = 'Copying a vapp'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -302,6 +304,19 @@ class VAppTest(BaseTestCase):
         result = VAppTest._runner.invoke(
             vapp, args=['deploy', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
+
+    def test_0080_copy_to(self):
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'copy', VAppTest._test_vapp_name, '-n',
+                VAppTest._vapp_copy_name, '-d', VAppTest._copy_description
+            ])
+        self.assertEqual(0, result.exit_code)
+        result_delete = VAppTest._runner.invoke(
+            vapp,
+            args=['delete', VAppTest._vapp_copy_name, '--yes', '--force'])
+        self.assertEqual(0, result_delete.exit_code)
 
     def test_0098_tearDown(self):
         """Delete vApp and logout from the session."""

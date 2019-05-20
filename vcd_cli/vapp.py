@@ -15,6 +15,8 @@
 import os
 import click
 import re
+from pyvcloud.vcd.client import EntityType
+from pyvcloud.vcd.client import get_links
 from pyvcloud.vcd.client import QueryResultFormat
 from pyvcloud.vcd.client import ResourceType
 from pyvcloud.vcd.org import Org
@@ -242,6 +244,10 @@ def vapp(ctx):
 \b
         vcd vapp upgrade-virtual-hardware vapp1
             Upgrade virtual hardware of vapp.
+
+\b
+        vcd vapp copy vapp1 -n new_vapp_name -v target_vdc -d description
+            Copy a vapp to target vdc.
     """
     pass
 
@@ -1326,6 +1332,47 @@ def update_vapp(ctx, vapp_name, name, description):
         vapp = get_vapp(ctx, vapp_name)
 
         task = vapp.edit_name_and_description(name, description)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('copy', short_help='copy a vapp')
+@click.pass_context
+@click.argument('vapp_name', metavar='<vapp_name>')
+@click.option(
+    '-n',
+    '--name',
+    'vapp_new_name',
+    required=True,
+    metavar='<vapp_new_name>',
+    help='name of copy vapp')
+@click.option(
+    '-v',
+    '--vdc',
+    'vdc',
+    default=None,
+    metavar='<vdc>',
+    help='virtual datacenter name where need to copy vapp')
+@click.option(
+    '-d',
+    '--description',
+    'description',
+    metavar='<description>',
+    help='description of copy vapp')
+def copy_to(ctx, vapp_name, vapp_new_name, vdc, description):
+    try:
+        restore_session(ctx, vdc_required=True)
+        client = ctx.obj['client']
+        logged_in_org = client.get_org()
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        if vdc is not None:
+            for v in get_links(logged_in_org, media_type=EntityType.VDC.value):
+                if vdc == v.name:
+                    vdc_href = v.href
+                    break
+        vapp = get_vapp(ctx, vapp_name)
+        task = vapp.copy_to(vdc_href, vapp_new_name, description)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -139,7 +139,7 @@ def login(ctx, user, host, password, api_version, org, verify_ssl_certs,
         log_bodies=True)
     try:
         if api_version is None:
-            api_version = client.set_highest_supported_version()
+            api_version = client.get_latest_api_version()
 
         if session_id is not None or use_browser_session:
             if use_browser_session:

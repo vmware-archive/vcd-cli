@@ -248,6 +248,10 @@ def vapp(ctx):
 \b
         vcd vapp copy vapp1 -n new_vapp_name -v target_vdc -d description
             Copy a vapp to target vdc.
+
+\b
+        vcd vapp move vapp1 -v target_vdc
+            Move a vapp to target vdc.
     """
     pass
 
@@ -325,11 +329,7 @@ def detach(ctx, vapp_name, vm_name, disk_name):
 @vapp.command('list', short_help='list vApps')
 @click.pass_context
 @click.argument('name', metavar='<vapp-name>', default=None, required=False)
-@click.option(
-    '--filter',
-    'filter',
-    metavar='<filter>',
-    help='filter for vapp')
+@click.option('--filter', 'filter', metavar='<filter>', help='filter for vapp')
 def list_vapps(ctx, name, filter):
     try:
         restore_session(ctx, vdc_required=True)
@@ -352,15 +352,16 @@ def list_vapps(ctx, name, filter):
             if filter is None:
                 filter = 'containerName==' + name
                 attributes = [
-                'name', 'containerName', 'ipAddress', 'status', 'memoryMB',
-                'numberOfCpus'
+                    'name', 'containerName', 'ipAddress', 'status', 'memoryMB',
+                    'numberOfCpus'
                 ]
             else:
                 filter = 'name==' + name + ';' + filter
                 resource_type = ResourceType.ADMIN_VAPP.value
                 attributes = [
-                'isDeployed', 'isEnabled', 'memoryAllocationMB', 'name', 'numberOfCpus', 'numberOfVMs', 'ownerName',
-                'status', 'storageKB', 'vdcName'
+                    'isDeployed', 'isEnabled', 'memoryAllocationMB', 'name',
+                    'numberOfCpus', 'numberOfVMs', 'ownerName', 'status',
+                    'storageKB', 'vdcName'
                 ]
 
         vdc_href = ctx.obj['profiles'].get('vdc_href')
@@ -1374,6 +1375,39 @@ def copy_to(ctx, vapp_name, vapp_new_name, vdc, description):
         vapp = get_vapp(ctx, vapp_name)
         task = vapp.copy_to(vdc_href, vapp_new_name, description)
         stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('move', short_help='move a vapp')
+@click.pass_context
+@click.argument('vapp_name', metavar='<vapp_name>')
+@click.option(
+    '-v',
+    '--vdc',
+    'vdc',
+    default=None,
+    required=True,
+    metavar='<vdc>',
+    help='virtual datacenter name where need to move vapp')
+def move_to(ctx, vapp_name, vdc):
+    try:
+        restore_session(ctx, vdc_required=True)
+        client = ctx.obj['client']
+        org_in_use = ctx.obj['profiles'].get('org_in_use')
+        org_resource = client.get_org_by_name(org_in_use)
+        vdc_href = None
+        if vdc is not None:
+            for v in get_links(org_resource, media_type=EntityType.VDC.value):
+                if vdc == v.name:
+                    vdc_href = v.href
+                    break
+        if vdc_href is not None:
+            vapp = get_vapp(ctx, vapp_name)
+            task = vapp.move_to(vdc_href)
+            stdout(task, ctx)
+        else:
+            stdout('Org vdc not found', ctx)
     except Exception as e:
         stderr(e, ctx)
 

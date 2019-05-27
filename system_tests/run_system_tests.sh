@@ -32,9 +32,10 @@ cd system_tests
 STABLE_TESTS=`find . -name "*.py" | sed -e "s/^\.\///" | sort`
 STABLE_TESTS=`echo $STABLE_TESTS | tr -d '\n'`
 UNSTABLE_TESTS="helpers/portgroup_helper.py \
-	main.py \
-	constants.py \
-	__init__.py"
+main.py \
+constants.py \
+pvdc_tests.py \
+__init__.py"
 UNSTABLE_TESTS=`echo $UNSTABLE_TESTS | tr -d '\n'`
 
 array_unstable_tests=(${UNSTABLE_TESTS// / })

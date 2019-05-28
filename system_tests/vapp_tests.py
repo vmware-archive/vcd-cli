@@ -23,9 +23,13 @@ from pyvcloud.system_test_framework.environment import CommonRoles
 from pyvcloud.system_test_framework.environment import Environment
 from pyvcloud.system_test_framework.utils import create_vapp_from_template
 
+from pyvcloud.vcd.system import System
+from pyvcloud.vcd.vdc import VDC
+
 from vcd_cli.login import login, logout
 from vcd_cli.org import org
 from vcd_cli.vapp import vapp
+from vcd_cli.vdc import vdc
 from vcd_cli.vapp_network import network  # NOQA
 
 
@@ -54,6 +58,7 @@ class VAppTest(BaseTestCase):
     _ova_file_name = 'test.ova'
     _vapp_copy_name = 'customized_vApp_copy_' + str(uuid1())
     _copy_description = 'Copying a vapp'
+    _ovdc_name = 'test_vdc2_ ' + str(uuid1())
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -78,6 +83,10 @@ class VAppTest(BaseTestCase):
             deploy=False)
         VAppTest._catalog_name = VAppTest._config['vcd'][
             'default_catalog_name']
+        VAppTest._sys_admin_client = Environment.get_sys_admin_client()
+        VAppTest._pvdc_name = Environment.get_test_pvdc_name()
+        default_ovdc = VAppTest._config['vcd']['default_ovdc_name']
+        VAppTest._default_ovdc = default_ovdc
 
     def test_0010_create_vapp_network(self):
         """Create a vApp network as per configuration stated above."""
@@ -102,13 +111,20 @@ class VAppTest(BaseTestCase):
         result = self._runner.invoke(vapp, args=['list'])
         self.assertEqual(0, result.exit_code)
 
-        result = self._runner.invoke(vapp, args=['list', VAppTest._test_vapp_name])
+        result = self._runner.invoke(
+            vapp, args=['list', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
 
-        result = self._runner.invoke(vapp, args=['list', '--filter', 'ownerName==' + VAppTest._test_ownername])
+        result = self._runner.invoke(
+            vapp,
+            args=[
+                'list', '--filter', 'ownerName==' + VAppTest._test_ownername
+            ])
         self.assertEqual(0, result.exit_code)
 
-        result = self._runner.invoke(vapp, args=['list', '--filter', 'name==' + VAppTest._test_vapp_name])
+        result = self._runner.invoke(
+            vapp,
+            args=['list', '--filter', 'name==' + VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
 
     def test_0020_poweron_vapp(self):
@@ -318,7 +334,54 @@ class VAppTest(BaseTestCase):
             args=['delete', VAppTest._vapp_copy_name, '--yes', '--force'])
         self.assertEqual(0, result_delete.exit_code)
 
-    def test_0098_tearDown(self):
+    def _create_org_vdc(self):
+        # creating a org vdc
+        org = Environment.get_test_org(VAppTest._sys_admin_client)
+        storage_profiles = [{
+            'name':
+            VAppTest._config['vcd']['default_storage_profile_name'],
+            'enabled':
+            True,
+            'units':
+            'MB',
+            'limit':
+            0,
+            'default':
+            True
+        }]
+        system = System(
+            VAppTest._sys_admin_client,
+            admin_resource=VAppTest._sys_admin_client.get_admin())
+        netpool_to_use = Environment._get_netpool_name_to_use(system)
+        org.create_org_vdc(
+            VAppTest._ovdc_name,
+            VAppTest._pvdc_name,
+            network_pool_name=netpool_to_use,
+            network_quota=VAppTest._config['vcd']['default_network_quota'],
+            storage_profiles=storage_profiles,
+            uses_fast_provisioning=True,
+            is_thin_provision=True)
+
+    def test_0090_move_to(self):
+        VAppTest._create_org_vdc(self)
+        VAppTest._runner.invoke(vdc, ['use', VAppTest._default_ovdc])
+        result = VAppTest._runner.invoke(
+            vapp, args=['stop', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=['move', VAppTest._test_vapp_name, '-v', VAppTest._ovdc_name])
+        self.assertEqual(0, result.exit_code)
+        VAppTest._runner.invoke(vdc, ['use', VAppTest._ovdc_name])
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'move', VAppTest._test_vapp_name, '-v', VAppTest._default_ovdc
+            ])
+        self.assertEqual(0, result.exit_code)
+        VAppTest._runner.invoke(vdc, ['use', VAppTest._default_ovdc])
+
+    def test_9998_tearDown(self):
         """Delete vApp and logout from the session."""
         result_delete = VAppTest._runner.invoke(
             vapp,

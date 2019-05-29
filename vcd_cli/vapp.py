@@ -252,6 +252,10 @@ def vapp(ctx):
 \b
         vcd vapp move vapp1 -v target_vdc
             Move a vapp to target vdc.
+
+\b
+        vcd vapp create-snapshot vapp1
+            Create snapshot of the vapp.
     """
     pass
 
@@ -1408,6 +1412,35 @@ def move_to(ctx, vapp_name, vdc):
             stdout(task, ctx)
         else:
             stdout('Org vdc not found', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('create-snapshot', short_help='create snapshot of a vapp')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.option(
+    'is_memory',
+    '--is-include-memory',
+    default=False,
+    required=False,
+    metavar='<is_memory>',
+    type=click.BOOL,
+    help='Include the virtual machine memory')
+@click.option(
+    'quiesce',
+    '--quiesce',
+    default=False,
+    required=False,
+    metavar='<quiesce>',
+    type=click.BOOL,
+    help='file system of the vm should be quiesced')
+def create_snapshot(ctx, vapp_name, is_memory, quiesce):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        task = vapp.create_snapshot(memory=is_memory, quiesce=quiesce)
+        stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
 

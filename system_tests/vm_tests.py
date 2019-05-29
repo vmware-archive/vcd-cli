@@ -106,10 +106,21 @@ class VmTest(BaseTestCase):
                       '--target-vm-name', VmTest._target_vm_name])
         self.assertEqual(0, result.exit_code)
 
-    def test_0028_delete(self):
-        """Delete VM from empty vApp"""
+    def test_0026_move_to(self):
+        """Move VM from one vApp to another."""
+        test_vapp = VmTest._test_vapp
+        test_vapp_resource = test_vapp.get_resource()
+        VmTest._test_vapp_name = test_vapp_resource.get('name')
         result = VmTest._runner.invoke(
-            vm, args=['delete', VmTest._empty_vapp_name,
+            vm, args=['move', VAppConstants.name, VAppConstants.vm1_name,
+                      '--target-vapp-name', VmTest._test_vapp_name,
+                      '--target-vm-name', VmTest._target_vm_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0028_delete(self):
+        """Delete VM from vApp"""
+        result = VmTest._runner.invoke(
+            vm, args=['delete', VmTest._test_vapp_name,
                       VmTest._target_vm_name])
         self.assertEqual(0, result.exit_code)
 

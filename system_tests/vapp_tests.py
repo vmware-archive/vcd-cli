@@ -386,6 +386,22 @@ class VAppTest(BaseTestCase):
             vapp, args=['create-snapshot', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0110_revert_to_snapshot(self):
+        result = VAppTest._runner.invoke(
+            vapp, args=['create-snapshot', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+        result = VAppTest._runner.invoke(
+            vapp, args=['revert-to-snapshot', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0120_snapshot_remove_all(self):
+        result = VAppTest._runner.invoke(
+            vapp, args=['create-snapshot', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+        result = VAppTest._runner.invoke(
+            vapp, args=['remove-all-snapshot', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """Delete vApp and logout from the session."""
         result_delete = VAppTest._runner.invoke(

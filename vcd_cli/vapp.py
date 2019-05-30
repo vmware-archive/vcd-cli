@@ -256,6 +256,14 @@ def vapp(ctx):
 \b
         vcd vapp create-snapshot vapp1
             Create snapshot of the vapp.
+
+\b
+        vcd vapp revert-to-snapshot vapp1
+            Revert to to current snapshot of the vapp.
+
+\b
+        vcd vapp remove-snapshot vapp1
+            Remove snapshot of the vapp.
     """
     pass
 
@@ -1440,6 +1448,33 @@ def create_snapshot(ctx, vapp_name, is_memory, quiesce):
         restore_session(ctx, vdc_required=True)
         vapp = get_vapp(ctx, vapp_name)
         task = vapp.create_snapshot(memory=is_memory, quiesce=quiesce)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command(
+    'revert-to-snapshot', short_help='revert vapp to current snapshot')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+def revert_to_snapshot(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        task = vapp.snapshot_revert_to_current()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('remove-snapshot', short_help='rmove snapshot of vapp')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+def snapshot_remove(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        task = vapp.snapshot_remove()
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

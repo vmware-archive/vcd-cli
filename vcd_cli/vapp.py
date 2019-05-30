@@ -262,8 +262,8 @@ def vapp(ctx):
             Revert to to current snapshot of the vapp.
 
 \b
-        vcd vapp remove-all-snapshot vapp1
-            Remove all snapshot of the vapp.
+        vcd vapp remove-snapshot vapp1
+            Remove snapshot of the vapp.
     """
     pass
 
@@ -1467,14 +1467,14 @@ def revert_to_snapshot(ctx, vapp_name):
         stderr(e, ctx)
 
 
-@vapp.command('remove-all-snapshot', short_help='rmove all snapshot of vapp')
+@vapp.command('remove-snapshot', short_help='rmove snapshot of vapp')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
-def snapshot_remove_all(ctx, vapp_name):
+def snapshot_remove(ctx, vapp_name):
     try:
         restore_session(ctx, vdc_required=True)
         vapp = get_vapp(ctx, vapp_name)
-        task = vapp.snapshot_remove_all()
+        task = vapp.snapshot_remove()
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

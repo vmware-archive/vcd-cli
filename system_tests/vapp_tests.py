@@ -381,6 +381,11 @@ class VAppTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
         VAppTest._runner.invoke(vdc, ['use', VAppTest._default_ovdc])
 
+    def test_0100_create_snapshot(self):
+        result = VAppTest._runner.invoke(
+            vapp, args=['create-snapshot', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """Delete vApp and logout from the session."""
         result_delete = VAppTest._runner.invoke(

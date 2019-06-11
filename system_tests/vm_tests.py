@@ -44,6 +44,9 @@ class VmTest(BaseTestCase):
     _empty_vapp_owner_name = None
     _empty_vapp_href = None
     _target_vm_name = 'target_vm'
+    _idisk_name = 'SCSI'
+    _idisk_size = '5000'
+    _idisk_description = '5Mb SCSI disk'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -72,6 +75,11 @@ class VmTest(BaseTestCase):
                               vdc=vdc,
                               name=VmTest._empty_vapp_name,
                               description=VmTest._empty_vapp_description)
+
+        # Create independent disk
+        VmTest._idisk = vdc.create_disk(name=self._idisk_name,
+                                        size=self._idisk_size,
+                                        description=self._idisk_description)
 
     def test_0010_info(self):
         """Get info of the VM."""
@@ -112,7 +120,7 @@ class VmTest(BaseTestCase):
         test_vapp_resource = test_vapp.get_resource()
         VmTest._test_vapp_name = test_vapp_resource.get('name')
         result = VmTest._runner.invoke(
-            vm, args=['move', VAppConstants.name, VAppConstants.vm1_name,
+            vm, args=['move', VmTest._empty_vapp_name, VmTest._target_vm_name,
                       '--target-vapp-name', VmTest._test_vapp_name,
                       '--target-vm-name', VmTest._target_vm_name])
         self.assertEqual(0, result.exit_code)
@@ -241,6 +249,16 @@ class VmTest(BaseTestCase):
                       VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0160_attach_dsk_to_vm(self):
+        """Attach independent disk to VM."""
+        vdc = Environment.get_test_vdc(VmTest._client)
+        idisk = vdc.get_disk(name=VmTest._idisk_name)
+        result = VmTest._runner.invoke(
+            vm, args=['attach-disk', VAppConstants.name,
+                      VAppConstants.vm1_name,
+                      '--idisk-href', idisk.get('href')])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """Delete the vApp created during setup.
 
@@ -251,7 +269,12 @@ class VmTest(BaseTestCase):
         if VmTest._empty_vapp_href is not None:
             vapps_to_delete.append(VmTest._empty_vapp_name)
 
+        self._sys_login()
         vdc = Environment.get_test_vdc(VmTest._client)
+        vdc.delete_disk(name=self._idisk_name)
+        self._logout()
+
+        self._login()
 
         for vapp_name in vapps_to_delete:
             task = vdc.delete_vapp(name=vapp_name, force=True)

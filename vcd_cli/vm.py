@@ -139,6 +139,11 @@ def vm(ctx):
 \b
         vcd vm delete vapp1 vm1
             Delete VM.
+
+\b
+        vcd vm attach-disk vapp1 vm1
+               --idisk-href https://10.11.200.00/api/disk/76e53c34-1845-43ca-bd5a-759c0d537433
+            Attach independent disk to VM.
     """
     pass
 
@@ -593,6 +598,26 @@ def delete(ctx, vapp_name, vm_name):
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
         task = vm.delete()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('attach-disk', short_help='attach independent disk to VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'idisk_href',
+    '--idisk-href',
+    required=True,
+    metavar='<idisk-href>',
+    help='idisk href')
+def attach_disk(ctx, vapp_name, vm_name, idisk_href):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = _get_vapp(ctx, vapp_name)
+        task = vapp.attach_disk_to_vm(disk_href=idisk_href,
+                                      vm_name=vm_name)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

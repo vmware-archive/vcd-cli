@@ -79,6 +79,10 @@ def network(ctx):
 \b
         vcd vapp network list-allocated-ip vapp1 vapp-network1
             List allocated ip
+
+\b
+        vcd vapp network list vapp1
+            List vapp networks
     """
     pass
 
@@ -305,6 +309,19 @@ def list_allocated_ip(ctx, vapp_name, network_name):
         restore_session(ctx, vdc_required=True)
         vapp = get_vapp(ctx, vapp_name)
         task = vapp.list_ip_allocations(network_name)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@network.command('list', short_help='list vapp networks')
+@click.pass_context
+@click.argument('vapp_name', metavar='<vapp-name>', required=True)
+def list_vapp_networks(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        task = vapp.get_vapp_network_list()
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

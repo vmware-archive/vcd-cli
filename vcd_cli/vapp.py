@@ -14,10 +14,9 @@
 
 import os
 import click
-import re
+from pyvcloud.vcd.client import ApiVersion
 from pyvcloud.vcd.client import EntityType
 from pyvcloud.vcd.client import get_links
-from pyvcloud.vcd.client import QueryResultFormat
 from pyvcloud.vcd.client import ResourceType
 from pyvcloud.vcd.org import Org
 from pyvcloud.vcd.utils import access_settings_to_dict
@@ -1380,7 +1379,15 @@ def copy_to(ctx, vapp_name, vapp_new_name, vdc, description):
         logged_in_org = client.get_org()
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         if vdc is not None:
-            for v in get_links(logged_in_org, media_type=EntityType.VDC.value):
+            if client.get_api_version() < ApiVersion.VERSION_33.value:
+                links = get_links(
+                    logged_in_org, media_type=EntityType.VDC.value)
+            else:
+                links = client.get_resource_link_from_query_object(
+                    logged_in_org,
+                    media_type=EntityType.RECORDS.value,
+                    type='vdc')
+            for v in links:
                 if vdc == v.name:
                     vdc_href = v.href
                     break
@@ -1410,7 +1417,15 @@ def move_to(ctx, vapp_name, vdc):
         org_resource = client.get_org_by_name(org_in_use)
         vdc_href = None
         if vdc is not None:
-            for v in get_links(org_resource, media_type=EntityType.VDC.value):
+            if client.get_api_version() < ApiVersion.VERSION_33.value:
+                links = get_links(
+                    org_resource, media_type=EntityType.VDC.value)
+            else:
+                links = client.get_resource_link_from_query_object(
+                    org_resource,
+                    media_type=EntityType.RECORDS.value,
+                    type='vdc')
+            for v in links:
                 if vdc == v.name:
                     vdc_href = v.href
                     break

@@ -13,6 +13,7 @@
 #
 
 import click
+from pyvcloud.vcd.client import ApiVersion
 from pyvcloud.vcd.client import EntityType
 from pyvcloud.vcd.client import get_links
 from pyvcloud.vcd.exceptions import OperationNotSupportedException
@@ -101,8 +102,15 @@ def list_vdc(ctx):
         result = []
         for org_resouce in orgs:
             if org_resouce.get('name').lower() == in_use_org_name.lower():
-                for link in get_links(org_resouce,
-                                      media_type=EntityType.VDC.value):
+                if client.get_api_version() < ApiVersion.VERSION_33.value:
+                    links = get_links(
+                        org_resouce, media_type=EntityType.VDC.value)
+                else:
+                    links = client.get_resource_link_from_query_object(
+                        org_resouce,
+                        media_type=EntityType.RECORDS.value,
+                        type='vdc')
+                for link in links:
                     result.append({
                         'name': link.name,
                         'org': org_resouce.get('name'),
@@ -125,8 +133,15 @@ def use(ctx, name):
         orgs = client.get_org_list()
         for org_resource in orgs:
             if org_resource.get('name').lower() == in_use_org_name.lower():
-                for link in get_links(org_resource,
-                                      media_type=EntityType.VDC.value):
+                if client.get_api_version() < ApiVersion.VERSION_33.value:
+                    links = get_links(
+                        org_resource, media_type=EntityType.VDC.value)
+                else:
+                    links = client.get_resource_link_from_query_object(
+                        org_resource,
+                        media_type=EntityType.RECORDS.value,
+                        type='vdc')
+                for link in links:
                     if link.name == name:
                         vdc_in_use = name
                         vapp_in_use = ''
@@ -420,8 +435,9 @@ def share(ctx, vdc_name):
         vdc = VDC(client, resource=vdc_resource)
 
         vdc.share_with_org_members()
-        stdout('Vdc \'%s\' shared to all members of the org \'%s\'.' %
-               (vdc_name, ctx.obj['profiles'].get('org_in_use')), ctx)
+        stdout(
+            'Vdc \'%s\' shared to all members of the org \'%s\'.' %
+            (vdc_name, ctx.obj['profiles'].get('org_in_use')), ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -440,8 +456,9 @@ def unshare(ctx, vdc_name):
         vdc = VDC(client, resource=vdc_resource)
 
         vdc.unshare_from_org_members()
-        stdout('Vdc \'%s\' unshared from all members of the org \'%s\'.' %
-               (vdc_name, ctx.obj['profiles'].get('org_in_use')), ctx)
+        stdout(
+            'Vdc \'%s\' unshared from all members of the org \'%s\'.' %
+            (vdc_name, ctx.obj['profiles'].get('org_in_use')), ctx)
     except Exception as e:
         stderr(e, ctx)
 
@@ -460,8 +477,7 @@ def list_acl(ctx, vdc_name):
 
         acl = vdc.get_access_settings()
         stdout(
-            access_settings_to_list(acl,
-                                    ctx.obj['profiles'].get('org_in_use')),
-            ctx)
+            access_settings_to_list(
+                acl, ctx.obj['profiles'].get('org_in_use')), ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -13,6 +13,7 @@
 #
 
 import click
+from pyvcloud.vcd.client import ApiVersion
 from pyvcloud.vcd.client import EntityType
 from pyvcloud.vcd.client import get_links
 from pyvcloud.vcd.org import Org
@@ -110,7 +111,13 @@ def use(ctx, name):
         vdc_href = ''
         in_use_vapp = ''
         vapp_href = ''
-        for link in get_links(org_resource, media_type=EntityType.VDC.value):
+        links = []
+        if client.get_api_version() < ApiVersion.VERSION_33.value:
+            links = get_links(org_resource, media_type=EntityType.VDC.value)
+        else:
+            links = client.get_resource_link_from_query_object(
+                org_resource, media_type=EntityType.RECORDS.value, type='vdc')
+        for link in links:
             in_use_vdc = link.name
             vdc_href = link.href
             break

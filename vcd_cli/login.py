@@ -15,6 +15,7 @@
 import click
 from pyvcloud.vcd.client import _WellKnownEndpoint
 from pyvcloud.vcd.client import API_CURRENT_VERSIONS
+from pyvcloud.vcd.client import ApiVersion
 from pyvcloud.vcd.client import BasicLoginCredentials
 from pyvcloud.vcd.client import Client
 from pyvcloud.vcd.client import EntityType
@@ -167,13 +168,19 @@ def login(ctx, user, host, password, api_version, org, verify_ssl_certs,
         org_href = logged_in_org.get('href')
         vdc_href = ''
         in_use_vdc = ''
+        links = []
+        if client.get_api_version() < ApiVersion.VERSION_33.value:
+            links = get_links(logged_in_org, media_type=EntityType.VDC.value)
+        else:
+            links = client.get_resource_link_from_query_object(
+                logged_in_org, media_type=EntityType.RECORDS.value, type='vdc')
         if vdc is None:
-            for v in get_links(logged_in_org, media_type=EntityType.VDC.value):
+            for v in links:
                 in_use_vdc = v.name
                 vdc_href = v.href
                 break
         else:
-            for v in get_links(logged_in_org, media_type=EntityType.VDC.value):
+            for v in links:
                 if vdc == v.name:
                     in_use_vdc = v.name
                     vdc_href = v.href

@@ -147,7 +147,7 @@ def vm(ctx):
 
 \b
         vcd vm deploy vapp1 vm1
-            Deploye a VM.
+            Deploy a VM.
 
 \b
         vcd vm undeploy vapp1 vm1

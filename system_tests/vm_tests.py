@@ -45,7 +45,7 @@ class VmTest(BaseTestCase):
     _empty_vapp_href = None
     _target_vm_name = 'target_vm'
     _idisk_name = 'SCSI'
-    _idisk_size = '5000'
+    _idisk_size = '5242880'
     _idisk_description = '5Mb SCSI disk'
 
     def test_0000_setup(self):
@@ -254,9 +254,39 @@ class VmTest(BaseTestCase):
         vdc = Environment.get_test_vdc(VmTest._client)
         idisk = vdc.get_disk(name=VmTest._idisk_name)
         result = VmTest._runner.invoke(
-            vm, args=['attach-disk', VAppConstants.name,
-                      VAppConstants.vm1_name,
-                      '--idisk-href', idisk.get('href')])
+            vm,
+            args=[
+                'attach-disk', VAppConstants.name, VAppConstants.vm1_name,
+                '--idisk-href',
+                idisk.get('href')
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0170_deploy_undeploy_vm(self):
+        # Undeploy VM
+        result = VmTest._runner.invoke(
+            vm, args=['undeploy', VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+        result = VmTest._runner.invoke(
+            vm, args=['deploy', VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0180_upgrade_virtual_hardware(self):
+        # Undeploy VM
+        result = VmTest._runner.invoke(
+            vm, args=['undeploy', VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+        # Upgrade virtual hardware of VM.
+        result = VmTest._runner.invoke(
+            vm,
+            args=[
+                'upgrade-virtual-hardware', VAppConstants.name,
+                VAppConstants.vm1_name
+            ])
+        self.assertEqual(0, result.exit_code)
+        # Again deploy VM for further test cases.
+        result = VmTest._runner.invoke(
+            vm, args=['deploy', VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
     def test_9998_tearDown(self):

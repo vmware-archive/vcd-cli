@@ -144,6 +144,19 @@ def vm(ctx):
         vcd vm attach-disk vapp1 vm1
                --idisk-href https://10.11.200.00/api/disk/76e53c34-1845-43ca-bd5a-759c0d537433
             Attach independent disk to VM.
+
+\b
+        vcd vm deploy vapp1 vm1
+            Deploy a VM.
+
+\b
+        vcd vm undeploy vapp1 vm1
+            Undeploy a VM.
+
+\b
+        vcd vm upgrade-virtual-hardware vapp1 vm1
+            Upgrade virtual hardware of VM.
+
     """
     pass
 
@@ -616,8 +629,50 @@ def attach_disk(ctx, vapp_name, vm_name, idisk_href):
     try:
         restore_session(ctx, vdc_required=True)
         vapp = _get_vapp(ctx, vapp_name)
-        task = vapp.attach_disk_to_vm(disk_href=idisk_href,
-                                      vm_name=vm_name)
+        task = vapp.attach_disk_to_vm(disk_href=idisk_href, vm_name=vm_name)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('deploy', short_help='deploy a VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def deploy(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.deploy()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('undeploy', short_help='undeploy a VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def undeploy(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.undeploy()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command(
+    'upgrade-virtual-hardware', short_help='upgrade virtual hardware of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def upgrade_virtual_hardware(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.upgrade_virtual_hardware()
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

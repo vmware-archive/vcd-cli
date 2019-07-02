@@ -289,6 +289,15 @@ class VmTest(BaseTestCase):
             vm, args=['deploy', VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0190_general_setting_detail(self):
+        # general setting details
+        result = VmTest._runner.invoke(
+            vm,
+            args=[
+                'general-setting', VAppConstants.name, VAppConstants.vm1_name
+            ])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """Delete the vApp created during setup.
 

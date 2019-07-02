@@ -157,6 +157,10 @@ def vm(ctx):
         vcd vm upgrade-virtual-hardware vapp1 vm1
             Upgrade virtual hardware of VM.
 
+\b
+        vcd vm general-setting vapp1 vm1
+            Show general setting details of VM.
+
     """
     pass
 
@@ -673,6 +677,20 @@ def upgrade_virtual_hardware(ctx, vapp_name, vm_name):
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
         task = vm.upgrade_virtual_hardware()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('general-setting', short_help='general setting detail of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def general_setting_detail(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.general_setting_detail()
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

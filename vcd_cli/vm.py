@@ -161,6 +161,11 @@ def vm(ctx):
         vcd vm general-setting vapp1 vm1
             Show general setting details of VM.
 
+
+\b
+        vcd vm list-storage-profile vapp1 vm1
+            List all storage profile of VM.
+
     """
     pass
 
@@ -691,6 +696,21 @@ def general_setting_detail(ctx, vapp_name, vm_name):
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
         task = vm.general_setting_detail()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command(
+    'list-storage-profile', short_help='list all storage profile of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def list_storage_profile(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.list_storage_profile()
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

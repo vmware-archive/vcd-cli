@@ -77,6 +77,12 @@ def network(ctx):
             Add DNS detail to vApp network.
 
 \b
+        vdc vapp network update-dns vapp1 vapp-network1
+                --dns1 6.6.5.2 --dns2 6.6.5.10-6.6.5.18
+                --dns-suffix example.com
+            Update DNS detail of vApp network.
+
+\b
         vcd vapp network list-allocated-ip vapp1 vapp-network1
             List allocated ip
 
@@ -290,6 +296,40 @@ def update_ip_range(ctx, vapp_name, network_name, ip_range, new_ip_range):
     help='dns suffix')
 def add_dns_to_vapp_network(ctx, vapp_name, network_name, primary_dns_ip,
                             secondary_dns_ip, dns_suffix):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        task = vapp.update_dns_vapp_network(network_name, primary_dns_ip,
+                                            secondary_dns_ip, dns_suffix)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@network.command('update-dns', short_help='update DNS detail of vapp network')
+@click.pass_context
+@click.argument('vapp_name', metavar='<vapp-name>', required=True)
+@click.argument('network_name', metavar='<network-name>', required=True)
+@click.option(
+    '--dns1',
+    'primary_dns_ip',
+    default=None,
+    metavar='<ip>',
+    help='IP of the primary dns server')
+@click.option(
+    '--dns2',
+    'secondary_dns_ip',
+    default=None,
+    metavar='<ip>',
+    help='IP of the secondary dns server')
+@click.option(
+    '--dns-suffix',
+    'dns_suffix',
+    default=None,
+    metavar='<name>',
+    help='dns suffix')
+def update_dns_of_vapp_network(ctx, vapp_name, network_name, primary_dns_ip,
+                               secondary_dns_ip, dns_suffix):
     try:
         restore_session(ctx, vdc_required=True)
         vapp = get_vapp(ctx, vapp_name)

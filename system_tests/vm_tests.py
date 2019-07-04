@@ -298,6 +298,15 @@ class VmTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    def test_0200_list_storage_profile(self):
+        result = VmTest._runner.invoke(
+            vm,
+            args=[
+                'list-storage-profile', VAppConstants.name,
+                VAppConstants.vm1_name
+            ])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """Delete the vApp created during setup.
 

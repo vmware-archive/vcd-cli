@@ -164,7 +164,7 @@ def vm(ctx):
 
 \b
         vcd vm list-storage-profile vapp1 vm1
-            List all storage profile of VM.
+            List all storage profiles of VM.
 
     """
     pass
@@ -702,7 +702,7 @@ def general_setting_detail(ctx, vapp_name, vm_name):
 
 
 @vm.command(
-    'list-storage-profile', short_help='list all storage profile of VM')
+    'list-storage-profile', short_help='list all storage profiles of VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)

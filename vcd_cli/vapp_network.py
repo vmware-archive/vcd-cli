@@ -83,6 +83,10 @@ def network(ctx):
             Update DNS details of vApp network.
 
 \b
+        vdc vapp network dns-info vapp1 vapp-network1
+            Show DNS details of vapp network
+
+\b
         vcd vapp network list-allocated-ip vapp1 vapp-network1
             List allocated ip
 
@@ -302,6 +306,20 @@ def add_dns_to_vapp_network(ctx, vapp_name, network_name, primary_dns_ip,
         task = vapp.update_dns_vapp_network(network_name, primary_dns_ip,
                                             secondary_dns_ip, dns_suffix)
         stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@network.command('dns-info', short_help='show DNS details of vapp network')
+@click.pass_context
+@click.argument('vapp_name', metavar='<vapp-name>', required=True)
+@click.argument('network_name', metavar='<network-name>', required=True)
+def dns_info(ctx, vapp_name, network_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        result = vapp.dns_detail_of_vapp_network(network_name)
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
 

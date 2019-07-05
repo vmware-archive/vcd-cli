@@ -268,6 +268,16 @@ class VAppTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    def test_0041_dns_info(self):
+        """DNS details of vapp network."""
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'network', 'dns-info', VAppTest._test_vapp_name,
+                VAppTest._vapp_network_name
+            ])
+        self.assertEqual(0, result.exit_code)
+
     def test_0044_list_vapp_networks(self):
         """List of vapp networks."""
         result = VAppTest._runner.invoke(

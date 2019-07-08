@@ -174,6 +174,7 @@ def vm(ctx):
 \b
         vcd vm reload-from-vc vapp1 vm1
             Reload VM from VC.
+
     """
     pass
 

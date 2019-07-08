@@ -321,6 +321,13 @@ class VmTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    def test_0220_reload_from_vc(self):
+        # Reload VM from VC
+        result = VmTest._runner.invoke(
+            vm, args=['reload-from-vc',
+                      VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """Delete the vApp created during setup.
 

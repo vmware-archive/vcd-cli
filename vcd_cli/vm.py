@@ -171,6 +171,10 @@ def vm(ctx):
         vcd vm list-storage-profile vapp1 vm1
             List all storage profiles of VM.
 
+\b
+        vcd vm reload-from-vc vapp1 vm1
+            Reload VM from VC.
+
     """
     pass
 
@@ -744,6 +748,19 @@ def list_storage_profile(ctx, vapp_name, vm_name):
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
         task = vm.list_storage_profile()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('reload-from-vc', short_help='reload VM from VC')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def reload_from_vc(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.reload_from_vc()
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

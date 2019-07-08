@@ -142,12 +142,12 @@ def vm(ctx):
 
 \b
         vcd vm attach-disk vapp1 vm1
-               --idisk-href https://10.11.200.00/api/disk/76e53c34-1845-43ca-bd5a-759c0d537433
+               --idisk-id 76e53c34-1845-43ca-bd5a-759c0d537433
             Attach independent disk to VM.
 
 \b
         vcd vm detach-disk vapp1 vm1
-               --idisk-href https://10.11.200.00/api/disk/76e53c34-1845-43ca-bd5a-759c0d537433
+               --idisk-id 76e53c34-1845-43ca-bd5a-759c0d537433
             Detach independent disk from VM.
 
 \b
@@ -183,14 +183,17 @@ def list_vms(ctx):
     except Exception as e:
         stderr(e, ctx)
 
-
-def _get_vapp(ctx, vapp_name):
+def _get_vdc(ctx):
     client = ctx.obj['client']
     vdc_href = ctx.obj['profiles'].get('vdc_href')
     vdc = VDC(client, href=vdc_href)
+    return vdc
+
+def _get_vapp(ctx, vapp_name):
+    client = ctx.obj['client']
+    vdc = _get_vdc(ctx)
     vapp_resource = vdc.get_vapp(vapp_name)
     return VApp(client, resource=vapp_resource)
-
 
 def _get_vm(ctx, vapp_name, vm_name):
     client = ctx.obj['client']
@@ -634,15 +637,18 @@ def delete(ctx, vapp_name, vm_name):
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)
 @click.option(
-    'idisk_href',
-    '--idisk-href',
+    'idisk_id',
+    '--idisk-id',
     required=True,
-    metavar='<idisk-href>',
-    help='idisk href')
-def attach_disk(ctx, vapp_name, vm_name, idisk_href):
+    metavar='<idisk-id>',
+    help='idisk id')
+def attach_disk(ctx, vapp_name, vm_name, idisk_id):
     try:
         restore_session(ctx, vdc_required=True)
         vapp = _get_vapp(ctx, vapp_name)
+        vdc = _get_vdc(ctx)
+        disk = vdc.get_disk(disk_id=idisk_id)
+        idisk_href = disk.get('href')
         task = vapp.attach_disk_to_vm(disk_href=idisk_href, vm_name=vm_name)
         stdout(task, ctx)
     except Exception as e:
@@ -653,15 +659,18 @@ def attach_disk(ctx, vapp_name, vm_name, idisk_href):
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)
 @click.option(
-    'idisk_href',
-    '--idisk-href',
+    'idisk_id',
+    '--idisk-id',
     required=True,
-    metavar='<idisk-href>',
-    help='idisk href')
-def detach_disk(ctx, vapp_name, vm_name, idisk_href):
+    metavar='<idisk-id>',
+    help='idisk id')
+def detach_disk(ctx, vapp_name, vm_name, idisk_id):
     try:
         restore_session(ctx, vdc_required=True)
         vapp = _get_vapp(ctx, vapp_name)
+        vdc = _get_vdc(ctx)
+        disk = vdc.get_disk(disk_id=idisk_id)
+        idisk_href = disk.get('href')
         task = vapp.detach_disk_from_vm(disk_href=idisk_href, vm_name=vm_name)
         stdout(task, ctx)
     except Exception as e:

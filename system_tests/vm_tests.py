@@ -20,6 +20,7 @@ from pyvcloud.system_test_framework.vapp_constants import VAppConstants
 from pyvcloud.system_test_framework.environment import CommonRoles
 from pyvcloud.system_test_framework.environment import Environment
 from pyvcloud.system_test_framework.utils import create_empty_vapp
+from pyvcloud.system_test_framework.utils import create_independent_disk
 from pyvcloud.vcd.client import TaskStatus
 from pyvcloud.vcd.vm import VM
 from uuid import uuid1
@@ -77,9 +78,11 @@ class VmTest(BaseTestCase):
                               description=VmTest._empty_vapp_description)
 
         # Create independent disk
-        VmTest._idisk = vdc.create_disk(name=self._idisk_name,
-                                        size=self._idisk_size,
-                                        description=self._idisk_description)
+        VmTest._idisk_id = create_independent_disk(client=VmTest._client,
+                                                   vdc=vdc,
+                                                   name=self._idisk_name,
+                                                   size=self._idisk_size,
+                                                   description=self._idisk_description)
 
     def test_0010_info(self):
         """Get info of the VM."""
@@ -249,20 +252,18 @@ class VmTest(BaseTestCase):
                       VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
-    def test_0160_attach_dsk_to_vm(self):
+    def test_0160_attach_disk_to_vm(self):
         """Attach independent disk to VM."""
-        vdc = Environment.get_test_vdc(VmTest._client)
-        idisk = vdc.get_disk(name=VmTest._idisk_name)
         result = VmTest._runner.invoke(
             vm,
             args=[
                 'attach-disk', VAppConstants.name, VAppConstants.vm1_name,
-                '--idisk-href',
-                idisk.get('href')
+                '--idisk-id',
+                VmTest._idisk_id
             ])
         self.assertEqual(0, result.exit_code)
 
-    def test_0170_detach_dsk_from_vm(self):
+    def test_0170_detach_disk_from_vm(self):
         """Detach independent disk from VM."""
         vdc = Environment.get_test_vdc(VmTest._client)
         idisk = vdc.get_disk(name=VmTest._idisk_name)
@@ -270,8 +271,8 @@ class VmTest(BaseTestCase):
             vm,
             args=[
                 'detach-disk', VAppConstants.name, VAppConstants.vm1_name,
-                '--idisk-href',
-                idisk.get('href')
+                '--idisk-id',
+                VmTest._idisk_id
             ])
         self.assertEqual(0, result.exit_code)
 

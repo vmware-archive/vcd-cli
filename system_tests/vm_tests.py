@@ -262,7 +262,20 @@ class VmTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
-    def test_0170_deploy_undeploy_vm(self):
+    def test_0170_detach_dsk_from_vm(self):
+        """Detach independent disk from VM."""
+        vdc = Environment.get_test_vdc(VmTest._client)
+        idisk = vdc.get_disk(name=VmTest._idisk_name)
+        result = VmTest._runner.invoke(
+            vm,
+            args=[
+                'detach-disk', VAppConstants.name, VAppConstants.vm1_name,
+                '--idisk-href',
+                idisk.get('href')
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0180_deploy_undeploy_vm(self):
         # Undeploy VM
         result = VmTest._runner.invoke(
             vm, args=['undeploy', VAppConstants.name, VAppConstants.vm1_name])
@@ -271,7 +284,7 @@ class VmTest(BaseTestCase):
             vm, args=['deploy', VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
-    def test_0180_upgrade_virtual_hardware(self):
+    def test_0190_upgrade_virtual_hardware(self):
         # Undeploy VM
         result = VmTest._runner.invoke(
             vm, args=['undeploy', VAppConstants.name, VAppConstants.vm1_name])
@@ -289,7 +302,7 @@ class VmTest(BaseTestCase):
             vm, args=['deploy', VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
-    def test_0190_general_setting_detail(self):
+    def test_0200_general_setting_detail(self):
         # general setting details
         result = VmTest._runner.invoke(
             vm,
@@ -298,7 +311,7 @@ class VmTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
-    def test_0200_list_storage_profile(self):
+    def test_0210_list_storage_profile(self):
         result = VmTest._runner.invoke(
             vm,
             args=[

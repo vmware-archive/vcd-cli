@@ -179,6 +179,7 @@ class VmTest(BaseTestCase):
 
     def test_0070_discard_suspended_state(self):
         """Discard suspended state of the VM."""
+
         result = VmTest._runner.invoke(
             vm, args=['discard-suspend', VAppConstants.name,
                       VAppConstants.vm1_name])
@@ -266,7 +267,6 @@ class VmTest(BaseTestCase):
     def test_0170_detach_disk_from_vm(self):
         """Detach independent disk from VM."""
         vdc = Environment.get_test_vdc(VmTest._client)
-        idisk = vdc.get_disk(name=VmTest._idisk_name)
         result = VmTest._runner.invoke(
             vm,
             args=[
@@ -325,6 +325,13 @@ class VmTest(BaseTestCase):
         # Reload VM from VC
         result = VmTest._runner.invoke(
             vm, args=['reload-from-vc',
+                      VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0230_check_compliance(self):
+        # Check compliance of VM
+        result = VmTest._runner.invoke(
+            vm, args=['check-compliance',
                       VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 

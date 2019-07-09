@@ -93,6 +93,14 @@ def network(ctx):
 \b
         vcd vapp network list vapp1
             List vapp networks
+
+\b
+        vdc vapp network connect-ovdc vapp1 vapp-network1 ovdc_network_name
+            Connect a vapp network to org vdc network
+
+\b
+        vdc vapp network sync-syslog-settings vapp1 vapp-network1
+            Sync syslog settings of vapp network
     """
     pass
 
@@ -381,6 +389,40 @@ def list_vapp_networks(ctx, vapp_name):
         vapp = get_vapp(ctx, vapp_name)
         task = vapp.get_vapp_network_list()
         stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@network.command(
+    'sync-syslog-settings', short_help='sync syslog settings of vapp network')
+@click.pass_context
+@click.argument('vapp_name', metavar='<vapp-name>', required=True)
+@click.argument('network_name', metavar='<network-name>', required=True)
+def sync_syslog_settings(ctx, vapp_name, network_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        result = vapp.sync_syslog_settings(network_name)
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@network.command(
+    'connect-ovdc', short_help='connect a vapp network to org vdc network')
+@click.pass_context
+@click.argument('vapp_name', metavar='<vapp-name>', required=True)
+@click.argument('network_name', metavar='<vapp-network-name>', required=True)
+@click.argument(
+    'ovdc_network_name', metavar='<ovdc-network-name>', required=True)
+def connect_vapp_network_to_ovdc_network(ctx, vapp_name, network_name,
+                                         ovdc_network_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        result = vapp.connect_vapp_network_to_ovdc_network(
+            network_name, ovdc_network_name)
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
 

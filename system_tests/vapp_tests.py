@@ -59,6 +59,7 @@ class VAppTest(BaseTestCase):
     _vapp_copy_name = 'customized_vApp_copy_' + str(uuid1())
     _copy_description = 'Copying a vapp'
     _ovdc_name = 'test_vdc2_ ' + str(uuid1())
+    _ovdc_network_name = 'test-direct-vdc-network'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -125,6 +126,26 @@ class VAppTest(BaseTestCase):
         result = self._runner.invoke(
             vapp,
             args=['list', '--filter', 'name==' + VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0012_connect_vapp_network_to_ovdc_network(self):
+        """Connect vapp network to ovdc network."""
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'network', 'connect-ovdc', VAppTest._test_vapp_name,
+                VAppTest._vapp_network_name, VAppTest._ovdc_network_name
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0013_sync_syslog_settings(self):
+        """Sync syslog settings."""
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'network', 'sync-syslog-settings', VAppTest._test_vapp_name,
+                VAppTest._vapp_network_name
+            ])
         self.assertEqual(0, result.exit_code)
 
     def test_0020_poweron_vapp(self):

@@ -175,6 +175,10 @@ def vm(ctx):
         vcd vm reload-from-vc vapp1 vm1
             Reload VM from VC.
 
+\b
+        vcd vm check-compliance vapp1 vm1
+            Check compliance of VM.
+
     """
     pass
 
@@ -761,6 +765,19 @@ def reload_from_vc(ctx, vapp_name, vm_name):
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
         task = vm.reload_from_vc()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('check-compliance', short_help='check compliance of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def check_compliance(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.check_compliance()
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

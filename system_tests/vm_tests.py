@@ -335,6 +335,13 @@ class VmTest(BaseTestCase):
                       VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0240_customize_on_next_power_on(self):
+        # Customize on next power on
+        result = VmTest._runner.invoke(
+            vm, args=['customize-on-next-poweron',
+                      VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """Delete the vApp created during setup.
 

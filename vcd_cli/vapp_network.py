@@ -95,11 +95,11 @@ def network(ctx):
             List vapp networks
 
 \b
-        vdc vapp network connect-ovdc vapp1 vapp-network1 ovdc_network_name
+        vcd vapp network connect-ovdc vapp1 vapp-network1 ovdc_network_name
             Connect a vapp network to org vdc network
 
 \b
-        vdc vapp network sync-syslog-settings vapp1 vapp-network1
+        vcd vapp network sync-syslog-settings vapp1 vapp-network1
             Sync syslog settings of vapp network
     """
     pass

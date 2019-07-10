@@ -179,6 +179,10 @@ def vm(ctx):
         vcd vm check-compliance vapp1 vm1
             Check compliance of VM.
 
+\b
+        vcd vm customize-on-next-poweron vapp1 vm1
+            Customize on next power on of VM.
+
     """
     pass
 
@@ -778,6 +782,20 @@ def check_compliance(ctx, vapp_name, vm_name):
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
         task = vm.check_compliance()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('customize-on-next-poweron', short_help='customize on '
+                                                    'next power on of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def customize_on_next_poweron(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.customize_at_next_power_on()
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

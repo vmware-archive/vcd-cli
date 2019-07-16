@@ -7,12 +7,13 @@ Options:
   -h, --help  Show this message and exit.
 
 Commands:
-  dhcp-pool     manage DHCP pool of the gateway
-  dnat          manage dnat rules of gateway
-  firewall      manage firewall rules of gateway
-  ipsec_vpn     manage ipsec vpn of gateway
-  nat           manage snat/dnat rules of gateway
-  snat          manage snat rules of gateway
-  static-route  manage static routes of gateway
+  ca-certificate       Manage CA certificates of gateway
+  crl-certificate      Manage CRL certificates of gateway
+  dhcp-pool            manage DHCP pool of the gateway
+  firewall             manage firewall rules of gateway
+  ipsec-vpn            Manage ipsec vpn of gateway
+  nat                  manage snat/dnat rules of gateway
+  service-certificate  Manage certificates of gateway
+  static-route         manage static routes of gateway
 
 ```

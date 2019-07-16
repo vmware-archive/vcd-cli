@@ -54,6 +54,9 @@ Usage: vcd gateway [OPTIONS] COMMAND [ARGS]...
           vcd gateway sync-syslog-settings gateway1
                Synchronizes syslog settings of the gateway with given name
 
+          vcd gateway set-syslog-server gateway1 10.11.11.11
+               Set syslog server ip address of the gateway
+
           vcd gateway list-syslog-server gateway1
                List syslog server of the gateway with given name
 
@@ -91,6 +94,7 @@ Commands:
   modify-form-factor          modify form factor for gateway
   redeploy                    redeploy the given gateway
   services                    manage gateway configure services
+  set-syslog-server           set syslog server ip of the given gateway
   sub-allocate-ip             configures Sub allocate ip pools of gateway
   sync-syslog-settings        sync syslog settings of the given gateway
   update                      update name, description and HA of gateway.

@@ -1,7 +1,8 @@
 ```
-Usage: vcd vapp list [OPTIONS] [name]
+Usage: vcd vapp list [OPTIONS] <vapp-name>
 
 Options:
-  -h, --help  Show this message and exit.
+  --filter <filter>  filter for vapp
+  -h, --help         Show this message and exit.
 
 ```

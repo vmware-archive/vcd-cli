@@ -32,7 +32,7 @@ Usage: vcd login [OPTIONS] host organization user
 
 Options:
   -p, --password <password>       Password
-  -V, --version [29.0|30.0|31.0|32.0]
+  -V, --version [29.0|30.0|31.0|32.0|33.0]
                                   API version
   -s, --verify-ssl-certs / -i, --no-verify-ssl-certs
                                   Verify SSL certificates

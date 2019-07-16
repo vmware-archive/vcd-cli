@@ -46,24 +46,51 @@ Usage: vcd gateway services firewall [OPTIONS] COMMAND [ARGS]...
           vcd gateway services firewall list-source test_gateway1 rule_id
               List firewall rule's source
 
-          vcd gateway services firewall update-sequence test_gateway1 rule_id
+          vcd gateway services firewall list-destination test_gateway1
+                  rule_id
+              List firewall rule's destination
+
+          vcd gateway services firewall reorder test_gateway1 rule_id
                   --index new_index
-              Change sequence of firewall rule
+              Reorder the firewall rule position on gateway
+
+          vcd gateway services firewall delete-source test_gateway1 rule_id
+                  source_value
+              Delete all source value of firewall rule by providing
+                  source_value
+
+          vcd gateway services firewall delete-destination test_gateway1
+                  rule_id destination_value
+              Delete all destination value of firewall rule by providing
+                  destination_value
+
+          vcd gateway services firewall list-service test_gateway1 rule_id
+              List firewall rule's services
+
+          vcd gateway services firewall delete-service test_gateway1 rule_id
+                  protocol
+              Delete all services of firewall rule by providing protocol.
 
 Options:
   -h, --help  Show this message and exit.
 
 Commands:
-  create             create new firewall rule
-  delete             delete firewall rule
-  disable            disable firewall rule
-  enable             enable firewall rule
-  info               info about firewall rule
-  list               show all firewall rule
-  list-object-types  list object types
-  list-objects       list objects for provided object type
-  list-source        list of firewall rule's source
-  update             update firewall rule
-  update-sequence    update sequence of firewall rule
+  create              create new firewall rule
+  delete              delete firewall rule
+  delete-destination  delete firewall rule's destination value of a firewall
+                      rule
+  delete-service      delete firewall rule's service of a firewall rule
+  delete-source       delete firewall rule's source value of a firewall rule
+  disable             disable firewall rule
+  enable              enable firewall rule
+  info                info about firewall rule
+  list                show all firewall rule
+  list-destination    list of firewall rule's destination
+  list-object-types   list object types
+  list-objects        list objects for provided object type
+  list-service        list firewall rule's services
+  list-source         list of firewall rule's source
+  reorder             reorder firewall rule position on gateway
+  update              update firewall rule
 
 ```

@@ -61,6 +61,18 @@
 <a href="vcd_gateway_modify-form-factor">modify-form-factor</a></li><li>
 <a href="vcd_gateway_redeploy">redeploy</a></li><li>
 <a href="vcd_gateway_services">services</a><ul><li>
+<a href="vcd_gateway_services_ca-certificate">ca-certificate</a><ul><li>
+<a href="vcd_gateway_services_ca-certificate_add">add</a></li><li>
+<a href="vcd_gateway_services_ca-certificate_delete">delete</a></li><li>
+<a href="vcd_gateway_services_ca-certificate_list">list</a></li>
+</ul></li>
+<li>
+<a href="vcd_gateway_services_crl-certificate">crl-certificate</a><ul><li>
+<a href="vcd_gateway_services_crl-certificate_add">add</a></li><li>
+<a href="vcd_gateway_services_crl-certificate_delete">delete</a></li><li>
+<a href="vcd_gateway_services_crl-certificate_list">list</a></li>
+</ul></li>
+<li>
 <a href="vcd_gateway_services_dhcp-pool">dhcp-pool</a><ul><li>
 <a href="vcd_gateway_services_dhcp-pool_create">create</a></li><li>
 <a href="vcd_gateway_services_dhcp-pool_delete">delete</a></li><li>
@@ -68,41 +80,54 @@
 <a href="vcd_gateway_services_dhcp-pool_list">list</a></li>
 </ul></li>
 <li>
-<a href="vcd_gateway_services_dnat">dnat</a><ul><li>
-<a href="vcd_gateway_services_dnat_create">create</a></li>
-</ul></li>
-<li>
 <a href="vcd_gateway_services_firewall">firewall</a><ul><li>
 <a href="vcd_gateway_services_firewall_create">create</a></li><li>
 <a href="vcd_gateway_services_firewall_delete">delete</a></li><li>
+<a href="vcd_gateway_services_firewall_delete-destination">delete-destination</a></li><li>
+<a href="vcd_gateway_services_firewall_delete-service">delete-service</a></li><li>
+<a href="vcd_gateway_services_firewall_delete-source">delete-source</a></li><li>
 <a href="vcd_gateway_services_firewall_disable">disable</a></li><li>
 <a href="vcd_gateway_services_firewall_enable">enable</a></li><li>
 <a href="vcd_gateway_services_firewall_info">info</a></li><li>
 <a href="vcd_gateway_services_firewall_list">list</a></li><li>
+<a href="vcd_gateway_services_firewall_list-destination">list-destination</a></li><li>
 <a href="vcd_gateway_services_firewall_list-object-types">list-object-types</a></li><li>
 <a href="vcd_gateway_services_firewall_list-objects">list-objects</a></li><li>
+<a href="vcd_gateway_services_firewall_list-service">list-service</a></li><li>
 <a href="vcd_gateway_services_firewall_list-source">list-source</a></li><li>
-<a href="vcd_gateway_services_firewall_update">update</a></li><li>
-<a href="vcd_gateway_services_firewall_update-sequence">update-sequence</a></li>
+<a href="vcd_gateway_services_firewall_reorder">reorder</a></li><li>
+<a href="vcd_gateway_services_firewall_update">update</a></li>
 </ul></li>
 <li>
-<a href="vcd_gateway_services_ipsec_vpn">ipsec_vpn</a><ul><li>
-<a href="vcd_gateway_services_ipsec_vpn_create">create</a></li><li>
-<a href="vcd_gateway_services_ipsec_vpn_delete">delete</a></li><li>
-<a href="vcd_gateway_services_ipsec_vpn_enable-activation-status">enable-activation-status</a></li><li>
-<a href="vcd_gateway_services_ipsec_vpn_enable-logging">enable-logging</a></li><li>
-<a href="vcd_gateway_services_ipsec_vpn_info-activation-status">info-activation-status</a></li><li>
-<a href="vcd_gateway_services_ipsec_vpn_info-logging-settings">info-logging-settings</a></li>
+<a href="vcd_gateway_services_ipsec-vpn">ipsec-vpn</a><ul><li>
+<a href="vcd_gateway_services_ipsec-vpn_change-shared-key">change-shared-key</a></li><li>
+<a href="vcd_gateway_services_ipsec-vpn_create">create</a></li><li>
+<a href="vcd_gateway_services_ipsec-vpn_delete">delete</a></li><li>
+<a href="vcd_gateway_services_ipsec-vpn_enable-activation-status">enable-activation-status</a></li><li>
+<a href="vcd_gateway_services_ipsec-vpn_enable-logging">enable-logging</a></li><li>
+<a href="vcd_gateway_services_ipsec-vpn_info">info</a></li><li>
+<a href="vcd_gateway_services_ipsec-vpn_info-activation-status">info-activation-status</a></li><li>
+<a href="vcd_gateway_services_ipsec-vpn_info-logging-settings">info-logging-settings</a></li><li>
+<a href="vcd_gateway_services_ipsec-vpn_list">list</a></li><li>
+<a href="vcd_gateway_services_ipsec-vpn_set-log-level">set-log-level</a></li><li>
+<a href="vcd_gateway_services_ipsec-vpn_update">update</a></li>
 </ul></li>
 <li>
 <a href="vcd_gateway_services_nat">nat</a><ul><li>
+<a href="vcd_gateway_services_nat_create-dnat">create-dnat</a></li><li>
+<a href="vcd_gateway_services_nat_create-snat">create-snat</a></li><li>
 <a href="vcd_gateway_services_nat_delete">delete</a></li><li>
 <a href="vcd_gateway_services_nat_info">info</a></li><li>
-<a href="vcd_gateway_services_nat_list">list</a></li>
+<a href="vcd_gateway_services_nat_list">list</a></li><li>
+<a href="vcd_gateway_services_nat_reorder">reorder</a></li><li>
+<a href="vcd_gateway_services_nat_update-dnat">update-dnat</a></li><li>
+<a href="vcd_gateway_services_nat_update-snat">update-snat</a></li>
 </ul></li>
 <li>
-<a href="vcd_gateway_services_snat">snat</a><ul><li>
-<a href="vcd_gateway_services_snat_create">create</a></li>
+<a href="vcd_gateway_services_service-certificate">service-certificate</a><ul><li>
+<a href="vcd_gateway_services_service-certificate_add">add</a></li><li>
+<a href="vcd_gateway_services_service-certificate_delete">delete</a></li><li>
+<a href="vcd_gateway_services_service-certificate_list">list</a></li>
 </ul></li>
 <li>
 <a href="vcd_gateway_services_static-route">static-route</a><ul><li>
@@ -113,6 +138,7 @@
 </ul></li>
 </ul></li>
 <li>
+<a href="vcd_gateway_set-syslog-server">set-syslog-server</a></li><li>
 <a href="vcd_gateway_sub-allocate-ip">sub-allocate-ip</a><ul><li>
 <a href="vcd_gateway_sub-allocate-ip_add">add</a></li><li>
 <a href="vcd_gateway_sub-allocate-ip_remove">remove</a></li><li>
@@ -165,6 +191,7 @@
 <a href="vcd_network_isolated_list">list</a></li>
 </ul></li>
 <li>
+<a href="vcd_network_list">list</a></li><li>
 <a href="vcd_network_routed">routed</a><ul><li>
 <a href="vcd_network_routed_add-dns">add-dns</a></li><li>
 <a href="vcd_network_routed_add-ip-range">add-ip-range</a></li><li>
@@ -289,21 +316,61 @@
 <a href="vcd_vapp_capture">capture</a></li><li>
 <a href="vcd_vapp_change-owner">change-owner</a></li><li>
 <a href="vcd_vapp_connect">connect</a></li><li>
+<a href="vcd_vapp_copy">copy</a></li><li>
 <a href="vcd_vapp_create">create</a></li><li>
-<a href="vcd_vapp_create-vapp-network">create-vapp-network</a></li><li>
+<a href="vcd_vapp_create-snapshot">create-snapshot</a></li><li>
 <a href="vcd_vapp_delete">delete</a></li><li>
 <a href="vcd_vapp_deploy">deploy</a></li><li>
 <a href="vcd_vapp_detach">detach</a></li><li>
+<a href="vcd_vapp_discard-suspended-state">discard-suspended-state</a></li><li>
 <a href="vcd_vapp_disconnect">disconnect</a></li><li>
+<a href="vcd_vapp_download">download</a></li><li>
+<a href="vcd_vapp_enter-maintenance-mode">enter-maintenance-mode</a></li><li>
+<a href="vcd_vapp_exit-maintenance-mode">exit-maintenance-mode</a></li><li>
 <a href="vcd_vapp_info">info</a></li><li>
 <a href="vcd_vapp_list">list</a></li><li>
+<a href="vcd_vapp_move">move</a></li><li>
+<a href="vcd_vapp_network">network</a><ul><li>
+<a href="vcd_vapp_network_add-dns">add-dns</a></li><li>
+<a href="vcd_vapp_network_add-ip-range">add-ip-range</a></li><li>
+<a href="vcd_vapp_network_connect-ovdc">connect-ovdc</a></li><li>
+<a href="vcd_vapp_network_create">create</a></li><li>
+<a href="vcd_vapp_network_delete">delete</a></li><li>
+<a href="vcd_vapp_network_delete-ip-range">delete-ip-range</a></li><li>
+<a href="vcd_vapp_network_dns-info">dns-info</a></li><li>
+<a href="vcd_vapp_network_list">list</a></li><li>
+<a href="vcd_vapp_network_list-allocated-ip">list-allocated-ip</a></li><li>
+<a href="vcd_vapp_network_reset">reset</a></li><li>
+<a href="vcd_vapp_network_services">services</a><ul><li>
+<a href="vcd_vapp_network_services_dhcp">dhcp</a><ul><li>
+<a href="vcd_vapp_network_services_dhcp_enable-dhcp">enable-dhcp</a></li><li>
+<a href="vcd_vapp_network_services_dhcp_set">set</a></li>
+</ul></li>
+<li>
+<a href="vcd_vapp_network_services_firewall">firewall</a><ul><li>
+<a href="vcd_vapp_network_services_firewall_enable-firewall">enable-firewall</a></li>
+</ul></li>
+</ul></li>
+<li>
+<a href="vcd_vapp_network_sync-syslog-settings">sync-syslog-settings</a></li><li>
+<a href="vcd_vapp_network_update">update</a></li><li>
+<a href="vcd_vapp_network_update-dns">update-dns</a></li><li>
+<a href="vcd_vapp_network_update-ip-range">update-ip-range</a></li>
+</ul></li>
+<li>
 <a href="vcd_vapp_power-off">power-off</a></li><li>
 <a href="vcd_vapp_power-on">power-on</a></li><li>
 <a href="vcd_vapp_reboot">reboot</a></li><li>
+<a href="vcd_vapp_remove-snapshot">remove-snapshot</a></li><li>
 <a href="vcd_vapp_reset">reset</a></li><li>
+<a href="vcd_vapp_revert-to-snapshot">revert-to-snapshot</a></li><li>
 <a href="vcd_vapp_shutdown">shutdown</a></li><li>
+<a href="vcd_vapp_stop">stop</a></li><li>
+<a href="vcd_vapp_suspend">suspend</a></li><li>
 <a href="vcd_vapp_undeploy">undeploy</a></li><li>
+<a href="vcd_vapp_update">update</a></li><li>
 <a href="vcd_vapp_update-lease">update-lease</a></li><li>
+<a href="vcd_vapp_upgrade-virtual-hardware">upgrade-virtual-hardware</a></li><li>
 <a href="vcd_vapp_use">use</a></li>
 </ul></li>
 <li>
@@ -337,9 +404,38 @@
 <li>
 <a href="vcd_version">version</a></li><li>
 <a href="vcd_vm">vm</a><ul><li>
+<a href="vcd_vm_add-nic">add-nic</a></li><li>
+<a href="vcd_vm_attach-disk">attach-disk</a></li><li>
+<a href="vcd_vm_check-compliance">check-compliance</a></li><li>
+<a href="vcd_vm_consolidate">consolidate</a></li><li>
+<a href="vcd_vm_copy">copy</a></li><li>
+<a href="vcd_vm_create-snapshot">create-snapshot</a></li><li>
+<a href="vcd_vm_customize-on-next-poweron">customize-on-next-poweron</a></li><li>
+<a href="vcd_vm_delete">delete</a></li><li>
+<a href="vcd_vm_delete-nic">delete-nic</a></li><li>
+<a href="vcd_vm_deploy">deploy</a></li><li>
+<a href="vcd_vm_detach-disk">detach-disk</a></li><li>
+<a href="vcd_vm_discard-suspend">discard-suspend</a></li><li>
+<a href="vcd_vm_eject-cd">eject-cd</a></li><li>
+<a href="vcd_vm_general-setting">general-setting</a></li><li>
 <a href="vcd_vm_info">info</a></li><li>
+<a href="vcd_vm_insert-cd">insert-cd</a></li><li>
+<a href="vcd_vm_install-vmware-tools">install-vmware-tools</a></li><li>
 <a href="vcd_vm_list">list</a></li><li>
-<a href="vcd_vm_update">update</a></li></ul>
+<a href="vcd_vm_list-nics">list-nics</a></li><li>
+<a href="vcd_vm_list-storage-profile">list-storage-profile</a></li><li>
+<a href="vcd_vm_move">move</a></li><li>
+<a href="vcd_vm_power-off">power-off</a></li><li>
+<a href="vcd_vm_power-on">power-on</a></li><li>
+<a href="vcd_vm_reboot">reboot</a></li><li>
+<a href="vcd_vm_reload-from-vc">reload-from-vc</a></li><li>
+<a href="vcd_vm_reset">reset</a></li><li>
+<a href="vcd_vm_revert-to-snapshot">revert-to-snapshot</a></li><li>
+<a href="vcd_vm_shutdown">shutdown</a></li><li>
+<a href="vcd_vm_suspend">suspend</a></li><li>
+<a href="vcd_vm_undeploy">undeploy</a></li><li>
+<a href="vcd_vm_update">update</a></li><li>
+<a href="vcd_vm_upgrade-virtual-hardware">upgrade-virtual-hardware</a></li></ul>
 </li></ul>
 </li></ul>
 </div>

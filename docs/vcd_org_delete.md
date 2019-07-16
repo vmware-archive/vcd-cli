@@ -6,7 +6,6 @@ Options:
                    state that normally allows removal
   -f, --force      pass this option along with --recursive to remove an Org
                    and any objects it contains, regardless of their state
-  -y, --yes
   -h, --help       Show this message and exit.
 
 ```

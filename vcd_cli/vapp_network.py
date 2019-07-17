@@ -108,7 +108,7 @@ def network(ctx):
 
 \b
         vdc vapp network enable-fence vapp1
-            Enable fence mode of vApp.
+            Enable fence mode of vApp network.
     """
     pass
 
@@ -452,7 +452,8 @@ def create_vapp_network_from_ovdc_network(ctx, vapp_name, ovdc_network_name):
         stderr(e, ctx)
 
 
-@network.command('enable-fence', short_help='enable fence mode of vapp')
+@network.command(
+    'enable-fence', short_help='enable fence mode of vapp network')
 @click.pass_context
 @click.argument('vapp_name', metavar='<vapp-name>', required=True)
 def enable_fence_mode(ctx, vapp_name):

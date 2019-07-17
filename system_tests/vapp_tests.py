@@ -444,6 +444,42 @@ class VAppTest(BaseTestCase):
             vapp, args=['remove-snapshot', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0130_create_vapp_network_from_ovdc_network(self):
+        # Create Vapp Network
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'network', 'create-ovdc-network', VAppTest._test_vapp_name,
+                VAppTest._ovdc_network_name
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0131_enable_fence_mode(self):
+        # Create Vapp Network
+        result = VAppTest._runner.invoke(
+            vapp, args=['network', 'enable-fence', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+        # Delete a vapp network.
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'network', 'delete', VAppTest._test_vapp_name,
+                VAppTest._ovdc_network_name
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0140_enable_download(self):
+        # Enable download of Vapp
+        result = VAppTest._runner.invoke(
+            vapp, args=['enable-download', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0150_disable_download(self):
+        # Disable download of Vapp
+        result = VAppTest._runner.invoke(
+            vapp, args=['disable-download', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """Delete vApp and logout from the session."""
         result_delete = VAppTest._runner.invoke(

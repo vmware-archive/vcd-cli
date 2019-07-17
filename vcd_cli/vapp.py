@@ -263,6 +263,14 @@ def vapp(ctx):
 \b
         vcd vapp remove-snapshot vapp1
             Remove snapshot of the vapp.
+
+\b
+        vcd vapp enable-download vapp1
+            Enable download of the vapp.
+
+\b
+        vcd vapp disable-download vapp1
+            Disable download of the vapp.
     """
     pass
 
@@ -1491,6 +1499,32 @@ def snapshot_remove(ctx, vapp_name):
         vapp = get_vapp(ctx, vapp_name)
         task = vapp.snapshot_remove()
         stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('enable-download', short_help='enable a vapp for download')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+def enable_download(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        vapp.enable_download()
+        stdout('Enabled download successfully', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('disable-download', short_help='disbale a vapp for download')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+def disable_download(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        vapp.disable_download()
+        stdout('Disabled download successfully', ctx)
     except Exception as e:
         stderr(e, ctx)
 

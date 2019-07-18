@@ -271,6 +271,14 @@ def vapp(ctx):
 \b
         vcd vapp disable-download vapp1
             Disable download of the vapp.
+
+\b
+        vcd vapp show-lease vapp1
+            Show vApp lease details.
+
+\b
+        vcd vapp show-metadata vapp1
+            Show metadata of vapp.
     """
     pass
 
@@ -1525,6 +1533,36 @@ def disable_download(ctx, vapp_name):
         vapp = get_vapp(ctx, vapp_name)
         vapp.disable_download()
         stdout('Disabled download successfully', ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('show-lease', short_help='show a vapp lease details')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+def show_lease(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        result = vapp.get_lease()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('show-metadata', short_help='show metadata of vapp')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+def show_metadata(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        metadata = vapp.get_metadata()
+        result = {}
+        if metadata is not None and hasattr(metadata, 'MetadataEntry'):
+            for me in metadata.MetadataEntry:
+                result['metadata: %s' % me.Key.text] = me.TypedValue.Value.text
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
 

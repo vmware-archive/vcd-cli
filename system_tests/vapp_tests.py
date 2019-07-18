@@ -480,6 +480,18 @@ class VAppTest(BaseTestCase):
             vapp, args=['disable-download', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0160_show_lease(self):
+        # Show lease details of Vapp
+        result = VAppTest._runner.invoke(
+            vapp, args=['show-lease', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0170_show_metadata(self):
+        # Show metadata of Vapp
+        result = VAppTest._runner.invoke(
+            vapp, args=['show-metadata', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """Delete vApp and logout from the session."""
         result_delete = VAppTest._runner.invoke(

@@ -101,6 +101,14 @@ def network(ctx):
 \b
         vcd vapp network sync-syslog-settings vapp1 vapp-network1
             Sync syslog settings of vapp network
+
+\b
+        vdc vapp network create-ovdc-network vapp1 ovdc-network1
+            Create a vApp network using org vdc network.
+
+\b
+        vdc vapp network enable-fence vapp1
+            Enable fence mode of vApp network.
     """
     pass
 
@@ -422,6 +430,37 @@ def connect_vapp_network_to_ovdc_network(ctx, vapp_name, network_name,
         vapp = get_vapp(ctx, vapp_name)
         result = vapp.connect_vapp_network_to_ovdc_network(
             network_name, ovdc_network_name)
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@network.command(
+    'create-ovdc-network',
+    short_help='create a vapp network using org vdc network')
+@click.pass_context
+@click.argument('vapp_name', metavar='<vapp-name>', required=True)
+@click.argument(
+    'ovdc_network_name', metavar='<ovdc-network-name>', required=True)
+def create_vapp_network_from_ovdc_network(ctx, vapp_name, ovdc_network_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        result = vapp.create_vapp_network_from_ovdc_network(ovdc_network_name)
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@network.command(
+    'enable-fence', short_help='enable fence mode of vapp network')
+@click.pass_context
+@click.argument('vapp_name', metavar='<vapp-name>', required=True)
+def enable_fence_mode(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        result = vapp.enable_fence_mode()
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

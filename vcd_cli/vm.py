@@ -180,8 +180,21 @@ def vm(ctx):
             Check compliance of VM.
 
 \b
+        vcd vm gc-enable vapp1 vm1
+                --enable
+            Enable guest customization of VM.
+
+\b
+        vcd vm gc-status vapp1 vm1
+            Returns guest customization status of VM.
+
+\b
         vcd vm customize-on-next-poweron vapp1 vm1
             Customize on next power on of VM.
+
+\b
+        vcd vm poweron-force-recustomize vapp1 vm1
+            Power on and force re-customize VM.
 
     """
     pass
@@ -796,6 +809,51 @@ def customize_on_next_poweron(ctx, vapp_name, vm_name):
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
         task = vm.customize_at_next_power_on()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('gc-enable', short_help='enable/disable the guest customization')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    '--enable/--disable',
+    'is_enabled',
+    default=None,
+    help='enable/disable the guest customization')
+def gc_enable(ctx, vapp_name, vm_name, is_enabled):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.enable_guest_customization(is_enabled = is_enabled)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('gc-status', short_help='get guest customization status')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def get_gc_status(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.get_guest_customization_status()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('poweron-force-recustomize', short_help='power on and '
+                                                        'force recustomize VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def power_on_and_force_recustomize(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.power_on_and_force_recustomization()
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

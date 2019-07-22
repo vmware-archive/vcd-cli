@@ -19,11 +19,15 @@ from pyvcloud.system_test_framework.base_test import BaseTestCase
 from pyvcloud.system_test_framework.vapp_constants import VAppConstants
 from pyvcloud.system_test_framework.environment import CommonRoles
 from pyvcloud.system_test_framework.environment import Environment
+from pyvcloud.system_test_framework.utils import \
+    create_customized_vapp_from_template
 from pyvcloud.system_test_framework.utils import create_empty_vapp
 from pyvcloud.system_test_framework.utils import create_independent_disk
 from pyvcloud.vcd.client import TaskStatus
+from pyvcloud.vcd.vapp import VApp
 from pyvcloud.vcd.vm import VM
 from uuid import uuid1
+from vcd_cli.vcd import vcd  # NOQA
 from vcd_cli.login import login, logout
 from vcd_cli.org import org
 from vcd_cli.vm import vm
@@ -48,6 +52,10 @@ class VmTest(BaseTestCase):
     _idisk_name = 'SCSI'
     _idisk_size = '5242880'
     _idisk_description = '5Mb SCSI disk'
+
+    _test_vapp_vmtools_name = 'test_vApp_vmtools_' + str(uuid1())
+    _test_vapp_vmtools_vm_name = 'yVM'
+
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -84,6 +92,49 @@ class VmTest(BaseTestCase):
                                                    size=self._idisk_size,
                                                    description=self._idisk_description)
 
+        # Upload template with vm tools.
+        catalog_author_client = Environment.get_client_in_default_org(
+            CommonRoles.CATALOG_AUTHOR)
+        org_admin_client = Environment.get_client_in_default_org(
+            CommonRoles.ORGANIZATION_ADMINISTRATOR)
+        org1 = Environment.get_test_org(org_admin_client)
+        catalog_name = Environment.get_config()['vcd']['default_catalog_name']
+        catalog_items = org1.list_catalog_items(catalog_name)
+        template_name = Environment.get_config()['vcd'][
+            'default_template_vmtools_file_name']
+        catalog_item_flag = False
+        for item in catalog_items:
+            if item.get('name').lower() == template_name.lower():
+                logger.debug('Reusing existing template ' +
+                             template_name)
+                catalog_item_flag = True
+                break
+        if not catalog_item_flag:
+            logger.debug('Uploading template ' + template_name +
+                         ' to catalog ' + catalog_name + '.')
+            org1.upload_ovf(catalog_name=catalog_name, file_name=template_name)
+            # wait for the template import to finish in vCD.
+            catalog_item = org1.get_catalog_item(
+                name=catalog_name, item_name=template_name)
+            template = catalog_author_client.get_resource(
+                catalog_item.Entity.get('href'))
+            catalog_author_client.get_task_monitor().wait_for_success(
+                task=template.Tasks.Task[0])
+        # Create Vapp with template of vmware tools
+        logger.debug('Creating vApp ' + VmTest._test_vapp_vmtools_name + '.')
+        VmTest._test_vapp_vmtools_href = create_customized_vapp_from_template(
+            client=VmTest._client,
+            vdc=vdc,
+            name=VmTest._test_vapp_vmtools_name,
+            catalog_name=catalog_name,
+            template_name=template_name)
+        self.assertIsNotNone(VmTest._test_vapp_vmtools_href)
+        vapp = VApp(VmTest._client, href=VmTest._test_vapp_vmtools_href)
+        VmTest._test_vapp_vmtools = vapp
+        vm_resource = vapp.get_vm(VmTest._test_vapp_vmtools_vm_name)
+        VmTest._test_vapp_vmtools_vm_href = vm_resource.get('href')
+        self.assertIsNotNone(VmTest._test_vapp_vmtools_vm_href)
+
     def test_0010_info(self):
         """Get info of the VM."""
         result = VmTest._runner.invoke(
@@ -102,11 +153,12 @@ class VmTest(BaseTestCase):
         self._sys_login()
         VmTest._runner.invoke(org, ['use', default_org])
         result = VmTest._runner.invoke(
-            vm, args=['consolidate', VAppConstants.name, VAppConstants.vm1_name])
+            vm,
+            args=['consolidate', VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
-        #logging out sys_client
+        # logging out sys_client
         self._logout()
-        #logging with org admin user
+        # logging with org admin user
         self._login()
 
     def test_0025_copy_to(self):
@@ -179,7 +231,6 @@ class VmTest(BaseTestCase):
 
     def test_0070_discard_suspended_state(self):
         """Discard suspended state of the VM."""
-
         result = VmTest._runner.invoke(
             vm, args=['discard-suspend', VAppConstants.name,
                       VAppConstants.vm1_name])
@@ -323,6 +374,9 @@ class VmTest(BaseTestCase):
 
     def test_0220_reload_from_vc(self):
         # Reload VM from VC
+        default_org = self._config['vcd']['default_org_name']
+        self._sys_login()
+        VmTest._runner.invoke(org, ['use', default_org])
         result = VmTest._runner.invoke(
             vm, args=['reload-from-vc',
                       VAppConstants.name, VAppConstants.vm1_name])
@@ -334,12 +388,42 @@ class VmTest(BaseTestCase):
             vm, args=['check-compliance',
                       VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
+        self._logout()
+        self._login()
 
     def test_0240_customize_on_next_power_on(self):
         # Customize on next power on
         result = VmTest._runner.invoke(
             vm, args=['customize-on-next-poweron',
                       VAppConstants.name, VAppConstants.vm1_name])
+
+    def test_0250_gc_enable(self):
+        # Enable guest customization
+        result = VmTest._runner.invoke(
+            vm, args=['gc-enable',
+                      VmTest._test_vapp_vmtools_name,
+                      VmTest._test_vapp_vmtools_vm_name, '--enable'])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0260_get_gc_status(self):
+        # Get guest customization status
+        result = VmTest._runner.invoke(
+            vm, args=['gc-status',
+                      VmTest._test_vapp_vmtools_name,
+                      VmTest._test_vapp_vmtools_vm_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0270_poweron_and_force_recustomizations(self):
+        #Power off VM.
+        result = VmTest._runner.invoke(
+            vm, args=['undeploy', VmTest._test_vapp_vmtools_name,
+                      VmTest._test_vapp_vmtools_vm_name])
+        self.assertEqual(0, result.exit_code)
+        # Power on and force recustomize VM.
+        result = VmTest._runner.invoke(
+            vm, args=['poweron-force-recustomize',
+                      VmTest._test_vapp_vmtools_name,
+                      VmTest._test_vapp_vmtools_vm_name])
         self.assertEqual(0, result.exit_code)
 
     def test_9998_tearDown(self):

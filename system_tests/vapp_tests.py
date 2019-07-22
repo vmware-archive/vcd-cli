@@ -60,6 +60,7 @@ class VAppTest(BaseTestCase):
     _copy_description = 'Copying a vapp'
     _ovdc_name = 'test_vdc2_ ' + str(uuid1())
     _ovdc_network_name = 'test-direct-vdc-network'
+    _test_vm = 'testvm1'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -490,6 +491,18 @@ class VAppTest(BaseTestCase):
         # Show metadata of Vapp
         result = VAppTest._runner.invoke(
             vapp, args=['show-metadata', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0180_update_startup_section(self):
+        # Disable download of Vapp
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'update-startup-section', VAppTest._test_vapp_name,
+                VAppTest._test_vm, '--o', 2, '--start-action', 'powerOn',
+                '--start-delay', 2, '--stop-action', 'powerOff',
+                '--stop-delay', 4
+            ])
         self.assertEqual(0, result.exit_code)
 
     def test_9998_tearDown(self):

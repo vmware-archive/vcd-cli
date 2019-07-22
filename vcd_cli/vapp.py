@@ -279,6 +279,10 @@ def vapp(ctx):
 \b
         vcd vapp show-metadata vapp1
             Show metadata of vapp.
+
+\b
+        vcd vapp update-startup-section vapp1 testvm1 --o 1 --start-action
+            powerOn --start-delay 4 --stop-action guestShutdown --stop-delay 3
     """
     pass
 
@@ -1563,6 +1567,62 @@ def show_metadata(ctx, vapp_name):
             for me in metadata.MetadataEntry:
                 result['metadata: %s' % me.Key.text] = me.TypedValue.Value.text
         stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command(
+    'update-startup-section',
+    short_help='update startup section of vapp for vm')
+@click.pass_context
+@click.argument('vapp_name', metavar='<vapp_name>')
+@click.argument('vm_name', metavar='<vm_name>')
+@click.option(
+    '--o',
+    'order',
+    default=None,
+    metavar='<order>',
+    type=click.INT,
+    help='start order of vm')
+@click.option(
+    '--start-action',
+    'start_action',
+    default=None,
+    metavar='<start_action>',
+    help='start action on VM')
+@click.option(
+    '--start-delay',
+    'start_delay',
+    default=None,
+    metavar='<start_delay>',
+    type=click.INT,
+    help='start delay on VM')
+@click.option(
+    '--stop-action',
+    'stop_action',
+    default=None,
+    metavar='<stop_action>',
+    help='stop action on VM')
+@click.option(
+    '--stop-delay',
+    'stop_delay',
+    default=None,
+    metavar='<stop_delay>',
+    type=click.INT,
+    help='stop delay on VM')
+def update_startup_section(ctx, vapp_name, vm_name, order, start_action,
+                           start_delay, stop_action, stop_delay):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        task = vapp.update_startup_section(
+            vm_name=vm_name,
+            order=order,
+            start_action=start_action,
+            start_delay=start_delay,
+            stop_action=stop_action,
+            stop_delay=stop_delay)
+        stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
 

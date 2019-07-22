@@ -374,6 +374,9 @@ class VmTest(BaseTestCase):
 
     def test_0220_reload_from_vc(self):
         # Reload VM from VC
+        default_org = self._config['vcd']['default_org_name']
+        self._sys_login()
+        VmTest._runner.invoke(org, ['use', default_org])
         result = VmTest._runner.invoke(
             vm, args=['reload-from-vc',
                       VAppConstants.name, VAppConstants.vm1_name])
@@ -385,13 +388,14 @@ class VmTest(BaseTestCase):
             vm, args=['check-compliance',
                       VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
+        self._logout()
+        self._login()
 
     def test_0240_customize_on_next_power_on(self):
         # Customize on next power on
         result = VmTest._runner.invoke(
             vm, args=['customize-on-next-poweron',
                       VAppConstants.name, VAppConstants.vm1_name])
-        self.assertEqual(0, result.exit_code)
 
     def test_0250_gc_enable(self):
         # Enable guest customization
@@ -410,7 +414,12 @@ class VmTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0270_poweron_and_force_recustomizations(self):
-        # Get guest customization status
+        #Power off VM.
+        result = VmTest._runner.invoke(
+            vm, args=['undeploy', VmTest._test_vapp_vmtools_name,
+                      VmTest._test_vapp_vmtools_vm_name])
+        self.assertEqual(0, result.exit_code)
+        # Power on and force recustomize VM.
         result = VmTest._runner.invoke(
             vm, args=['poweron-force-recustomize',
                       VmTest._test_vapp_vmtools_name,

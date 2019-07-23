@@ -426,6 +426,14 @@ class VmTest(BaseTestCase):
                       VmTest._test_vapp_vmtools_vm_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0280_list_virtual_hardware_section(self):
+        #list virtual hardware section
+        result = VmTest._runner.invoke(
+            vm, args=['list-virtual-hardware-section',
+                      VmTest._test_vapp_vmtools_name,
+                      VmTest._test_vapp_vmtools_vm_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """Delete the vApp created during setup.
 

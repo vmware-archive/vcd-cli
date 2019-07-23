@@ -196,6 +196,10 @@ def vm(ctx):
         vcd vm poweron-force-recustomize vapp1 vm1
             Power on and force re-customize VM.
 
+\b
+        vcd vm list-virtual-hardware-section vapp1 vm1
+            List virtual hadware section of VM.
+
     """
     pass
 
@@ -855,5 +859,59 @@ def power_on_and_force_recustomize(ctx, vapp_name, vm_name):
         vm = _get_vm(ctx, vapp_name, vm_name)
         task = vm.power_on_and_force_recustomization()
         stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('list-virtual-hardware-section', short_help='list virtual hardware '
+                                                        'section of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'is_cpu',
+    '--is-include-cpu',
+    required=False,
+    metavar='<is_cpu>',
+    type=click.BOOL,
+    help='list the virtual machine CPU')
+@click.option(
+    'is_memory',
+    '--is-include-memory',
+    required=False,
+    metavar='<is_memory>',
+    type=click.BOOL,
+    help='list the virtual machine memory')
+@click.option(
+    'is_disk',
+    '--is-include-disk',
+    required=False,
+    metavar='<is_disk>',
+    type=click.BOOL,
+    help='list the virtual machine disk')
+@click.option(
+    'is_media',
+    '--is-include-media',
+    required=False,
+    metavar='<is_media>',
+    type=click.BOOL,
+    help='list the virtual machine media')
+@click.option(
+    'is_network',
+    '--is-include-network',
+    required=False,
+    metavar='<is_network>',
+    type=click.BOOL,
+    help='list the virtual machine network')
+def list_virtual_hardware_section(ctx, vapp_name, vm_name, is_cpu, is_memory,
+                                  is_disk, is_media, is_network):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.list_virtual_hardware_section(is_cpu=is_cpu,
+                                                is_memory=is_memory,
+                                                is_disk=is_disk,
+                                                is_media=is_media,
+                                                is_networkCards=is_network)
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

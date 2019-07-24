@@ -217,6 +217,11 @@ def vm(ctx):
         vcd vm list-historic-metrics vapp1 vm1
             List historic metrics of VM.
 
+\b
+        vcd vm list-sample-historic-data vapp1 vm1
+                --metric-name disk.read.average
+            List historic sample data of given metric of VM.
+
     """
     pass
 
@@ -989,6 +994,26 @@ def list_all_historic_metrics(ctx, vapp_name, vm_name):
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
         result = vm.list_all_historic_metrics()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('list-sample-historic-data', short_help='list sample historic '
+                                                'data of given metric of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'metric_name',
+    '--metric-name',
+    required=True,
+    metavar='<metric_name>',
+    help='list sample historic data based on metric name')
+def list_sample_historic_metrics(ctx, vapp_name, vm_name, metric_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.list_sample_historic_metric_data(metric_name=metric_name)
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

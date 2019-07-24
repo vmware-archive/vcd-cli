@@ -505,6 +505,29 @@ class VAppTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    def test_0190_show_startup_section(self):
+        # Show startup section of Vapp
+        result = VAppTest._runner.invoke(
+            vapp, args=['show-startup-section', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0200_update_startup_section(self):
+        # Update product section of Vapp
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'update-product-section', VAppTest._test_vapp_name, '--key',
+                'user', '--value', '--admin', '--type', 'string', '--label',
+                'Lable of property'
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0210_show_product_section(self):
+        # Show product section of Vapp
+        result = VAppTest._runner.invoke(
+            vapp, args=['show-product-section', VAppTest._test_vapp_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """Delete vApp and logout from the session."""
         result_delete = VAppTest._runner.invoke(

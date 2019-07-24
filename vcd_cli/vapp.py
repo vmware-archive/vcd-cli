@@ -283,6 +283,21 @@ def vapp(ctx):
 \b
         vcd vapp update-startup-section vapp1 testvm1 --o 1 --start-action
             powerOn --start-delay 4 --stop-action guestShutdown --stop-delay 3
+            Update startup section of vapp
+
+\b
+        vcd vapp show-startup-section vapp1
+            Show startup section data of vapp.
+
+\b
+        vcd vapp show-product-section vapp1
+            Show product section data of vapp.
+
+\b
+        vcd vapp update-product-section vapp1 --key testkey --value testvalue
+            --class_name testclassname --instance_name testinstancename --label
+            labledata --is_password true --user_configurable false
+            Update product section of vapp.
     """
     pass
 
@@ -1623,6 +1638,106 @@ def update_startup_section(ctx, vapp_name, vm_name, order, start_action,
             stop_action=stop_action,
             stop_delay=stop_delay)
         stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command(
+    'show-startup-section', short_help='show startup section of vapp')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+def show_startup_section(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        startup_section = vapp.get_startup_section()
+        stdout(startup_section, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command(
+    'update-product-section', short_help='update product section of vapp')
+@click.pass_context
+@click.argument('vapp_name', metavar='<vapp_name>')
+@click.option(
+    '--key',
+    'key',
+    required=True,
+    metavar='<key>',
+    help='key for property of product section')
+@click.option(
+    '--value',
+    'value',
+    default='',
+    metavar='<value>',
+    help='value for property of product section')
+@click.option(
+    '--type',
+    'type',
+    default='string',
+    metavar='<type>',
+    help='type for property value of product section')
+@click.option(
+    '--class_name',
+    'class_name',
+    default='',
+    metavar='<class_name>',
+    help='class name of product section')
+@click.option(
+    '--instance_name',
+    'instance_name',
+    default='',
+    metavar='<instance_name>',
+    help='instance name of product section')
+@click.option(
+    '--label',
+    'label',
+    default=None,
+    metavar='<label>',
+    help='label for property of product section')
+@click.option(
+    '--is_password',
+    'is_password',
+    metavar='<is_password>',
+    type=click.BOOL,
+    help='is password for property value of product section')
+@click.option(
+    '--user_configurable',
+    'user_configurable',
+    metavar='<is_password>',
+    type=click.BOOL,
+    help='is user configurable property of product section')
+def update_product_section(ctx, vapp_name, key, value, type, class_name,
+                           instance_name, label, is_password,
+                           user_configurable):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        task = vapp.update_product_section(
+            key=key,
+            value=value,
+            type=type,
+            class_name=class_name,
+            instance_name=instance_name,
+            label=label,
+            is_password=is_password,
+            user_configurable=user_configurable)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command(
+    'show-product-section', short_help='show product sections of vapp')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+def show_product_section(ctx, vapp_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        product_sections = vapp.get_product_sections()
+        stdout(product_sections, ctx)
     except Exception as e:
         stderr(e, ctx)
 

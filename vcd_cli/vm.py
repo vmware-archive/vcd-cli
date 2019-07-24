@@ -209,7 +209,7 @@ def vm(ctx):
             List current metrics of VM.
 
 \b
-        vcd vm list_subset_currennt_metrics vapp1 vm1
+        vcd vm list-subset-current_metrics vapp1 vm1
                 --metric-pattern *.average
             List subset of current metrics of VM based on metric pattern.
 

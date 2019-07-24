@@ -55,6 +55,7 @@ class VmTest(BaseTestCase):
 
     _test_vapp_vmtools_name = 'test_vApp_vmtools_' + str(uuid1())
     _test_vapp_vmtools_vm_name = 'yVM'
+    _metric_pattern = '*.average'
 
 
     def test_0000_setup(self):
@@ -445,6 +446,21 @@ class VmTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
         self._logout()
         self._login()
+
+    def test_0300_list_current_metrics(self):
+        #list current metrics
+        result = VmTest._runner.invoke(
+            vm, args=['list-current-metrics',
+                      VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0310_list_subset_current_metrics(self):
+        #list subset of current metrics based on metric pattern
+        result = VmTest._runner.invoke(
+            vm, args=['list-subset-current-metrics',
+                      VAppConstants.name, VAppConstants.vm1_name,
+                      '--metric-pattern', VmTest._metric_pattern ])
+        self.assertEqual(0, result.exit_code)
 
     def test_9998_tearDown(self):
         """Delete the vApp created during setup.

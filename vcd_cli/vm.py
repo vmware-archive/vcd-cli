@@ -204,6 +204,19 @@ def vm(ctx):
         vcd vm get-compliance-result vapp1 vm1
             Get compliance result of VM.
 
+\b
+        vcd vm list-current-metrics vapp1 vm1
+            List current metrics of VM.
+
+\b
+        vcd vm list-subset-current-metrics vapp1 vm1
+                --metric-pattern *.average
+            List subset of current metrics of VM based on metric pattern.
+
+\b
+        vcd vm list-historic-metrics vapp1 vm1
+            List historic metrics of VM.
+
     """
     pass
 
@@ -931,5 +944,51 @@ def get_compliance_result(ctx, vapp_name, vm_name):
         result = vm.get_compliance_result()
         compliance_result = result.ComplianceStatus
         stdout(compliance_result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('list-current-metrics', short_help='list current metrics of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def list_all_currennt_metrics(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.list_all_current_metrics()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('list-subset-current-metrics', short_help='list subset of '
+                                                      'current metrics of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'metric_pattern',
+    '--metric-pattern',
+    required=True,
+    metavar='<metric_pattern>',
+    help='list subset of current metrics based on metric pattern')
+def list_subset_currennt_metrics(ctx, vapp_name, vm_name, metric_pattern):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.list_current_metrics_subset(metric_pattern=metric_pattern)
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('list-historic-metrics', short_help='list historic metrics of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def list_all_historic_metrics(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.list_all_historic_metrics()
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

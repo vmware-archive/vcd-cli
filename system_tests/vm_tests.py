@@ -434,6 +434,18 @@ class VmTest(BaseTestCase):
                       VmTest._test_vapp_vmtools_vm_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0290_get_compliance_result(self):
+        # Get compliance result
+        default_org = self._config['vcd']['default_org_name']
+        self._sys_login()
+        VmTest._runner.invoke(org, ['use', default_org])
+        result = VmTest._runner.invoke(
+            vm, args=['get-compliance-result',
+                      VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+        self._logout()
+        self._login()
+
     def test_9998_tearDown(self):
         """Delete the vApp created during setup.
 

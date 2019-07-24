@@ -200,6 +200,10 @@ def vm(ctx):
         vcd vm list-virtual-hardware-section vapp1 vm1
             List virtual hadware section of VM.
 
+\b
+        vcd vm get-compliance-result vapp1 vm1
+            Get compliance result of VM.
+
     """
     pass
 
@@ -913,5 +917,19 @@ def list_virtual_hardware_section(ctx, vapp_name, vm_name, is_cpu, is_memory,
                                                 is_media=is_media,
                                                 is_networkCards=is_network)
         stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('get-compliance-result', short_help='get compliance result of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def get_compliance_result(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.get_compliance_result()
+        compliance_result = result.ComplianceStatus
+        stdout(compliance_result, ctx)
     except Exception as e:
         stderr(e, ctx)

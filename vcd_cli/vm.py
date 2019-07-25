@@ -1021,6 +1021,8 @@ def list_sample_historic_metrics(ctx, vapp_name, vm_name, metric_name):
         vm = _get_vm(ctx, vapp_name, vm_name)
         result = vm.list_sample_historic_metric_data(metric_name=metric_name)
         stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
 
 @vm.command(
     'update-general-setting', short_help='update general setting of VM')

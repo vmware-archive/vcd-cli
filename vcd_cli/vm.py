@@ -222,6 +222,12 @@ def vm(ctx):
                 --metric-name disk.read.average
             List historic sample data of given metric of VM.
 
+\b
+        vcd vm update-general-setting vapp1 vm1 --name vm_new_name
+            --d vm_new_description --cn new_computer_name --bd 60
+            --ebs True
+            Update general setting details of VM.
+
     """
     pass
 
@@ -999,7 +1005,7 @@ def list_all_historic_metrics(ctx, vapp_name, vm_name):
         stderr(e, ctx)
 
 @vm.command('list-sample-historic-data', short_help='list sample historic '
-                                                'data of given metric of VM')
+                                                'data of given metric of VM'
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)
@@ -1015,5 +1021,75 @@ def list_sample_historic_metrics(ctx, vapp_name, vm_name, metric_name):
         vm = _get_vm(ctx, vapp_name, vm_name)
         result = vm.list_sample_historic_metric_data(metric_name=metric_name)
         stdout(result, ctx)
+
+@vm.command(
+    'update-general-setting', short_help='update general setting of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'name',
+    '--name',
+    required=False,
+    default=None,
+    metavar='<vm_name>',
+    help='vm name')
+@click.option(
+    'description',
+    '--d',
+    required=False,
+    default=None,
+    metavar='<description>',
+    help='vm description')
+@click.option(
+    'computer_name',
+    '--cn',
+    required=False,
+    default=None,
+    metavar='<computer_name>',
+    help='vm computer name')
+@click.option(
+    'boot_delay',
+    '--bd',
+    required=False,
+    default=None,
+    metavar='<boot_delay>',
+    type=click.INT,
+    help='boot delay of VM.')
+@click.option(
+    'enter_bios_setup',
+    '--ebs',
+    required=False,
+    default=None,
+    metavar='<enter_bios_setup>',
+    type=click.BOOL,
+    help='enter bios setup of VM.')
+@click.option(
+    'storage_policy',
+    '--sp',
+    required=False,
+    default=None,
+    metavar='<storage_policy>',
+    help='vm storage policy')
+def update_general_setting(ctx, vapp_name, vm_name, name, description,
+                           computer_name, boot_delay, enter_bios_setup,
+                           storage_policy):
+    try:
+        restore_session(ctx, vdc_required=True)
+        client = ctx.obj['client']
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        vdc = _get_vdc(ctx)
+        storage_policy_href = None
+        if storage_policy is not None:
+            storage_policy_href = vdc.get_storage_profile(storage_policy).get(
+                'href')
+        task = vm.update_general_setting(
+            name=name,
+            description=description,
+            computer_name=computer_name,
+            boot_delay=boot_delay,
+            enter_bios_setup=enter_bios_setup,
+            storage_policy_href=storage_policy_href)
+        stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

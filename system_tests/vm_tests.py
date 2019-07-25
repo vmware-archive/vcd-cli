@@ -57,6 +57,13 @@ class VmTest(BaseTestCase):
     _test_vapp_vmtools_vm_name = 'yVM'
     _metric_pattern = '*.average'
 
+    _vapp_name = 'testVapp' + str(uuid1())
+    _vm_name = 'testvm1'
+    _vm_name_update = 'testvm'
+    _description_update = 'Description'
+    _computer_name_update = 'mycom'
+    _boot_delay_update = 60
+    _enter_bios_setup_update = True
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -101,8 +108,8 @@ class VmTest(BaseTestCase):
         org1 = Environment.get_test_org(org_admin_client)
         catalog_name = Environment.get_config()['vcd']['default_catalog_name']
         catalog_items = org1.list_catalog_items(catalog_name)
-        template_name = Environment.get_config()['vcd'][
-            'default_template_vmtools_file_name']
+        config = Environment.get_config()
+        template_name = config['vcd']['default_template_vmtools_file_name']
         catalog_item_flag = False
         for item in catalog_items:
             if item.get('name').lower() == template_name.lower():
@@ -135,6 +142,14 @@ class VmTest(BaseTestCase):
         vm_resource = vapp.get_vm(VmTest._test_vapp_vmtools_vm_name)
         VmTest._test_vapp_vmtools_vm_href = vm_resource.get('href')
         self.assertIsNotNone(VmTest._test_vapp_vmtools_vm_href)
+        temp_name = config['vcd']['default_template_file_name']
+        VmTest._test_vapp_href = create_customized_vapp_from_template(
+            client=VmTest._client,
+            vdc=vdc,
+            name=VmTest._vapp_name,
+            catalog_name=catalog_name,
+            template_name=temp_name)
+        self.assertIsNotNone(VmTest._test_vapp_href)
 
     def test_0010_info(self):
         """Get info of the VM."""
@@ -462,6 +477,26 @@ class VmTest(BaseTestCase):
                       '--metric-pattern', VmTest._metric_pattern ])
         self.assertEqual(0, result.exit_code)
 
+    def test_0320_update_general_setting(self):
+        # System admin login
+        self._sys_login()
+        # update general setting
+        result = VmTest._runner.invoke(
+            vm,
+            args=[
+                'update-general-setting', VmTest._vapp_name, VmTest._vm_name,
+                '--name', VmTest._vm_name_update, '--d',
+                VmTest._description_update, '--cn',
+                VmTest._computer_name_update, '--bd',
+                VmTest._boot_delay_update, '--ebs',
+                VmTest._enter_bios_setup_update
+            ])
+        self.assertEqual(0, result.exit_code)
+        #logging out sys_client
+        self._logout()
+        #logging with org admin user
+        self._login()
+
     def test_9998_tearDown(self):
         """Delete the vApp created during setup.
 
@@ -471,7 +506,12 @@ class VmTest(BaseTestCase):
 
         if VmTest._empty_vapp_href is not None:
             vapps_to_delete.append(VmTest._empty_vapp_name)
-
+        vapp = VApp(VmTest._client, href=VmTest._test_vapp_vmtools_href)
+        vapp.undeploy()
+        vapp = VApp(VmTest._client, href=VmTest._test_vapp_href)
+        vapp.undeploy()
+        vapps_to_delete.append(VmTest._vapp_name)
+        vapps_to_delete.append(VmTest._test_vapp_vmtools_name)
         self._sys_login()
         vdc = Environment.get_test_vdc(VmTest._client)
         vdc.delete_disk(name=self._idisk_name)

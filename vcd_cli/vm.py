@@ -1005,7 +1005,7 @@ def list_all_historic_metrics(ctx, vapp_name, vm_name):
         stderr(e, ctx)
 
 @vm.command('list-sample-historic-data', short_help='list sample historic '
-                                                'data of given metric of VM'
+                                                'data of given metric of VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)

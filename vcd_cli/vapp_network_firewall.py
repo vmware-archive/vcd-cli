@@ -41,11 +41,18 @@ def firewall(ctx):
             List firewall rules in firewall service.
 
     \b
-        vcd vapp network services firewall add vapp_name network_name
+        vcd vapp network services firewall add vapp_name network_name rule_name
+                --enable --policy drop --protocols Tcp,Udp --source-ip Any
+                 --source-port-range Any --destination-port-range Any
+                --destination-ip Any --enable-logging
             Add firewall rule in firewall service.
 
     \b
         vcd vapp network services firewall update vapp_name network_name
+                rule_name --name rule_new_name --enable --policy
+                drop --protocols Tcp,Udp --source-ip Any
+                --source-port-range Any --destination-port-range Any
+                --destination-ip Any --enable-logging
             Update firewall rule in firewall service.
 
     \b

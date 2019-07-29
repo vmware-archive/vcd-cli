@@ -31,6 +31,11 @@ class TestVappFirewall(BaseTestCase):
     """Test vapp firewall functionalities implemented in pyvcloud."""
     _vapp_name = VAppConstants.name
     _vapp_network_name = VAppConstants.network1_name
+    _org_vdc_network_name = 'test-direct-vdc-network'
+    _drop = 'drop'
+    _allow = 'allow'
+    _test_firewall_rule_name = 'test_firewall_rule'
+    _update_firewall_rule_name = 'updated_firewall_rule'
 
     def test_0000_setup(self):
         self._config = Environment.get_config()
@@ -43,12 +48,9 @@ class TestVappFirewall(BaseTestCase):
 
         vapp = Environment.get_test_vapp_with_network(TestVappFirewall._client)
         vapp.reload()
-
-        TestVappFirewall._vapp_network_name = \
-            Environment.get_default_orgvdc_network_name()
-        task = vapp.connect_org_vdc_network(
-            TestVappFirewall._vapp_network_name,
-            fence_mode=FenceMode.NAT_ROUTED.value)
+        task = vapp.connect_vapp_network_to_ovdc_network(
+            network_name=TestVappFirewall._vapp_network_name,
+            orgvdc_network_name=TestVappFirewall._org_vdc_network_name)
         result = TestVappFirewall._client.get_task_monitor().wait_for_success(
             task)
         self.assertEqual(result.get('status'), TaskStatus.SUCCESS.value)
@@ -94,6 +96,71 @@ class TestVappFirewall(BaseTestCase):
                 TestVappFirewall._vapp_name,
                 TestVappFirewall._vapp_network_name,
                 '--enable',
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0020_set_default_action(self):
+        result = TestVappFirewall._runner.invoke(
+            vapp,
+            args=[
+                'network', 'services', 'firewall', 'set-default-action',
+                TestVappFirewall._vapp_name,
+                TestVappFirewall._vapp_network_name, '--action',
+                TestVappFirewall._allow, '--enable-log-action'
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0030_add_firewall_rule(self):
+        result = TestVappFirewall._runner.invoke(
+            vapp,
+            args=[
+                'network', 'services', 'firewall', 'add',
+                TestVappFirewall._vapp_name,
+                TestVappFirewall._vapp_network_name,
+                TestVappFirewall._test_firewall_rule_name
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0040_list_firewall_rule(self):
+        result = TestVappFirewall._runner.invoke(
+            vapp,
+            args=[
+                'network', 'services', 'firewall', 'list',
+                TestVappFirewall._vapp_name,
+                TestVappFirewall._vapp_network_name
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0050_update_firewall_rule(self):
+        result = TestVappFirewall._runner.invoke(
+            vapp,
+            args=[
+                'network', 'services', 'firewall', 'update',
+                TestVappFirewall._vapp_name,
+                TestVappFirewall._vapp_network_name,
+                TestVappFirewall._test_firewall_rule_name, '--name',
+                TestVappFirewall._update_firewall_rule_name
+            ])
+        self.assertEqual(0, result.exit_code)
+        result = TestVappFirewall._runner.invoke(
+            vapp,
+            args=[
+                'network', 'services', 'firewall', 'update',
+                TestVappFirewall._vapp_name,
+                TestVappFirewall._vapp_network_name,
+                TestVappFirewall._update_firewall_rule_name, '--name',
+                TestVappFirewall._test_firewall_rule_name
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0060_delete_firewall_rule(self):
+        result = TestVappFirewall._runner.invoke(
+            vapp,
+            args=[
+                'network', 'services', 'firewall', 'delete',
+                TestVappFirewall._vapp_name,
+                TestVappFirewall._vapp_network_name,
+                TestVappFirewall._test_firewall_rule_name
             ])
         self.assertEqual(0, result.exit_code)
 

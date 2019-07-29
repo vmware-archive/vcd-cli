@@ -23,6 +23,9 @@ from pyvcloud.system_test_framework.utils import \
     create_customized_vapp_from_template
 from pyvcloud.system_test_framework.utils import create_empty_vapp
 from pyvcloud.system_test_framework.utils import create_independent_disk
+from pyvcloud.vcd.client import EntityType
+from pyvcloud.vcd.client import NSMAP
+from pyvcloud.vcd.client import RelationType
 from pyvcloud.vcd.client import TaskStatus
 from pyvcloud.vcd.vapp import VApp
 from pyvcloud.vcd.vm import VM
@@ -80,6 +83,7 @@ class VmTest(BaseTestCase):
         VmTest._test_vdc = Environment.get_test_vdc(VmTest._client)
         VmTest._test_vapp = Environment.get_test_vapp_with_network(
             VmTest._client)
+        VmTest._test_old_vapp_href = VmTest._test_vapp.get_resource().get('href')
         VmTest._test_vm = VM(
             VmTest._client,
             href=VmTest._test_vapp.get_vm(VAppConstants.vm1_name).get('href'))
@@ -150,6 +154,17 @@ class VmTest(BaseTestCase):
             catalog_name=catalog_name,
             template_name=temp_name)
         self.assertIsNotNone(VmTest._test_vapp_href)
+
+        VmTest._sys_admin_client = Environment.get_sys_admin_client()
+        resource = VmTest._sys_admin_client.get_extension()
+        result = VmTest._sys_admin_client.get_linked_resource(
+            resource, RelationType.DOWN,
+            EntityType.DATASTORE_REFERENCES.value)
+        if hasattr(result, '{' + NSMAP['vcloud'] + '}Reference'):
+            for reference in result['{' + NSMAP['vcloud'] + '}Reference']:
+                datastore_id = reference.get('id')
+                VmTest._datastore_id = datastore_id.split(':')[3]
+                break
 
     def test_0010_info(self):
         """Get info of the VM."""
@@ -430,7 +445,7 @@ class VmTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0270_poweron_and_force_recustomizations(self):
-        #Power off VM.
+        # Power off VM.
         result = VmTest._runner.invoke(
             vm, args=['undeploy', VmTest._test_vapp_vmtools_name,
                       VmTest._test_vapp_vmtools_vm_name])
@@ -443,7 +458,7 @@ class VmTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0280_list_virtual_hardware_section(self):
-        #list virtual hardware section
+        # list virtual hardware section
         result = VmTest._runner.invoke(
             vm, args=['list-virtual-hardware-section',
                       VmTest._test_vapp_vmtools_name,
@@ -463,18 +478,18 @@ class VmTest(BaseTestCase):
         self._login()
 
     def test_0300_list_current_metrics(self):
-        #list current metrics
+        # list current metrics
         result = VmTest._runner.invoke(
             vm, args=['list-current-metrics',
                       VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
     def test_0310_list_subset_current_metrics(self):
-        #list subset of current metrics based on metric pattern
+        # list subset of current metrics based on metric pattern
         result = VmTest._runner.invoke(
             vm, args=['list-subset-current-metrics',
                       VAppConstants.name, VAppConstants.vm1_name,
-                      '--metric-pattern', VmTest._metric_pattern ])
+                      '--metric-pattern', VmTest._metric_pattern])
         self.assertEqual(0, result.exit_code)
 
     def test_0320_update_general_setting(self):
@@ -492,10 +507,28 @@ class VmTest(BaseTestCase):
                 VmTest._enter_bios_setup_update
             ])
         self.assertEqual(0, result.exit_code)
-        #logging out sys_client
+        # logging out sys_client
         self._logout()
-        #logging with org admin user
+        # logging with org admin user
         self._login()
+
+    def test_0330_relocate(self):
+        #relocate VM to given datastore
+        default_org = self._config['vcd']['default_org_name']
+        self._sys_login()
+        VmTest._runner.invoke(org, ['use', default_org])
+        result = VmTest._runner.invoke(
+            vm, args=['relocate',
+                      VAppConstants.name, VAppConstants.vm1_name,
+                      '--datastore-id', VmTest._datastore_id ])
+        self.assertEqual(0, result.exit_code)
+
+    def _power_off_and_undeploy(self, vapp):
+        if vapp.is_powered_on():
+            task = vapp.power_off()
+            VmTest._client.get_task_monitor().wait_for_success(task)
+            task = vapp.undeploy()
+            VmTest._client.get_task_monitor().wait_for_success(task)
 
     def test_9998_tearDown(self):
         """Delete the vApp created during setup.
@@ -506,12 +539,15 @@ class VmTest(BaseTestCase):
 
         if VmTest._empty_vapp_href is not None:
             vapps_to_delete.append(VmTest._empty_vapp_name)
+        vapp = VApp(VmTest._client, href=VmTest._test_old_vapp_href)
+        self._power_off_and_undeploy(vapp = vapp)
         vapp = VApp(VmTest._client, href=VmTest._test_vapp_vmtools_href)
-        vapp.undeploy()
+        self._power_off_and_undeploy(vapp = vapp)
         vapp = VApp(VmTest._client, href=VmTest._test_vapp_href)
-        vapp.undeploy()
+        self._power_off_and_undeploy(vapp = vapp)
         vapps_to_delete.append(VmTest._vapp_name)
         vapps_to_delete.append(VmTest._test_vapp_vmtools_name)
+        vapps_to_delete.append(VAppConstants.name)
         self._sys_login()
         vdc = Environment.get_test_vdc(VmTest._client)
         vdc.delete_disk(name=self._idisk_name)

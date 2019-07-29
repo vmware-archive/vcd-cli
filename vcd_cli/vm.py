@@ -15,6 +15,7 @@
 import click
 from pyvcloud.vcd.client import IpAddressMode
 from pyvcloud.vcd.client import NetworkAdapterType
+from pyvcloud.vcd.platform import Platform
 from pyvcloud.vcd.utils import vm_to_dict
 from pyvcloud.vcd.vapp import VApp
 from pyvcloud.vcd.vdc import VDC
@@ -227,6 +228,11 @@ def vm(ctx):
             --d vm_new_description --cn new_computer_name --bd 60
             --ebs True
             Update general setting details of VM.
+
+\b
+        vcd vm relocate vapp1 vm1
+                --datastore-id 0d8c7358-3e8d-4862-9364-68155069d252
+            Relocate VM to given datastore.
 
     """
     pass
@@ -1092,6 +1098,27 @@ def update_general_setting(ctx, vapp_name, vm_name, name, description,
             boot_delay=boot_delay,
             enter_bios_setup=enter_bios_setup,
             storage_policy_href=storage_policy_href)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('relocate', short_help='relocate VM to given datastore')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'datastore_id',
+    '--datastore-id',
+    required=True,
+    metavar='<datastore-id>',
+    help='datastore id')
+def relocate(ctx, vapp_name, vm_name, datastore_id):
+    try:
+        restore_session(ctx, vdc_required=True)
+        platform = Platform(ctx.obj['client'])
+        datastore_href = platform.get_datastore_href_by_id(id=datastore_id)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.relocate(datastore_href=datastore_href)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

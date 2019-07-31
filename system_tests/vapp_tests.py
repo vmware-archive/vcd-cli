@@ -528,6 +528,15 @@ class VAppTest(BaseTestCase):
             vapp, args=['show-product-section', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0220_list_vm_interface(self):
+        result = VAppTest._runner.invoke(vapp,
+                                         args=[
+                                             'network', 'list-vm-interface',
+                                             VAppTest._test_vapp_name,
+                                             VAppTest._vapp_network_name
+                                         ])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """Delete vApp and logout from the session."""
         result_delete = VAppTest._runner.invoke(

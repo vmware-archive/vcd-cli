@@ -59,6 +59,9 @@ def vdc(ctx):
 \b
         vcd vdc delete -y dev-vdc
             Delete virtual datacenter.
+\b
+        vcd vdc list-media
+            Get list of media in virtual datacenters.
     """
     pass
 
@@ -479,5 +482,23 @@ def list_acl(ctx, vdc_name):
         stdout(
             access_settings_to_list(
                 acl, ctx.obj['profiles'].get('org_in_use')), ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vdc.command('list-media', short_help='list media from VDC')
+@click.pass_context
+@click.argument('vdc-name', metavar='<vdc-name>')
+def list_media(ctx, vdc_name):
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
+        in_use_org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, in_use_org_href)
+        vdc_resource = org.get_vdc(vdc_name)
+        vdc = VDC(client, resource=vdc_resource)
+
+        media_list = vdc.list_media_id()
+        stdout(media_list, ctx)
     except Exception as e:
         stderr(e, ctx)

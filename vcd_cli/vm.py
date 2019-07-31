@@ -396,7 +396,7 @@ def add_nic(ctx, vapp_name, vm_name, adapter_type, primary, connect, network,
     except Exception as e:
         stderr(e, ctx)
 
-@vm.command('update-nic', short_help='Add a nic to the VM')
+@vm.command('update-nic', short_help='Update a nic to the VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)

@@ -283,7 +283,7 @@ class VmTest(BaseTestCase):
         media_id = media_id.split(':')[3]
         result = VmTest._runner.invoke(
             vm, args=['insert-cd', VAppConstants.name, VAppConstants.vm1_name,
-                      '--media-href', media_id])
+                      '--media-id', media_id])
         self.assertEqual(0, result.exit_code)
 
     def test_0100_eject_cd(self):
@@ -292,7 +292,7 @@ class VmTest(BaseTestCase):
         media_id = media_id.split(':')[3]
         result = VmTest._runner.invoke(
             vm, args=['eject-cd', VAppConstants.name, VAppConstants.vm1_name,
-                      '--media-href', media_id])
+                      '--media-id', media_id])
         self.assertEqual(0, result.exit_code)
 
     def test_0110_add_nic(self):

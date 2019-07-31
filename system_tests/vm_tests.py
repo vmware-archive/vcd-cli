@@ -279,18 +279,20 @@ class VmTest(BaseTestCase):
 
     def test_0090_insert_cd(self):
         """Insert CD in the VM."""
-        media_href = VmTest._media_resource.Entity.get('href')
+        media_id = VmTest._media_resource.Entity.get('id')
+        media_id = media_id.split(':')[3]
         result = VmTest._runner.invoke(
             vm, args=['insert-cd', VAppConstants.name, VAppConstants.vm1_name,
-                      '--media-href', media_href])
+                      '--media-href', media_id])
         self.assertEqual(0, result.exit_code)
 
     def test_0100_eject_cd(self):
         """Eject CD from the VM."""
-        media_href = VmTest._media_resource.Entity.get('href')
+        media_id = VmTest._media_resource.Entity.get('id')
+        media_id = media_id.split(':')[3]
         result = VmTest._runner.invoke(
             vm, args=['eject-cd', VAppConstants.name, VAppConstants.vm1_name,
-                      '--media-href', media_href])
+                      '--media-href', media_id])
         self.assertEqual(0, result.exit_code)
 
     def test_0110_add_nic(self):
@@ -302,6 +304,16 @@ class VmTest(BaseTestCase):
                 '--adapter-type', VmTest.DEFAULT_ADAPTER_TYPE, '--connect',
                 '--primary', '--network', VAppConstants.network1_name,
                 '--ip-address-mode', VmTest.DEFAULT_IP_MODE
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0115_update_nic(self):
+        """update nic of the VM."""
+        result = VmTest._runner.invoke(
+            vm,
+            args=[
+                'update-nic', VAppConstants.name, VAppConstants.vm1_name,
+                '--network', VAppConstants.network1_name
             ])
         self.assertEqual(0, result.exit_code)
 

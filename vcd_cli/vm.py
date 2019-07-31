@@ -67,6 +67,17 @@ def vm(ctx):
             Adds a nic to the VM.
 
 \b
+        vcd vm update-nic vapp1 vm1
+                --adapter-type VMXNET3
+                --primary
+                --connect
+                --network network_name
+                --ip-address-mode MANUAL
+                --ip-address 192.168.1.10
+            Update a nic of the VM.
+
+
+\b
         vcd vm list-nics vapp1 vm1
             Lists the nics of the VM.
 
@@ -109,12 +120,12 @@ def vm(ctx):
 
 \b
         vcd vm insert-cd vapp1 vm1
-                --media-href https://10.11.200.00/api/media/76e53c34-1845-43ca-bd5a-759c0d537433
+                --media-id 76e53c34-1845-43ca-bd5a-759c0d537433
             Insert CD from catalog to the VM.
 
 \b
         vcd vm eject-cd vapp1 vm1
-                --media-href https://10.11.200.00/api/media/76e53c34-1845-43ca-bd5a-759c0d537433
+                --media-id 76e53c34-1845-43ca-bd5a-759c0d537433
             Eject CD from the VM.
 
 \b
@@ -385,6 +396,71 @@ def add_nic(ctx, vapp_name, vm_name, adapter_type, primary, connect, network,
     except Exception as e:
         stderr(e, ctx)
 
+@vm.command('update-nic', short_help='Add a nic to the VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'adapter_type',
+    '--adapter-type',
+    required=False,
+    metavar='<adapter-type>',
+    type=click.Choice([
+        NetworkAdapterType.VLANCE.value, NetworkAdapterType.VMXNET.value,
+        NetworkAdapterType.VMXNET2.value, NetworkAdapterType.VMXNET3.value,
+        NetworkAdapterType.E1000.value
+    ]),
+    help='adapter type of nic - one of VLANCE|VMXNET|VMXNET2|VMXNET3|E1000')
+@click.option(
+    'primary',
+    '--primary',
+    required=False,
+    is_flag=True,
+    metavar='<primary>',
+    help='whether nic has to be a primary')
+@click.option(
+    'connect',
+    '--connect',
+    required=False,
+    is_flag=True,
+    metavar='<connect>',
+    help='whether nic has to be connected')
+@click.option(
+    'network',
+    '--network',
+    required=True,
+    default='none',
+    metavar='<network>',
+    help='network to connect to')
+@click.option(
+    'ip_address_mode',
+    '--ip-address-mode',
+    required=False,
+    default=IpAddressMode.DHCP.value,
+    metavar='<ip-address-mode>',
+    type=click.Choice([
+        IpAddressMode.DHCP.value, IpAddressMode.POOL.value,
+        IpAddressMode.MANUAL.value
+    ]),
+    help='IP address allocation mode - one of DHCP|POOL|MANUAL|NONE')
+@click.option(
+    'ip_address',
+    '--ip-address',
+    required=False,
+    metavar='<ip-address>',
+    help='nanual IP address that needs to be allocated to the nic')
+def update_nic(ctx, vapp_name, vm_name, adapter_type, primary, connect, network,
+               ip_address_mode, ip_address):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.update_nic(network_name=network, is_connected=connect,
+                             is_primary=primary,
+                             ip_address_mode=ip_address_mode,
+                             ip_address=ip_address, adapter_type=adapter_type)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
 
 @vm.command('list-nics', short_help='List all the nics of the VM')
 @click.pass_context
@@ -533,16 +609,16 @@ def install_vmware_tools(ctx, vapp_name, vm_name):
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)
 @click.option(
-    'media_href',
-    '--media-href',
+    'media_id',
+    '--media-id',
     required=True,
-    metavar='<media-href>',
-    help='media href to be inserted')
-def insert_cd(ctx, vapp_name, vm_name, media_href):
+    metavar='<media-id>',
+    help='media id to be inserted')
+def insert_cd(ctx, vapp_name, vm_name, media_id):
     try:
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
-        task = vm.insert_cd_from_catalog(media_href)
+        task = vm.insert_cd_from_catalog(media_id=media_id)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -552,16 +628,16 @@ def insert_cd(ctx, vapp_name, vm_name, media_href):
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)
 @click.option(
-    'media_href',
-    '--media-href',
+    'media_id',
+    '--media-id',
     required=True,
-    metavar='<media-href>',
-    help='media href to be ejected')
-def eject_cd(ctx, vapp_name, vm_name, media_href):
+    metavar='<media-id>',
+    help='media id to be ejected')
+def eject_cd(ctx, vapp_name, vm_name, media_id):
     try:
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
-        task = vm.eject_cd(media_href)
+        task = vm.eject_cd(media_id=media_id)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -109,6 +109,10 @@ def network(ctx):
 \b
         vdc vapp network enable-fence vapp1
             Enable fence mode of vApp network.
+
+\b
+        vdc vapp network list-vm-interface vapp1 vapp-network1
+            List vm interfaces of network.
     """
     pass
 
@@ -461,6 +465,21 @@ def enable_fence_mode(ctx, vapp_name):
         restore_session(ctx, vdc_required=True)
         vapp = get_vapp(ctx, vapp_name)
         result = vapp.enable_fence_mode()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@network.command('list-vm-interface',
+                 short_help='list vm interfaces of network')
+@click.pass_context
+@click.argument('vapp_name', metavar='<vapp-name>', required=True)
+@click.argument('network_name', metavar='<network_name>', required=True)
+def list_vm_interface(ctx, vapp_name, network_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, vapp_name)
+        result = vapp.list_vm_interface(network_name)
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

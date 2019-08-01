@@ -245,6 +245,15 @@ def vm(ctx):
                 --datastore-id 0d8c7358-3e8d-4862-9364-68155069d252
             Relocate VM to given datastore.
 
+\b
+        vcd vm list-os-section vapp1 vm1
+            List OS section properties of VM.
+
+\b
+        vcd vm update-os-section vapp1 vm1
+                --ovf-info newInfo
+                --description newDescription
+            Update OS section properties of VM.
     """
     pass
 
@@ -1195,6 +1204,49 @@ def relocate(ctx, vapp_name, vm_name, datastore_id):
         datastore_href = platform.get_datastore_href_by_id(id=datastore_id)
         vm = _get_vm(ctx, vapp_name, vm_name)
         task = vm.relocate(datastore_href=datastore_href)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('list-os-section', short_help='list operating system section '
+                                          'properties of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def list_os_section(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.list_os_section()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command(
+    'update-os-section', short_help='update os section properties of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'ovf_info',
+    '--ovf-info',
+    required=False,
+    default=None,
+    metavar='<ovf_info>',
+    help='ovf info')
+@click.option(
+    'description',
+    '--d',
+    required=False,
+    default=None,
+    metavar='<description>',
+    help='description')
+def update_os_section(ctx, vapp_name, vm_name, ovf_info, description):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.update_operating_system_section(ovf_info=ovf_info,
+                                                  description=description)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

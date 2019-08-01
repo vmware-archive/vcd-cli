@@ -67,6 +67,7 @@ class VmTest(BaseTestCase):
     _computer_name_update = 'mycom'
     _boot_delay_update = 60
     _enter_bios_setup_update = True
+    _new_ovf_info = 'new info'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -541,6 +542,21 @@ class VmTest(BaseTestCase):
             VmTest._client.get_task_monitor().wait_for_success(task)
             task = vapp.undeploy()
             VmTest._client.get_task_monitor().wait_for_success(task)
+
+    def test_0340_list_os_section(self):
+        # list os section properties
+        result = VmTest._runner.invoke(
+            vm, args=['list-os-section',
+                      VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0340_update_os_section(self):
+        # list os section properties
+        result = VmTest._runner.invoke(
+            vm, args=['update-os-section',
+                      VAppConstants.name, VAppConstants.vm1_name,
+                      '--ovf-info', VmTest._new_ovf_info])
+        self.assertEqual(0, result.exit_code)
 
     def test_9998_tearDown(self):
         """Delete the vApp created during setup.

@@ -253,7 +253,7 @@ def vm(ctx):
         vcd vm update-os-section vapp1 vm1
                 --ovf-info newInfo
                 --description newDescription
-            List OS section properties of VM.
+            Update OS section properties of VM.
     """
     pass
 
@@ -1221,8 +1221,9 @@ def list_os_section(ctx, vapp_name, vm_name):
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 @vm.command(
-    'update-os-section', short_help='update od section properties of VM')
+    'update-os-section', short_help='update os section properties of VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)

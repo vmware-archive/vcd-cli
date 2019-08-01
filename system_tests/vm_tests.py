@@ -551,7 +551,7 @@ class VmTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0340_update_os_section(self):
-        # list os section properties
+        # update os section properties
         result = VmTest._runner.invoke(
             vm, args=['update-os-section',
                       VAppConstants.name, VAppConstants.vm1_name,

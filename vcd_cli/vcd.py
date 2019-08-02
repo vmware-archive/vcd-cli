@@ -139,6 +139,7 @@ else:
     from vcd_cli import vapp_network  # NOQA
     from vcd_cli import vapp_network_dhcp  # NOQA
     from vcd_cli import vapp_network_firewall  # NOQA
+    from vcd_cli import vapp_network_nat  # NOQA
     from vcd_cli import vc  # NOQA
     from vcd_cli import vdc  # NOQA
     from vcd_cli import vm  # NOQA

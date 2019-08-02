@@ -254,6 +254,20 @@ def vm(ctx):
                 --ovf-info newInfo
                 --description newDescription
             Update OS section properties of VM.
+
+\b
+        vcd vm list-gc-section vapp1 vm1
+            List guest customization section properties of VM.
+
+\b
+        vcd vm update-gc-section
+                --disable
+            Update guest customization section properties of VM.
+
+\b
+        vcd vm check-post-gc-script vapp1 vm1
+            Check post guest customization script status of VM.
+
     """
     pass
 
@@ -1248,5 +1262,166 @@ def update_os_section(ctx, vapp_name, vm_name, ovf_info, description):
         task = vm.update_operating_system_section(ovf_info=ovf_info,
                                                   description=description)
         stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('list-gc-section', short_help='list guest customization section '
+                                          'properties of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def list_gc_section(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.list_gc_section()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command(
+    'update-gc-section', short_help='update guest customization section'
+                                    ' properties of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    '--enable/--disable',
+    'is_enabled',
+    required=False,
+    default=None,
+    metavar='<bool>',
+    help='enable guest customization')
+@click.option(
+    '--enable-change-sid/--disable-change-sid',
+    'is_change_sid',
+    required=False,
+    default=None,
+    metavar='<bool>',
+    help='change sid')
+@click.option(
+    '--enable-join-domain/--disable-join-domain',
+    'is_join_domain',
+    required=False,
+    default=None,
+    metavar='<bool>',
+    help='enable join domain')
+@click.option(
+    '--enable-use-org-settings/--disable-use-org-settings',
+    'is_use_org_settings',
+    required=False,
+    default=None,
+    metavar='<bool>',
+    help='enable use org settings')
+@click.option(
+    '--domain-name',
+    'domain_name',
+    required=False,
+    default=None,
+    metavar='<str>',
+    help='domain name')
+@click.option(
+    '--domain-user-name',
+    'domain_user_name',
+    required=False,
+    default=None,
+    metavar='<str>',
+    help='domain user name')
+@click.option(
+    '--domain-user-password',
+    'domain_user_password',
+    required=False,
+    default=None,
+    metavar='<str>',
+    help='domain user password')
+@click.option(
+    '--enable-admin-password/--disable-admin-password',
+    'is_admin_password',
+    required=False,
+    default=None,
+    metavar='<bool>',
+    help='enable admin password')
+@click.option(
+    '--enable-admin-password-auto/--disable-admin-password-auto',
+    'is_admin_password_auto',
+    required=False,
+    default=None,
+    metavar='<bool>',
+    help='enable admin password auto')
+@click.option(
+    '--admin-password',
+    'admin_password',
+    required=False,
+    default=None,
+    metavar='<str>',
+    help='admin password')
+@click.option(
+    '--enable-admin-auto-logon/--disable-admin-auto-logon',
+    'is_admin_auto_logon',
+    required=False,
+    default=None,
+    metavar='<bool>',
+    help='enable admin auto logon')
+@click.option(
+    '--admin-auto-logon-count',
+    'admin_auto_logon_count',
+    required=False,
+    default=0,
+    metavar='<int>',
+    help='admin auto logon count')
+@click.option(
+    '--enable-reset-password/--disable-reset-password',
+    'is_reset_password',
+    required=False,
+    default=None,
+    metavar='<bool>',
+    help='enable reset password')
+@click.option(
+    '--customization-script',
+    'customization_script',
+    required=False,
+    default=None,
+    metavar='<str>',
+    help='customization scipt')
+def update_gc_section(ctx, vapp_name, vm_name, is_enabled, is_change_sid,
+                      is_join_domain, is_use_org_settings, domain_name,
+                      domain_user_name, domain_user_password, is_admin_password,
+                      is_admin_password_auto, admin_password,
+                      is_admin_auto_logon, admin_auto_logon_count,
+                      is_reset_password, customization_script):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm. \
+            update_guest_customization_section(
+            enabled=is_enabled,
+            change_sid=is_change_sid,
+            join_domain_enabled=is_join_domain,
+            use_org_settings=is_use_org_settings,
+            domain_name=domain_name,
+            domain_user_name=domain_user_name,
+            domain_user_password=domain_user_password,
+            admin_password_enabled=is_admin_password,
+            admin_password_auto=is_admin_password_auto,
+            admin_password=admin_password,
+            admin_auto_logon_enabled=is_admin_auto_logon,
+            admin_auto_logon_count=admin_auto_logon_count,
+            reset_password_required=is_reset_password,
+            customization_script=customization_script)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('check-post-gc-script', short_help='check post guest customization'
+                                          'script of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def check_post_gc_script(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.list_check_post_gc_status()
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

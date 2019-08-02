@@ -526,14 +526,14 @@ class VmTest(BaseTestCase):
         self._login()
 
     def test_0330_relocate(self):
-        #relocate VM to given datastore
+        # relocate VM to given datastore
         default_org = self._config['vcd']['default_org_name']
         self._sys_login()
         VmTest._runner.invoke(org, ['use', default_org])
         result = VmTest._runner.invoke(
             vm, args=['relocate',
                       VAppConstants.name, VAppConstants.vm1_name,
-                      '--datastore-id', VmTest._datastore_id ])
+                      '--datastore-id', VmTest._datastore_id])
         self.assertEqual(0, result.exit_code)
 
     def _power_off_and_undeploy(self, vapp):
@@ -556,6 +556,31 @@ class VmTest(BaseTestCase):
             vm, args=['update-os-section',
                       VAppConstants.name, VAppConstants.vm1_name,
                       '--ovf-info', VmTest._new_ovf_info])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0350_list_gc_section(self):
+        # list gc section properties
+        result = VmTest._runner.invoke(
+            vm, args=['list-gc-section',
+                      VmTest._test_vapp_vmtools_name,
+                      VmTest._test_vapp_vmtools_vm_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0360_update_gc_section(self):
+        # update os section properties
+        result = VmTest._runner.invoke(
+            vm, args=['update-gc-section',
+                      VmTest._test_vapp_vmtools_name,
+                      VmTest._test_vapp_vmtools_vm_name,
+                      '--disable'])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0370_check_post_gc_script_status(self):
+        # check post gc script status
+        result = VmTest._runner.invoke(
+            vm, args=['check-post-gc-script',
+                      VmTest._test_vapp_vmtools_name,
+                      VmTest._test_vapp_vmtools_vm_name])
         self.assertEqual(0, result.exit_code)
 
     def test_9998_tearDown(self):

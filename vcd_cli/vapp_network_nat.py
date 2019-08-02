@@ -49,7 +49,7 @@ def get_vapp_network_nat(ctx, vapp_name, network_name):
     return vapp_nat
 
 
-@nat.command('enable-nat', short_help='Enable NAT service')
+@nat.command('enable-nat', short_help='enable NAT service')
 @click.pass_context
 @click.argument('vapp_name', metavar='<vapp-name>', required=True)
 @click.argument('network_name', metavar='<network-name>', required=True)

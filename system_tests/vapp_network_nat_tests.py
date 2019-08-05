@@ -20,7 +20,10 @@ from pyvcloud.system_test_framework.environment import Environment
 from pyvcloud.system_test_framework.environment import developerModeAware
 
 from pyvcloud.vcd.client import FenceMode
+from pyvcloud.vcd.client import IpAddressMode
+from pyvcloud.vcd.client import NetworkAdapterType
 from pyvcloud.vcd.client import TaskStatus
+from pyvcloud.vcd.vm import VM
 
 from vcd_cli.login import login, logout
 from vcd_cli.vapp import vapp
@@ -31,7 +34,11 @@ class TestVappNat(BaseTestCase):
     """Test vapp nat functionalities implemented in pyvcloud."""
     _vapp_name = VAppConstants.name
     _vapp_network_name = VAppConstants.network1_name
+    _vm_name = VAppConstants.vm1_name
     _org_vdc_network_name = 'test-direct-vdc-network'
+    _nat_type_ip_translation = 'ipTranslation'
+    _rule_id = '65537'
+    _allocate_ip_address = '90.80.70.10'
 
     def test_0000_setup(self):
         self._config = Environment.get_config()
@@ -49,6 +56,20 @@ class TestVappNat(BaseTestCase):
             orgvdc_network_name=TestVappNat._org_vdc_network_name)
         result = TestVappNat._client.get_task_monitor().wait_for_success(task)
         self.assertEqual(result.get('status'), TaskStatus.SUCCESS.value)
+
+        vm_resource = vapp.get_vm(TestVappNat._vm_name)
+        vm = VM(TestVappNat._client, resource=vm_resource)
+        task = vm.add_nic(NetworkAdapterType.E1000.value, True, True,
+                          TestVappNat._vapp_network_name,
+                          IpAddressMode.MANUAL.value,
+                          TestVappNat._allocate_ip_address)
+        result = TestVappNat._client.get_task_monitor().wait_for_success(task)
+        self.assertEqual(result.get('status'), TaskStatus.SUCCESS.value)
+        list_vm_interface = vapp.list_vm_interface(
+            TestVappNat._vapp_network_name)
+        for vm_interface in list_vm_interface:
+            TestVappNat._vm_id = str(vm_interface['Local_id'])
+            TestVappNat._vm_nic_id = str(vm_interface['VmNicId'])
 
     def test_0010_enable_nat_service(self):
         result = TestVappNat._runner.invoke(vapp,
@@ -90,6 +111,47 @@ class TestVappNat(BaseTestCase):
                 TestVappNat._vapp_name, TestVappNat._vapp_network_name,
                 '--type', 'ipTranslation', '--policy', 'allowTrafficIn'
             ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0030_get_nat_type(self):
+        result = TestVappNat._runner.invoke(vapp,
+                                            args=[
+                                                'network', 'services', 'nat',
+                                                'get-nat-type',
+                                                TestVappNat._vapp_name,
+                                                TestVappNat._vapp_network_name
+                                            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0040_add_nat_rule(self):
+        result = TestVappNat._runner.invoke(
+            vapp,
+            args=[
+                'network', 'services', 'nat', 'add', TestVappNat._vapp_name,
+                TestVappNat._vapp_network_name, '--type',
+                TestVappNat._nat_type_ip_translation, '--vm_id',
+                TestVappNat._vm_id, '--nic_id', TestVappNat._vm_nic_id
+            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0050_get_list_of_nat_rule(self):
+        result = TestVappNat._runner.invoke(vapp,
+                                            args=[
+                                                'network', 'services', 'nat',
+                                                'list', TestVappNat._vapp_name,
+                                                TestVappNat._vapp_network_name
+                                            ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0090_delete_nat_rule(self):
+        result = TestVappNat._runner.invoke(vapp,
+                                            args=[
+                                                'network', 'services', 'nat',
+                                                'delete',
+                                                TestVappNat._vapp_name,
+                                                TestVappNat._vapp_network_name,
+                                                TestVappNat._rule_id
+                                            ])
         self.assertEqual(0, result.exit_code)
 
     def _login(self):

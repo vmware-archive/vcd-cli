@@ -583,6 +583,21 @@ class VmTest(BaseTestCase):
                       VmTest._test_vapp_vmtools_vm_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0380_list_vm_capabilities(self):
+        # list vm capabilities section properties
+        result = VmTest._runner.invoke(
+            vm, args=['list-vm-capabilities',
+                      VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0390_update_vm_capabilities(self):
+        # update vm capabilities section properties
+        result = VmTest._runner.invoke(
+            vm, args=['update-vm-capabilities',
+                      VAppConstants.name, VAppConstants.vm1_name,
+                      '--disable-memory-hot-add'])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """Delete the vApp created during setup.
 

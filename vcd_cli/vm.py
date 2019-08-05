@@ -268,6 +268,14 @@ def vm(ctx):
         vcd vm check-post-gc-script vapp1 vm1
             Check post guest customization script status of VM.
 
+\b
+        vcd vm list-vm-capabilities vapp1 vm1
+            List VM capabilities section properties of VM.
+
+\b
+        vcd vm update-vm-capabilities
+                --enable-memory-hot-add
+            Update VM capabilities section properties of VM.
     """
     pass
 
@@ -1423,5 +1431,53 @@ def check_post_gc_script(ctx, vapp_name, vm_name):
         vm = _get_vm(ctx, vapp_name, vm_name)
         result = vm.list_check_post_gc_status()
         stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('list-vm-capabilities', short_help='list VM capabilities section '
+                                               'properties')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def list_vm_capabilities(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.list_vm_capabilities()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command(
+    'update-vm-capabilities', short_help='update VM capabilities properties')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'enable_memory_hot_add',
+    '--enable-memory-hot-add/--disable-memory-hot-add',
+    required=False,
+    default=None,
+    metavar='<bool>',
+    help='enable memory hot add')
+@click.option(
+    'enable_cpu_hot_add',
+    '--enable-cpu-hot-add/--disable-cpu-hot-add',
+    required=False,
+    default=None,
+    metavar='<bool>',
+    help='enable CPU hot add')
+def update_vm_capabilities_section(ctx, vapp_name, vm_name,
+                                   enable_memory_hot_add, enable_cpu_hot_add):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm. \
+            update_vm_capabilities_section(
+            memory_hot_add_enabled=enable_memory_hot_add,
+            cpu_hot_add_enabled=enable_cpu_hot_add)
+        stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

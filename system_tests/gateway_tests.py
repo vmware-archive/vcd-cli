@@ -40,6 +40,8 @@ class GatewayTest(BaseTestCase):
     _ext_network_name = None
     _gateway_ip = '2.2.3.1'
     _logger = None
+    _ip_range = '2.2.3.3-2.2.3.10'
+    _new_config_ip = '2.2.3.3'
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
@@ -157,14 +159,14 @@ class GatewayTest(BaseTestCase):
 
         It will delete the gateway after creation
         """
-        ip_range = self._get_ip_range()
+        ip_range = GatewayTest._ip_range
         result_create3 = GatewayTest._runner.invoke(
             gateway,
             args=[
                 'create', self._name, '-e', GatewayTest._ext_network_name,
                 '--sub-allocate-ip', GatewayTest._ext_network_name, '--subnet',
-                GatewayTest._subnet_addr, '--ip-range', ip_range,
-                '--sub-allocate-ip', GatewayTest._ext_network_name, '--subnet',
+                GatewayTest._subnet_addr, '--sub-allocate-ip',
+                GatewayTest._ext_network_name, '--subnet',
                 GatewayTest._subnet_addr, '--ip-range', ip_range
             ])
         GatewayTest._logger.debug("vcd gateway create <name> -e <ext nw> "
@@ -474,9 +476,6 @@ class GatewayTest(BaseTestCase):
                                       gateway_sub_allocated_ip_range))
         self.assertEqual(0, result.exit_code)
 
-    @unittest.skip("Its running for base gateway and not for other "
-                   "test gateway so skipping test "
-                   "case for now")
     def test_0020_update_rate_limit(self):
         """Updates existing rate limit of gateway.
          It will trigger the cli command configure-rate-limits list
@@ -487,8 +486,7 @@ class GatewayTest(BaseTestCase):
         result = self._runner.invoke(
             gateway,
             args=[
-                'configure-rate-limits', 'list', self._name, '-r',
-                [(ext_name, '101.0', '101.0')]
+                'configure-rate-limits', 'list', self._name
             ])
         self.assertEqual(0, result.exit_code)
 
@@ -557,20 +555,6 @@ class GatewayTest(BaseTestCase):
             gateway, args=['configure-default-gateway', 'list', self._name])
         self.assertEqual(0, result.exit_code)
 
-    @unittest.skip("Skipping test case because set syslog server is not in "
-                   "code. It should be unskipped after set syslog server is "
-                   "written")
-    def test_0030_get_tenant_syslog_ip(self):
-        """Get information of the gateway tenant syslog ip server.
-
-        It will trigger the cli command with option list-syslog-server
-        """
-        result_info = self._runner.invoke(
-            gateway, args=['list-syslog-server', self._name])
-        GatewayTest._logger.debug('result output {0}'.format(result_info))
-        self.assertTrue(
-            self._validate_result_for_unclosed_sslsocket_warning(result_info))
-
     def test_0031_set_tenant_syslog_ip(self):
         """Set information of the gateway tenant syslog ip server.
 
@@ -582,8 +566,20 @@ class GatewayTest(BaseTestCase):
         GatewayTest._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)
 
+    @unittest.skip("This test case depends ons editing syslog server IP in Org."
+                   "This functionality is missing now.")
+    def test_0032_get_tenant_syslog_ip(self):
+        """Get information of the gateway tenant syslog ip server.
+
+        It will trigger the cli command with option list-syslog-server
+        """
+        result_info = self._runner.invoke(
+            gateway, args=['list-syslog-server', self._name])
+        GatewayTest._logger.debug('result output {0}'.format(result_info))
+        self.assertTrue((0, result_info.exit_code))
+
     def test_0098_tearDown(self):
-        result_delete = self._runner.invoke(
+        result_delete = GatewayTest._runner.invoke(
             gateway, args=['delete', self._name])
         self.assertEqual(0, result_delete.exit_code)
         """Logout ignoring any errors to ensure test session is gone."""

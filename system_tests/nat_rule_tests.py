@@ -101,7 +101,7 @@ class TestNatRule(BaseTestCase):
                 '--vnic', TestNatRule._vnic, '--enabled', '--logging-enabled'])
         self.assertEqual(0, result.exit_code)
 
-    def test_0020_add_snat_rule(self):
+    def test_0020_add_dnat_rule(self):
         """Add DNAT Rule in the gateway.
         It will trigger the cli command 'services nat create-dnat'
         """

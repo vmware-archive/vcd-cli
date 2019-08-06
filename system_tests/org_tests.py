@@ -97,7 +97,7 @@ class OrgTest(BaseTestCase):
         description = "TEST:{0}".format(uuid.uuid1())
         self._login()
         # Ensure that the org does not exist and then create.
-        self._runner.invoke(org, args=['delete', test_org])
+        self._runner.invoke(org, args=['delete', test_org, '-y'])
         res_org = self._runner.invoke(
             org, args=['create', test_org, description])
         self.assertEqual(0, res_org.exit_code)

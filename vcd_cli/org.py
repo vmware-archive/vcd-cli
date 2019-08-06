@@ -65,7 +65,8 @@ def info(ctx, name):
         logged_in_org_name = ctx.obj['profiles'].get('org')
         in_use_org_name = ctx.obj['profiles'].get('org_in_use')
         org_resource = client.get_org_by_name(name)
-        result = org_to_dict(org_resource)
+        org = Org(client=client, resource=org_resource)
+        result = org_to_dict(org)
         result['logged_in'] = logged_in_org_name.lower() == \
             result.get('name').lower()
         result['in_use'] = in_use_org_name.lower() == \
@@ -73,7 +74,6 @@ def info(ctx, name):
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
-
 
 @org.command('list', short_help='list organizations')
 @click.pass_context

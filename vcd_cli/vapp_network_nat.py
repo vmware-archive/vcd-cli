@@ -63,6 +63,23 @@ def nat(ctx):
     \b
         vcd vapp network services nat delete vapp_name network_name id
             Delete NAT rule from NAT service.
+
+    \b
+        vcd vapp network services nat update vapp_name network_name rule_id
+            --vm_id testvm1 --nic_id 1
+            Update  NAT rule to NAT service.
+
+    \b
+        vcd vapp network services nat update vapp_name network_name rule_id
+                --vm_id testvm1 --nic_id 1 --mapping_mode manual
+                --ext_ip 10.1.1.1
+            Add  NAT rule to NAT service.
+
+    \b
+        vcd vapp network services nat update vapp_name network_name rule_id
+                --vm_id testvm1 --nic_id 1 --ext_port -1 --int_port -1
+                --protocol TCP_UDP
+            Update  NAT rule to NAT service.
     """
 
 
@@ -215,6 +232,63 @@ def delete_nat_rule(ctx, vapp_name, network_name, rule_id):
     try:
         vapp_nat = get_vapp_network_nat(ctx, vapp_name, network_name)
         result = vapp_nat.delete_nat_rule(rule_id)
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@nat.command('update', short_help='update NAT rule')
+@click.pass_context
+@click.argument('vapp_name', metavar='<vapp-name>', required=True)
+@click.argument('network_name', metavar='<network-name>', required=True)
+@click.argument('rule_id', metavar='<rule-id>', required=True)
+@click.option('--vm_id',
+              'vm_id',
+              default=None,
+              metavar='<vm_id>',
+              help='VM local id')
+@click.option('--nic_id',
+              'nic_id',
+              default=None,
+              metavar='<nic_id>',
+              help='NIC id of vapp network in vm ')
+@click.option('--mapping_mode',
+              'mapping_mode',
+              default=None,
+              metavar='<mapping_mode>',
+              help='mapping mode of NAT rule')
+@click.option('--ext_ip',
+              'ext_ip',
+              default=None,
+              metavar='<ext_ip>',
+              help='external IP address')
+@click.option('--ext_port',
+              'ext_port',
+              default=None,
+              metavar='<ext_port>',
+              help='external port')
+@click.option('--int_port',
+              'int_port',
+              default=None,
+              metavar='<int_port>',
+              help='internal port')
+@click.option('--protocol',
+              'protocol',
+              default=None,
+              metavar='<protocol>',
+              help='protocol')
+def update_nat_rule(ctx, vapp_name, network_name, rule_id, vm_id, nic_id,
+                    mapping_mode, ext_ip, ext_port, int_port, protocol):
+    try:
+        vapp_nat = get_vapp_network_nat(ctx, vapp_name, network_name)
+        result = vapp_nat.update_nat_rule(rule_id=rule_id,
+                                          vapp_scoped_vm_id=vm_id,
+                                          vm_nic_id=nic_id,
+                                          mapping_mode=mapping_mode,
+                                          external_ip_address=ext_ip,
+                                          external_port=ext_port,
+                                          internal_port=int_port,
+                                          protocol=protocol)
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

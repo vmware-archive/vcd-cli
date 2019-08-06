@@ -39,6 +39,8 @@ class TestVappNat(BaseTestCase):
     _nat_type_ip_translation = 'ipTranslation'
     _rule_id = '65537'
     _allocate_ip_address = '90.80.70.10'
+    _ext_ip_addr = '2.2.3.20'
+    _manual = 'manual'
 
     def test_0000_setup(self):
         self._config = Environment.get_config()
@@ -141,6 +143,17 @@ class TestVappNat(BaseTestCase):
                                                 'list', TestVappNat._vapp_name,
                                                 TestVappNat._vapp_network_name
                                             ])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0060_update_nat_rule(self):
+        result = TestVappNat._runner.invoke(
+            vapp,
+            args=[
+                'network', 'services', 'nat', 'update', TestVappNat._vapp_name,
+                TestVappNat._vapp_network_name, TestVappNat._rule_id,
+                '--mapping_mode', TestVappNat._manual, '--ext_ip',
+                TestVappNat._ext_ip_addr
+            ])
         self.assertEqual(0, result.exit_code)
 
     def test_0090_delete_nat_rule(self):

@@ -73,7 +73,7 @@ def nat(ctx):
         vcd vapp network services nat update vapp_name network_name rule_id
                 --vm_id testvm1 --nic_id 1 --mapping_mode manual
                 --ext_ip 10.1.1.1
-            Add  NAT rule to NAT service.
+            Update  NAT rule to NAT service.
 
     \b
         vcd vapp network services nat update vapp_name network_name rule_id

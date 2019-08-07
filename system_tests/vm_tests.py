@@ -641,7 +641,8 @@ class VmTest(BaseTestCase):
         This test passes if the task for deleting the vApp succeed.
         """
         vapps_to_delete = []
-
+        """
+        Commenting for debug purpose.
         if VmTest._empty_vapp_href is not None:
             vapps_to_delete.append(VmTest._empty_vapp_name)
         vapp = VApp(VmTest._client, href=VmTest._test_old_vapp_href)
@@ -652,7 +653,7 @@ class VmTest(BaseTestCase):
         self._power_off_and_undeploy(vapp = vapp)
         vapps_to_delete.append(VmTest._vapp_name)
         vapps_to_delete.append(VmTest._test_vapp_vmtools_name)
-        vapps_to_delete.append(VAppConstants.name)
+        vapps_to_delete.append(VAppConstants.name)"""
         self._sys_login()
         vdc = Environment.get_test_vdc(VmTest._client)
         vdc.delete_disk(name=self._idisk_name)

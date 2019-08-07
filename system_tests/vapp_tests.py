@@ -173,6 +173,7 @@ class VAppTest(BaseTestCase):
             vapp, args=['power-on', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
 
+    # Inconsistent behavior with CI CD and locally working fine.
     # def test_0026_suspend_vapp(self):
     #     result = VAppTest._runner.invoke(
     #         vapp, args=['suspend', VAppTest._test_vapp_name])

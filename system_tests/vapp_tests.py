@@ -161,26 +161,27 @@ class VAppTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0025_capture(self):
-        result = VAppTest._runner.invoke(
-            vapp,
-            args=[
-                'capture', VAppTest._test_vapp_name, VAppTest._catalog_name,
-                '-d', VAppTest._description
-            ])
+        result = VAppTest._runner.invoke(vapp,
+                                         args=[
+                                             'capture',
+                                             VAppTest._test_vapp_name,
+                                             VAppTest._catalog_name, '-d',
+                                             VAppTest._description
+                                         ])
         self.assertEqual(0, result.exit_code)
         result = VAppTest._runner.invoke(
             vapp, args=['power-on', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
 
-    def test_0026_suspend_vapp(self):
-        result = VAppTest._runner.invoke(
-            vapp, args=['suspend', VAppTest._test_vapp_name])
-        self.assertEqual(0, result.exit_code)
-
-    def test_0027_discard_suspended_state_vapp(self):
-        result = VAppTest._runner.invoke(
-            vapp, args=['discard-suspended-state', VAppTest._test_vapp_name])
-        self.assertEqual(0, result.exit_code)
+    # def test_0026_suspend_vapp(self):
+    #     result = VAppTest._runner.invoke(
+    #         vapp, args=['suspend', VAppTest._test_vapp_name])
+    #     self.assertEqual(0, result.exit_code)
+    #
+    # def test_0027_discard_suspended_state_vapp(self):
+    #     result = VAppTest._runner.invoke(
+    #         vapp, args=['discard-suspended-state', VAppTest._test_vapp_name])
+    #     self.assertEqual(0, result.exit_code)
 
     def test_0028_enter_maintenance_mode(self):
         VAppTest._logout(self)

@@ -276,6 +276,19 @@ def vm(ctx):
         vcd vm update-vm-capabilities
                 --enable-memory-hot-add
             Update VM capabilities section properties of VM.
+
+\b
+        vcd vm list-runtime-info vapp1 vm1
+            List runtime info properties of VM.
+
+\b
+        vcd vm list-boot-options vapp1 vm1
+            List boot options properties of VM.
+
+\b
+        vcd vm update-boot-options
+                --enable-enter-bios-setup
+            Update boot options properties of VM.
     """
     pass
 
@@ -1478,6 +1491,64 @@ def update_vm_capabilities_section(ctx, vapp_name, vm_name,
             update_vm_capabilities_section(
             memory_hot_add_enabled=enable_memory_hot_add,
             cpu_hot_add_enabled=enable_cpu_hot_add)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('list-runtime-info', short_help='list runtime info properties'
+                                            ' of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def list_runtime_info(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.list_run_time_info()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('list-boot-options', short_help='list boot options properties'
+                                            ' of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def list_boot_options(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.list_boot_options()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command(
+    'update-boot-options', short_help='update boot options properties')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'boot_delay',
+    '--bool-delay',
+    required=False,
+    default=None,
+    metavar='<int>',
+    help='boot delay option')
+@click.option(
+    'enter_bios_setup',
+    '--enable-enter-bios-setup/--disable-enter-bios-setup',
+    required=False,
+    default=None,
+    metavar='<bool>',
+    help='enable enter bios set-up')
+def update_boot_options(ctx, vapp_name, vm_name,
+                                   boot_delay, enter_bios_setup):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.update_boot_options(boot_delay=boot_delay,
+                                      enter_bios_setup=enter_bios_setup)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

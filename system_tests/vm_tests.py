@@ -71,8 +71,9 @@ class VmTest(BaseTestCase):
 
     def test_0000_setup(self):
         """Load configuration and create a click runner to invoke CLI."""
+        logger = Environment.get_default_logger()
         VmTest._config = Environment.get_config()
-        VmTest._logger = Environment.get_default_logger()
+        VmTest._logger = logger
         VmTest._client = Environment.get_client_in_default_org(
             CommonRoles.ORGANIZATION_ADMINISTRATOR)
         VmTest._media_resource = Environment.get_test_media_resource()
@@ -85,10 +86,15 @@ class VmTest(BaseTestCase):
         VmTest._test_vapp = Environment.get_test_vapp_with_network(
             VmTest._client)
         VmTest._test_old_vapp_href = VmTest._test_vapp.get_resource().get('href')
+        self.assertIsNotNone(VmTest._test_old_vapp_href)
+        logger.debug("Old vapp href is : " + VmTest._test_old_vapp_href)
+
         VmTest._test_vm = VM(
             VmTest._client,
             href=VmTest._test_vapp.get_vm(VAppConstants.vm1_name).get('href'))
-        logger = Environment.get_default_logger()
+        self.assertIsNotNone(VmTest._test_vapp.get_vm(VAppConstants.vm1_name).get('href'))
+        logger.debug("Old vapp VM href is : " +
+            VmTest._test_vapp.get_vm(VAppConstants.vm1_name).get('href'))
 
         vdc = Environment.get_test_vdc(VmTest._client)
         logger.debug('Creating empty vApp.')
@@ -97,6 +103,8 @@ class VmTest(BaseTestCase):
                               vdc=vdc,
                               name=VmTest._empty_vapp_name,
                               description=VmTest._empty_vapp_description)
+        self.assertIsNotNone(VmTest._empty_vapp_href)
+        logger.debug("Empty vapp href is: " + VmTest._empty_vapp_href)
 
         # Create independent disk
         VmTest._idisk_id = create_independent_disk(client=VmTest._client,
@@ -104,6 +112,9 @@ class VmTest(BaseTestCase):
                                                    name=self._idisk_name,
                                                    size=self._idisk_size,
                                                    description=self._idisk_description)
+        self.assertIsNotNone(VmTest._idisk_id)
+
+        logger.debug("Independent disk id is: " + VmTest._idisk_id )
 
         # Upload template with vm tools.
         catalog_author_client = Environment.get_client_in_default_org(
@@ -133,8 +144,10 @@ class VmTest(BaseTestCase):
                 catalog_item.Entity.get('href'))
             catalog_author_client.get_task_monitor().wait_for_success(
                 task=template.Tasks.Task[0])
+            logger.debug("Template upload comleted for: " + template_name)
+
         # Create Vapp with template of vmware tools
-        logger.debug('Creating vApp ' + VmTest._test_vapp_vmtools_name + '.')
+        logger.debug('Creating vApp ' + VmTest._test_vapp_vmtools_name)
         VmTest._test_vapp_vmtools_href = create_customized_vapp_from_template(
             client=VmTest._client,
             vdc=vdc,
@@ -142,6 +155,7 @@ class VmTest(BaseTestCase):
             catalog_name=catalog_name,
             template_name=template_name)
         self.assertIsNotNone(VmTest._test_vapp_vmtools_href)
+        logger.debug("vmtools vapp href is: " + VmTest._test_vapp_vmtools_href)
         vapp = VApp(VmTest._client, href=VmTest._test_vapp_vmtools_href)
         VmTest._test_vapp_vmtools = vapp
         vm_resource = vapp.get_vm(VmTest._test_vapp_vmtools_vm_name)
@@ -166,6 +180,7 @@ class VmTest(BaseTestCase):
                 datastore_id = reference.get('id')
                 VmTest._datastore_id = datastore_id.split(':')[3]
                 break
+        self.assertIsNotNone(VmTest._datastore_id)
 
     def test_0010_info(self):
         """Get info of the VM."""
@@ -598,13 +613,36 @@ class VmTest(BaseTestCase):
                       '--disable-memory-hot-add'])
         self.assertEqual(0, result.exit_code)
 
+    def test_0400_list_runtime_info(self):
+        # list runtime info properties
+        result = VmTest._runner.invoke(
+            vm, args=['list-runtime-info',
+                      VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0410_list_boot_options(self):
+        # list boot options properties
+        result = VmTest._runner.invoke(
+            vm, args=['list-boot-options',
+                      VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0420_update_boot_options(self):
+        # update boot options properties
+        result = VmTest._runner.invoke(
+            vm, args=['update-boot-options',
+                      VAppConstants.name, VAppConstants.vm1_name,
+                      '--disable-enter-bios-setup'])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """Delete the vApp created during setup.
 
         This test passes if the task for deleting the vApp succeed.
         """
         vapps_to_delete = []
-
+        """
+        Commenting for debug purpose.
         if VmTest._empty_vapp_href is not None:
             vapps_to_delete.append(VmTest._empty_vapp_name)
         vapp = VApp(VmTest._client, href=VmTest._test_old_vapp_href)
@@ -615,7 +653,7 @@ class VmTest(BaseTestCase):
         self._power_off_and_undeploy(vapp = vapp)
         vapps_to_delete.append(VmTest._vapp_name)
         vapps_to_delete.append(VmTest._test_vapp_vmtools_name)
-        vapps_to_delete.append(VAppConstants.name)
+        vapps_to_delete.append(VAppConstants.name)"""
         self._sys_login()
         vdc = Environment.get_test_vdc(VmTest._client)
         vdc.delete_disk(name=self._idisk_name)

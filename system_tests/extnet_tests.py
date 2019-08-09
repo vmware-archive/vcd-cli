@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import unittest
 from uuid import uuid1
 from click.testing import CliRunner
 
@@ -122,6 +123,7 @@ class ExtNetTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    @unittest.skip("Waiting for PR 2399981 fix")
     def test_0020_update(self):
         """Update name and description of the external network created.
 
@@ -146,6 +148,7 @@ class ExtNetTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    @unittest.skip("Waiting for PR 2399981 fix")
     def test_0030_add_subnet(self):
         """Add subnet to the external network created.
 
@@ -161,6 +164,7 @@ class ExtNetTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    @unittest.skip("Waiting for PR 2399981 fix")
     def test_0031_enable_subnet(self):
         """Enable/Disable subnet of an external network.
 
@@ -181,6 +185,7 @@ class ExtNetTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    @unittest.skip("Waiting for PR 2399981 fix")
     def test_0040_attach_port_group(self):
         """Attach a portgroup to an external network.
         Invoke the command 'external attach-port-group' in network.
@@ -201,6 +206,7 @@ class ExtNetTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    @unittest.skip("Waiting for PR 2399981 fix")
     def test_0041_detach_port_group(self):
         """Detach port group from an external network.
         Invoke the command 'external detach-port-group' in network.
@@ -220,6 +226,7 @@ class ExtNetTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    @unittest.skip("Waiting for PR 2399981 fix")
     def test_0050_add_ip_range(self):
         """Add an IP range to a subnet in an external network.
 
@@ -233,6 +240,7 @@ class ExtNetTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    @unittest.skip("Waiting for PR 2399981 fix")
     def test_0051_update_ip_range(self):
         """Update an IP range of a subnet in an external network.
 
@@ -247,6 +255,7 @@ class ExtNetTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    @unittest.skip("Waiting for PR 2399981 fix")
     def test_0052_delete_ip_range(self):
         """Remove an IP range of a subnet in an external network.
 

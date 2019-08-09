@@ -33,6 +33,7 @@ from uuid import uuid1
 from vcd_cli.vcd import vcd  # NOQA
 from vcd_cli.login import login, logout
 from vcd_cli.org import org
+from vcd_cli.vdc import vdc
 from vcd_cli.vm import vm
 
 import re
@@ -82,6 +83,11 @@ class VmTest(BaseTestCase):
         default_org = VmTest._config['vcd']['default_org_name']
         VmTest._login(self)
         VmTest._runner.invoke(org, ['use', default_org])
+
+        default_ovdc = VmTest._config['vcd']['default_ovdc_name']
+        VmTest._default_ovdc = default_ovdc
+        VmTest._runner.invoke(vdc, ['use', VmTest._default_ovdc])
+
         VmTest._test_vdc = Environment.get_test_vdc(VmTest._client)
         VmTest._test_vapp = Environment.get_test_vapp_with_network(
             VmTest._client)
@@ -96,11 +102,11 @@ class VmTest(BaseTestCase):
         logger.debug("Old vapp VM href is : " +
             VmTest._test_vapp.get_vm(VAppConstants.vm1_name).get('href'))
 
-        vdc = Environment.get_test_vdc(VmTest._client)
+        vdc1 = Environment.get_test_vdc(VmTest._client)
         logger.debug('Creating empty vApp.')
         VmTest._empty_vapp_href = \
             create_empty_vapp(client=VmTest._client,
-                              vdc=vdc,
+                              vdc=vdc1,
                               name=VmTest._empty_vapp_name,
                               description=VmTest._empty_vapp_description)
         self.assertIsNotNone(VmTest._empty_vapp_href)
@@ -108,7 +114,7 @@ class VmTest(BaseTestCase):
 
         # Create independent disk
         VmTest._idisk_id = create_independent_disk(client=VmTest._client,
-                                                   vdc=vdc,
+                                                   vdc=vdc1,
                                                    name=self._idisk_name,
                                                    size=self._idisk_size,
                                                    description=self._idisk_description)
@@ -150,7 +156,7 @@ class VmTest(BaseTestCase):
         logger.debug('Creating vApp ' + VmTest._test_vapp_vmtools_name)
         VmTest._test_vapp_vmtools_href = create_customized_vapp_from_template(
             client=VmTest._client,
-            vdc=vdc,
+            vdc=vdc1,
             name=VmTest._test_vapp_vmtools_name,
             catalog_name=catalog_name,
             template_name=template_name)
@@ -164,7 +170,7 @@ class VmTest(BaseTestCase):
         temp_name = config['vcd']['default_template_file_name']
         VmTest._test_vapp_href = create_customized_vapp_from_template(
             client=VmTest._client,
-            vdc=vdc,
+            vdc=vdc1,
             name=VmTest._vapp_name,
             catalog_name=catalog_name,
             template_name=temp_name)
@@ -199,6 +205,7 @@ class VmTest(BaseTestCase):
         default_org = self._config['vcd']['default_org_name']
         self._sys_login()
         VmTest._runner.invoke(org, ['use', default_org])
+        VmTest._runner.invoke(vdc, ['use', VmTest._default_ovdc])
         result = VmTest._runner.invoke(
             vm,
             args=['consolidate', VAppConstants.name, VAppConstants.vm1_name])
@@ -207,6 +214,7 @@ class VmTest(BaseTestCase):
         self._logout()
         # logging with org admin user
         self._login()
+        VmTest._runner.invoke(vdc, ['use', VmTest._default_ovdc])
 
     def test_0025_copy_to(self):
         """Copy VM from one vApp to another."""
@@ -436,6 +444,7 @@ class VmTest(BaseTestCase):
         default_org = self._config['vcd']['default_org_name']
         self._sys_login()
         VmTest._runner.invoke(org, ['use', default_org])
+        VmTest._runner.invoke(vdc, ['use', VmTest._default_ovdc])
         result = VmTest._runner.invoke(
             vm, args=['reload-from-vc',
                       VAppConstants.name, VAppConstants.vm1_name])
@@ -449,6 +458,7 @@ class VmTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
         self._logout()
         self._login()
+        VmTest._runner.invoke(vdc, ['use', VmTest._default_ovdc])
 
     def test_0240_customize_on_next_power_on(self):
         # Customize on next power on
@@ -498,12 +508,14 @@ class VmTest(BaseTestCase):
         default_org = self._config['vcd']['default_org_name']
         self._sys_login()
         VmTest._runner.invoke(org, ['use', default_org])
+        VmTest._runner.invoke(vdc, ['use', VmTest._default_ovdc])
         result = VmTest._runner.invoke(
             vm, args=['get-compliance-result',
                       VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
         self._logout()
         self._login()
+        VmTest._runner.invoke(vdc, ['use', VmTest._default_ovdc])
 
     def test_0300_list_current_metrics(self):
         # list current metrics
@@ -523,6 +535,7 @@ class VmTest(BaseTestCase):
     def test_0320_update_general_setting(self):
         # System admin login
         self._sys_login()
+        VmTest._runner.invoke(vdc, ['use', VmTest._default_ovdc])
         # update general setting
         result = VmTest._runner.invoke(
             vm,
@@ -545,6 +558,7 @@ class VmTest(BaseTestCase):
         default_org = self._config['vcd']['default_org_name']
         self._sys_login()
         VmTest._runner.invoke(org, ['use', default_org])
+        VmTest._runner.invoke(vdc, ['use', VmTest._default_ovdc])
         result = VmTest._runner.invoke(
             vm, args=['relocate',
                       VAppConstants.name, VAppConstants.vm1_name,

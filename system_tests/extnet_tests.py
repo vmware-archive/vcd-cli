@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import unittest
 from uuid import uuid1
 from click.testing import CliRunner
 
@@ -122,6 +123,7 @@ class ExtNetTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
+    @unittest.skip("Waiting for PR 2399981 fix")
     def test_0020_update(self):
         """Update name and description of the external network created.
 

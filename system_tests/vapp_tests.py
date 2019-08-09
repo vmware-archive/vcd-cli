@@ -68,6 +68,7 @@ class VAppTest(BaseTestCase):
         VAppTest._logger = Environment.get_default_logger()
         VAppTest._client = Environment.get_client_in_default_org(
             CommonRoles.ORGANIZATION_ADMINISTRATOR)
+        VAppTest._sys_admin_client = Environment.get_sys_admin_client()
 
         VAppTest._runner = CliRunner()
         default_org = VAppTest._config['vcd']['default_org_name']
@@ -404,7 +405,7 @@ class VAppTest(BaseTestCase):
             VAppTest._sys_admin_client,
             admin_resource=VAppTest._sys_admin_client.get_admin())
         netpool_to_use = Environment._get_netpool_name_to_use(system)
-        org.create_org_vdc(
+        task = org.create_org_vdc(
             VAppTest._ovdc_name,
             VAppTest._pvdc_name,
             network_pool_name=netpool_to_use,
@@ -412,6 +413,7 @@ class VAppTest(BaseTestCase):
             storage_profiles=storage_profiles,
             uses_fast_provisioning=True,
             is_thin_provision=True)
+        VAppTest._sys_admin_client.get_task_monitor().wait_for_success(task)
 
     def test_0090_move_to(self):
         VAppTest._create_org_vdc(self)

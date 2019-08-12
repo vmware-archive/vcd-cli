@@ -224,14 +224,13 @@ def clone(ctx, original_role_name, new_role_name, org_name, description):
             org_href = ctx.obj['profiles'].get('org_href')
         org = Org(client, href=org_href)
 
+        role_resource = org.get_role_resource(original_role_name)
         # get original role description
         if description is None:
-            role_resource = org.get_role_resource(original_role_name)
             description = to_dict(role_resource)['Description']
 
         # get original role rights
-        role_record = org.get_role_record(original_role_name)
-        role = Role(client, href=role_record.get('href'))
+        role = Role(client, resource=role_resource)
         raw_rights = role.list_rights()  # list of dicts: {'name': 'right'}
         rights = [right_dict['name'] for right_dict in raw_rights]
 

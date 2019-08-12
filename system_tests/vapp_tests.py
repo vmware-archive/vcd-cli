@@ -356,7 +356,9 @@ class VAppTest(BaseTestCase):
         result = VAppTest._runner.invoke(
             vapp, args=['deploy', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
-
+        vapp_obj.reload()
+        task = vapp_obj.power_on()
+        VAppTest._client.get_task_monitor().wait_for_success(task)
         # Remove downloaded vapp file
         os.remove(VAppTest._ova_file_name)
 
@@ -370,6 +372,9 @@ class VAppTest(BaseTestCase):
         result = VAppTest._runner.invoke(
             vapp, args=['deploy', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
+        vapp_obj.reload()
+        task = vapp_obj.power_on()
+        VAppTest._client.get_task_monitor().wait_for_success(task)
 
     def test_0080_copy_to(self):
         result = VAppTest._runner.invoke(

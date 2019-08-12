@@ -24,6 +24,7 @@ from pyvcloud.system_test_framework.environment import Environment
 from pyvcloud.system_test_framework.utils import create_vapp_from_template
 
 from pyvcloud.vcd.system import System
+from pyvcloud.vcd.vapp import VApp
 from pyvcloud.vcd.vdc import VDC
 
 from vcd_cli.login import login, logout
@@ -58,7 +59,7 @@ class VAppTest(BaseTestCase):
     _ova_file_name = 'test.ova'
     _vapp_copy_name = 'customized_vApp_copy_' + str(uuid1())
     _copy_description = 'Copying a vapp'
-    _ovdc_name = 'test_vdc2_ ' + str(uuid1())
+    _ovdc_name = 'test_vdc2_' + str(uuid1())
     _ovdc_network_name = 'test-direct-vdc-network'
     _test_vm = 'testvm1'
 
@@ -343,9 +344,8 @@ class VAppTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0060_download_ova(self):
-        result = VAppTest._runner.invoke(
-            vapp, args=['stop', VAppTest._test_vapp_name])
-        self.assertEqual(0, result.exit_code)
+        vapp_obj = VApp(VAppTest._client, href=VAppTest._test_vapp)
+        self._power_off_and_undeploy(vapp_obj)
         result = VAppTest._runner.invoke(
             vapp,
             args=[
@@ -356,15 +356,15 @@ class VAppTest(BaseTestCase):
         result = VAppTest._runner.invoke(
             vapp, args=['deploy', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
-
+        vapp_obj.reload()
+        task = vapp_obj.power_on()
+        VAppTest._client.get_task_monitor().wait_for_success(task)
         # Remove downloaded vapp file
         os.remove(VAppTest._ova_file_name)
 
     def test_0070_upgrade_virtual_hardware(self):
-        result = VAppTest._runner.invoke(
-            vapp, args=['stop', VAppTest._test_vapp_name])
-        self.assertEqual(0, result.exit_code)
-
+        vapp_obj = VApp(VAppTest._client, href=VAppTest._test_vapp)
+        self._power_off_and_undeploy(vapp_obj)
         result = VAppTest._runner.invoke(
             vapp, args=['upgrade-virtual-hardware', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
@@ -372,6 +372,9 @@ class VAppTest(BaseTestCase):
         result = VAppTest._runner.invoke(
             vapp, args=['deploy', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)
+        vapp_obj.reload()
+        task = vapp_obj.power_on()
+        VAppTest._client.get_task_monitor().wait_for_success(task)
 
     def test_0080_copy_to(self):
         result = VAppTest._runner.invoke(
@@ -387,24 +390,35 @@ class VAppTest(BaseTestCase):
         self.assertEqual(0, result_delete.exit_code)
 
     def _create_org_vdc(self):
-        # creating a org vdc
+        """Creates an org vdc with the name specified in the test class.
+
+        :raises: Exception: if the class variable _org_href or _pvdc_name
+             is not populated.
+         """
+
+        system = System(VAppTest._sys_admin_client,
+                        admin_resource=VAppTest._sys_admin_client.get_admin())
+
         org = Environment.get_test_org(VAppTest._sys_admin_client)
+
+        if VAppTest._check_ovdc(self, org, VAppTest._ovdc_name):
+            return
+
         storage_profiles = [{
             'name':
-            VAppTest._config['vcd']['default_storage_profile_name'],
+                VAppTest._config['vcd']['default_storage_profile_name'],
             'enabled':
-            True,
+                True,
             'units':
-            'MB',
+                'MB',
             'limit':
-            0,
+                0,
             'default':
-            True
+                True
         }]
-        system = System(
-            VAppTest._sys_admin_client,
-            admin_resource=VAppTest._sys_admin_client.get_admin())
+
         netpool_to_use = Environment._get_netpool_name_to_use(system)
+        VAppTest._pvdc_name = Environment.get_test_pvdc_name()
         task = org.create_org_vdc(
             VAppTest._ovdc_name,
             VAppTest._pvdc_name,
@@ -413,14 +427,25 @@ class VAppTest(BaseTestCase):
             storage_profiles=storage_profiles,
             uses_fast_provisioning=True,
             is_thin_provision=True)
-        VAppTest._sys_admin_client.get_task_monitor().wait_for_success(task)
+        VAppTest._sys_admin_client.get_task_monitor().wait_for_success(
+            task.Tasks.Task[0])
+        org.reload()
+        VAppTest._check_ovdc(self, org, VAppTest._ovdc_name)
+
+    def _check_ovdc(self, org, ovdc_name):
+        if org.get_vdc(ovdc_name):
+            vdc = org.get_vdc(ovdc_name)
+            VAppTest._ovdc_href = vdc.get('href')
+            VAppTest._vdc_resource = vdc
+            return True
+        else:
+            return False
 
     def test_0090_move_to(self):
         VAppTest._create_org_vdc(self)
         VAppTest._runner.invoke(vdc, ['use', VAppTest._default_ovdc])
-        result = VAppTest._runner.invoke(
-            vapp, args=['stop', VAppTest._test_vapp_name])
-        self.assertEqual(0, result.exit_code)
+        vapp_obj = VApp(VAppTest._sys_admin_client, href=VAppTest._test_vapp)
+        self._power_off_and_undeploy(vapp_obj)
         result = VAppTest._runner.invoke(
             vapp,
             args=['move', VAppTest._test_vapp_name, '-v', VAppTest._ovdc_name])
@@ -547,7 +572,17 @@ class VAppTest(BaseTestCase):
             vapp,
             args=['delete', VAppTest._test_vapp_name, '--yes', '--force'])
         self.assertEqual(0, result_delete.exit_code)
+        vdc1 = VDC(VAppTest._sys_admin_client, resource=VAppTest._vdc_resource)
+        vdc1.enable_vdc(enable=False)
+        vdc1.delete_vdc()
         VAppTest._logout(self)
+
+    def _power_off_and_undeploy(self, vapp):
+        if vapp.is_powered_on():
+            task = vapp.power_off()
+            VAppTest._client.get_task_monitor().wait_for_success(task)
+            task = vapp.undeploy()
+            VAppTest._client.get_task_monitor().wait_for_success(task)
 
     def _login(self):
         org = VAppTest._config['vcd']['default_org_name']

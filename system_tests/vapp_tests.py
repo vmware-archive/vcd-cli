@@ -344,9 +344,8 @@ class VAppTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0060_download_ova(self):
-        result = VAppTest._runner.invoke(
-            vapp, args=['stop', VAppTest._test_vapp_name])
-        self.assertEqual(0, result.exit_code)
+        vapp_obj = VApp(VAppTest._client, href=VAppTest._test_vapp)
+        self._power_off_and_undeploy(vapp_obj)
         result = VAppTest._runner.invoke(
             vapp,
             args=[
@@ -362,10 +361,8 @@ class VAppTest(BaseTestCase):
         os.remove(VAppTest._ova_file_name)
 
     def test_0070_upgrade_virtual_hardware(self):
-        result = VAppTest._runner.invoke(
-            vapp, args=['stop', VAppTest._test_vapp_name])
-        self.assertEqual(0, result.exit_code)
-
+        vapp_obj = VApp(VAppTest._client, href=VAppTest._test_vapp)
+        self._power_off_and_undeploy(vapp_obj)
         result = VAppTest._runner.invoke(
             vapp, args=['upgrade-virtual-hardware', VAppTest._test_vapp_name])
         self.assertEqual(0, result.exit_code)

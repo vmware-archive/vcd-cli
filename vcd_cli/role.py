@@ -189,6 +189,58 @@ def create(ctx, role_name, description, rights, org_name):
         stderr(e, ctx)
 
 
+@role.command('clone', short_help='Creates a role that is a copy of an '
+                                  'existing role in the specified org'
+                                  '(defaults to the current org in use)')
+@click.pass_context
+@click.argument('original_role_name', metavar='<original-role-name>',
+                required=True)
+@click.argument('new_role_name', metavar='<new-role-name>', required=True)
+@click.option(
+    '-o',
+    '--org',
+    'org_name',
+    required=False,
+    default=None,
+    metavar='[org-name]',
+    help='Name of the org',
+)
+@click.option(
+    '-d',
+    '--description',
+    'description',
+    required=False,
+    default=None,
+    metavar='[description]',
+    help='Role description (Defaults to description of role being cloned)'
+)
+def clone(ctx, original_role_name, new_role_name, org_name, description):
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
+        if org_name is not None:
+            org_href = client.get_org_by_name(org_name).get('href')
+        else:
+            org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, href=org_href)
+
+        # get original role description
+        if description is None:
+            role_resource = org.get_role_resource(original_role_name)
+            description = to_dict(role_resource)['Description']
+
+        # get original role rights
+        role_record = org.get_role_record(original_role_name)
+        role = Role(client, href=role_record.get('href'))
+        raw_rights = role.list_rights()  # list of dicts: {'name': 'right'}
+        rights = [right_dict['name'] for right_dict in raw_rights]
+
+        role = org.create_role(new_role_name, description, rights)
+        stdout(to_dict(role, exclude=['Link', 'RightReferences']), ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
 @role.command(
     'delete', short_help='Deletes role in the specified Organization')
 @click.pass_context

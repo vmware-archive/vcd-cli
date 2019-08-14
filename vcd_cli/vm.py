@@ -15,6 +15,7 @@
 import click
 from pyvcloud.vcd.client import IpAddressMode
 from pyvcloud.vcd.client import NetworkAdapterType
+from pyvcloud.vcd.utils import metadata_to_dict
 from pyvcloud.vcd.platform import Platform
 from pyvcloud.vcd.utils import vm_to_dict
 from pyvcloud.vcd.vapp import VApp
@@ -1550,5 +1551,164 @@ def update_boot_options(ctx, vapp_name, vm_name,
         task = vm.update_boot_options(boot_delay=boot_delay,
                                       enter_bios_setup=enter_bios_setup)
         stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('list-metadata', short_help='list metadata of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def show_metadata(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = metadata_to_dict(vm.get_metadata())
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('set-metadata', short_help='set an entity as metadata of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'domain',
+    '--domain',
+    type=click.Choice(['GENERAL', 'SYSTEM']),
+    required=True,
+    default=None,
+    metavar='<domain>',
+    help='domain')
+@click.option(
+    'visibility',
+    '--visibility',
+    type=click.Choice(['PRIVATE', 'READONLY', 'READ_WRITE']),
+    required=True,
+    default=None,
+    metavar='<visibility>',
+    help='visibility')
+@click.option(
+    'value_type',
+    '--value-type',
+    type=click.Choice(['STRING', 'NUMBER', 'BOOLEAN', 'DATA_TIME']),
+    required=False,
+    default=None,
+    metavar='<value_type>',
+    help='value_type')
+@click.option(
+    'key',
+    '--key',
+    required=True,
+    default=None,
+    metavar='<key>',
+    help='key')
+@click.option(
+    'value',
+    '--value',
+    required=True,
+    default=None,
+    metavar='<value>',
+    help='value')
+def set_metadata(ctx, vapp_name, vm_name, domain, visibility, value_type, key,
+                 value):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.set_metadata(domain=domain,
+                                 visibility=visibility,
+                                 key=key,
+                                 value=value,
+                                 metadata_type=value_type)
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('update-metadata', short_help='update metadata of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'domain',
+    '--domain',
+    type=click.Choice(['GENERAL', 'SYSTEM']),
+    required=True,
+    default=None,
+    metavar='<domain>',
+    help='domain')
+@click.option(
+    'visibility',
+    '--visibility',
+    type=click.Choice(['PRIVATE', 'READONLY', 'READ_WRITE']),
+    required=True,
+    default=None,
+    metavar='<visibility>',
+    help='visibility')
+@click.option(
+    'value_type',
+    '--value-type',
+    type=click.Choice(['STRING', 'NUMBER', 'BOOLEAN', 'DATA_TIME']),
+    required=False,
+    default=None,
+    metavar='<value_type>',
+    help='value_type')
+@click.option(
+    'key',
+    '--key',
+    required=True,
+    default=None,
+    metavar='<key>',
+    help='key')
+@click.option(
+    'value',
+    '--value',
+    required=True,
+    default=None,
+    metavar='<value>',
+    help='value')
+def update_metadata(ctx, vapp_name, vm_name, domain, visibility, value_type,
+                    key,
+                    value):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.set_metadata(domain=domain,
+                                 visibility=visibility,
+                                 key=key,
+                                 value=value,
+                                 metadata_type=value_type)
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('remove-metadata', short_help='remove metadata of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'domain',
+    '--domain',
+    type=click.Choice(['GENERAL', 'SYSTEM']),
+    required=True,
+    default=None,
+    metavar='<domain>',
+    help='domain')
+@click.option(
+    'key',
+    '--key',
+    required=True,
+    default=None,
+    metavar='<key>',
+    help='key')
+def remove_metadata(ctx, vapp_name, vm_name, domain, key):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.remove_metadata(domain=domain,
+                                    key=key)
+        stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

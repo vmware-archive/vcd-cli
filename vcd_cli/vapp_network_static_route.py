@@ -37,7 +37,9 @@ def static_route(ctx):
 
     \b
         vcd vapp network services static-route add vapp_name network_name
-                --name route_name --nhip next_hop_ip --network network_cidr
+                --name route_name
+                --nhip next_hop_ip
+                --network network_cidr
             Add static route in static route service.
 
     \b
@@ -46,8 +48,10 @@ def static_route(ctx):
 
     \b
         vcd vapp network services static-route update vapp_name network_name
-                route_name --name new_route_name --nhip next_hop_ip --network
-                network_cidr
+                route_name
+                --name new_route_name
+                --network network_cidr
+                --nhip next_hop_ip
             Update static route in static route service.
 
     \b

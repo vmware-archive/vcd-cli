@@ -14,6 +14,7 @@
 
 import click
 from pyvcloud.vcd.client import IpAddressMode
+from pyvcloud.vcd.client import MetadataDomain
 from pyvcloud.vcd.client import NetworkAdapterType
 from pyvcloud.vcd.utils import metadata_to_dict
 from pyvcloud.vcd.platform import Platform
@@ -1584,7 +1585,7 @@ def show_metadata(ctx, vapp_name, vm_name):
 @click.option(
     'visibility',
     '--visibility',
-    type=click.Choice(['PRIVATE', 'READONLY', 'READ_WRITE']),
+    type=click.Choice(['PRIVATE', 'READONLY', 'READWRITE']),
     required=True,
     default=None,
     metavar='<visibility>',
@@ -1592,8 +1593,10 @@ def show_metadata(ctx, vapp_name, vm_name):
 @click.option(
     'value_type',
     '--value-type',
-    type=click.Choice(['STRING', 'NUMBER', 'BOOLEAN', 'DATA_TIME']),
-    required=False,
+    type=click.Choice(
+        ['MetadataStringValue', 'MetadataNumberValue', 'MetadataBooleanValue',
+         'MetadataDateTimeValue']),
+    required=True,
     default=None,
     metavar='<value_type>',
     help='value_type')
@@ -1641,7 +1644,7 @@ def set_metadata(ctx, vapp_name, vm_name, domain, visibility, value_type, key,
 @click.option(
     'visibility',
     '--visibility',
-    type=click.Choice(['PRIVATE', 'READONLY', 'READ_WRITE']),
+    type=click.Choice(['PRIVATE', 'READONLY', 'READWRITE']),
     required=True,
     default=None,
     metavar='<visibility>',
@@ -1649,7 +1652,9 @@ def set_metadata(ctx, vapp_name, vm_name, domain, visibility, value_type, key,
 @click.option(
     'value_type',
     '--value-type',
-    type=click.Choice(['STRING', 'NUMBER', 'BOOLEAN', 'DATA_TIME']),
+    type=click.Choice(
+        ['MetadataStringValue', 'MetadataNumberValue', 'MetadataBooleanValue',
+         'MetadataDateTimeValue']),
     required=False,
     default=None,
     metavar='<value_type>',
@@ -1707,7 +1712,7 @@ def remove_metadata(ctx, vapp_name, vm_name, domain, key):
     try:
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
-        result = vm.remove_metadata(domain=domain,
+        result = vm.remove_metadata(domain=MetadataDomain(domain),
                                     key=key)
         stdout(result, ctx)
     except Exception as e:

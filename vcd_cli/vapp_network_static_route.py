@@ -37,7 +37,7 @@ def static_route(ctx):
 
     \b
         vcd vapp network services static-route add vapp_name network_name
-                route_name network_cidr next_hop_ip
+                --name route_name --nhip next_hop_ip --network network_cidr
             Add static route in static route service.
 
     \b
@@ -94,9 +94,21 @@ def enable_service(ctx, vapp_name, network_name, is_enabled):
 @click.pass_context
 @click.argument('vapp_name', metavar='<vapp-name>', required=True)
 @click.argument('network_name', metavar='<network-name>', required=True)
-@click.argument('route_name', metavar='<route-name>', required=True)
-@click.argument('network_cidr', metavar='<network-cidr>', required=True)
-@click.argument('next_hop_ip', metavar='<next-hop-ip>', required=True)
+@click.option('--name',
+              'route_name',
+              required=True,
+              metavar='<route-name>',
+              help='route name')
+@click.option('--network',
+              'network_cidr',
+              required=True,
+              metavar='<network-cidr>',
+              help='network CIDR')
+@click.option('--nhip',
+              'next_hop_ip',
+              required=True,
+              metavar='<next-hop-ip>',
+              help='next hop IP')
 def add(ctx, vapp_name, network_name, route_name, network_cidr, next_hop_ip):
     try:
         static_route = get_vapp_network_static_route(ctx, vapp_name,

@@ -91,9 +91,9 @@ class TestVappStaticRoute(BaseTestCase):
             args=[
                 'network', 'services', 'static-route', 'add',
                 TestVappStaticRoute._vapp_name,
-                TestVappStaticRoute._network_name,
-                TestVappStaticRoute._route_name,
-                TestVappStaticRoute._network_cidr,
+                TestVappStaticRoute._network_name, '--name',
+                TestVappStaticRoute._route_name, '--network',
+                TestVappStaticRoute._network_cidr, '--nhip',
                 TestVappStaticRoute._next_hop_ip
             ])
         self.assertEqual(0, result.exit_code)

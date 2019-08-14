@@ -288,9 +288,37 @@ def vm(ctx):
             List boot options properties of VM.
 
 \b
-        vcd vm update-boot-options
+        vcd vm update-boot-options vapp1 vm1
                 --enable-enter-bios-setup
             Update boot options properties of VM.
+
+\b
+        vcd vm set-metadata vapp1 vm1
+                --domain GENERAL
+                --visibility READWRITE
+                --key key1
+                --value value1
+                --value-type MetadataStringValue
+            Set metadata of VM.
+
+\b
+        vcd vm update-metadata vapp1 vm1
+                --domain GENERAL
+                --visibility READWRITE
+                --key key1
+                --value value2
+                --value-type MetadataStringValue
+            Update metadata of VM.
+
+\b
+        vcd vm list-metadata vapp1 vm1
+            List metadata of VM.
+
+\b
+        vcd vm remove-metadata vapp1 vm1
+                --domain GENERAL
+                --key key1
+            Remove metadata of VM.
     """
     pass
 

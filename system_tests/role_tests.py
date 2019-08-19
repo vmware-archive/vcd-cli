@@ -16,9 +16,9 @@ class TestRole(BaseTestCase):
         self._config = Environment.get_config()
         TestRole._logger = Environment.get_default_logger()
         TestRole._runner = CliRunner()
-        self._login()
+        self._sys_login()
 
-    def _login(self):
+    def _sys_login(self):
         """Logs in using admin credentials"""
         login_args = [
             self._config['vcd']['host'],
@@ -41,5 +41,9 @@ class TestRole(BaseTestCase):
                                f"{DUMMY_ROLE_NAME}: {result.output}")
         self.assertEqual(0, result.exit_code)
 
-    def test_9999_teardown(self):
+    def _logout(self):
+        """Logs out current session, ignoring errors"""
         TestRole._runner.invoke(logout)
+
+    def test_9999_teardown(self):
+        self._logout()

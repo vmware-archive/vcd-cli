@@ -73,6 +73,10 @@ def role(ctx):
         vcd role remove-right myRole myRight1 myRight2  -o myOrg
             Removes one or more rights from a given role.
 
+\b
+        vcd role clone "Organization Adminstrator" cloned_role
+            Creates a new role 'cloned_role' with the same rights and
+            description as "Organization Administrator"
     """
     pass
 

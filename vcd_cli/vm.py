@@ -319,6 +319,18 @@ def vm(ctx):
                 --domain GENERAL
                 --key key1
             Remove metadata of VM.
+
+\b
+        vcd vm list-screen-ticket vapp1 vm1
+            List screen ticket of VM.
+
+\b
+        vcd vm list-mks-ticket vapp1 vm1
+            List mks ticket of VM.
+
+\b
+        vcd vm list-product-sections vapp1 vm1
+            List product sections of VM.
     """
     pass
 
@@ -1742,6 +1754,48 @@ def remove_metadata(ctx, vapp_name, vm_name, domain, key):
         vm = _get_vm(ctx, vapp_name, vm_name)
         result = vm.remove_metadata(domain=MetadataDomain(domain),
                                     key=key)
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('list-screen-ticket', short_help='list screen ticket of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def list_screen_ticket(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.list_screen_ticket()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('list-mks-ticket', short_help='list mks ticket of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def list_mks_ticket(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.list_mks_ticket()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('list-product-sections', short_help='list product sections of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def list_product_sections(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.list_product_sections()
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

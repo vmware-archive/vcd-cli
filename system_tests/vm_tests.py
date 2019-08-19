@@ -703,6 +703,27 @@ class VmTest(BaseTestCase):
                       '--domain', 'GENERAL', '--key', 'key1'])
         self.assertEqual(0, result.exit_code)
 
+    def test_0470_list_screen_ticket(self):
+        # list screen ticket
+        result = VmTest._runner.invoke(
+            vm, args=['list-screen-ticket',
+                      VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0480_mks_ticket(self):
+        # list mks ticket
+        result = VmTest._runner.invoke(
+            vm, args=['list-screen-ticket',
+                      VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0490_list_product_sections(self):
+        # list product sections
+        result = VmTest._runner.invoke(
+            vm, args=['list-product-sections',
+                      VAppConstants.name, VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """Delete the vApp created during setup.
 

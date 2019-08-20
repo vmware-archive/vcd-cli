@@ -566,6 +566,16 @@ class VAppTest(BaseTestCase):
                                          ])
         self.assertEqual(0, result.exit_code)
 
+    def test_0230_add_vm_scratch(self):
+        result = VAppTest._runner.invoke(
+            vapp,
+            args=[
+                'add-vm-scratch', VAppTest._test_vapp_name, '-vm', 'abcd',
+                '-cn', 'abcd', '-os', 'windows7_64Guest', '-d', 'description',
+                '-cpu', '2', '-cps', '2', '-crm', '2', '-m', '1024', '-aae'
+            ])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """Delete vApp and logout from the session."""
         result_delete = VAppTest._runner.invoke(

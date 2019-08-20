@@ -298,6 +298,12 @@ def vapp(ctx):
             --class_name testclassname --instance_name testinstancename --label
             labledata --is_password true --user_configurable false
             Update product section of vapp.
+
+\b
+        vcd vapp add-vm-scratch vapp1 -vm vm1 -cn computer_name -d description
+                -os windows7_64Guest -cpu 2 -cps 2 -crm 2 -m 1024 -media
+                pb1.iso -aae -deploy -power-on
+            Add a VM from scratch to a vApp.
     """
     pass
 
@@ -1738,6 +1744,133 @@ def show_product_section(ctx, vapp_name):
         vapp = get_vapp(ctx, vapp_name)
         product_sections = vapp.get_product_sections()
         stdout(product_sections, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('add-vm-scratch', short_help='add VM from scratch to vApp')
+@click.pass_context
+@click.argument('name', metavar='<target-vapp>', required=True)
+@click.option('-vm',
+              '--vm_name',
+              required=True,
+              metavar='<vm_name>',
+              help='name of vm')
+@click.option('-cn',
+              '--computer_name',
+              required=True,
+              metavar='<computer_name>',
+              help='computer name of vm')
+@click.option('-d',
+              '--description',
+              default=None,
+              required=False,
+              metavar='<description>',
+              help='description of vm')
+@click.option(
+    '-os',
+    '--os_type',
+    required=True,
+    metavar='<os_type>',
+    type=click.Choice([
+        'vmkernelGuest', 'vmkernel5Guest', 'vmkernel6Guest', 'dosGuest',
+        'win31Guest', 'win95Guest', 'win98Guest', 'winntguest',
+        'win2000ProGuest', 'win2000ServGuest', 'win2000AdvServGuest',
+        'winXPProGuest', 'winXPPro64Guest', 'winNetEnterpriseGuest',
+        'winNetDatacenterGuest', 'winNetStandardGuest', 'winNetWebGuest',
+        'winNetBusinessGuest', 'winNetEnterprise64Guest',
+        'winNetDatacenter64Guest', 'winNetStandard64Guest', 'winVistaGuest',
+        'winVista64Guest', 'winLonghornGuest', 'winLonghorn64Guest',
+        'windows7Guest', 'windows7_64Guest', 'windows7Server64Guest',
+        'windows8Guest', 'windows8_64Guest', 'windows8Server64Guest',
+        'windows9Guest', 'windows9_64Guest', 'windows9Server64Guest',
+        'asianux3Guest', 'asianux3_64Guest', 'asianux4Guest',
+        'asianux4_64Guest', 'asianux5_64Guest', 'centosGuest', 'centos64Guest',
+        'coreos64Guest', 'debian4Guest', 'debian4_64Guest', 'debian5Guest',
+        'debian5_64Guest', 'debian6Guest', 'debian6_64Guest', 'debian7Guest',
+        'debian7_64Guest', 'debian8Guest', 'debian8_64Guest',
+        'oracleLinuxGuest', 'oracleLinux64Guest', 'rhel7Guest',
+        'rhel7_64Guest', 'rhel6Guest', 'rhel6_64Guest', 'rhel5Guest',
+        'rhel5_64Guest', 'fedoraGuest', 'fedora64Guest', 'sles12Guest',
+        'sles12_64Guest', 'sles11Guest', 'sles11_64Guest', 'sles10Guest',
+        'sles10_64Guest', 'opensuseGuest', 'opensuse64Guest', 'ubuntuGuest',
+        'ubuntu64Guest', 'otherlinuxguest', 'otherlinux64guest', 'darwinGuest',
+        'darwin10Guest', 'darwin10_64Guest', 'darwin11Guest',
+        'darwin11_64Guest', 'darwin12_64Guest', 'darwin13_64Guest',
+        'darwin14_64Guest', 'otherguest', 'otherguest64', 'netware5Guest',
+        'netware6Guest', 'solaris9Guest', 'solaris10Guest', 'freebsdGuest',
+        'Other (32-bit)', 'BEA Liquid VM'
+    ]),
+    help='os name of vm')
+@click.option('-cpu',
+              '--virtual_cpu',
+              type=click.INT,
+              required=False,
+              default=1,
+              metavar='<virtual_cpu>',
+              help='no of virtual cpu')
+@click.option('-cps',
+              '--core_per_socket',
+              metavar='<core_per_socket>',
+              required=False,
+              default=1,
+              help='core per socket')
+@click.option('-crm',
+              '--cpu_resource_mhz',
+              metavar='<cpu_resource_mhz>',
+              required=False,
+              default=1,
+              help='cpu resource in Mhz')
+@click.option('-m',
+              '--memory',
+              metavar='<memory>',
+              required=False,
+              default=512,
+              help='memory in MB')
+@click.option('-media',
+              '--media_name',
+              metavar='<media_name>',
+              required=False,
+              default=None,
+              help='media name of boot image')
+@click.option('-aae',
+              '--accept-all-eulas',
+              is_flag=True,
+              help='Accept all EULAs')
+@click.option('-deploy', '--deploy', is_flag=True, help='deploy vm')
+@click.option('-power-on', '--power_on', is_flag=True, help='power on vm')
+def add_vm_scratch(ctx, name, vm_name, computer_name, description, os_type,
+                   virtual_cpu, core_per_socket, cpu_resource_mhz, memory,
+                   media_name, accept_all_eulas, deploy, power_on):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vapp = get_vapp(ctx, name)
+        spec = {
+            'vm_name': vm_name,
+            'comp_name': computer_name,
+            'virtual_cpu': virtual_cpu,
+            'core_per_socket': core_per_socket,
+            'cpu_resource_mhz': cpu_resource_mhz,
+            'memory': memory,
+            'os_type': os_type
+        }
+        if description is not None:
+            spec['description'] = description
+        if media_name is not None:
+            client = ctx.obj['client']
+            vdc_href = ctx.obj['profiles'].get('vdc_href')
+            vdc = VDC(client, href=vdc_href)
+            media_list = vdc.list_media_id()
+            for media in media_list:
+                if media['name'] == media_name:
+                    spec['media_href'] = media['href']
+                    spec['media_id'] = media['Id']
+                    spec['media_name'] = media['name']
+        task = vapp.add_vm_from_scratch(spec,
+                                        deploy=deploy,
+                                        power_on=power_on,
+                                        all_eulas_accepted=accept_all_eulas)
+        stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
 

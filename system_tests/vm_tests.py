@@ -724,6 +724,25 @@ class VmTest(BaseTestCase):
                       VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0500_update_vhs_disk(self):
+        # update virtual hardware section disk
+        vm1 = VM(VmTest._sys_admin_client,
+                href=VmTest._test_vapp.get_vm(VAppConstants.vm1_name).get(
+                    'href'))
+        disk_list = vm1.list_virtual_hardware_section(is_cpu=False,
+                                                     is_memory=False,
+                                                     is_disk=True)
+        for disk in disk_list:
+            element_name = disk['diskElementName']
+            virtual_quantity = disk['diskVirtualQuantityInBytes']
+            break
+        result = VmTest._runner.invoke(
+            vm, args=['update-vhs-disk',
+                      VAppConstants.name, VAppConstants.vm1_name,
+                      '--e-name', element_name, '--v-quantity',
+                      virtual_quantity])
+        self.assertEqual(0, result.exit_code)
+
     def test_9998_tearDown(self):
         """Delete the vApp created during setup.
 

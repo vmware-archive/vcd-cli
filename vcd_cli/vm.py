@@ -331,6 +331,17 @@ def vm(ctx):
 \b
         vcd vm list-product-sections vapp1 vm1
             List product sections of VM.
+
+\b
+        vcd vm update-vhs-disk vapp1 vm1
+                --e-name 'Hard Disk 1'
+                --v-quantity 694487
+            Update virtual hardware section disk of VM.
+\b
+        vcd vm update-vhs-media  vapp1 vm1
+                --e-name 'CD DVD DRive'
+                --host-resource pb1.iso
+            Update virtual hardware section media of VM.
     """
     pass
 
@@ -1619,7 +1630,6 @@ def show_metadata(ctx, vapp_name, vm_name):
     '--domain',
     type=click.Choice(['GENERAL', 'SYSTEM']),
     required=True,
-    default=None,
     metavar='<domain>',
     help='domain')
 @click.option(
@@ -1627,7 +1637,6 @@ def show_metadata(ctx, vapp_name, vm_name):
     '--visibility',
     type=click.Choice(['PRIVATE', 'READONLY', 'READWRITE']),
     required=True,
-    default=None,
     metavar='<visibility>',
     help='visibility')
 @click.option(
@@ -1637,21 +1646,18 @@ def show_metadata(ctx, vapp_name, vm_name):
         ['MetadataStringValue', 'MetadataNumberValue', 'MetadataBooleanValue',
          'MetadataDateTimeValue']),
     required=True,
-    default=None,
     metavar='<value_type>',
     help='value_type')
 @click.option(
     'key',
     '--key',
     required=True,
-    default=None,
     metavar='<key>',
     help='key')
 @click.option(
     'value',
     '--value',
     required=True,
-    default=None,
     metavar='<value>',
     help='value')
 def set_metadata(ctx, vapp_name, vm_name, domain, visibility, value_type, key,
@@ -1678,7 +1684,6 @@ def set_metadata(ctx, vapp_name, vm_name, domain, visibility, value_type, key,
     '--domain',
     type=click.Choice(['GENERAL', 'SYSTEM']),
     required=True,
-    default=None,
     metavar='<domain>',
     help='domain')
 @click.option(
@@ -1686,7 +1691,6 @@ def set_metadata(ctx, vapp_name, vm_name, domain, visibility, value_type, key,
     '--visibility',
     type=click.Choice(['PRIVATE', 'READONLY', 'READWRITE']),
     required=True,
-    default=None,
     metavar='<visibility>',
     help='visibility')
 @click.option(
@@ -1695,22 +1699,19 @@ def set_metadata(ctx, vapp_name, vm_name, domain, visibility, value_type, key,
     type=click.Choice(
         ['MetadataStringValue', 'MetadataNumberValue', 'MetadataBooleanValue',
          'MetadataDateTimeValue']),
-    required=False,
-    default=None,
+    required=True,
     metavar='<value_type>',
     help='value_type')
 @click.option(
     'key',
     '--key',
     required=True,
-    default=None,
     metavar='<key>',
     help='key')
 @click.option(
     'value',
     '--value',
     required=True,
-    default=None,
     metavar='<value>',
     help='value')
 def update_metadata(ctx, vapp_name, vm_name, domain, visibility, value_type,
@@ -1738,14 +1739,12 @@ def update_metadata(ctx, vapp_name, vm_name, domain, visibility, value_type,
     '--domain',
     type=click.Choice(['GENERAL', 'SYSTEM']),
     required=True,
-    default=None,
     metavar='<domain>',
     help='domain')
 @click.option(
     'key',
     '--key',
     required=True,
-    default=None,
     metavar='<key>',
     help='key')
 def remove_metadata(ctx, vapp_name, vm_name, domain, key):
@@ -1796,6 +1795,62 @@ def list_product_sections(ctx, vapp_name, vm_name):
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
         result = vm.list_product_sections()
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('update-vhs-disk', short_help='update virtual hardware section '
+                                          'disk of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'element_name',
+    '--e-name',
+    required=True,
+    metavar='<element-name>',
+    help='element name')
+@click.option(
+    'virtual_quantity',
+    '--v-quantity',
+    required=True,
+    metavar='<virtual_quantity>',
+    help='virtual quantity in bytes')
+def update_vhs_disk(ctx, vapp_name, vm_name, element_name, virtual_quantity):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.\
+            update_vhs_disks(element_name=element_name,
+                             virtual_quatntity_in_bytes=virtual_quantity)
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('update-vhs-media', short_help='update virtual hardware section '
+                                          'media of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    'element_name',
+    '--e-name',
+    required=True,
+    metavar='<element-name>',
+    help='element name')
+@click.option(
+    'host_resource',
+    '--host-resource',
+    required=True,
+    metavar='<host resource>',
+    help='host resource')
+def update_vhs_media(ctx, vapp_name, vm_name, element_name, host_resource):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.update_vhs_media(element_name=element_name,
+                                     host_resource=host_resource)
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

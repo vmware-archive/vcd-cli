@@ -298,6 +298,12 @@ def vapp(ctx):
             --class_name testclassname --instance_name testinstancename --label
             labledata --is_password true --user_configurable false
             Update product section of vapp.
+
+\b
+        vcd vapp add-vm-scratch vapp1 -vm vm1 -cn computer_name -d description
+                -os windows7_64Guest -cpu 2 -cps 2 -crm 2 -m 1024 -media
+                pb1.iso -aae -deploy -power-on
+            Add a VM from scratch to a vApp.
     """
     pass
 

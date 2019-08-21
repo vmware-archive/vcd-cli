@@ -197,14 +197,12 @@ def create(ctx, role_name, description, rights, org_name):
                                   'existing role in the specified org'
                                   '(defaults to the current org in use)')
 @click.pass_context
-@click.argument('original_role_name', metavar='<original-role-name>',
-                required=True)
-@click.argument('new_role_name', metavar='<new-role-name>', required=True)
+@click.argument('original_role_name', metavar='<original-role-name>')
+@click.argument('new_role_name', metavar='<new-role-name>')
 @click.option(
     '-o',
     '--org',
     'org_name',
-    required=False,
     default=None,
     metavar='[org-name]',
     help='Name of the org',
@@ -213,7 +211,6 @@ def create(ctx, role_name, description, rights, org_name):
     '-d',
     '--description',
     'description',
-    required=False,
     default=None,
     metavar='[description]',
     help='Role description (Defaults to description of role being cloned)'

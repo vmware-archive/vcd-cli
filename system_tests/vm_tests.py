@@ -552,7 +552,9 @@ class VmTest(BaseTestCase):
 
     def test_0320_update_general_setting(self):
         # System admin login
+        default_org = self._config['vcd']['default_org_name']
         self._sys_login()
+        VmTest._runner.invoke(org, ['use', default_org])
         VmTest._runner.invoke(vdc, ['use', VmTest._default_ovdc])
         # update general setting
         result = VmTest._runner.invoke(
@@ -741,6 +743,14 @@ class VmTest(BaseTestCase):
                       VAppConstants.name, VAppConstants.vm1_name,
                       '--e-name', element_name, '--v-quantity',
                       virtual_quantity])
+        self.assertEqual(0, result.exit_code)
+
+    def test_0510_enable_nested_hypervisor(self):
+        vapp = VApp(VmTest._client, href=VmTest._test_old_vapp_href)
+        self._power_off_and_undeploy(vapp=vapp)
+        result = VmTest._runner.invoke(
+            vm, args=['enable-nested-hypervisor',
+                      VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
     def test_9998_tearDown(self):

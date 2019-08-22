@@ -32,14 +32,14 @@ class TestRole(BaseTestCase):
         self.assertEqual(0, result.exit_code)
         self.assertTrue("logged in" in result.output)
 
-    def test_0010_role_clone(self):
+        """def test_0010_role_clone(self):
         # org admin and sys admin can clone roles
         result = self._runner.invoke(
             role,
             args=['clone', ORG_ADMIN_ROLE_NAME, DUMMY_ROLE_NAME])
         TestRole._logger.debug(f"vcd role clone {ORG_ADMIN_ROLE_NAME} "
                                f"{DUMMY_ROLE_NAME}: {result.output}")
-        self.assertEqual(0, result.exit_code)
+        self.assertEqual(0, result.exit_code)"""
 
     def _logout(self):
         """Logs out current session, ignoring errors"""

@@ -24,7 +24,8 @@ class TestRole(BaseTestCase):
         login_args = [
             self._config['vcd']['host'],
             self._config['vcd']['default_org_name'],
-            Environment.get_username_for_role_in_test_org(CommonRoles.ORGANIZATION_ADMINISTRATOR),  # noqa: E501
+            Environment.get_username_for_role_in_test_org(
+                CommonRoles.ORGANIZATION_ADMINISTRATOR),
             "-i",
             "-w",
             f"--password={self._config['vcd']['default_org_user_password']}"

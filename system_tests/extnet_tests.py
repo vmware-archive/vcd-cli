@@ -123,12 +123,8 @@ class ExtNetTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
-    @unittest.skip("Waiting for PR 2399981 fix")
+    """@unittest.skip("Waiting for PR 2399981 fix")
     def test_0020_update(self):
-        """Update name and description of the external network created.
-
-        Invoke the command 'external update' in network.
-        """
         new_name = "updated_" + self._name
         new_description = "Updated " + self._name
         result = self._runner.invoke(
@@ -149,10 +145,6 @@ class ExtNetTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0030_add_subnet(self):
-        """Add subnet to the external network created.
-
-        Invoke the command 'external add-subnet' in network.
-        """
         result = self._runner.invoke(
             external,
             args=[
@@ -164,10 +156,6 @@ class ExtNetTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0031_enable_subnet(self):
-        """Enable/Disable subnet of an external network.
-
-        Invoke the command 'external enable-subnet' in network.
-        """
         result = self._runner.invoke(
             external,
             args=[
@@ -184,9 +172,6 @@ class ExtNetTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0040_attach_port_group(self):
-        """Attach a portgroup to an external network.
-        Invoke the command 'external attach-port-group' in network.
-        """
         if ExtNetTest._vc2_host_ip is None or ExtNetTest._vc2_host_ip == '':
             return
         ExtNetTest._client = Environment.get_sys_admin_client()
@@ -204,9 +189,6 @@ class ExtNetTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0041_detach_port_group(self):
-        """Detach port group from an external network.
-        Invoke the command 'external detach-port-group' in network.
-        """
         if ExtNetTest._vc2_host_ip is None or ExtNetTest._vc2_host_ip == '':
             return
         ExtNetTest._client = Environment.get_sys_admin_client()
@@ -223,10 +205,6 @@ class ExtNetTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0050_add_ip_range(self):
-        """Add an IP range to a subnet in an external network.
-
-        Invoke the command 'external add-ip-range' in network.
-        """
         result = self._runner.invoke(
             external,
             args=[
@@ -236,10 +214,6 @@ class ExtNetTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0051_update_ip_range(self):
-        """Update an IP range of a subnet in an external network.
-
-        Invoke the command 'external update-ip-range' in network.
-        """
         result = self._runner.invoke(
             external,
             args=[
@@ -250,17 +224,13 @@ class ExtNetTest(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0052_delete_ip_range(self):
-        """Remove an IP range of a subnet in an external network.
-
-        Invoke the command 'external delete-ip-range' in network.
-        """
         result = self._runner.invoke(
             external,
             args=[
                 'delete-ip-range', self._name, '--gateway', self._gateway1,
                 '--ip-range', self._ip_range2
             ])
-        self.assertEqual(0, result.exit_code)
+        self.assertEqual(0, result.exit_code)"""
 
     def test_0055_list_available_prov_vdc(self):
         """List available provider vdcs.

@@ -40,28 +40,39 @@ def vdc(ctx):
     Examples
         vcd vdc list
             Get list of virtual datacenters in current organization.
+
 \b
         vcd vdc info my-vdc
             Get details of the virtual datacenter 'my-vdc'.
+
 \b
         vcd vdc use my-vdc
             Set virtual datacenter 'my-vdc' as default.
+
 \b
         vcd vdc create dev-vdc -p prov-vdc -n net-pool -s '*' \\
             -a ReservationPool -d 'vDC for development'
             Create new virtual datacenter.
+
 \b
         vcd vdc disable dev-vdc
             Disable virtual datacenter.
+
 \b
         vcd vdc enable dev-vdc
             Enable virtual datacenter.
+
 \b
         vcd vdc delete -y dev-vdc
             Delete virtual datacenter.
+
 \b
         vcd vdc list-media
-            Get list of media in virtual datacenters.
+            Get list of media in virtual datacenter.
+
+\b
+        vcd vdc list-disk
+            Get list of disks in virtual datacenter.
     """
     pass
 
@@ -500,5 +511,22 @@ def list_media(ctx, vdc_name):
 
         media_list = vdc.list_media_id()
         stdout(media_list, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vdc.command('list-disk', short_help='list disks from VDC')
+@click.pass_context
+@click.argument('vdc-name', metavar='<vdc-name>')
+def list_disk(ctx, vdc_name):
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
+        in_use_org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, in_use_org_href)
+        vdc_resource = org.get_vdc(vdc_name)
+        vdc = VDC(client, resource=vdc_resource)
+
+        disk_list = vdc.list_idisk()
+        stdout(disk_list, ctx)
     except Exception as e:
         stderr(e, ctx)

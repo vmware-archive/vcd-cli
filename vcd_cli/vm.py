@@ -337,11 +337,16 @@ def vm(ctx):
                 --e-name 'Hard Disk 1'
                 --v-quantity 694487
             Update virtual hardware section disk of VM.
+
 \b
         vcd vm update-vhs-media  vapp1 vm1
                 --e-name 'CD DVD DRive'
                 --host-resource pb1.iso
             Update virtual hardware section media of VM.
+
+\b
+        vcd vm enable-nested-hypervisor vapp1 vm1
+            Enable nested hypervisor of VM.
     """
     pass
 
@@ -1288,10 +1293,8 @@ def update_general_setting(ctx, vapp_name, vm_name, name, description,
 def relocate(ctx, vapp_name, vm_name, datastore_id):
     try:
         restore_session(ctx, vdc_required=True)
-        platform = Platform(ctx.obj['client'])
-        datastore_href = platform.get_datastore_href_by_id(id=datastore_id)
         vm = _get_vm(ctx, vapp_name, vm_name)
-        task = vm.relocate(datastore_href=datastore_href)
+        task = vm.relocate(datastore_id=datastore_id)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -1851,6 +1854,21 @@ def update_vhs_media(ctx, vapp_name, vm_name, element_name, host_resource):
         vm = _get_vm(ctx, vapp_name, vm_name)
         result = vm.update_vhs_media(element_name=element_name,
                                      host_resource=host_resource)
+        stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vm.command('enable-nested-hypervisor', short_help='enable nested hypervisor '
+                                                   'of VM')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def enable_nested_hypervisor(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        result = vm.enable_nested_hypervisor()
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)

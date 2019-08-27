@@ -394,28 +394,28 @@ class GatewayTest(BaseTestCase):
             gateway, args=['update', self._new_name, '-n', self._name])
         self.assertEqual(0, result.exit_code)
 
-    @unittest.skip("Its running for base gateway and not for other "
-                   "test gateway so skipping test "
-                   "case for now")
-    def test_0016_edit_config_ip_settings(self):
-        """Edits the gateway config ip settings.
-
-        It will trigger the cli command with option config-ip-settings
-        """
-        GatewayTest._logger.debug(
-            "vcd gateway configure-ip-settings {} -e {} "
-            "-s {} True {}".format(self._name, GatewayTest._ext_network_name,
-                                   GatewayTest._subnet_addr,
-                                   GatewayTest._new_config_ip))
-        result = self._runner.invoke(
-            gateway,
-            args=[
-                'configure-ip-settings', self._name, '--external-network',
-                GatewayTest._ext_network_name, '--subnet-available',
-                GatewayTest._subnet_addr, True, GatewayTest._new_config_ip
-            ])
-        GatewayTest._logger.debug("result {} ".format(result.output))
-        self.assertEqual(0, result.exit_code)
+    # @unittest.skip("Its running for base gateway and not for other "
+    #                "test gateway so skipping test "
+    #                "case for now")
+    # def test_0016_edit_config_ip_settings(self):
+    #     """Edits the gateway config ip settings.
+    #
+    #     It will trigger the cli command with option config-ip-settings
+    #     """
+    #     GatewayTest._logger.debug(
+    #         "vcd gateway configure-ip-settings {} -e {} "
+    #         "-s {} True {}".format(self._name, GatewayTest._ext_network_name,
+    #                                GatewayTest._subnet_addr,
+    #                                GatewayTest._new_config_ip))
+    #     result = self._runner.invoke(
+    #         gateway,
+    #         args=[
+    #             'configure-ip-settings', self._name, '--external-network',
+    #             GatewayTest._ext_network_name, '--subnet-available',
+    #             GatewayTest._subnet_addr, True, GatewayTest._new_config_ip
+    #         ])
+    #     GatewayTest._logger.debug("result {} ".format(result.output))
+    #     self.assertEqual(0, result.exit_code)
 
     def test_0017_add_sub_allocated_ip_pools(self):
         """Adds new ip range present to the sub allocate pool of gateway.
@@ -566,17 +566,18 @@ class GatewayTest(BaseTestCase):
         GatewayTest._logger.debug('result output {0}'.format(result))
         self.assertEqual(0, result.exit_code)
 
-    @unittest.skip("This test case depends ons editing syslog server IP in Org."
-                   "This functionality is missing now.")
-    def test_0032_get_tenant_syslog_ip(self):
-        """Get information of the gateway tenant syslog ip server.
-
-        It will trigger the cli command with option list-syslog-server
-        """
-        result_info = self._runner.invoke(
-            gateway, args=['list-syslog-server', self._name])
-        GatewayTest._logger.debug('result output {0}'.format(result_info))
-        self.assertTrue((0, result_info.exit_code))
+    # @unittest.skip("This test case depends ons editing syslog server IP in
+    # Org."
+    #                "This functionality is missing now.")
+    # def test_0032_get_tenant_syslog_ip(self):
+    #     """Get information of the gateway tenant syslog ip server.
+    #
+    #     It will trigger the cli command with option list-syslog-server
+    #     """
+    #     result_info = self._runner.invoke(
+    #         gateway, args=['list-syslog-server', self._name])
+    #     GatewayTest._logger.debug('result output {0}'.format(result_info))
+    #     self.assertTrue((0, result_info.exit_code))
 
     def test_0098_tearDown(self):
         result_delete = GatewayTest._runner.invoke(

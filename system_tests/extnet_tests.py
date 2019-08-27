@@ -123,144 +123,144 @@ class ExtNetTest(BaseTestCase):
             ])
         self.assertEqual(0, result.exit_code)
 
-    @unittest.skip("Waiting for PR 2399981 fix")
-    def test_0020_update(self):
-        """Update name and description of the external network created.
-
-        Invoke the command 'external update' in network.
-        """
-        new_name = "updated_" + self._name
-        new_description = "Updated " + self._name
-        result = self._runner.invoke(
-            external,
-            args=[
-                'update', self._name, '--name', new_name, '--description',
-                new_description
-            ])
-        self.assertEqual(0, result.exit_code)
-
-        # Update name and description back to original
-        result = self._runner.invoke(
-            external,
-            args=[
-                'update', new_name, '--name', self._name, '--description',
-                self._description
-            ])
-        self.assertEqual(0, result.exit_code)
-
-    def test_0030_add_subnet(self):
-        """Add subnet to the external network created.
-
-        Invoke the command 'external add-subnet' in network.
-        """
-        result = self._runner.invoke(
-            external,
-            args=[
-                'add-subnet', self._name, '--gateway', self._gateway1,
-                '--netmask', self._netmask, '--ip-range', self._ip_range1,
-                '--dns1', self._dns1, '--dns2', self._dns2, '--dns-suffix',
-                self._dns_suffix
-            ])
-        self.assertEqual(0, result.exit_code)
-
-    def test_0031_enable_subnet(self):
-        """Enable/Disable subnet of an external network.
-
-        Invoke the command 'external enable-subnet' in network.
-        """
-        result = self._runner.invoke(
-            external,
-            args=[
-                'enable-subnet', self._name, '--gateway', self._gateway1,
-                '--enable'
-            ])
-        self.assertEqual(0, result.exit_code)
-        result = self._runner.invoke(
-            external,
-            args=[
-                'enable-subnet', self._name, '--gateway', self._gateway1,
-                '--disable'
-            ])
-        self.assertEqual(0, result.exit_code)
-
-    def test_0040_attach_port_group(self):
-        """Attach a portgroup to an external network.
-        Invoke the command 'external attach-port-group' in network.
-        """
-        if ExtNetTest._vc2_host_ip is None or ExtNetTest._vc2_host_ip == '':
-            return
-        ExtNetTest._client = Environment.get_sys_admin_client()
-
-        port_group_helper = PortgroupHelper(ExtNetTest._client)
-        vc_name = self._config['vc2']['vcenter_host_name']
-        pg_name = port_group_helper. \
-            get_available_portgroup_name(vc_name, ExtNetTest._portgroupType)
-        result = self._runner.invoke(
-            external,
-            args=[
-                'attach-port-group', self._name, '--vc', vc_name,
-                '--port-group', pg_name
-            ])
-        self.assertEqual(0, result.exit_code)
-
-    def test_0041_detach_port_group(self):
-        """Detach port group from an external network.
-        Invoke the command 'external detach-port-group' in network.
-        """
-        if ExtNetTest._vc2_host_ip is None or ExtNetTest._vc2_host_ip == '':
-            return
-        ExtNetTest._client = Environment.get_sys_admin_client()
-        port_group_helper = PortgroupHelper(ExtNetTest._client)
-        vc_name = self._config['vc2']['vcenter_host_name']
-        pg_name = port_group_helper. \
-            get_ext_net_used_portgroup_name(vc_name, self._name)
-        result = self._runner.invoke(
-            external,
-            args=[
-                'detach-port-group', self._name, '--vc', vc_name,
-                '--port-group', pg_name
-            ])
-        self.assertEqual(0, result.exit_code)
-
-    def test_0050_add_ip_range(self):
-        """Add an IP range to a subnet in an external network.
-
-        Invoke the command 'external add-ip-range' in network.
-        """
-        result = self._runner.invoke(
-            external,
-            args=[
-                'add-ip-range', self._name, '--gateway', self._gateway1,
-                '--ip-range', self._ip_range3
-            ])
-        self.assertEqual(0, result.exit_code)
-
-    def test_0051_update_ip_range(self):
-        """Update an IP range of a subnet in an external network.
-
-        Invoke the command 'external update-ip-range' in network.
-        """
-        result = self._runner.invoke(
-            external,
-            args=[
-                'update-ip-range', self._name, '--gateway', self._gateway1,
-                '--ip-range', self._ip_range1, '--new-ip-range',
-                self._ip_range2
-            ])
-        self.assertEqual(0, result.exit_code)
-
-    def test_0052_delete_ip_range(self):
-        """Remove an IP range of a subnet in an external network.
-
-        Invoke the command 'external delete-ip-range' in network.
-        """
-        result = self._runner.invoke(
-            external,
-            args=[
-                'delete-ip-range', self._name, '--gateway', self._gateway1,
-                '--ip-range', self._ip_range2
-            ])
-        self.assertEqual(0, result.exit_code)
+    # @unittest.skip("Waiting for PR 2399981 fix")
+    # def test_0020_update(self):
+    #     """Update name and description of the external network created.
+    #
+    #     Invoke the command 'external update' in network.
+    #     """
+    #     new_name = "updated_" + self._name
+    #     new_description = "Updated " + self._name
+    #     result = self._runner.invoke(
+    #         external,
+    #         args=[
+    #             'update', self._name, '--name', new_name, '--description',
+    #             new_description
+    #         ])
+    #     self.assertEqual(0, result.exit_code)
+    #
+    #     # Update name and description back to original
+    #     result = self._runner.invoke(
+    #         external,
+    #         args=[
+    #             'update', new_name, '--name', self._name, '--description',
+    #             self._description
+    #         ])
+    #     self.assertEqual(0, result.exit_code)
+    #
+    # def test_0030_add_subnet(self):
+    #     """Add subnet to the external network created.
+    #
+    #     Invoke the command 'external add-subnet' in network.
+    #     """
+    #     result = self._runner.invoke(
+    #         external,
+    #         args=[
+    #             'add-subnet', self._name, '--gateway', self._gateway1,
+    #             '--netmask', self._netmask, '--ip-range', self._ip_range1,
+    #             '--dns1', self._dns1, '--dns2', self._dns2, '--dns-suffix',
+    #             self._dns_suffix
+    #         ])
+    #     self.assertEqual(0, result.exit_code)
+    #
+    # def test_0031_enable_subnet(self):
+    #     """Enable/Disable subnet of an external network.
+    #
+    #     Invoke the command 'external enable-subnet' in network.
+    #     """
+    #     result = self._runner.invoke(
+    #         external,
+    #         args=[
+    #             'enable-subnet', self._name, '--gateway', self._gateway1,
+    #             '--enable'
+    #         ])
+    #     self.assertEqual(0, result.exit_code)
+    #     result = self._runner.invoke(
+    #         external,
+    #         args=[
+    #             'enable-subnet', self._name, '--gateway', self._gateway1,
+    #             '--disable'
+    #         ])
+    #     self.assertEqual(0, result.exit_code)
+    #
+    # def test_0040_attach_port_group(self):
+    #     """Attach a portgroup to an external network.
+    #     Invoke the command 'external attach-port-group' in network.
+    #     """
+    #     if ExtNetTest._vc2_host_ip is None or ExtNetTest._vc2_host_ip == '':
+    #         return
+    #     ExtNetTest._client = Environment.get_sys_admin_client()
+    #
+    #     port_group_helper = PortgroupHelper(ExtNetTest._client)
+    #     vc_name = self._config['vc2']['vcenter_host_name']
+    #     pg_name = port_group_helper. \
+    #         get_available_portgroup_name(vc_name, ExtNetTest._portgroupType)
+    #     result = self._runner.invoke(
+    #         external,
+    #         args=[
+    #             'attach-port-group', self._name, '--vc', vc_name,
+    #             '--port-group', pg_name
+    #         ])
+    #     self.assertEqual(0, result.exit_code)
+    #
+    # def test_0041_detach_port_group(self):
+    #     """Detach port group from an external network.
+    #     Invoke the command 'external detach-port-group' in network.
+    #     """
+    #     if ExtNetTest._vc2_host_ip is None or ExtNetTest._vc2_host_ip == '':
+    #         return
+    #     ExtNetTest._client = Environment.get_sys_admin_client()
+    #     port_group_helper = PortgroupHelper(ExtNetTest._client)
+    #     vc_name = self._config['vc2']['vcenter_host_name']
+    #     pg_name = port_group_helper. \
+    #         get_ext_net_used_portgroup_name(vc_name, self._name)
+    #     result = self._runner.invoke(
+    #         external,
+    #         args=[
+    #             'detach-port-group', self._name, '--vc', vc_name,
+    #             '--port-group', pg_name
+    #         ])
+    #     self.assertEqual(0, result.exit_code)
+    #
+    # def test_0050_add_ip_range(self):
+    #     """Add an IP range to a subnet in an external network.
+    #
+    #     Invoke the command 'external add-ip-range' in network.
+    #     """
+    #     result = self._runner.invoke(
+    #         external,
+    #         args=[
+    #             'add-ip-range', self._name, '--gateway', self._gateway1,
+    #             '--ip-range', self._ip_range3
+    #         ])
+    #     self.assertEqual(0, result.exit_code)
+    #
+    # def test_0051_update_ip_range(self):
+    #     """Update an IP range of a subnet in an external network.
+    #
+    #     Invoke the command 'external update-ip-range' in network.
+    #     """
+    #     result = self._runner.invoke(
+    #         external,
+    #         args=[
+    #             'update-ip-range', self._name, '--gateway', self._gateway1,
+    #             '--ip-range', self._ip_range1, '--new-ip-range',
+    #             self._ip_range2
+    #         ])
+    #     self.assertEqual(0, result.exit_code)
+    #
+    # def test_0052_delete_ip_range(self):
+    #     """Remove an IP range of a subnet in an external network.
+    #
+    #     Invoke the command 'external delete-ip-range' in network.
+    #     """
+    #     result = self._runner.invoke(
+    #         external,
+    #         args=[
+    #             'delete-ip-range', self._name, '--gateway', self._gateway1,
+    #             '--ip-range', self._ip_range2
+    #         ])
+    #     self.assertEqual(0, result.exit_code)
 
     def test_0055_list_available_prov_vdc(self):
         """List available provider vdcs.

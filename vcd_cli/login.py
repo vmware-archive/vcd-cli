@@ -172,8 +172,10 @@ def login(ctx, user, host, password, api_version, org, verify_ssl_certs,
         if client.get_api_version() < ApiVersion.VERSION_33.value:
             links = get_links(logged_in_org, media_type=EntityType.VDC.value)
         else:
-            links = client.get_resource_link_from_query_object(
-                logged_in_org, media_type=EntityType.RECORDS.value, type='vdc')
+            if logged_in_org.get('name') != 'System':
+                links = client.get_resource_link_from_query_object(
+                    logged_in_org, media_type=EntityType.RECORDS.value,
+                    type='vdc')
         if vdc is None:
             for v in links:
                 in_use_vdc = v.name

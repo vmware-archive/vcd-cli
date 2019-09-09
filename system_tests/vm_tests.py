@@ -288,26 +288,26 @@ class VmTest(BaseTestCase):
             vm, args=['reset', VAppConstants.name, VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
-    def test_0060_suspend(self):
-        """Suspend the VM."""
-        result = VmTest._runner.invoke(
-            vm,
-            args=['suspend', VAppConstants.name, VAppConstants.vm1_name])
-        self.assertEqual(0, result.exit_code)
-
-    def test_0070_discard_suspended_state(self):
-        """Discard suspended state of the VM."""
-        result = VmTest._runner.invoke(
-            vm, args=['discard-suspend', VAppConstants.name,
-                      VAppConstants.vm1_name])
-        self.assertEqual(0, result.exit_code)
+    # def test_0060_suspend(self):
+    #     """Suspend the VM."""
+    #     result = VmTest._runner.invoke(
+    #         vm,
+    #         args=['suspend', VAppConstants.name, VAppConstants.vm1_name])
+    #     self.assertEqual(0, result.exit_code)
+    #
+    # def test_0070_discard_suspended_state(self):
+    #     """Discard suspended state of the VM."""
+    #     result = VmTest._runner.invoke(
+    #         vm, args=['discard-suspend', VAppConstants.name,
+    #                   VAppConstants.vm1_name])
+    #     self.assertEqual(0, result.exit_code)
 
     def test_0080_install_vmware_tools(self):
         """Install vmware tools in the VM."""
-        result = VmTest._runner.invoke(
-            vm,
-            args=['power-on', VAppConstants.name, VAppConstants.vm1_name])
-        self.assertEqual(0, result.exit_code)
+        # result = VmTest._runner.invoke(
+        #     vm,
+        #     args=['power-on', VAppConstants.name, VAppConstants.vm1_name])
+        # self.assertEqual(0, result.exit_code)
         result = VmTest._runner.invoke(
             vm, args=['install-vmware-tools', VAppConstants.name,
                       VAppConstants.vm1_name])

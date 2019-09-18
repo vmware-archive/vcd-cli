@@ -174,7 +174,7 @@ def use(ctx, name):
                             'vapp': vapp_in_use
                         }, ctx, message)
                         return
-        raise Exception('Org \'%s\' not found' % in_use_org_name)
+        raise Exception('Org Vdc \'%s\' not found' % name)
     except Exception as e:
         stderr(e, ctx)
 

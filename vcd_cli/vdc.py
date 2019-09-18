@@ -166,15 +166,16 @@ def use(ctx, name):
                         ctx.obj['profiles'].set('vapp_in_use', vapp_in_use)
                         ctx.obj['profiles'].set('vapp_href', vapp_href)
                         message = 'now using org: \'%s\', vdc: \'%s\', vApp:' \
-                            ' \'%s\'.' % (in_use_org_name, vdc_in_use,
-                                          vapp_in_use)
+                                  ' \'%s\'.' % (in_use_org_name, vdc_in_use,
+                                                vapp_in_use)
                         stdout({
                             'org': in_use_org_name,
                             'vdc': vdc_in_use,
                             'vapp': vapp_in_use
                         }, ctx, message)
                         return
-        raise Exception('Org Vdc \'%s\' not found' % name)
+        raise Exception('Org Vdc \'%s\' not found in org \'%s\'' % (name,
+                                                            in_use_org_name))
     except Exception as e:
         stderr(e, ctx)
 

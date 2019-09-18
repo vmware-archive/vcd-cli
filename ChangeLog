@@ -1,6 +1,242 @@
 CHANGES
 =======
 
+22.0.0
+------
+
+* VP-3051: [VCD-CLI] Fix bug in error statement. (#493)
+* Comment suspend VM test case. (#492)
+* VP-2945 (#490)
+* VP-2938 : VCD-CLI issue in login with API version 33  (#488)
+* VP-2929: [VCD-CLI] Comment failure test case (#485)
+* VP-2705,VP-2885: List Independent disk, enable Nested hypervisor of VM. (#484)
+* [VCDA-1091] Add role clone command
+* Address review comments
+* VP-2824: [VCDCLI]As a SDK user, I can create VM from scratch
+* VP-2657,VP-2664: Update virtual hardware section disk and media (#482)
+* Update
+* VP-2647,VP-2645,VP-2628: Ticket, mks ticket and product sections operations (#481)
+* Add system tests
+* VP-2754: [VcdCli] Enable static routing in vapp network VP-2756: [VcdCli] Add static route in vapp network VP-2758: [VcdCli] Update static route in vapp network VP-2760: [VcdCli] Delete static route in vapp network VP-2811: [VcdCli] List static route in vapp network
+* VP-2622, VP-2849, VP-2851,VP-2856: metadata CRUD operations (#479)
+* Remove unnecessary API call
+* Add role clone command
+* VCD-CLI CI/CD Tests Failure. Fix vapp move test failure
+* Test fail (#475)
+* VP-2853: CLI CI/CD bug fix (#474)
+* VP-2685,VP-2687,VP-2815: Runtime info and boot options in VM (#470)
+* Due to suspended vm state test cases it's went in partial state. That making cause to fail other test cases for temporary 
+* VP-2745: [VcdCli] Update NAT rule in vapp network
+* VP-2822: [PYSDK-VCDCLI] Bug fixes of CI/CD (#469)
+* VP-2681,VP-2683: List and update VM capabilities (#466)
+* VP-2743: [VcdCli] Add NAT rule in vapp network VP-2798: [VcdCli] List NAT rule in vapp network VP-2809: [VcdCli] get NAT type and policy in vapp network VP-2747: [VcdCli] Delete NAT rule in vapp network
+* VP-2801,VP-2675,VP-2679 List, update and check postgc script status (#464)
+* VP-2749: [VcdCli] Enable NAT rule in vapp network VP-2752: [VcdCli] Select NAT rule type in vapp network
+* VP-2673, VP-2796: List and update VM Operating system section (#462)
+* VP-2793: [VcdCli] List VM interfaces
+* VP-2791,VP-2709,VP-2707 Update nic (#460)
+* VP-2653:[VcdCli] Add firewall rule in vapp network, VP-2654:[VcdCli] delete firewall rule in vapp network, VP-2739:[VcdCli] update firewall rule default action and log in vapp network, VP-2741:[VcdCli] update firewall rule in vapp network, VP-2777:[VcdCli] list firewall rule in vapp network
+* VP-2052,VP-2076: [VcDCLI] relocate (#458)
+* VP-2763: [VCD-CLI] Get sample historic data of a metric (#456)
+* VP-2066: [VcdCLI]Update selected VM general properties
+* VP-2636, VP-2729, VP-2731: List VM Metrics (#455)
+* VP-2625: [VCD-CLI] get compliance result (#453)
+* VP-2626: [VcdCli]show product section in vapp, VP-2721: [VcdCli]show startup section of vapp, VP-2726: [VcdCli]update product section in vapp,
+* VP-2649, VP-2660, VP-2663: List virtual hardware section (#452)
+* VP-2022,VP-2677,VP-2690: [Vcd-CLI]Power on with force Recustomization for a VM (#450)
+* VP-2631: [VcdCli]Start time action in vapp VP-2632: [VcdCli]Stop time action in vapp
+* VP-2629: [VcdCli]show Lease setting in vapp VP-2623: [VcdCli]show metadeta in vapp
+* VP-1909: [VCDCLI] Create vApp network using OrgvDC Network VP-1922: [VCDCLI] Enable Fence vApp VP-2621: [VcdCli] Enable disable download in vapp
+* DocGen (#447)
+* VP-2080: [VcdCLI] CUstomize at Next Power ON (#444)
+* VP-1400: [VcdCli] Synchronize syslog server settings VP-2599 : [VcdCli] Make connection of vapp network
+* VP-2601: [VcdCli] Check compliance (#443)
+* VP-2072: [VcdCLI] Reload from VC (#442)
+* VP-2072: [VcdCLI] Reload from VC
+* VP-2050: [VcdCLI] Detach Disk (#441)
+* VP-2594 : [vcdcli] Show DNS detail of Vapp Network
+* VP-1412 : [vcdcli] Edit DNS Under Network Specification
+* VP-2595: Fix for Pypi issue: HTTPError: 400 Client Error: The description failed to render in the default format of reStructuredText (#439)
+* VP-2069 : [VcdCLI] List Storage profiles
+* Pypi Release change
+* VP-2064: [VcdCLI]List selected VM general properties
+* VP-2032: [Vcd-CLI]Upgrade Virtual Hardware version VP-2056: [VcDCLI] deploy VM VP-2057: [VcDCLI] undeploy VM
+* VP-2496 : Upgrade pysdk and CLI for API version 33
+* VP-2113 : [VcdCLI] List vApp Networks
+* VP-2048: [VcdCli] Attach Disk (#428)
+* VP-2109 : [VcdCLI] Revert to snapshot of vapp VP-2111 : [VcdCLI] Remove the snapshot of vapp
+* VP-2107 : [VcdCLI] create snapshot vapp
+* VP-2038: [Vcd-CLI] Move To VM from one VAPP to another vapp. (#423)
+* VP-2103 : [VcdCLI] Move to vapp (#419)
+* VP-2410: [VCD-CLI] Feature to add test files automatically. (#421)
+* VP-2410: [VCD-CLI] Feature to add test files automatically. (#420)
+* VP-2399 : Release Pypi
+* VP-2373: Fix - CI/CD of VCD-CLI (#418)
+* VP-2397: [VCDCLI] Add missing test case classes to include in CI/CD (#417)
+* VP-2395 : Fix - click version issue of VCD-CLI
+* VP-2101 : [VcdCLI] Copy to vapp
+* VP-2040: [Vcd-CLI] Delete VM (#415)
+* VP-2036: [Vcd-CLI]Copy to VM from one vapp to another (#414)
+* VP-2055: [VcDCLI] remove snapshots to current (#413)
+* VP-2053: [VcDCLI] create snapshots (#412)
+* VP-2061 : [VcDCLI] shutdown VM (#410)
+* VP-2062: Reboot the VM (#409)
+* Added filter for 'vcd vapp list' command (#403)
+* VP-2036: [Vcd-CLI]Copy to VM from one vapp to another (#408)
+* VP-2042: [Vcd-CLI] Consolidate VM (#406)
+* VP-2026,VP-2028, VP-2030:Install vmware tools, Insert or eject CD (#405)
+* VP-2095 : [VcdCLI] Upgrade Virtual Hardware version a vapp
+* VP-2099 : [VcdCLI] Download vapp
+* VP-2097 : [VcdCLI] Add to catalog. Improve the Capture command for overwrite option
+* VP-2087:[VcdCLI]Discard suspended state. VP-2091:[VcdCLI] Enter maintenance mode. VP-2093:VcdCLI] Exit maintenance mode. VP-2199:[VcdCLI]suspend vapp
+
+21.1.0
+------
+
+* Updated pyvcloud to latest
+* VP-2020: [VCD-CLI] Reset a VM (#397)
+* VP-2085 : [VcdCLI]Stop vApp
+* VP-2183 : List network for non admin user. Adding a command to list org vdc network for non admin user
+* VP-2177 : Incorrect implementation of method list\_rights\_available\_in\_system in org.py
+* Cli logger is changing to rotating file handler logger
+* VP-2153 : [2271719] : vcd-cli usage message bug in vcd org delete
+* VP-2018,VP-2024,VP-2140,VP-2141: POwer operations of VM (#389)
+* VP-1904 : [VCDCLI] List IP allocations of vApp network
+* VP-1942: [VCDCLI] Enable Firewall of vApp network. VP-1944: [VCDCLI] Disable Firewall of vApp network
+* VP-1938 : [VCDCLI] Enable DHCP of vApp network. VP-1940 : [VCDCLI] Disable DHCP of vApp network
+* VP-1913,1916,1971,1973,1975, Commands related to CA and CRL certificates (#383)
+* Service certificate (#382)
+* VP-1926 : [VCDCLI] Update IP range of vApp network. VP-1930 : [VCDCLI] Add DNS details to vApp network
+* VP-1902 : [VCDCLI] Update vApp network
+* Appending UUID to gateway2 for update (#379)
+* VP-1911:[VCD-CLI] Add service certificate (#376)
+* Added support for add IP range and delete (#378)
+* Updated pyvcloud reference in vcdcli
+* VP-1804: vm: info command. (#373)
+* VP-1776:[VCDCLI] Info VPN site (#374)
+* VP-1802: vm: delete-nic command (#372)
+* VP-1797, VP-1800: add-nic and list-nics commands to vm. (#371)
+* VP-1724:[VCDCLI] Edit IPsec VPN Sites (#370)
+* VP-1714,VP-1720,VP-1727: Change shaed key,set log settings,list ipsec vpn (#369)
+* VP-1862 : [Vcd-Cli] Added code to set syslog server IP for gateway
+* VP-1228: [VCD-CLI] TestFest bugs IPSEC Vpn (#367)
+* VP-1396, VP-1398: reset and delete vapp network commands. (#363)
+* VP-1796 : [VCD-CLI] delete values from Firewall Service
+* Updating the pysdk version to fix jenkin's test failure (#365)
+* VP-1846 : [VCD-CLI] List Firewall Service
+* VP-1794 : [VCD-CLI] delete values from Firewall Destination. Adding a command to delete firewall rule's destination value of rule id
+* VP-1593: Change the NAT rule sequence (#362)
+* Generate test report for CLI (#361)
+* VP-1841 : [VCD-CLI] : List Firewall Destination
+* VP-1587: Edit a NAT Rule (#357)
+* VP-1402: add update command to change vApp name and description. (#358)
+* VP-1792 : [VCDCLI] delete values from Firewall Source
+* Update required version to Python 3.6 (#353)
+* Generated docs for newer entities added in Wellington
+* Remove -h for --next-hop (#355)
+* VP-1545 : [VCDCLI] Change the sequence of the firewall rules
+* Modify cli-command details and skip test (#351)
+* VP-1790 : [VCD-CLI] : List Firewall Source
+* Help message modified
+* [VcdCli] Provided support for command Info of External network
+* Test\_fest\_fix also added enable/disable HA (#348)
+* Fix external network command help messages (#347)
+* Updated the command to delete from remove
+*  Modified the command to look consistent and added missing test case (#344)
+* To improve typo error in code
+* Added remaining test cases to the list
+* Update the description
+* Modified the command to look consistent
+* Skiping test\_0016\_edit\_config\_ip\_settings test case (#343)
+* VP-1539 : [VCDCLI]: Edit Firewall rule name
+* Update the pyvcloud dependency to latest (#342)
+* VP:1595: Get the NAT Rule Info (#340)
+* Add delete ipsec (#338)
+* VP-1560:[VCDCLI] Get Firewall rule info
+* [VP-1393]: Create a vApp network. (#336)
+* VP-1541:[VCDCLI] Delete a firewall rule (#337)
+* VP-1535:[VCDCLI]: Enable Firewall rule (#335)
+* [VP-1735] Adding CLI support for Edit service of firewall rule (#334)
+* VP-1607-1609: Edit and Delete the static route (#331)
+* Edit firewall (#333)
+* VP-1605,1610: Add and list static routes (#329)
+* [VP 1768]Provided CLi support for list objects and object types for firewall rule edit (#328)
+* VP-1589: Delete a NAT Rule (#327)
+* Test failure (#326)
+* Setting up CI instance for Vcd-CLI in Butler (#325)
+
+21.0.2
+------
+
+* Updating pyvcloud to latest[20.0.3]
+* [VP-1386, VP-1388, VP-1532] Provided options for converting to SubInterface, Distributed Routing and network Info (#324)
+* Correction of network commands help messages (#323)
+* [VP-1366]: Remove static IP pool from a routed network under Network Specification (#321)
+* [VP-1683] Add support for adding DNS details in routed network (#320)
+* [VP-1378]: List connected vApps to org vDC routed network (#319)
+* VP-1543:[VCDCLI] List Firewall rules and list user defined rules (#318)
+* VP:1553,VP-1558,VP-1556:List,info and delete DHCP Pool
+* VP-1591: List NAT Rules (#315)
+* [VP-1537] Provided CLI command for Add Firewall Rule (#314)
+* VP-1550: Add DHCP Pool (#313)
+* VP-1585: Add SNAT and DNAT rule (#312)
+* [VP-1376] List IP allocations of a routed org vdc network (#311)
+* VCDCLI support to add default gateway, enable/disable the dns realy and list the supported configured default gateway. Implemented configure\_default\_gateway, configure\_dns\_default\_gateway, list\_configure\_default\_gateways in gateway.py
+
+21.0.1
+------
+
+* Modified the requirements file to pick the latest pyvcloud (20.0.2)
+* Making vc-name an option in external network commands (#308)
+* [VP-1370,VP-1654,VP-1372]: VCD-CLI support to set/list/remove metadata for vDC routed network (#306)
+* VP-1603:List vSphere Networks (#305)
+* VP-1524: List Rate limits of the gateway VP-1629: Disable rate limit of the gateway
+* VP-1246:List associated direct org vDC networks in external network (#303)
+* VP 1267: [VCD-CLI] List gateway IP sub-allocation (#302)
+* Handle fallout of replacing flufl.enum with standard enum in pycloud. (#300)
+* List allocated ip (#299)
+* List gateways (#298)
+* [VP-1354]Edit IP range of routed vdc network (#297)
+* VP-1355]List routed vdc networks (#295)
+* Gateway list syslog (#296)
+* [VP-1360]Edit routed network for Static IP pool under Network Specification (Add) (#294)
+* VP-1490:Edit gateway for Configure Rate Limits (#293)
+* [VP-1262]List accessible provider vDCs (#292)
+* Delete ip range (#290)
+* [VP-1358]Edit routed network includes(Edit Name, Share network with other VDCs in this organization) (#291)
+* VP-1258: Attach port groups to an external network (#289)
+* Under-score changed to Hyphen in windows resulting in gateway\_tests failure in unix (#288)
+* Detach port group (#286)
+* VP-1299:Remove suballocate ip pool of the gateway (#287)
+* VP-1297:Edit gateway for Sub-Allocate IP Pools (#285)
+* VP-1295:Add sub-allocate ip pools to gateway (#283)
+* VP1242: [VCD-CLI] Add an IP range to a subnet in external network (#282)
+* list available portgroups (#281)
+* VP-1238: [VCD-CLI] Enable a subnet in external network (#280)
+* VP-1250, VP-1291: Edit edge gateway name and gateway config ip settings
+* VP-1250, VP-1291: Edit edge gateway name and gateway config ip settings
+* VP-1250, VP-1291: Edit edgegateway name and config ip settings of gateway
+* [VP-1429, VP-1430] Support added for create routed vdc network and delete of routed vdc network (#278)
+* VP-1253, VP-1254: configure external network for gateways. (#276)
+* VP-1293:List edge gateway's Configure IP Settings
+* VP-1293:List edge gateway's Configure IP Settings
+* VP-1244: Modify an IP range of a subnet in external network (#274)
+* [VP-1323]: Provide backward compatibility support for create gateway workflow (#273)
+* VP-1163: Synchronize syslog server settings of a gateway. (#272)
+* VP-1161 : Redploy edge gateway. (#271)
+* VP-1152:[VCD-CLI] Add subnet to external network (#268)
+* VP-1241 List external network IP allocations. (#267)
+* [VDP-2171]: added support for add and delete storage profiles to vcd-cli (#264)
+* [VP-1248] Providing CLI support for Modify form factor (#265)
+* [VP-1154] Update name and description of external network in VCD CLI (#263)
+* [VP-1147, VP-1148] : Implement commands to create and delete external networks. (#257)
+* [VP-1184, VP-1201] Provided command line support for convert to advanced gateway and enable distributed routing (#260)
+* Support added for Create gateway and delete gateway (#252)
+
+21.0.0
+------
+
+* [VCDA-764] Update OSL files for vcd-cli (#247)
 * [VCDA-752] Updated docs as of SHA ee2c3c3 (#248)
 * [VCDA-761] Fix command vcd login session list chrome for Windows (#246)
 * added migrate-vms CLI (#241)

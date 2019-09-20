@@ -143,6 +143,10 @@ def vm(ctx):
             Revert VM to current snapshot.
 
 \b
+        vcd vm remove-snapshot vapp1 vm1
+            Remove VM snapshot.
+
+\b
         vcd vm copy vapp1 vm1 vapp2 vm2
             Copy VM from one vapp to another vapp.
 
@@ -802,6 +806,19 @@ def revert_to_snapshot(ctx, vapp_name, vm_name):
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
         task = vm.snapshot_revert_to_current()
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('remove-snapshot', short_help='remove VM snaphot')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+def remove_snapshot(ctx, vapp_name, vm_name):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        task = vm.snapshot_remove_all()
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

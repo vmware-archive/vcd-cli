@@ -386,6 +386,13 @@ class VmTest(BaseTestCase):
                       VAppConstants.vm1_name])
         self.assertEqual(0, result.exit_code)
 
+    def test_0155_remove_snapshot(self):
+        """Remove VM snapshot."""
+        result = VmTest._runner.invoke(
+            vm, args=['remove-snapshot', VAppConstants.name,
+                      VAppConstants.vm1_name])
+        self.assertEqual(0, result.exit_code)
+
     def test_0160_attach_disk_to_vm(self):
         """Attach independent disk to VM."""
         result = VmTest._runner.invoke(

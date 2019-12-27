@@ -92,9 +92,7 @@ def as_metavar(values):
 
 
 def restore_session(ctx, vdc_required=False):
-    if type(
-            ctx.obj
-    ) is dict and 'client' in ctx.obj and ctx.obj['client'] is not None:
+    if type(ctx.obj) is dict and 'client' in ctx.obj and ctx.obj['client']:
         return
     profiles = Profiles.load()
     token = profiles.get('token')
@@ -112,6 +110,7 @@ def restore_session(ctx, vdc_required=False):
                 fg='yellow',
                 err=True)
         requests.packages.urllib3.disable_warnings()
+
     client = Client(
         profiles.get('host'),
         api_version=profiles.get('api_version'),
@@ -120,7 +119,9 @@ def restore_session(ctx, vdc_required=False):
         log_requests=profiles.get('log_request'),
         log_headers=profiles.get('log_header'),
         log_bodies=profiles.get('log_body'))
-    client.rehydrate(profiles)
+    client.rehydrate_from_token(
+        profiles.get('token'), profiles.get('is_jwt_token'))
+
     ctx.obj = {}
     ctx.obj['client'] = client
     ctx.obj['profiles'] = profiles

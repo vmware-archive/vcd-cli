@@ -13,7 +13,6 @@
 #
 
 import click
-from pyvcloud.vcd.client import _WellKnownEndpoint
 from pyvcloud.vcd.client import API_CURRENT_VERSIONS
 from pyvcloud.vcd.client import ApiVersion
 from pyvcloud.vcd.client import BasicLoginCredentials
@@ -167,7 +166,7 @@ def login(ctx, user, host, password, api_version, org, verify_ssl_certs,
         in_use_vdc = ''
 
         links = []
-        if float(client.get_api_version()) < float(ApiVersion.VERSION_33.value):  # noqa: E501
+        if float(negotiated_api_version) < float(ApiVersion.VERSION_33.value):
             links = get_links(logged_in_org, media_type=EntityType.VDC.value)
         else:
             if logged_in_org.get('name') != 'System':
@@ -176,10 +175,9 @@ def login(ctx, user, host, password, api_version, org, verify_ssl_certs,
                     type='vdc')
 
         if vdc is None:
-            for v in links:
-                in_use_vdc = v.name
-                vdc_href = v.href
-                break
+            if len(links) > 0:
+                in_use_vdc = links[0].name
+                vdc_href = links[0].href
         else:
             for v in links:
                 if vdc == v.name:
@@ -190,11 +188,11 @@ def login(ctx, user, host, password, api_version, org, verify_ssl_certs,
                 raise Exception('VDC not found')
 
         token = client.get_access_token()
+        is_jwt_token = True
         if not token:
             token = client.get_xvcloud_authorization_token()
             is_jwt_token = False
-        else:
-            is_jwt_token = True
+
         profiles.update(
             host,
             org,

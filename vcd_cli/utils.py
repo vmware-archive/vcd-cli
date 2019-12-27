@@ -13,7 +13,6 @@
 #
 import collections
 import json
-import logging
 from os import environ
 import re
 import sys
@@ -26,8 +25,8 @@ from pygments import formatters
 from pygments import highlight
 from pygments import lexers
 from pyvcloud.vcd.client import Client
-from pyvcloud.vcd.client import get_logger
 from pyvcloud.vcd.client import EntityType
+from pyvcloud.vcd.client import get_logger
 from pyvcloud.vcd.client import NSMAP
 from pyvcloud.vcd.client import TaskStatus
 from pyvcloud.vcd.exceptions import AccessForbiddenException

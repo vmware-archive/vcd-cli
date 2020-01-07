@@ -55,7 +55,7 @@ def info(ctx, task_id):
     try:
         restore_session(ctx)
         client = ctx.obj['client']
-        result = client.get_resource('%s/task/%s' % (client._uri, task_id))
+        result = client.get_resource(f"{client.get_api_uri()}/task/{task_id}")
         stdout(task_to_dict(result), ctx, show_id=True)
     except Exception as e:
         stderr(e, ctx)
@@ -96,7 +96,7 @@ def wait(ctx, task_id):
     try:
         restore_session(ctx)
         client = ctx.obj['client']
-        task = client.get_resource('%s/task/%s' % (client._uri, task_id))
+        task = client.get_resource(f"{client.get_api_uri()}/task/{task_id}")
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
@@ -114,7 +114,7 @@ def update(ctx, status, task_id):
     try:
         restore_session(ctx)
         client = ctx.obj['client']
-        task = client.get_resource('%s/task/%s' % (client._uri, task_id))
+        task = client.get_resource(f"{client.get_api_uri()}/task/{task_id}")
         task.set('status', status)
         result = client.put_linked_resource(task, RelationType.EDIT,
                                             EntityType.TASK.value, task)

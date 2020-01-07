@@ -61,7 +61,6 @@ class Profiles(object):
                user,
                token,
                api_version,
-               wkep,
                verify,
                disable_warnings,
                vdc,
@@ -72,34 +71,38 @@ class Profiles(object):
                log_body,
                vapp,
                vapp_href,
-               name='default'):
+               name='default',
+               is_jwt_token=False):
         if self.data is None:
             self.data = {}
         if 'profiles' not in self.data:
             self.data['profiles'] = []
+
         profile = {}
         profile['name'] = str(name)
         profile['host'] = str(host)
         profile['org'] = str(org)
         profile['user'] = str(user)
         profile['token'] = str(token)
+        profile['is_jwt_token'] = is_jwt_token
         profile['api_version'] = str(api_version)
         profile['verify'] = verify
         profile['log_request'] = log_request
         profile['log_header'] = log_header
         profile['log_body'] = log_body
         profile['disable_warnings'] = disable_warnings
-        profile['wkep'] = wkep
         profile['org_in_use'] = str(org)
         profile['vdc_in_use'] = str(vdc)
         profile['vapp_in_use'] = str(vapp)
         profile['org_href'] = str(org_href)
         profile['vdc_href'] = str(vdc_href)
         profile['vapp_href'] = str(vapp_href)
+
         tmp = [profile]
         for p in self.data['profiles']:
             if p['name'] != name:
                 tmp.append(p)
+
         self.data['profiles'] = tmp
         self.data['active'] = str(name)
         self.save()

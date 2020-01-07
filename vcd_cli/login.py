@@ -13,7 +13,6 @@
 #
 
 import click
-from pyvcloud.vcd.client import _WellKnownEndpoint
 from pyvcloud.vcd.client import API_CURRENT_VERSIONS
 from pyvcloud.vcd.client import ApiVersion
 from pyvcloud.vcd.client import BasicLoginCredentials
@@ -120,6 +119,7 @@ def login(ctx, user, host, password, api_version, org, verify_ssl_certs,
                 fg='yellow',
                 err=True)
         requests.packages.urllib3.disable_warnings()
+
     if host == 'session' and org == 'list':
         sessions = []
         if user == 'chrome':
@@ -139,9 +139,6 @@ def login(ctx, user, host, password, api_version, org, verify_ssl_certs,
         log_headers=True,
         log_bodies=True)
     try:
-        if api_version is None:
-            api_version = client.get_latest_api_version()
-
         if session_id is not None or use_browser_session:
             if use_browser_session:
                 browser_session_id = None
@@ -159,28 +156,28 @@ def login(ctx, user, host, password, api_version, org, verify_ssl_certs,
             if password is None:
                 password = click.prompt('Password', hide_input=True, type=str)
             client.set_credentials(BasicLoginCredentials(user, org, password))
-        wkep = {}
-        for endpoint in _WellKnownEndpoint:
-            if endpoint in client._session_endpoints:
-                wkep[endpoint.name] = client._session_endpoints[endpoint]
+
+        negotiated_api_version = client.get_api_version()
+
         profiles = Profiles.load()
         logged_in_org = client.get_org()
         org_href = logged_in_org.get('href')
         vdc_href = ''
         in_use_vdc = ''
+
         links = []
-        if client.get_api_version() < ApiVersion.VERSION_33.value:
+        if float(negotiated_api_version) < float(ApiVersion.VERSION_33.value):
             links = get_links(logged_in_org, media_type=EntityType.VDC.value)
         else:
             if logged_in_org.get('name') != 'System':
                 links = client.get_resource_link_from_query_object(
                     logged_in_org, media_type=EntityType.RECORDS.value,
                     type='vdc')
+
         if vdc is None:
-            for v in links:
-                in_use_vdc = v.name
-                vdc_href = v.href
-                break
+            if len(links) > 0:
+                in_use_vdc = links[0].name
+                vdc_href = links[0].href
         else:
             for v in links:
                 if vdc == v.name:
@@ -189,13 +186,19 @@ def login(ctx, user, host, password, api_version, org, verify_ssl_certs,
                     break
             if len(in_use_vdc) == 0:
                 raise Exception('VDC not found')
+
+        token = client.get_access_token()
+        is_jwt_token = True
+        if not token:
+            token = client.get_xvcloud_authorization_token()
+            is_jwt_token = False
+
         profiles.update(
             host,
             org,
             user,
-            client._session.headers['x-vcloud-authorization'],
-            api_version,
-            wkep,
+            token,
+            negotiated_api_version,
             verify_ssl_certs,
             disable_warnings,
             vdc=in_use_vdc,
@@ -205,15 +208,17 @@ def login(ctx, user, host, password, api_version, org, verify_ssl_certs,
             log_header=True,
             log_body=True,
             vapp='',
-            vapp_href='')
-        alt_text = '%s logged in, org: \'%s\', vdc: \'%s\'' % \
-                   (user, org, in_use_vdc)
-        stdout({
+            vapp_href='',
+            is_jwt_token=is_jwt_token)
+
+        alt_text = f"{user} logged in, org: '{org}', vdc: '{in_use_vdc}'"
+        d = {
             'user': user,
             'org': org,
             'vdc': in_use_vdc,
             'logged_in': True
-        }, ctx, alt_text)
+        }
+        stdout(d, ctx, alt_text)
     except Exception as e:
         try:
             profiles = Profiles.load()

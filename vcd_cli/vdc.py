@@ -242,8 +242,15 @@ def use(ctx, name):
     metavar='<cpu-limit>',
     type=click.INT,
     help='Capacity limit relative to the value specified for Allocation.')
+@click.option(
+    '--network-quota',
+    required=False,
+    default=0,
+    metavar='<network-quota>',
+    type=click.INT,
+    help='Maximum number of network objects that can be deployed in this vdc.')
 def create(ctx, name, pvdc_name, network_pool_name, allocation_model, sp_name,
-           sp_limit, description, cpu_allocated, cpu_limit):
+           sp_limit, description, cpu_allocated, cpu_limit, network_quota):
     try:
         restore_session(ctx)
         client = ctx.obj['client']
@@ -265,6 +272,7 @@ def create(ctx, name, pvdc_name, network_pool_name, allocation_model, sp_name,
             cpu_allocated=cpu_allocated,
             cpu_limit=cpu_limit,
             storage_profiles=storage_profiles,
+            network_quota=network_quota,
             uses_fast_provisioning=True,
             is_thin_provision=True)
         stdout(vdc_resource.Tasks.Task[0], ctx)

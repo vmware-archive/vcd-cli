@@ -1,6 +1,24 @@
 CHANGES
 =======
 
+23.0.0
+------
+
+* Restricting pyvcloud version to >= 22.0.0 and < 23.0.0
+
+22.0.2
+------
+
+* Updating pyvcloud version to latest release version (#513)
+* Updating pyvcloud version to latest release version
+
+22.0.1
+------
+
+* [VCDA - 1341] Added JWT based authorization support in vcd-cli (#510)
+* [VCD-CLI] Remove snapshot of VM. (#496)
+* Updating Authors and ChangeLOg in github
+
 22.0.0
 ------
 

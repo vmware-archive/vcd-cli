@@ -245,7 +245,7 @@ def use(ctx, name):
     default=0,
     metavar='<cpu-allocated>',
     type=click.INT,
-    help='Capacity (in hz) that is commited to be available.')
+    help='Capacity that is commited to be available.')
 @click.option(
     '--cpu-limit',
     required=False,

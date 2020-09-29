@@ -269,7 +269,7 @@ def use(ctx, name):
     help='Maximum number of network objects that can be deployed in this vdc.')
 
 def create(ctx, name, pvdc_name, network_pool_name, allocation_model, sp_name,
-           sp_limit, description, cpu_allocated, cpu_limit, network_quota,mem_allocated):
+           sp_limit, description, cpu_allocated, cpu_limit, network_quota, mem_allocated):
     try:
         restore_session(ctx)
         client = ctx.obj['client']

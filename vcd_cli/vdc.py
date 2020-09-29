@@ -53,7 +53,18 @@ def vdc(ctx):
         vcd vdc create dev-vdc -p prov-vdc -n net-pool -s '*' \\
             -a ReservationPool -d 'vDC for development'
             Create new virtual datacenter.
-
+\b
+        vcd vdc create dev-vdc \\
+            --provider-vdc prov-vdc \\
+            --network-pool net-pool \\
+            --network-quota 10240 \\
+            --storage-profile '*' \\
+            --storage-profile-limit 10240 \\
+            --allocation-model AllocationPool  \\
+            --cpu-allocated 3000  \\
+            --memory-allocated 2048 \\
+            --description 'vDC for development'
+            Create new virtual datacenter.
 \b
         vcd vdc disable dev-vdc
             Disable virtual datacenter.
@@ -234,7 +245,7 @@ def use(ctx, name):
     default=0,
     metavar='<cpu-allocated>',
     type=click.INT,
-    help='Capacity that is commited to be available.')
+    help='Capacity (in hz) that is commited to be available.')
 @click.option(
     '--cpu-limit',
     required=False,
@@ -243,14 +254,22 @@ def use(ctx, name):
     type=click.INT,
     help='Capacity limit relative to the value specified for Allocation.')
 @click.option(
+    '--mem-allocated',
+    required=False,
+    default=0,
+    metavar='<mem-allocated>',
+    type=click.INT,
+    help='Capacity (in MB) that is commited to be available.')
+@click.option(
     '--network-quota',
     required=False,
     default=0,
     metavar='<network-quota>',
     type=click.INT,
     help='Maximum number of network objects that can be deployed in this vdc.')
+
 def create(ctx, name, pvdc_name, network_pool_name, allocation_model, sp_name,
-           sp_limit, description, cpu_allocated, cpu_limit, network_quota):
+           sp_limit, description, cpu_allocated, cpu_limit, network_quota,mem_allocated):
     try:
         restore_session(ctx)
         client = ctx.obj['client']
@@ -273,6 +292,7 @@ def create(ctx, name, pvdc_name, network_pool_name, allocation_model, sp_name,
             cpu_limit=cpu_limit,
             storage_profiles=storage_profiles,
             network_quota=network_quota,
+            mem_allocated=mem_allocated,
             uses_fast_provisioning=True,
             is_thin_provision=True)
         stdout(vdc_resource.Tasks.Task[0], ctx)

@@ -232,7 +232,6 @@ def stdout(obj, ctx=None, alt_text=None, show_id=False,
                     text = as_table(to_dict(obj), show_id=show_id,
                                     show_headers=show_headers)
             elif not isinstance(obj, list):
-                click.echo("not list")
                 obj1 = {}
                 for k, v in obj.items():
                     if type(v) in [list, tuple]:

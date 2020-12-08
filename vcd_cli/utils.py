@@ -51,7 +51,8 @@ def is_sysadmin(ctx):
 def as_table(obj_list,
              show_id=False,
              sort_headers=True,
-             hide_fields=['href', 'type']):
+             hide_fields=['href', 'type'],
+             show_headers=True):
     if len(obj_list) == 0:
         return ''
     else:
@@ -68,7 +69,9 @@ def as_table(obj_list,
         for obj in obj_list:
             table.append(
                 [obj.get(k) if k in obj.keys() else '' for k in headers])
-        return tabulate(table, headers)
+        if show_headers:
+            return tabulate(table, headers)
+        return tabulate(table)
 
 
 def as_prop_value_list(obj, show_id=True):
@@ -159,7 +162,8 @@ def task_callback(task):
     click.secho(message, nl=False)
 
 
-def stdout(obj, ctx=None, alt_text=None, show_id=False, sort_headers=True):
+def stdout(obj, ctx=None, alt_text=None, show_id=False,
+           sort_headers=True, show_headers=True):
     global last_message
     last_message = ''
     o = obj
@@ -225,7 +229,8 @@ def stdout(obj, ctx=None, alt_text=None, show_id=False, sort_headers=True):
                         } for k, v in sorted(to_dict(obj).items())],
                         show_id=show_id)
                 else:
-                    text = as_table(to_dict(obj), show_id=show_id)
+                    text = as_table(to_dict(obj), show_id=show_id,
+                                    show_headers=show_headers)
             elif not isinstance(obj, list):
                 obj1 = {}
                 for k, v in obj.items():
@@ -240,7 +245,8 @@ def stdout(obj, ctx=None, alt_text=None, show_id=False, sort_headers=True):
                 text = as_prop_value_list(obj1, show_id=show_id)
             else:
                 text = as_table(
-                    obj, show_id=show_id, sort_headers=sort_headers)
+                    obj, show_id=show_id, sort_headers=sort_headers,
+                    show_headers=show_headers)
         click.echo('\x1b[2K\r' + text)
 
 

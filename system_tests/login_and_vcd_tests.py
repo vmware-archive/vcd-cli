@@ -141,7 +141,7 @@ class LoginAndVcdTest(BaseTestCase):
         result = self._runner.invoke(version)
         self.assertEqual(0, result.exit_code)
         self.assertTrue("vcd-cli" in result.output, msg=result.output)
-        version_pattern = re.compile('[0-9]+\.[0-3]+\.[0-9]+')
+        version_pattern = re.compile(r'[0-9]+\.[0-3]+\.[0-9]+')
         self.assertTrue(
             version_pattern.search(result.output) is not None,
             msg=result.output)

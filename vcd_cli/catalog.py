@@ -62,7 +62,7 @@ def catalog(ctx):
             Get list of items in a catalog.
 \b
         vcd catalog list '*'
-        vcd catalog list \*
+        vcd catalog list \\*
             Get list of items in all catalogs in current organization.
 \b
         vcd catalog upload my-catalog photon.ova

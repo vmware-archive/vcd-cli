@@ -6,14 +6,14 @@ Options:
                                   IP range of the DHCP pool  [required]
   --enable-auto-dns / --disable-auto-dns
                                   Auto configure DNS
-  -g--gateway-ip <default-gateway-ip>
+  -g, --gateway-ip <default-gateway-ip>
                                   Default gateway ip
-  -d--domain <domain-name>        domain name
-  -p--primary-server <primary-name-server>
+  -d, --domain <domain-name>      domain name
+  -p, --primary-server <primary-name-server>
                                   primary server ip
-  -s--secondary-server <secondary-name-server>
+  -s, --secondary-server <secondary-name-server>
                                   secondary server ip
-  -l--lease <lease-time>          lease time
+  -l, --lease <lease-time>        lease time
   --never-expire-lease / --expire-lease
                                   lease lease expire
   --subnet <subnet>               subnet mask

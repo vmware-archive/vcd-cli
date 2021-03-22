@@ -11,9 +11,11 @@ Options:
   -lsubnet, --local-subnet <local-subnet>
                                   Local subnets of IPsec VPN.These should be
                                   given comma separated.
+
   -psubnet, --peer-subnet <peer-subnet>
                                   Peer subnets of IPsec VPN.These should be
                                   given comma separated.
+
   -psk, --pre-shared-key <pre-shared-key>
                                   Pre shared key of IPsec VPN.
   --description <description>     Description of IPsec VPN.

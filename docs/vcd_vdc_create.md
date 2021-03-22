@@ -13,12 +13,18 @@ Options:
   --storage-profile-limit [storage-profile-limit]
                                   Provider VDC Storage Profile limit (MB), 0
                                   means unlimited.
+
   -D, --description [description]
                                   description.
   --cpu-allocated <cpu-allocated>
                                   Capacity that is commited to be available.
   --cpu-limit <cpu-limit>         Capacity limit relative to the value
                                   specified for Allocation.
+
+  --network-quota <network-quota>
+                                  Maximum number of network objects that can
+                                  be deployed in this vdc.
+
   -h, --help                      Show this message and exit.
 
 ```

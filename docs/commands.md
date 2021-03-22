@@ -22,6 +22,10 @@
 <a href="vcd_catalog_upload">upload</a></li>
 </ul></li>
 <li>
+<a href="vcd_datastore">datastore</a><ul><li>
+<a href="vcd_datastore_list">list</a></li>
+</ul></li>
+<li>
 <a href="vcd_disk">disk</a><ul><li>
 <a href="vcd_disk_change-owner">change-owner</a></li><li>
 <a href="vcd_disk_create">create</a></li><li>
@@ -259,6 +263,7 @@
 <li>
 <a href="vcd_role">role</a><ul><li>
 <a href="vcd_role_add-right">add-right</a></li><li>
+<a href="vcd_role_clone">clone</a></li><li>
 <a href="vcd_role_create">create</a></li><li>
 <a href="vcd_role_delete">delete</a></li><li>
 <a href="vcd_role_info">info</a></li><li>
@@ -312,6 +317,7 @@
 <li>
 <a href="vcd_vapp_add-disk">add-disk</a></li><li>
 <a href="vcd_vapp_add-vm">add-vm</a></li><li>
+<a href="vcd_vapp_add-vm-scratch">add-vm-scratch</a></li><li>
 <a href="vcd_vapp_attach">attach</a></li><li>
 <a href="vcd_vapp_capture">capture</a></li><li>
 <a href="vcd_vapp_change-owner">change-owner</a></li><li>
@@ -322,9 +328,11 @@
 <a href="vcd_vapp_delete">delete</a></li><li>
 <a href="vcd_vapp_deploy">deploy</a></li><li>
 <a href="vcd_vapp_detach">detach</a></li><li>
+<a href="vcd_vapp_disable-download">disable-download</a></li><li>
 <a href="vcd_vapp_discard-suspended-state">discard-suspended-state</a></li><li>
 <a href="vcd_vapp_disconnect">disconnect</a></li><li>
 <a href="vcd_vapp_download">download</a></li><li>
+<a href="vcd_vapp_enable-download">enable-download</a></li><li>
 <a href="vcd_vapp_enter-maintenance-mode">enter-maintenance-mode</a></li><li>
 <a href="vcd_vapp_exit-maintenance-mode">exit-maintenance-mode</a></li><li>
 <a href="vcd_vapp_info">info</a></li><li>
@@ -335,11 +343,14 @@
 <a href="vcd_vapp_network_add-ip-range">add-ip-range</a></li><li>
 <a href="vcd_vapp_network_connect-ovdc">connect-ovdc</a></li><li>
 <a href="vcd_vapp_network_create">create</a></li><li>
+<a href="vcd_vapp_network_create-ovdc-network">create-ovdc-network</a></li><li>
 <a href="vcd_vapp_network_delete">delete</a></li><li>
 <a href="vcd_vapp_network_delete-ip-range">delete-ip-range</a></li><li>
 <a href="vcd_vapp_network_dns-info">dns-info</a></li><li>
+<a href="vcd_vapp_network_enable-fence">enable-fence</a></li><li>
 <a href="vcd_vapp_network_list">list</a></li><li>
 <a href="vcd_vapp_network_list-allocated-ip">list-allocated-ip</a></li><li>
+<a href="vcd_vapp_network_list-vm-interface">list-vm-interface</a></li><li>
 <a href="vcd_vapp_network_reset">reset</a></li><li>
 <a href="vcd_vapp_network_services">services</a><ul><li>
 <a href="vcd_vapp_network_services_dhcp">dhcp</a><ul><li>
@@ -348,7 +359,30 @@
 </ul></li>
 <li>
 <a href="vcd_vapp_network_services_firewall">firewall</a><ul><li>
-<a href="vcd_vapp_network_services_firewall_enable-firewall">enable-firewall</a></li>
+<a href="vcd_vapp_network_services_firewall_add">add</a></li><li>
+<a href="vcd_vapp_network_services_firewall_delete">delete</a></li><li>
+<a href="vcd_vapp_network_services_firewall_enable-firewall">enable-firewall</a></li><li>
+<a href="vcd_vapp_network_services_firewall_list">list</a></li><li>
+<a href="vcd_vapp_network_services_firewall_set-default-action">set-default-action</a></li><li>
+<a href="vcd_vapp_network_services_firewall_update">update</a></li>
+</ul></li>
+<li>
+<a href="vcd_vapp_network_services_nat">nat</a><ul><li>
+<a href="vcd_vapp_network_services_nat_add">add</a></li><li>
+<a href="vcd_vapp_network_services_nat_delete">delete</a></li><li>
+<a href="vcd_vapp_network_services_nat_enable-nat">enable-nat</a></li><li>
+<a href="vcd_vapp_network_services_nat_get-nat-type">get-nat-type</a></li><li>
+<a href="vcd_vapp_network_services_nat_list">list</a></li><li>
+<a href="vcd_vapp_network_services_nat_set-nat-type">set-nat-type</a></li><li>
+<a href="vcd_vapp_network_services_nat_update">update</a></li>
+</ul></li>
+<li>
+<a href="vcd_vapp_network_services_static-route">static-route</a><ul><li>
+<a href="vcd_vapp_network_services_static-route_add">add</a></li><li>
+<a href="vcd_vapp_network_services_static-route_delete">delete</a></li><li>
+<a href="vcd_vapp_network_services_static-route_enable-service">enable-service</a></li><li>
+<a href="vcd_vapp_network_services_static-route_list">list</a></li><li>
+<a href="vcd_vapp_network_services_static-route_update">update</a></li>
 </ul></li>
 </ul></li>
 <li>
@@ -364,12 +398,18 @@
 <a href="vcd_vapp_remove-snapshot">remove-snapshot</a></li><li>
 <a href="vcd_vapp_reset">reset</a></li><li>
 <a href="vcd_vapp_revert-to-snapshot">revert-to-snapshot</a></li><li>
+<a href="vcd_vapp_show-lease">show-lease</a></li><li>
+<a href="vcd_vapp_show-metadata">show-metadata</a></li><li>
+<a href="vcd_vapp_show-product-section">show-product-section</a></li><li>
+<a href="vcd_vapp_show-startup-section">show-startup-section</a></li><li>
 <a href="vcd_vapp_shutdown">shutdown</a></li><li>
 <a href="vcd_vapp_stop">stop</a></li><li>
 <a href="vcd_vapp_suspend">suspend</a></li><li>
 <a href="vcd_vapp_undeploy">undeploy</a></li><li>
 <a href="vcd_vapp_update">update</a></li><li>
 <a href="vcd_vapp_update-lease">update-lease</a></li><li>
+<a href="vcd_vapp_update-product-section">update-product-section</a></li><li>
+<a href="vcd_vapp_update-startup-section">update-startup-section</a></li><li>
 <a href="vcd_vapp_upgrade-virtual-hardware">upgrade-virtual-hardware</a></li><li>
 <a href="vcd_vapp_use">use</a></li>
 </ul></li>
@@ -399,6 +439,8 @@
 <a href="vcd_vdc_enable">enable</a></li><li>
 <a href="vcd_vdc_info">info</a></li><li>
 <a href="vcd_vdc_list">list</a></li><li>
+<a href="vcd_vdc_list-disk">list-disk</a></li><li>
+<a href="vcd_vdc_list-media">list-media</a></li><li>
 <a href="vcd_vdc_use">use</a></li>
 </ul></li>
 <li>
@@ -407,6 +449,7 @@
 <a href="vcd_vm_add-nic">add-nic</a></li><li>
 <a href="vcd_vm_attach-disk">attach-disk</a></li><li>
 <a href="vcd_vm_check-compliance">check-compliance</a></li><li>
+<a href="vcd_vm_check-post-gc-script">check-post-gc-script</a></li><li>
 <a href="vcd_vm_consolidate">consolidate</a></li><li>
 <a href="vcd_vm_copy">copy</a></li><li>
 <a href="vcd_vm_create-snapshot">create-snapshot</a></li><li>
@@ -417,24 +460,56 @@
 <a href="vcd_vm_detach-disk">detach-disk</a></li><li>
 <a href="vcd_vm_discard-suspend">discard-suspend</a></li><li>
 <a href="vcd_vm_eject-cd">eject-cd</a></li><li>
+<a href="vcd_vm_enable-nested-hypervisor">enable-nested-hypervisor</a></li><li>
+<a href="vcd_vm_gc-enable">gc-enable</a></li><li>
+<a href="vcd_vm_gc-status">gc-status</a></li><li>
 <a href="vcd_vm_general-setting">general-setting</a></li><li>
+<a href="vcd_vm_get-compliance-result">get-compliance-result</a></li><li>
 <a href="vcd_vm_info">info</a></li><li>
 <a href="vcd_vm_insert-cd">insert-cd</a></li><li>
 <a href="vcd_vm_install-vmware-tools">install-vmware-tools</a></li><li>
 <a href="vcd_vm_list">list</a></li><li>
+<a href="vcd_vm_list-boot-options">list-boot-options</a></li><li>
+<a href="vcd_vm_list-current-metrics">list-current-metrics</a></li><li>
+<a href="vcd_vm_list-gc-section">list-gc-section</a></li><li>
+<a href="vcd_vm_list-historic-metrics">list-historic-metrics</a></li><li>
+<a href="vcd_vm_list-metadata">list-metadata</a></li><li>
+<a href="vcd_vm_list-mks-ticket">list-mks-ticket</a></li><li>
 <a href="vcd_vm_list-nics">list-nics</a></li><li>
+<a href="vcd_vm_list-os-section">list-os-section</a></li><li>
+<a href="vcd_vm_list-product-sections">list-product-sections</a></li><li>
+<a href="vcd_vm_list-runtime-info">list-runtime-info</a></li><li>
+<a href="vcd_vm_list-sample-historic-data">list-sample-historic-data</a></li><li>
+<a href="vcd_vm_list-screen-ticket">list-screen-ticket</a></li><li>
 <a href="vcd_vm_list-storage-profile">list-storage-profile</a></li><li>
+<a href="vcd_vm_list-subset-current-metrics">list-subset-current-metrics</a></li><li>
+<a href="vcd_vm_list-virtual-hardware-section">list-virtual-hardware-section</a></li><li>
+<a href="vcd_vm_list-vm-capabilities">list-vm-capabilities</a></li><li>
 <a href="vcd_vm_move">move</a></li><li>
 <a href="vcd_vm_power-off">power-off</a></li><li>
 <a href="vcd_vm_power-on">power-on</a></li><li>
+<a href="vcd_vm_poweron-force-recustomize">poweron-force-recustomize</a></li><li>
 <a href="vcd_vm_reboot">reboot</a></li><li>
 <a href="vcd_vm_reload-from-vc">reload-from-vc</a></li><li>
+<a href="vcd_vm_relocate">relocate</a></li><li>
+<a href="vcd_vm_remove-metadata">remove-metadata</a></li><li>
+<a href="vcd_vm_remove-snapshot">remove-snapshot</a></li><li>
 <a href="vcd_vm_reset">reset</a></li><li>
 <a href="vcd_vm_revert-to-snapshot">revert-to-snapshot</a></li><li>
+<a href="vcd_vm_set-metadata">set-metadata</a></li><li>
 <a href="vcd_vm_shutdown">shutdown</a></li><li>
 <a href="vcd_vm_suspend">suspend</a></li><li>
 <a href="vcd_vm_undeploy">undeploy</a></li><li>
 <a href="vcd_vm_update">update</a></li><li>
+<a href="vcd_vm_update-boot-options">update-boot-options</a></li><li>
+<a href="vcd_vm_update-gc-section">update-gc-section</a></li><li>
+<a href="vcd_vm_update-general-setting">update-general-setting</a></li><li>
+<a href="vcd_vm_update-metadata">update-metadata</a></li><li>
+<a href="vcd_vm_update-nic">update-nic</a></li><li>
+<a href="vcd_vm_update-os-section">update-os-section</a></li><li>
+<a href="vcd_vm_update-vhs-disk">update-vhs-disk</a></li><li>
+<a href="vcd_vm_update-vhs-media">update-vhs-media</a></li><li>
+<a href="vcd_vm_update-vm-capabilities">update-vm-capabilities</a></li><li>
 <a href="vcd_vm_upgrade-virtual-hardware">upgrade-virtual-hardware</a></li></ul>
 </li></ul>
 </li></ul>

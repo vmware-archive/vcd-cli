@@ -6,6 +6,7 @@ Options:
                                   Description of the new disk
   -s, --storage-profile <name>    Name of the Storage Profile to be used for
                                   the new disk.
+
   -i, --iops <iops>               Iops requirements of the new disk
   -h, --help                      Show this message and exit.
 

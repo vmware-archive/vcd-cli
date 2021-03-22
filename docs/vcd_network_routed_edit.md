@@ -7,6 +7,7 @@ Options:
   --shared-enabled / --shared-disabled
                                   share this network with other VDCs in the
                                   organization
+
   -h, --help                      Show this message and exit.
 
 ```

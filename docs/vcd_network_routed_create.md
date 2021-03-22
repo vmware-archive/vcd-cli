@@ -4,6 +4,7 @@ Usage: vcd network routed create [OPTIONS] <name>
 Options:
   -g, --gateway-name <name>       name of gateway to which this network will
                                   connect  [required]
+
   --subnet <CIDR format. e.g.,x.x.x.x/20>
                                   Network CIDR  [required]
   --description <description>     description

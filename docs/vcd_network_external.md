@@ -107,12 +107,14 @@ Options:
 Commands:
   add-ip-range                 add an IP range to a subnet in an external
                                network
+
   add-subnet                   add subnet to an external network
   attach-port-group            attach a port group to an external network
   create                       create a new external network
   delete                       delete an external network
   delete-ip-range              delete an IP range of a subnet in an external
                                network
+
   detach-port-group            detach port group from an external network
   enable-subnet                enable subnet of an external network
   info                         show external network details
@@ -125,6 +127,7 @@ Commands:
   list-vsphere-network         list associated vSphere networks
   update                       update name and description of an external
                                network
+
   update-ip-range              update an IP range of a subnet in an external
                                network
 

@@ -32,12 +32,13 @@ Usage: vcd login [OPTIONS] host organization user
 
 Options:
   -p, --password <password>       Password
-  -V, --version [29.0|30.0|31.0|32.0|33.0]
+  -V, --version [29.0|30.0|31.0|32.0|33.0|34.0|35.0|36.0]
                                   API version
   -s, --verify-ssl-certs / -i, --no-verify-ssl-certs
                                   Verify SSL certificates
   -w, --disable-warnings          Do not display warnings when not verifying
                                   SSL certificates
+
   -v, --vdc TEXT                  virtual datacenter
   -d, --session-id TEXT           session id
   -b, --use-browser-session       Use browser session

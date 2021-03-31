@@ -79,6 +79,7 @@ Commands:
   delete              delete firewall rule
   delete-destination  delete firewall rule's destination value of a firewall
                       rule
+
   delete-service      delete firewall rule's service of a firewall rule
   delete-source       delete firewall rule's source value of a firewall rule
   disable             disable firewall rule

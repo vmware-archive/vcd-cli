@@ -19,30 +19,31 @@ Options:
   -h, --help                    Show this message and exit.
 
 Commands:
-  catalog  work with catalogs
-  disk     manage independent disks
-  gateway  manage edge gateways
-  help     show help
-  info     show resource details
-  login    login to vCD
-  logout   logout from vCD
-  netpool  work with network pools
-  network  work with vcd networks
-  nsxt     manage NSX-T managers
-  org      work with organizations
-  profile  manage profiles
-  pvdc     work with provider virtual datacenters
-  pwd      current resources in use
-  right    work with rights
-  role     work with roles
-  search   search resources
-  system   manage system settings
-  task     work with tasks
-  user     work with users in current organization
-  vapp     manage vApps
-  vc       manage vCenter Servers
-  vdc      work with virtual datacenters
-  version  show version
-  vm       manage VMs
+  catalog    work with catalogs
+  datastore  manage datastores
+  disk       manage independent disks
+  gateway    manage edge gateways
+  help       show help
+  info       show resource details
+  login      login to vCD
+  logout     logout from vCD
+  netpool    work with network pools
+  network    work with vcd networks
+  nsxt       manage NSX-T managers
+  org        work with organizations
+  profile    manage profiles
+  pvdc       work with provider virtual datacenters
+  pwd        current resources in use
+  right      work with rights
+  role       work with roles
+  search     search resources
+  system     manage system settings
+  task       work with tasks
+  user       work with users in current organization
+  vapp       manage vApps
+  vc         manage vCenter Servers
+  vdc        work with virtual datacenters
+  version    show version
+  vm         manage VMs
 
 ```

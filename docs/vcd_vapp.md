@@ -172,6 +172,38 @@ Usage: vcd vapp [OPTIONS] COMMAND [ARGS]...
 
           vcd vapp remove-snapshot vapp1
               Remove snapshot of the vapp.
+
+          vcd vapp enable-download vapp1
+              Enable download of the vapp.
+
+          vcd vapp disable-download vapp1
+              Disable download of the vapp.
+
+          vcd vapp show-lease vapp1
+              Show vApp lease details.
+
+          vcd vapp show-metadata vapp1
+              Show metadata of vapp.
+
+          vcd vapp update-startup-section vapp1 testvm1 --o 1 --start-action
+              powerOn --start-delay 4 --stop-action guestShutdown --stop-delay 3
+              Update startup section of vapp
+
+          vcd vapp show-startup-section vapp1
+              Show startup section data of vapp.
+
+          vcd vapp show-product-section vapp1
+              Show product section data of vapp.
+
+          vcd vapp update-product-section vapp1 --key testkey --value testvalue
+              --class_name testclassname --instance_name testinstancename --label
+              labledata --is_password true --user_configurable false
+              Update product section of vapp.
+
+          vcd vapp add-vm-scratch vapp1 -vm vm1 -cn computer_name -d description
+                  -os windows7_64Guest -cpu 2 -cps 2 -crm 2 -m 1024 -media
+                  pb1.iso -aae -deploy -power-on
+              Add a VM from scratch to a vApp.
       
 
 Options:
@@ -181,6 +213,7 @@ Commands:
   acl                       work with vapp acl
   add-disk                  add disk to vm
   add-vm                    add VM to vApp
+  add-vm-scratch            add VM from scratch to vApp
   attach                    attach disk to VM in vApp
   capture                   Capture a vApp as template
   change-owner              change vApp owner
@@ -191,9 +224,11 @@ Commands:
   delete                    delete a vApp or VM(s)
   deploy                    Deploy a vApp or VM(s)
   detach                    detach disk from VM in vApp
+  disable-download          disbale a vapp for download
   discard-suspended-state   discard suspended state of vApp
   disconnect                disconnect an ovdc network from a vapp
   download                  Download a vApp
+  enable-download           enable a vapp for download
   enter-maintenance-mode    Place a vApp in Maintenance Mode
   exit-maintenance-mode     exit maintenance mode a vApp
   info                      show vApp details
@@ -206,12 +241,18 @@ Commands:
   remove-snapshot           rmove snapshot of vapp
   reset                     Reset a vApp or VM(s)
   revert-to-snapshot        revert vapp to current snapshot
+  show-lease                show a vapp lease details
+  show-metadata             show metadata of vapp
+  show-product-section      show product sections of vapp
+  show-startup-section      show startup section of vapp
   shutdown                  shutdown a vApp
   stop                      stop a vApp
   suspend                   suspend a vApp
   undeploy                  undeploy a vApp or VM(s)
   update                    update vapp's name and description
   update-lease              update vApp lease
+  update-product-section    update product section of vapp
+  update-startup-section    update startup section of vapp for vm
   upgrade-virtual-hardware  upgrade virtual hardware of a vApp
   use                       set active vApp
 

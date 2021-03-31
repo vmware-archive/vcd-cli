@@ -7,14 +7,18 @@ Options:
   -pid, --peer-id <peer-id>       Peer id of IPsec VPN.  [required]
   -lip, --local-ip <local-ip>     Local IP/Local end point of IPsec VPN.
                                   [required]
+
   -pip, --peer-ip <peer-ip>       Peer IP/Peer end point of IPsec VPN.
                                   [required]
+
   -lsubnet, --local-subnet <local-subnet>
                                   Local subnets of IPsec VPN.These should be
                                   given comma separated.  [required]
+
   -psubnet, --peer-subnet <peer-subnet>
                                   Peer subnets of IPsec VPN.These should be
                                   given comma separated.  [required]
+
   -psk, --pre-shared-key <pre-shared-key>
                                   Pre shared key of IPsec VPN.  [required]
   --description <description>     Description of IPsec VPN.

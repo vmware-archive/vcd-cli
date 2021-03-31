@@ -62,6 +62,15 @@ Usage: vcd vapp network [OPTIONS] COMMAND [ARGS]...
 
           vcd vapp network sync-syslog-settings vapp1 vapp-network1
               Sync syslog settings of vapp network
+
+          vdc vapp network create-ovdc-network vapp1 ovdc-network1
+              Create a vApp network using org vdc network.
+
+          vdc vapp network enable-fence vapp1
+              Enable fence mode of vApp network.
+
+          vdc vapp network list-vm-interface vapp1 vapp-network1
+              List vm interfaces of network.
       
 
 Options:
@@ -72,11 +81,14 @@ Commands:
   add-ip-range          add IP range/s to the network
   connect-ovdc          connect a vapp network to org vdc network
   create                create a vApp network
+  create-ovdc-network   create a vapp network using org vdc network
   delete                delete a vApp network
   delete-ip-range       delete an IP range in network
   dns-info              show DNS details of vapp network
+  enable-fence          enable fence mode of vapp network
   list                  list vapp networks
   list-allocated-ip     list allocated IP
+  list-vm-interface     list vm interfaces of network
   reset                 reset a vApp network
   services              manage vapp network services
   sync-syslog-settings  sync syslog settings of vapp network

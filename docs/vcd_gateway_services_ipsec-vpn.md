@@ -69,6 +69,7 @@ Commands:
   set-log-level             set log level of IPsec VPN. It's value should be
                             from the domain:{emergency, alert, critical,
                             error, warning, notice, info, debug)
+
   update                    update IPsec VPN
 
 ```

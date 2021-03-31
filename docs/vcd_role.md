@@ -37,15 +37,22 @@ Usage: vcd role [OPTIONS] COMMAND [ARGS]...
           vcd role remove-right myRole myRight1 myRight2  -o myOrg
               Removes one or more rights from a given role.
 
-
+          vcd role clone "Organization Adminstrator" cloned_role
+              Creates a new role 'cloned_role' with the same rights and
+              description as "Organization Administrator"
+      
 
 Options:
   -h, --help  Show this message and exit.
 
 Commands:
   add-right     Adds one or more rights to the role
+  clone         Creates a role that is a copy of an existing role in the
+                specified org(defaults to the current org in use)
+
   create        Creates role in the specified Organization (defaults to the
                 current Organization in use)
+
   delete        Deletes role in the specified Organization
   info          show details of a role
   link          Link the role of a given org to its template

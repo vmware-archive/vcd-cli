@@ -92,15 +92,18 @@ Commands:
   delete                          delete org vdc routed network
   delete-ip-range                 delete an IP range from a routed org vdc
                                   network
+
   edit                            Edit a routed org vdc network
   info                            show routed network information
   list                            list all routed org vdc networks in the
                                   selected vdc
+
   list-allocated-ip               list allocated IP addresses
   list-connected-vapps            list connected vApps
   list-metadata                   list metadata of a routed org vdc network
   remove-metadata                 remove metadata from a routed org vdc
                                   network
+
   set-metadata                    set metadata to a routed org vdc network
   update-ip-range                 Update IP range of routed org vdc network.
 

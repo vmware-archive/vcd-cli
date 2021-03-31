@@ -68,35 +68,35 @@ def dhcp_pool(ctx):
    default=False,
    help='Auto configure DNS')
 @click.option(
-   '-g'
+   '-g',
    '--gateway-ip',
    'gateway_ip',
    metavar='<default-gateway-ip>',
    default=None,
    help='Default gateway ip')
 @click.option(
-   '-d'
+   '-d',
    '--domain',
    'domain',
    metavar='<domain-name>',
    default=None,
    help='domain name')
 @click.option(
-   '-p'
+   '-p',
    '--primary-server',
    'primary_server',
    metavar='<primary-name-server>',
    default=None,
    help='primary server ip')
 @click.option(
-   '-s'
+   '-s',
    '--secondary-server',
    'secondary_server',
    metavar='<secondary-name-server>',
    default=None,
    help='secondary server ip')
 @click.option(
-   '-l'
+   '-l',
    '--lease',
    'lease',
    metavar='<lease-time>',

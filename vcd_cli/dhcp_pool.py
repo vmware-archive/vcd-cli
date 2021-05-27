@@ -12,18 +12,17 @@
 # conditions of the subcomponent's license, as noted in the LICENSE file.
 #
 import click
+from pyvcloud.vcd.dhcp_pool import DhcpPool
+
+from vcd_cli.gateway import get_gateway
+from vcd_cli.gateway import services
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
-# Don't change the order of vcd  nd gateway
-from vcd_cli.vcd import vcd #NOQA
-from vcd_cli.gateway import gateway # NOQA
-from vcd_cli.gateway import get_gateway
-from vcd_cli.gateway import services
-
-from pyvcloud.vcd.dhcp_pool import DhcpPool
 
 LEASE_TIME = '8640'
+
+
 @services.group('dhcp-pool', short_help='manage DHCP pool of the gateway')
 @click.pass_context
 def dhcp_pool(ctx):
@@ -53,76 +52,66 @@ def dhcp_pool(ctx):
 @dhcp_pool.command("create", short_help="create new DHCP pool")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
-@click.option(
-   '-r',
-   '--range',
-   'ip_range',
-   required=True,
-   default=None,
-   metavar='<IP range of the pool>',
-   help='IP range of the DHCP pool')
-@click.option(
-   '--enable-auto-dns/--disable-auto-dns',
-   'is_auto_dns',
-   metavar='<bool>',
-   default=False,
-   help='Auto configure DNS')
-@click.option(
-   '-g'
-   '--gateway-ip',
-   'gateway_ip',
-   metavar='<default-gateway-ip>',
-   default=None,
-   help='Default gateway ip')
-@click.option(
-   '-d'
-   '--domain',
-   'domain',
-   metavar='<domain-name>',
-   default=None,
-   help='domain name')
-@click.option(
-   '-p'
-   '--primary-server',
-   'primary_server',
-   metavar='<primary-name-server>',
-   default=None,
-   help='primary server ip')
-@click.option(
-   '-s'
-   '--secondary-server',
-   'secondary_server',
-   metavar='<secondary-name-server>',
-   default=None,
-   help='secondary server ip')
-@click.option(
-   '-l'
-   '--lease',
-   'lease',
-   metavar='<lease-time>',
-   default=LEASE_TIME,
-   help='lease time')
-@click.option(
-   '--never-expire-lease/--expire-lease',
-   'lease_expire',
-   metavar='<bool>',
-   default=False,
-   help='lease lease expire')
-@click.option(
-   '--subnet',
-   'subnet',
-   metavar='<subnet>',
-   default=None,
-   help='subnet mask')
+@click.option('-r',
+              '--range',
+              'ip_range',
+              required=True,
+              default=None,
+              metavar='<IP range of the pool>',
+              help='IP range of the DHCP pool')
+@click.option('--enable-auto-dns/--disable-auto-dns',
+              'is_auto_dns',
+              metavar='<bool>',
+              default=False,
+              help='Auto configure DNS')
+@click.option('-g'
+              '--gateway-ip',
+              'gateway_ip',
+              metavar='<default-gateway-ip>',
+              default=None,
+              help='Default gateway ip')
+@click.option('-d'
+              '--domain',
+              'domain',
+              metavar='<domain-name>',
+              default=None,
+              help='domain name')
+@click.option('-p'
+              '--primary-server',
+              'primary_server',
+              metavar='<primary-name-server>',
+              default=None,
+              help='primary server ip')
+@click.option('-s'
+              '--secondary-server',
+              'secondary_server',
+              metavar='<secondary-name-server>',
+              default=None,
+              help='secondary server ip')
+@click.option('-l'
+              '--lease',
+              'lease',
+              metavar='<lease-time>',
+              default=LEASE_TIME,
+              help='lease time')
+@click.option('--never-expire-lease/--expire-lease',
+              'lease_expire',
+              metavar='<bool>',
+              default=False,
+              help='lease lease expire')
+@click.option('--subnet',
+              'subnet',
+              metavar='<subnet>',
+              default=None,
+              help='subnet mask')
 def create_dhcp_pool(ctx, gateway_name, ip_range, is_auto_dns, gateway_ip,
                      domain, lease_expire, primary_server, secondary_server,
                      lease, subnet):
     try:
         gateway_resource = get_gateway(ctx, gateway_name)
-        gateway_resource.add_dhcp_pool(ip_range, is_auto_dns, gateway_ip
-                                              , domain, lease_expire, lease,
-                                              subnet, primary_server,
-                                              secondary_server)
+        gateway_resource.add_dhcp_pool(ip_range, is_auto_dns, gateway_ip,
+                                       domain, lease_expire, lease, subnet,
+                                       primary_server, secondary_server)
         stdout('DHCP Pool created successfully.', ctx)
     except Exception as e:
         stderr(e, ctx)

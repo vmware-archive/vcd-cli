@@ -13,16 +13,13 @@
 #
 
 import click
+from pyvcloud.vcd.static_route import StaticRoute
+
+from vcd_cli.gateway import get_gateway
+from vcd_cli.gateway import services
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
-# Don't change the order of vcd  and gateway
-from vcd_cli.vcd import vcd #NOQA
-from vcd_cli.gateway import gateway # NOQA
-from vcd_cli.gateway import get_gateway
-from vcd_cli.gateway import services
-
-from pyvcloud.vcd.static_route import StaticRoute
 
 
 @services.group('static-route', short_help='manage static routes of gateway')

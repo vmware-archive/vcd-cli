@@ -13,15 +13,13 @@
 #
 
 import click
-
 from pyvcloud.vcd.firewall_rule import FirewallRule
-from vcd_cli.utils import stderr
-from vcd_cli.utils import stdout
-from vcd_cli.vcd import vcd  #NOQA
-from vcd_cli.gateway import gateway  # NOQA
+
 from vcd_cli.gateway import get_gateway
 from vcd_cli.gateway import services
 from vcd_cli.utils import restore_session
+from vcd_cli.utils import stderr
+from vcd_cli.utils import stdout
 from vcd_cli.utils import tuple_to_dict
 
 

@@ -111,7 +111,7 @@ class Chrome(BrowserCookieLoader):
                         iterations = 1003
                         key = PBKDF2(my_pass, salt, length, iterations)
                         break
-                except Exception as e:
+                except Exception as e:  # noqa F841
                     pass
 
         elif sys.platform.startswith('linux'):
@@ -123,8 +123,8 @@ class Chrome(BrowserCookieLoader):
         elif sys.platform == 'win32':
             key = None
         else:
-            raise BrowserCookieError('Unsupported operating system: ' +
-                                     sys.platform)
+            raise BrowserCookieError(
+                f'Unsupported operating system: {sys.platform}')
 
         for cookie_file in self.cookie_files:
             with create_local_copy(cookie_file) as tmp_cookie_file:
@@ -213,8 +213,8 @@ class Firefox(BrowserCookieLoader):
             return glob.glob(os.path.join(os.getenv('APPDATA', ''),
                              'Mozilla/Firefox/profiles.ini'))
         else:
-            raise BrowserCookieError('Unsupported operating system: ' +
-                                     sys.platform)
+            raise BrowserCookieError(
+                f'Unsupported operating system: {sys.platform}')
 
     def find_cookie_files(self):
         profile = self.find_default_profile()

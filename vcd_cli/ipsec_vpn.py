@@ -14,14 +14,12 @@
 
 import click
 from pyvcloud.vcd.ipsec_vpn import IpsecVpn
+
+from vcd_cli.gateway import get_gateway
+from vcd_cli.gateway import services
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
-# Don't change the order of vcd  and gateway
-from vcd_cli.vcd import vcd  # NOQA
-from vcd_cli.gateway import gateway  # NOQA
-from vcd_cli.gateway import get_gateway
-from vcd_cli.gateway import services
 
 
 @services.group('ipsec-vpn', short_help='Manage ipsec vpn of gateway')
@@ -51,7 +49,8 @@ def ipsec_vpn(ctx):
                 Updates IPsec VPN with new values.
 
     \b
-            vcd gateway services ipsec-vpn enable-activation-status test_gateway1
+            vcd gateway services ipsec-vpn enable-activation-status
+                    test_gateway1
                     --enable
                 Enable/disable activation status.
 
@@ -91,12 +90,6 @@ def ipsec_vpn(ctx):
                 Deletes IPsec VPN.
 
     """
-    __DEFAULT_ENCRYPTION_PROTOCOL = 'aes'
-    __DEFAULT_AUTHENTICATION_MODE = 'psk'
-    __DEFAULT_DH_GROUP = 'dh5'
-    __DEFAULT_MTU = '1500'
-    __DEFAULT_IP_SEC_ENABLE = True
-    __DEFAULT_ENABLE_PFS = False
 
 
 @ipsec_vpn.command("create", short_help="create new IPsec VPN")
@@ -230,7 +223,9 @@ def create_ipsec_vpn(ctx, gateway_name, name, local_id, peer_id, local_ip,
 @ipsec_vpn.command("update", short_help="update IPsec VPN")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
-@click.argument('id', metavar='<local end point-peer end point>', required=True)
+@click.argument('id',
+                metavar='<local end point-peer end point>',
+                required=True)
 @click.option(
     '--new-name',
     'name',
@@ -344,7 +339,9 @@ def update_ipsec_vpn(ctx, gateway_name, id, name, local_id, peer_id, local_ip,
 @ipsec_vpn.command("delete", short_help="Deletes the IPsec VPN")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
-@click.argument('id', metavar='<local end point-peer end point>', required=True)
+@click.argument('id',
+                metavar='<local end point-peer end point>',
+                required=True)
 def delete_ipsec_vpn(ctx, gateway_name, id):
     try:
         ipsec_vpn_obj = get_ipsec_vpn(ctx, gateway_name, id)
@@ -421,9 +418,9 @@ def info_logging_settings(ctx, gateway_name):
 
 
 @ipsec_vpn.command("set-log-level",
-                   short_help="set log level of IPsec VPN. It's value should be"
-                              " from the domain:{emergency, alert, critical, "
-                              "error, warning, notice, info, debug)")
+                   short_help="set log level of IPsec VPN. It's value should"
+                   " be from the domain:{emergency, alert, critical, error,"
+                   " warning, notice, info, debug)")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
 @click.argument('log_level', metavar='<log level>', required=True)
@@ -465,7 +462,9 @@ def change_shared_key(ctx, gateway_name, new_shared_key):
 @ipsec_vpn.command("info", short_help="get details of ipsec vpn")
 @click.pass_context
 @click.argument('gateway_name', metavar='<gateway name>', required=True)
-@click.argument('id', metavar='<local end point-peer end point>', required=True)
+@click.argument('id',
+                metavar='<local end point-peer end point>',
+                required=True)
 def info_ipsec_vpn(ctx, gateway_name, id):
     try:
         ipsec_vpn_obj = get_ipsec_vpn(ctx, gateway_name, id)

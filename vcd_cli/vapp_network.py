@@ -13,13 +13,12 @@
 #
 
 import click
+
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
-
-from vcd_cli.vcd import vcd  # NOQA
-from vcd_cli.vapp import vapp  # NOQA
 from vcd_cli.vapp import get_vapp
+from vcd_cli.vapp import vapp
 
 
 @vapp.group(short_help='work with vapp network')

@@ -14,18 +14,16 @@
 
 import click
 from pyvcloud.vcd.crl import Crl
+
+from vcd_cli.gateway import get_gateway
+from vcd_cli.gateway import services
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
-# Don't change the order of vcd  and gateway
-from vcd_cli.vcd import vcd  # NOQA
-from vcd_cli.gateway import gateway  # NOQA
-from vcd_cli.gateway import get_gateway
-from vcd_cli.gateway import services
 
 
-@services.group('crl-certificate', short_help='Manage '
-                                             'CRL certificates of gateway')
+@services.group('crl-certificate',
+                short_help='Manage CRL certificates of gateway')
 @click.pass_context
 def crl_certificates(ctx):
     """Manages CRL certificates of gateway.
@@ -65,10 +63,8 @@ def add_crl_certificate(ctx, gateway_name, certificate_file_path, desc):
     try:
         restore_session(ctx, vdc_required=True)
         gateway_resource = get_gateway(ctx, gateway_name)
-        gateway_resource. \
-            add_crl_certificate(crl_certificate_file_path=
-                                certificate_file_path,
-                                description=desc)
+        gateway_resource.add_crl_certificate(
+            crl_certificate_file_path=certificate_file_path, description=desc)
         stdout('CRL certificate added successfully', ctx)
     except Exception as e:
         stderr(e, ctx)

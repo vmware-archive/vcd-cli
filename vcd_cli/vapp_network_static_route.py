@@ -13,6 +13,7 @@
 # limitations under the License.
 import click
 from pyvcloud.vcd.vapp_static_route import VappStaticRoute
+
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
@@ -179,7 +180,7 @@ def update(ctx, vapp_name, network_name, route_name, route_new_name,
 @click.argument('vapp_name', metavar='<vapp-name>', required=True)
 @click.argument('network_name', metavar='<network-name>', required=True)
 @click.argument('route_name', metavar='<route-name>', required=True)
-def list(ctx, vapp_name, network_name, route_name):
+def delete(ctx, vapp_name, network_name, route_name):
     try:
         static_route = get_vapp_network_static_route(ctx, vapp_name,
                                                      network_name)

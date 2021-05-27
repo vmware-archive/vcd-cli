@@ -17,7 +17,6 @@ from pyvcloud.vcd.client import IpAddressMode
 from pyvcloud.vcd.client import MetadataDomain
 from pyvcloud.vcd.client import NetworkAdapterType
 from pyvcloud.vcd.utils import metadata_to_dict
-from pyvcloud.vcd.platform import Platform
 from pyvcloud.vcd.utils import vm_to_dict
 from pyvcloud.vcd.vapp import VApp
 from pyvcloud.vcd.vdc import VDC
@@ -363,17 +362,20 @@ def list_vms(ctx):
     except Exception as e:
         stderr(e, ctx)
 
+
 def _get_vdc(ctx):
     client = ctx.obj['client']
     vdc_href = ctx.obj['profiles'].get('vdc_href')
     vdc = VDC(client, href=vdc_href)
     return vdc
 
+
 def _get_vapp(ctx, vapp_name):
     client = ctx.obj['client']
     vdc = _get_vdc(ctx)
     vapp_resource = vdc.get_vapp(vapp_name)
     return VApp(client, resource=vapp_resource)
+
 
 def _get_vm(ctx, vapp_name, vm_name):
     client = ctx.obj['client']
@@ -395,6 +397,7 @@ def info(ctx, vapp_name, vm_name):
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command('update', short_help='Update the VM properties and configurations')
 @click.pass_context
@@ -502,6 +505,7 @@ def add_nic(ctx, vapp_name, vm_name, adapter_type, primary, connect, network,
     except Exception as e:
         stderr(e, ctx)
 
+
 @vm.command('update-nic', short_help='Update a nic to the VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
@@ -555,8 +559,8 @@ def add_nic(ctx, vapp_name, vm_name, adapter_type, primary, connect, network,
     required=False,
     metavar='<ip-address>',
     help='nanual IP address that needs to be allocated to the nic')
-def update_nic(ctx, vapp_name, vm_name, adapter_type, primary, connect, network,
-               ip_address_mode, ip_address):
+def update_nic(ctx, vapp_name, vm_name, adapter_type, primary, connect,
+               network, ip_address_mode, ip_address):
     try:
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
@@ -567,6 +571,7 @@ def update_nic(ctx, vapp_name, vm_name, adapter_type, primary, connect, network,
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command('list-nics', short_help='List all the nics of the VM')
 @click.pass_context
@@ -630,6 +635,7 @@ def power_on(ctx, vapp_name, vm_name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @vm.command('reboot', short_help='reboot a VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
@@ -643,6 +649,7 @@ def reboot(ctx, vapp_name, vm_name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @vm.command('shutdown', short_help='shutdown a VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
@@ -655,6 +662,7 @@ def shutdown(ctx, vapp_name, vm_name):
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command('suspend', short_help='suspend a VM')
 @click.pass_context
@@ -683,6 +691,7 @@ def discard_suspend(ctx, vapp_name, vm_name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @vm.command('reset', short_help='reset a VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
@@ -695,6 +704,7 @@ def reset(ctx, vapp_name, vm_name):
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command('install-vmware-tools', short_help='instal vmware tools')
 @click.pass_context
@@ -729,6 +739,7 @@ def insert_cd(ctx, vapp_name, vm_name, media_id):
     except Exception as e:
         stderr(e, ctx)
 
+
 @vm.command('eject-cd', short_help='eject CD from VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
@@ -748,6 +759,7 @@ def eject_cd(ctx, vapp_name, vm_name, media_id):
     except Exception as e:
         stderr(e, ctx)
 
+
 @vm.command('consolidate', short_help='consolidate VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
@@ -760,6 +772,7 @@ def consolidate(ctx, vapp_name, vm_name):
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command('create-snapshot', short_help='create snapshot of a VM')
 @click.pass_context
@@ -790,12 +803,11 @@ def create_snapshot(ctx, vapp_name, vm_name, is_memory, quiesce, name):
     try:
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
-        task = vm.snapshot_create(memory = is_memory,
-                                  quiesce = quiesce,
-                                  name = name)
+        task = vm.snapshot_create(memory=is_memory, quiesce=quiesce, name=name)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command('revert-to-snapshot', short_help='revert VM to current snapshot')
 @click.pass_context
@@ -810,6 +822,7 @@ def revert_to_snapshot(ctx, vapp_name, vm_name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @vm.command('remove-snapshot', short_help='remove VM snaphot')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
@@ -822,6 +835,7 @@ def remove_snapshot(ctx, vapp_name, vm_name):
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command('copy', short_help='copy vm from one vapp to another vapp')
 @click.pass_context
@@ -850,6 +864,7 @@ def copy_to(ctx, vapp_name, vm_name, target_vapp_name, target_vm_name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @vm.command('move', short_help='move VM from one vapp to another vapp')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
@@ -877,6 +892,7 @@ def move_to(ctx, vapp_name, vm_name, target_vapp_name, target_vm_name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @vm.command('delete', short_help='delete VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
@@ -889,6 +905,7 @@ def delete(ctx, vapp_name, vm_name):
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command('attach-disk', short_help='attach independent disk to VM')
 @click.pass_context
@@ -911,6 +928,7 @@ def attach_disk(ctx, vapp_name, vm_name, idisk_id):
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command('detach-disk', short_help='detach independent disk from VM')
 @click.pass_context
@@ -1006,6 +1024,7 @@ def list_storage_profile(ctx, vapp_name, vm_name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @vm.command('reload-from-vc', short_help='reload VM from VC')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
@@ -1019,6 +1038,7 @@ def reload_from_vc(ctx, vapp_name, vm_name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @vm.command('check-compliance', short_help='check compliance of VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
@@ -1031,6 +1051,7 @@ def check_compliance(ctx, vapp_name, vm_name):
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command('customize-on-next-poweron', short_help='customize on '
                                                     'next power on of VM')
@@ -1046,6 +1067,7 @@ def customize_on_next_poweron(ctx, vapp_name, vm_name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @vm.command('gc-enable', short_help='enable/disable the guest customization')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
@@ -1059,10 +1081,11 @@ def gc_enable(ctx, vapp_name, vm_name, is_enabled):
     try:
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
-        task = vm.enable_guest_customization(is_enabled = is_enabled)
+        task = vm.enable_guest_customization(is_enabled=is_enabled)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command('gc-status', short_help='get guest customization status')
 @click.pass_context
@@ -1077,8 +1100,9 @@ def get_gc_status(ctx, vapp_name, vm_name):
     except Exception as e:
         stderr(e, ctx)
 
-@vm.command('poweron-force-recustomize', short_help='power on and '
-                                                        'force recustomize VM')
+
+@vm.command('poweron-force-recustomize',
+            short_help='power on and force recustomize VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)
@@ -1091,8 +1115,9 @@ def power_on_and_force_recustomize(ctx, vapp_name, vm_name):
     except Exception as e:
         stderr(e, ctx)
 
-@vm.command('list-virtual-hardware-section', short_help='list virtual hardware '
-                                                        'section of VM')
+
+@vm.command('list-virtual-hardware-section',
+            short_help='list virtual hardware section of VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)
@@ -1137,13 +1162,14 @@ def list_virtual_hardware_section(ctx, vapp_name, vm_name, is_cpu, is_memory,
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
         result = vm.list_virtual_hardware_section(is_cpu=is_cpu,
-                                                is_memory=is_memory,
-                                                is_disk=is_disk,
-                                                is_media=is_media,
-                                                is_networkCards=is_network)
+                                                  is_memory=is_memory,
+                                                  is_disk=is_disk,
+                                                  is_media=is_media,
+                                                  is_networkCards=is_network)
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command('get-compliance-result', short_help='get compliance result of VM')
 @click.pass_context
@@ -1159,6 +1185,7 @@ def get_compliance_result(ctx, vapp_name, vm_name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @vm.command('list-current-metrics', short_help='list current metrics of VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
@@ -1171,6 +1198,7 @@ def list_all_currennt_metrics(ctx, vapp_name, vm_name):
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command('list-subset-current-metrics', short_help='list subset of '
                                                       'current metrics of VM')
@@ -1192,6 +1220,7 @@ def list_subset_currennt_metrics(ctx, vapp_name, vm_name, metric_pattern):
     except Exception as e:
         stderr(e, ctx)
 
+
 @vm.command('list-historic-metrics', short_help='list historic metrics of VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
@@ -1205,8 +1234,9 @@ def list_all_historic_metrics(ctx, vapp_name, vm_name):
     except Exception as e:
         stderr(e, ctx)
 
-@vm.command('list-sample-historic-data', short_help='list sample historic '
-                                                'data of given metric of VM')
+
+@vm.command('list-sample-historic-data',
+            short_help='list sample historic data of given metric of VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)
@@ -1224,6 +1254,7 @@ def list_sample_historic_metrics(ctx, vapp_name, vm_name, metric_name):
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command(
     'update-general-setting', short_help='update general setting of VM')
@@ -1279,7 +1310,6 @@ def update_general_setting(ctx, vapp_name, vm_name, name, description,
                            storage_policy):
     try:
         restore_session(ctx, vdc_required=True)
-        client = ctx.obj['client']
         vm = _get_vm(ctx, vapp_name, vm_name)
         vdc = _get_vdc(ctx)
         storage_policy_href = None
@@ -1296,6 +1326,7 @@ def update_general_setting(ctx, vapp_name, vm_name, name, description,
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command('relocate', short_help='relocate VM to given datastore')
 @click.pass_context
@@ -1316,6 +1347,7 @@ def relocate(ctx, vapp_name, vm_name, datastore_id):
     except Exception as e:
         stderr(e, ctx)
 
+
 @vm.command('list-os-section', short_help='list operating system section '
                                           'properties of VM')
 @click.pass_context
@@ -1329,6 +1361,7 @@ def list_os_section(ctx, vapp_name, vm_name):
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command(
     'update-os-section', short_help='update os section properties of VM')
@@ -1359,6 +1392,7 @@ def update_os_section(ctx, vapp_name, vm_name, ovf_info, description):
     except Exception as e:
         stderr(e, ctx)
 
+
 @vm.command('list-gc-section', short_help='list guest customization section '
                                           'properties of VM')
 @click.pass_context
@@ -1372,6 +1406,7 @@ def list_gc_section(ctx, vapp_name, vm_name):
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command(
     'update-gc-section', short_help='update guest customization section'
@@ -1479,15 +1514,15 @@ def list_gc_section(ctx, vapp_name, vm_name):
     help='customization scipt')
 def update_gc_section(ctx, vapp_name, vm_name, is_enabled, is_change_sid,
                       is_join_domain, is_use_org_settings, domain_name,
-                      domain_user_name, domain_user_password, is_admin_password,
-                      is_admin_password_auto, admin_password,
-                      is_admin_auto_logon, admin_auto_logon_count,
-                      is_reset_password, customization_script):
+                      domain_user_name, domain_user_password,
+                      is_admin_password, is_admin_password_auto,
+                      admin_password, is_admin_auto_logon,
+                      admin_auto_logon_count, is_reset_password,
+                      customization_script):
     try:
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
-        task = vm. \
-            update_guest_customization_section(
+        task = vm.update_guest_customization_section(
             enabled=is_enabled,
             change_sid=is_change_sid,
             join_domain_enabled=is_join_domain,
@@ -1506,8 +1541,9 @@ def update_gc_section(ctx, vapp_name, vm_name, is_enabled, is_change_sid,
     except Exception as e:
         stderr(e, ctx)
 
-@vm.command('check-post-gc-script', short_help='check post guest customization'
-                                          'script of VM')
+
+@vm.command('check-post-gc-script',
+            short_help='check post guest customization script of VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)
@@ -1560,13 +1596,13 @@ def update_vm_capabilities_section(ctx, vapp_name, vm_name,
     try:
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
-        task = vm. \
-            update_vm_capabilities_section(
+        task = vm.update_vm_capabilities_section(
             memory_hot_add_enabled=enable_memory_hot_add,
             cpu_hot_add_enabled=enable_cpu_hot_add)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command('list-runtime-info', short_help='list runtime info properties'
                                             ' of VM')
@@ -1582,8 +1618,9 @@ def list_runtime_info(ctx, vapp_name, vm_name):
     except Exception as e:
         stderr(e, ctx)
 
-@vm.command('list-boot-options', short_help='list boot options properties'
-                                            ' of VM')
+
+@vm.command('list-boot-options',
+            short_help='list boot options properties of VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)
@@ -1595,6 +1632,7 @@ def list_boot_options(ctx, vapp_name, vm_name):
         stdout(result, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command(
     'update-boot-options', short_help='update boot options properties')
@@ -1615,8 +1653,7 @@ def list_boot_options(ctx, vapp_name, vm_name):
     default=None,
     metavar='<bool>',
     help='enable enter bios set-up')
-def update_boot_options(ctx, vapp_name, vm_name,
-                                   boot_delay, enter_bios_setup):
+def update_boot_options(ctx, vapp_name, vm_name, boot_delay, enter_bios_setup):
     try:
         restore_session(ctx, vdc_required=True)
         vm = _get_vm(ctx, vapp_name, vm_name)
@@ -1848,8 +1885,9 @@ def update_vhs_disk(ctx, vapp_name, vm_name, element_name, virtual_quantity):
     except Exception as e:
         stderr(e, ctx)
 
-@vm.command('update-vhs-media', short_help='update virtual hardware section '
-                                          'media of VM')
+
+@vm.command('update-vhs-media',
+            short_help='update virtual hardware section media of VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)

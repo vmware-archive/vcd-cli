@@ -14,14 +14,12 @@
 
 import click
 from pyvcloud.vcd.certificate import Certificate
+
+from vcd_cli.gateway import get_gateway
+from vcd_cli.gateway import services
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
-# Don't change the order of vcd  and gateway
-from vcd_cli.vcd import vcd  # NOQA
-from vcd_cli.gateway import gateway  # NOQA
-from vcd_cli.gateway import get_gateway
-from vcd_cli.gateway import services
 
 
 @services.group('ca-certificate', short_help='Manage '
@@ -65,10 +63,8 @@ def add_ca_certificate(ctx, gateway_name, certificate_file_path, desc):
     try:
         restore_session(ctx, vdc_required=True)
         gateway_resource = get_gateway(ctx, gateway_name)
-        gateway_resource. \
-            add_ca_certificate(ca_certificate_file_path=
-                               certificate_file_path,
-                               description=desc)
+        gateway_resource.add_ca_certificate(
+            ca_certificate_file_path=certificate_file_path, description=desc)
         stdout('CA certificate added successfully', ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -103,7 +103,7 @@ def add(ctx, module):
             click.secho('Extension added from module \'%s\'.' % module)
         else:
             raise Exception('module already in the profile')
-    except Exception as e:
+    except Exception as e:  # noqa: F841
         stderr('Could not add extension from module \'%s\'' % module, ctx)
 
 
@@ -123,7 +123,7 @@ def delete(ctx, module):
         profiles.data['extensions'].remove(module)
         profiles.save()
         click.secho('Extension from module \'%s\' deleted.' % module)
-    except Exception as e:
+    except Exception as e:  # noqa: F841
         stderr('Could not delete extension from module \'%s\'' % module, ctx)
 
 
@@ -140,10 +140,9 @@ def pwd(ctx):
         in_use_org_name = ctx.obj['profiles'].get('org_in_use')
         in_use_vdc_name = ctx.obj['profiles'].get('vdc_in_use')
         in_use_vapp_name = ctx.obj['profiles'].get('vapp_in_use')
-        message = ('connected to %s as \'%s\'\n' +
-                   'using org: \'%s\', vdc: \'%s\', vApp: \'%s\'.') % \
-                  (host, user, in_use_org_name, in_use_vdc_name,
-                   in_use_vapp_name)
+        message = ('connected to %s as \'%s\'\n using org: \'%s\', vdc: \'%s\''
+                   ', vApp: \'%s\'.') % (host, user, in_use_org_name,
+                                         in_use_vdc_name, in_use_vapp_name)
         stdout({
             'host': host,
             'user': user,

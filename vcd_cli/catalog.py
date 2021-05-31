@@ -61,8 +61,7 @@ def catalog(ctx):
         vcd catalog list my-catalog
             Get list of items in a catalog.
 \b
-        vcd catalog list '*'
-        vcd catalog list \*
+        vcd catalog list
             Get list of items in all catalogs in current organization.
 \b
         vcd catalog upload my-catalog photon.ova
@@ -117,7 +116,7 @@ def info(ctx, catalog_name, item_name):
                 access_control_settings = access_settings_to_dict(
                     org.get_catalog_access_settings(catalog_name))
                 result.update(access_control_settings)
-            except AccessForbiddenException as e:
+            except AccessForbiddenException as e:  # noqa: F841
                 pass
         else:
             catalog_item = org.get_catalog_item(catalog_name, item_name)

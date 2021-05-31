@@ -16,13 +16,14 @@ import click
 from pyvcloud.vcd.client import ApiVersion
 from pyvcloud.vcd.client import EdgeGatewayType
 from pyvcloud.vcd.client import GatewayBackingConfigType
+from pyvcloud.vcd.gateway import Gateway
 from pyvcloud.vcd.vdc import VDC
+
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
-from vcd_cli.vcd import vcd
-from pyvcloud.vcd.gateway import Gateway
 from vcd_cli.utils import tuple_to_dict
+from vcd_cli.vcd import vcd
 
 
 @vcd.group(short_help='manage edge gateways')

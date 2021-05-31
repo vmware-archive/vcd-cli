@@ -203,7 +203,8 @@ def detach(ctx, name):
     except Exception as e:
         stderr(e, ctx)
 
-@vc.command('list-available-port-groups', short_help='list avaliable portgroups in vc')
+
+@vc.command('list-available-port-groups', short_help='list avaliable portgroups in vc')  # noqa: E501
 @click.pass_context
 @click.argument('vc_name', metavar='<vc_name>', required=True)
 def list_available_port_groups(ctx, vc_name):
@@ -217,4 +218,3 @@ def list_available_port_groups(ctx, vc_name):
         stdout(output, ctx)
     except Exception as e:
         stderr(e, ctx)
-

@@ -13,11 +13,11 @@
 #
 
 import click
+from pyvcloud.vcd.client import NSMAP
 from pyvcloud.vcd.external_network import ExternalNetwork
 from pyvcloud.vcd.platform import Platform
 from pyvcloud.vcd.utils import netmask_to_cidr_prefix_len
 from pyvcloud.vcd.vdc import VDC
-from pyvcloud.vcd.client import NSMAP
 
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
@@ -1039,7 +1039,6 @@ def list_vsphere_network(ctx, name, filter):
 def external_network_info(ctx, name):
     try:
         platform = _get_platform(ctx)
-        client = ctx.obj['client']
         ext_net = platform.get_external_network(name)
 
         config = ext_net['{' + NSMAP['vcloud'] + '}Configuration']

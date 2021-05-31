@@ -13,6 +13,7 @@
 # limitations under the License.
 import click
 from pyvcloud.vcd.vapp_firewall import VappFirewall
+
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout

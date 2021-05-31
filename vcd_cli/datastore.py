@@ -18,7 +18,8 @@ from pyvcloud.vcd.platform import Platform
 from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
-from vcd_cli.vcd import vcd  # NOQA
+from vcd_cli.vcd import vcd
+
 
 @vcd.group(short_help='manage datastores')
 @click.pass_context

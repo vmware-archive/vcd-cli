@@ -175,7 +175,7 @@ def use(ctx, name):
                         }, ctx, message)
                         return
         raise Exception('Org Vdc \'%s\' not found in org \'%s\'' % (name,
-                                                            in_use_org_name))
+                        in_use_org_name))
     except Exception as e:
         stderr(e, ctx)
 
@@ -522,6 +522,7 @@ def list_media(ctx, vdc_name):
         stdout(media_list, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vdc.command('list-disk', short_help='list disks from VDC')
 @click.pass_context

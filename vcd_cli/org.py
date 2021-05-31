@@ -75,6 +75,7 @@ def info(ctx, name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @org.command('list', short_help='list organizations')
 @click.pass_context
 def list_orgs(ctx):

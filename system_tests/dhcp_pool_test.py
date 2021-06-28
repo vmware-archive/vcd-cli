@@ -12,13 +12,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import unittest
 from click.testing import CliRunner
 from pyvcloud.system_test_framework.base_test import BaseTestCase
 from pyvcloud.system_test_framework.constants.gateway_constants \
     import GatewayConstants
 from pyvcloud.system_test_framework.environment import Environment
-from vcd_cli.dhcp_pool import gateway
 from vcd_cli.org import org
 from vcd_cli.login import login, logout
 
@@ -41,6 +39,7 @@ class TestDhcpPool(BaseTestCase):
         default_org = self._config['vcd']['default_org_name']
         self._login()
         TestDhcpPool._runner.invoke(org, ['use', default_org])
+        from vcd_cli.gateway import gateway
         result = TestDhcpPool._runner.invoke(
             gateway,
             args=[
@@ -67,6 +66,7 @@ class TestDhcpPool(BaseTestCase):
 
          It will trigger the cli command service dhcp-pool list
         """
+        from vcd_cli.gateway import gateway
         result = TestDhcpPool._runner.invoke(
             gateway,
             args=[
@@ -82,6 +82,7 @@ class TestDhcpPool(BaseTestCase):
 
          It will trigger the cli command services dhcp-pool info
         """
+        from vcd_cli.gateway import gateway
         result = TestDhcpPool._runner.invoke(
             gateway,
             args=[
@@ -106,6 +107,7 @@ class TestDhcpPool(BaseTestCase):
         TestDhcpPool._runner = CliRunner()
         default_org = self._config['vcd']['default_org_name']
         TestDhcpPool._runner.invoke(org, ['use', default_org])
+        from vcd_cli.gateway import gateway
         result = TestDhcpPool._runner.invoke(
             gateway,
             args=[

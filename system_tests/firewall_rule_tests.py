@@ -24,7 +24,6 @@ from pyvcloud.vcd.gateway import Gateway
 from uuid import uuid1
 from vcd_cli.org import org
 from vcd_cli.login import login, logout
-from vcd_cli.firewall_rule import gateway
 
 
 class TestFirewallRule(BaseTestCase):
@@ -44,6 +43,7 @@ class TestFirewallRule(BaseTestCase):
         TestFirewallRule._ext_nw = self._config['external_network']['name']
         self._login()
         TestFirewallRule._runner.invoke(org, ['use', default_org])
+        from vcd_cli.gateway import gateway
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
@@ -85,6 +85,7 @@ class TestFirewallRule(BaseTestCase):
         It will trigger the cli command with option gateway services
         firewall list.
         """
+        from vcd_cli.gateway import gateway
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=['services', 'firewall', 'list', TestFirewallRule.__name])
@@ -93,6 +94,7 @@ class TestFirewallRule(BaseTestCase):
 
     def test_0011_list_object_types(self):
         """List object types."""
+        from vcd_cli.gateway import gateway
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
@@ -104,6 +106,7 @@ class TestFirewallRule(BaseTestCase):
 
     def test_0021_list_objects(self):
         """List objects for the provided object type."""
+        from vcd_cli.gateway import gateway
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
@@ -116,6 +119,7 @@ class TestFirewallRule(BaseTestCase):
 
     def test_0031_update(self):
         """Update Firewall Rule."""
+        from vcd_cli.gateway import gateway
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
@@ -144,6 +148,7 @@ class TestFirewallRule(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0041_enable_firewall_rule(self):
+        from vcd_cli.gateway import gateway
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
@@ -154,6 +159,7 @@ class TestFirewallRule(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0042_disable_firewall_rule(self):
+        from vcd_cli.gateway import gateway
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
@@ -164,6 +170,7 @@ class TestFirewallRule(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0061_info_firewall_rule(self):
+        from vcd_cli.gateway import gateway
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
@@ -175,6 +182,7 @@ class TestFirewallRule(BaseTestCase):
 
     def test_0071_delete_firewall_rule_source(self):
         source_value = 'vnic-0'
+        from vcd_cli.gateway import gateway
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
@@ -187,6 +195,7 @@ class TestFirewallRule(BaseTestCase):
 
     def test_0072_delete_firewall_rule_destination(self):
         destination_value = 'vnic-0'
+        from vcd_cli.gateway import gateway
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
@@ -199,6 +208,7 @@ class TestFirewallRule(BaseTestCase):
 
     def test_0073_delete_firewall_rule_service(self):
         protocol_to_delete = 'tcp'
+        from vcd_cli.gateway import gateway
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
@@ -210,6 +220,7 @@ class TestFirewallRule(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0081_list_firewall_rule_source(self):
+        from vcd_cli.gateway import gateway
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
@@ -220,6 +231,7 @@ class TestFirewallRule(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0082_list_firewall_rule_destination(self):
+        from vcd_cli.gateway import gateway
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
@@ -230,6 +242,7 @@ class TestFirewallRule(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0083_list_firewall_rule_service(self):
+        from vcd_cli.gateway import gateway
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
@@ -240,6 +253,7 @@ class TestFirewallRule(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0091_update_firewall_rule_sequence(self):
+        from vcd_cli.gateway import gateway
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[
@@ -250,6 +264,7 @@ class TestFirewallRule(BaseTestCase):
         self.assertEqual(0, result.exit_code)
 
     def test_0098_delete_firewall_rule(self):
+        from vcd_cli.gateway import gateway
         result = TestFirewallRule._runner.invoke(
             gateway,
             args=[

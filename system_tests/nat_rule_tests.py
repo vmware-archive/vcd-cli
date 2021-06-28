@@ -20,7 +20,6 @@ from pyvcloud.system_test_framework.constants.gateway_constants \
     import GatewayConstants
 from pyvcloud.system_test_framework.environment import Environment
 
-from vcd_cli.nat_rule import gateway
 from vcd_cli.org import org
 from vcd_cli.login import login, logout
 
@@ -67,6 +66,7 @@ class TestNatRule(BaseTestCase):
         gateway_sub_allocated_ip_range = \
             config['gateway_sub_allocated_ip_range']
         ext_name = config['name']
+        from vcd_cli.gateway import gateway
         result = TestNatRule._runner.invoke(
             gateway,
             args=[
@@ -92,6 +92,7 @@ class TestNatRule(BaseTestCase):
         """Add SNAT Rule in the gateway.
         It will trigger the cli command 'services nat create-snat'
         """
+        from vcd_cli.gateway import gateway
         result = TestNatRule._runner.invoke(
             gateway,
             args=[
@@ -105,6 +106,7 @@ class TestNatRule(BaseTestCase):
         """Add DNAT Rule in the gateway.
         It will trigger the cli command 'services nat create-dnat'
         """
+        from vcd_cli.gateway import gateway
         result = TestNatRule._runner.invoke(
             gateway,
             args=[
@@ -122,6 +124,7 @@ class TestNatRule(BaseTestCase):
 
         Invoke the cli command 'gateway services nat list' in nat_rule.
         """
+        from vcd_cli.gateway import gateway
         result = TestNatRule._runner.invoke(
             gateway, args=['services', 'nat', 'list', TestNatRule._name])
         self.assertEqual(0, result.exit_code)
@@ -138,6 +141,7 @@ class TestNatRule(BaseTestCase):
 
         Invoke the cli command 'services nat info' in nat_rule.
         """
+        from vcd_cli.gateway import gateway
         result = TestNatRule._runner.invoke(
             gateway,
             args=[
@@ -149,6 +153,7 @@ class TestNatRule(BaseTestCase):
         """Update SNAT Rule in the gateway.
         It will trigger the cli command 'services nat update-snat'
         """
+        from vcd_cli.gateway import gateway
         result = TestNatRule._runner.invoke(
             gateway,
             args=[
@@ -162,6 +167,7 @@ class TestNatRule(BaseTestCase):
         """Update DNAT Rule in the gateway.
         It will trigger the cli command 'services nat update-dnat'
         """
+        from vcd_cli.gateway import gateway
         result = TestNatRule._runner.invoke(
             gateway,
             args=[
@@ -177,6 +183,7 @@ class TestNatRule(BaseTestCase):
 
         Invoke the cli command 'services nat reorder'.
         """
+        from vcd_cli.gateway import gateway
         result = TestNatRule._runner.invoke(
             gateway,
             args=[
@@ -188,6 +195,7 @@ class TestNatRule(BaseTestCase):
         """Deletes the nat rule.
         It will trigger the cli command services nat delete
         """
+        from vcd_cli.gateway import gateway
         # Delete the SNAT Rule
         result = TestNatRule._runner.invoke(
             gateway,
@@ -219,6 +227,7 @@ class TestNatRule(BaseTestCase):
         gateway_sub_allocated_ip_range = \
             config['gateway_sub_allocated_ip_range']
         ext_name = config['name']
+        from vcd_cli.gateway import gateway
         result = TestNatRule._runner.invoke(
             gateway,
             args=[

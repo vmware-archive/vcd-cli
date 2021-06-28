@@ -20,7 +20,6 @@ from pyvcloud.system_test_framework.constants.gateway_constants \
     import GatewayConstants
 from pyvcloud.system_test_framework.environment import Environment
 
-from vcd_cli.static_route import gateway
 from vcd_cli.org import org
 from vcd_cli.login import login, logout
 
@@ -50,6 +49,7 @@ class TestStaticRoute(BaseTestCase):
         default_org = self._config['vcd']['default_org_name']
         self._login()
         TestStaticRoute._runner.invoke(org, ['use', default_org])
+        from vcd_cli.gateway import gateway
         result = TestStaticRoute._runner.invoke(
             gateway,
             args=[
@@ -80,6 +80,7 @@ class TestStaticRoute(BaseTestCase):
 
         Invoke the cli command 'services static list'.
         """
+        from vcd_cli.gateway import gateway
         result = TestStaticRoute._runner.invoke(
             gateway,
             args=[
@@ -92,6 +93,7 @@ class TestStaticRoute(BaseTestCase):
 
         Invoke the cli command 'services static-route update'.
         """
+        from vcd_cli.gateway import gateway
         result = TestStaticRoute._runner.invoke(
             gateway,
             args=[
@@ -109,6 +111,7 @@ class TestStaticRoute(BaseTestCase):
 
         Invoke the cli command 'services static-route delete'
         """
+        from vcd_cli.gateway import gateway
         result = TestStaticRoute._runner.invoke(
             gateway,
             args=[

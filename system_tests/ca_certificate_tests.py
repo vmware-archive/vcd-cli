@@ -18,7 +18,6 @@ from pyvcloud.system_test_framework.constants.gateway_constants import \
     GatewayConstants
 from pyvcloud.system_test_framework.environment import Environment
 from pyvcloud.vcd.gateway import Gateway
-from vcd_cli.ipsec_vpn import gateway
 from vcd_cli.org import org
 from vcd_cli.login import login, logout
 
@@ -36,7 +35,8 @@ class TestCaCertificates(BaseTestCase):
         TestCaCertificates._org = Environment.get_test_org(
             TestCaCertificates._client)
         test_gateway = Environment.get_test_gateway(TestCaCertificates._client)
-        gateway_obj1 = Gateway(TestCaCertificates._client, GatewayConstants.name,
+        gateway_obj1 = Gateway(TestCaCertificates._client,
+                               GatewayConstants.name,
                                href=test_gateway.get('href'))
         TestCaCertificates.gateway_obj = gateway_obj1
         TestCaCertificates._runner = CliRunner()
@@ -49,6 +49,7 @@ class TestCaCertificates(BaseTestCase):
 
         It will trigger the cli command services ca-certificate add
         """
+        from vcd_cli.gateway import gateway
         result = TestCaCertificates._runner.invoke(
             gateway,
             args=[
@@ -62,6 +63,7 @@ class TestCaCertificates(BaseTestCase):
 
         It will trigger the cli command services ca-certificate list
         """
+        from vcd_cli.gateway import gateway
         result = TestCaCertificates._runner.invoke(
             gateway,
             args=[
@@ -78,7 +80,7 @@ class TestCaCertificates(BaseTestCase):
         certificate_list = gateway_obj1.list_ca_certificates()
         certificate = certificate_list[0]
         id = certificate["Object_Id"]
-
+        from vcd_cli.gateway import gateway
         result = TestCaCertificates._runner.invoke(
             gateway,
             args=['services', 'ca-certificate', 'delete',

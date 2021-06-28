@@ -18,7 +18,6 @@ from pyvcloud.system_test_framework.constants.gateway_constants import \
     GatewayConstants
 from pyvcloud.system_test_framework.environment import Environment
 from pyvcloud.vcd.gateway import Gateway
-from vcd_cli.ipsec_vpn import gateway
 from vcd_cli.org import org
 from vcd_cli.login import login, logout
 
@@ -49,6 +48,7 @@ class TestCrlCertificates(BaseTestCase):
 
         It will trigger the cli command services crl-certificate add
         """
+        from vcd_cli.gateway import gateway
         result = TestCrlCertificates._runner.invoke(
             gateway,
             args=[
@@ -62,6 +62,7 @@ class TestCrlCertificates(BaseTestCase):
 
         It will trigger the cli command services crl-certificate list
         """
+        from vcd_cli.gateway import gateway
         result = TestCrlCertificates._runner.invoke(
             gateway,
             args=[
@@ -78,7 +79,7 @@ class TestCrlCertificates(BaseTestCase):
         certificate_list = gateway_obj1.list_crl_certificates()
         certificate = certificate_list[0]
         id = certificate["Object_Id"]
-
+        from vcd_cli.gateway import gateway
         result = TestCrlCertificates._runner.invoke(
             gateway,
             args=['services', 'crl-certificate', 'delete',

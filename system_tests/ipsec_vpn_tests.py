@@ -24,7 +24,6 @@ from pyvcloud.vcd.vdc_network import VdcNetwork
 
 from pyvcloud.system_test_framework.environment import Environment
 from pyvcloud.vcd.gateway import Gateway
-from vcd_cli.ipsec_vpn import gateway
 from vcd_cli.org import org
 from vcd_cli.login import login, logout
 
@@ -78,6 +77,7 @@ class TestIpSecVpn(BaseTestCase):
         default_org = self._config['vcd']['default_org_name']
         self._login()
         TestIpSecVpn._runner.invoke(org, ['use', default_org])
+        from vcd_cli.gateway import gateway
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
@@ -99,6 +99,7 @@ class TestIpSecVpn(BaseTestCase):
         update
         """
         id = TestIpSecVpn._local_ip + '-' + TestIpSecVpn._peer_ip
+        from vcd_cli.gateway import gateway
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
@@ -113,6 +114,7 @@ class TestIpSecVpn(BaseTestCase):
         info
         """
         id = TestIpSecVpn._local_ip + '-' + TestIpSecVpn._peer_ip
+        from vcd_cli.gateway import gateway
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
@@ -126,6 +128,7 @@ class TestIpSecVpn(BaseTestCase):
         It will trigger the cli command services ipsec_vpn
         enable-activation-status
         """
+        from vcd_cli.gateway import gateway
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
@@ -139,6 +142,7 @@ class TestIpSecVpn(BaseTestCase):
         It will trigger the cli command services ipsec_vpn
         info-activation-status
         """
+        from vcd_cli.gateway import gateway
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
@@ -152,6 +156,7 @@ class TestIpSecVpn(BaseTestCase):
         It will trigger the cli command services ipsec_vpn
         enable-logging
         """
+        from vcd_cli.gateway import gateway
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
@@ -165,6 +170,7 @@ class TestIpSecVpn(BaseTestCase):
         It will trigger the cli command services ipsec_vpn
         info-logging-settings
         """
+        from vcd_cli.gateway import gateway
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
@@ -178,6 +184,7 @@ class TestIpSecVpn(BaseTestCase):
         It will trigger the cli command services ipsec_vpn
         set-log-level
         """
+        from vcd_cli.gateway import gateway
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
@@ -191,6 +198,7 @@ class TestIpSecVpn(BaseTestCase):
         It will trigger the cli command services ipsec_vpn
         list
         """
+        from vcd_cli.gateway import gateway
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
@@ -204,6 +212,7 @@ class TestIpSecVpn(BaseTestCase):
         It will trigger the cli command services ipsec_vpn
         change-shared-key
         """
+        from vcd_cli.gateway import gateway
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
@@ -217,6 +226,7 @@ class TestIpSecVpn(BaseTestCase):
         It will trigger the cli command services ipsec_vpn delete
         """
         id = TestIpSecVpn._local_ip + '-' + TestIpSecVpn._peer_ip
+        from vcd_cli.gateway import gateway
         result = TestIpSecVpn._runner.invoke(
             gateway,
             args=[
@@ -276,9 +286,6 @@ class TestIpSecVpn(BaseTestCase):
 
         system = System(TestIpSecVpn._client,
                         admin_resource=TestIpSecVpn._client.get_admin())
-        if TestIpSecVpn._org is None:
-            org_name = TestIpSecVpn._config['vcd']['default_org_name']
-            org_resource_list = TestIpSecVpn._client.get_org_list()
 
         org = TestIpSecVpn._org
         ovdc_name = TestIpSecVpn._orgvdc_name
@@ -320,7 +327,7 @@ class TestIpSecVpn(BaseTestCase):
         self.__check_ovdc(org, ovdc_name)
 
     def __check_ovdc(self, org, ovdc_name):
-        if org.get_vdc(ovdc_name):
+        if org.get_vdc(ovdc_name) is not None:
             vdc = org.get_vdc(ovdc_name)
             TestIpSecVpn._ovdc_href = vdc.get('href')
             TestIpSecVpn._vdc_resource = vdc

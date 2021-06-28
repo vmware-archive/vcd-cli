@@ -18,7 +18,6 @@ from pyvcloud.system_test_framework.constants.gateway_constants import \
     GatewayConstants
 from pyvcloud.system_test_framework.environment import Environment
 from pyvcloud.vcd.gateway import Gateway
-from vcd_cli.ipsec_vpn import gateway
 from vcd_cli.org import org
 from vcd_cli.login import login, logout
 
@@ -50,6 +49,7 @@ class TestCertificates(BaseTestCase):
 
         It will trigger the cli command services service-certificate add
         """
+        from vcd_cli.gateway import gateway
         result = TestCertificates._runner.invoke(
             gateway,
             args=[
@@ -65,6 +65,7 @@ class TestCertificates(BaseTestCase):
 
         It will trigger the cli command services service-certificat list
         """
+        from vcd_cli.gateway import gateway
         result = TestCertificates._runner.invoke(
             gateway,
             args=[
@@ -81,7 +82,7 @@ class TestCertificates(BaseTestCase):
         certificate_list = gateway_obj1.list_service_certificates()
         certificate = certificate_list[0]
         id = certificate["Object_Id"]
-
+        from vcd_cli.gateway import gateway
         result = TestCertificates._runner.invoke(
             gateway,
             args=['services', 'service-certificate', 'delete',

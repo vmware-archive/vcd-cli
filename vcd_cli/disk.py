@@ -15,6 +15,7 @@
 import click
 import humanfriendly
 from pyvcloud.vcd.client import VCLOUD_STATUS_MAP
+from pyvcloud.vcd.client import SIZE_1MB
 from pyvcloud.vcd.org import Org
 from pyvcloud.vcd.utils import disk_to_dict
 from pyvcloud.vcd.utils import extract_id
@@ -87,6 +88,12 @@ def list_disks(ctx):
             if hasattr(disk, 'attached_vms') and \
                hasattr(disk.attached_vms, 'VmReference'):
                 attached_vms = disk.attached_vms.VmReference.get('name')
+
+            if 'size' in disk.keys():
+                size_in_bytes = int(disk.get('size'))
+            else:
+                size_in_bytes = int(disk.get('sizeMb')) * SIZE_1MB
+
             result.append({
                 'name':
                 disk.get('name'),
@@ -95,9 +102,9 @@ def list_disks(ctx):
                 'owner':
                 disk.Owner.User.get('name'),
                 'size':
-                humanfriendly.format_size(int(disk.get('size'))),
+                humanfriendly.format_size(int(size_in_bytes)),
                 'size_bytes':
-                disk.get('size'),
+                size_in_bytes,
                 'status':
                 VCLOUD_STATUS_MAP.get(int(disk.get('status'))),
                 'vms_attached':

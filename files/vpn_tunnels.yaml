@@ -5,5 +5,5 @@
       local_net: 10.10.10.0/24
       peer_ip: 10.11.11.11
       peer_net: 10.11.11.0/24
-      shared_secret: __NOT_AN_ACTUAL_VALIE__
+      shared_secret: __NOT_AN_ACTUAL_VALUE__
       enc_protocol: AES256

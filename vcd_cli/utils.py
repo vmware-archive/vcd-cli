@@ -11,7 +11,7 @@
 # code for the these subcomponents is subject to the terms and
 # conditions of the subcomponent's license, as noted in the LICENSE file.
 #
-import collections
+from collections import abc
 import json
 from os import environ
 import re
@@ -219,7 +219,7 @@ def stdout(obj, ctx=None, alt_text=None, show_id=False,
                                     task.get('operation'),
                                     task.get('status'))
                 elif ctx.command.name == 'list' and \
-                        isinstance(obj, collections.Iterable):
+                        isinstance(obj, abc.Iterable):
                     text = as_table(obj)
                 elif ctx.command.name == 'info':
                     text = as_table(

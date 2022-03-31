@@ -1,7 +1,7 @@
 click >= 7.0
 colorama >= 0.3.9
 keyring >= 19.0.0, <= 23.5.0
-pycryptodome == 3.6.6
+pycryptodome >=3.7.0, <4.0.0
 pypiwin32 >= 223;platform_system=="Windows"
 pyvcloud >= 23.0.1, < 24.0.0
 tabulate >= 0.7.5

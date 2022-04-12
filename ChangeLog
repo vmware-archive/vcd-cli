@@ -1,6 +1,16 @@
 CHANGES
 =======
 
+* Update pycryptodome to 3.7.0 (#567)
+* Update keyring to fix collections.abc alias to support python3.10 (#566)
+* Update vpn\_tunnels.yaml (#563)
+* Fix unit test errors (#552)
+* Fix Flake8 and Travis build errors (#551)
+
+24.0.1
+------
+
+*  Update ChangeLog and Authors for release v24.0.1
 * Bump pyvcloud dependency to 23.0.1dev11
 * Consume pyvcloud 23.0.1.dev6 (#543)
 * Add option to avoid printing headers in stdout (#540)

@@ -144,4 +144,5 @@ else:
     from vcd_cli import vc  # NOQA
     from vcd_cli import vdc  # NOQA
     from vcd_cli import vm  # NOQA
+    from vcd_cli import ui_extensions  # NOQA
     init(autoreset=True)

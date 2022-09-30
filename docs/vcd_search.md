@@ -44,6 +44,9 @@ Usage: vcd search [OPTIONS] [resource-type]
   
           vcd search vm
               Search for virtual machines.
+  
+          vcd search vm --fields 'name,vdcName,status'
+              Search for virtual machines and show only some fields.
       
 
 Options:

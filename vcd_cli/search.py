@@ -36,7 +36,14 @@ from vcd_cli.vcd import vcd
     required=False,
     metavar='[query-filter]',
     help='query filter')
-def search(ctx, resource_type, query_filter):
+@click.option(
+    '-t',
+    '--fields',
+    'fields',
+    required=False,
+    metavar='[fields]',
+    help='fields to show')
+def search(ctx, resource_type, query_filter,fields):
     """Search for resources in vCloud Director.
 
 \b
@@ -81,6 +88,9 @@ def search(ctx, resource_type, query_filter):
 \b
         vcd search vm
             Search for virtual machines.
+\b
+        vcd search vm --fields 'name,vdcName,status'
+          Search for virtual machines and show only some fields.
     """
 
     try:
@@ -96,7 +106,8 @@ def search(ctx, resource_type, query_filter):
         q = client.get_typed_query(
             resource_type_cc,
             query_result_format=QueryResultFormat.ID_RECORDS,
-            qfilter=query_filter)
+            qfilter=query_filter,
+            fields=fields)
         records = list(q.execute())
         if len(records) == 0:
             result = 'not found'

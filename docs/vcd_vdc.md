@@ -31,13 +31,14 @@ Options:
   -h, --help  Show this message and exit.
 
 Commands:
-  acl      work with vdc acl
-  create   create a virtual datacenter
-  delete   delete a virtual datacenter
-  disable  disable a virtual datacenter
-  enable   enable a virtual datacenter
-  info     show virtual datacenter details
-  list     list of virtual datacenters
-  use      set active virtual datacenter
+  acl                    work with vdc acl
+  create                 create a virtual datacenter
+  delete                 delete a virtual datacenter
+  disable                disable a virtual datacenter
+  enable                 enable a virtual datacenter
+  info                   show virtual datacenter details
+  list                   list of virtual datacenters
+  list-compute-policies  list compute policies available in a VDC
+  use                    set active virtual datacenter
 
 ```

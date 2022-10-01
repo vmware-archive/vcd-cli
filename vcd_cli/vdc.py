@@ -540,3 +540,20 @@ def list_disk(ctx, vdc_name):
         stdout(disk_list, ctx)
     except Exception as e:
         stderr(e, ctx)
+
+
+@vdc.command('list-compute-policies', short_help='list compute policies available in a VDC')
+@click.pass_context
+@click.argument('vdc-name', metavar='<vdc-name>')
+def list_disk(ctx, vdc_name):
+    try:
+        restore_session(ctx)
+        client = ctx.obj['client']
+        in_use_org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, in_use_org_href)
+        vdc_resource = org.get_vdc(vdc_name)
+        vdc = VDC(client, resource=vdc_resource)
+        policies_list = vdc.list_compute_policies()
+        stdout(policies_list, ctx)
+    except Exception as e:
+        stderr(e, ctx)

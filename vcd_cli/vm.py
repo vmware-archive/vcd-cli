@@ -16,6 +16,7 @@ import click
 from pyvcloud.vcd.client import IpAddressMode
 from pyvcloud.vcd.client import MetadataDomain
 from pyvcloud.vcd.client import NetworkAdapterType
+from pyvcloud.vcd.client import ResourceType
 from pyvcloud.vcd.utils import metadata_to_dict
 from pyvcloud.vcd.utils import vm_to_dict
 from pyvcloud.vcd.vapp import VApp
@@ -26,6 +27,7 @@ from vcd_cli.utils import restore_session
 from vcd_cli.utils import stderr
 from vcd_cli.utils import stdout
 from vcd_cli.vcd import vcd
+from vcd_cli.search import _search
 
 
 @vcd.group(short_help='manage VMs')
@@ -358,7 +360,16 @@ def vm(ctx):
 @click.pass_context
 def list_vms(ctx):
     try:
-        raise Exception('not implemented')
+        restore_session(ctx, vdc_required=True)
+        client = ctx.obj['client']
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        filter = 'isVAppTemplate==false;vdc==%s' \
+            % (vdc_href)
+        fields='name,containerName,status'
+        resource=ResourceType.VM
+        if client.is_sysadmin():
+            resource=ResourceType.ADMIN_VM
+        _search(ctx, resource.value, query_filter=filter,fields=fields, show_id=False)
     except Exception as e:
         stderr(e, ctx)
 

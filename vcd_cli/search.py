@@ -43,7 +43,15 @@ from vcd_cli.vcd import vcd
     required=False,
     metavar='[fields]',
     help='fields to show')
-def search(ctx, resource_type, query_filter,fields):
+@click.option(
+    '--show-id/--do-not-show-id',
+    'show_id',
+    required=False,
+    is_flag=True,
+    show_default=True,
+    default=True,
+    help='show id')
+def search(ctx, resource_type, query_filter, fields, show_id):
     """Search for resources in vCloud Director.
 
 \b
@@ -92,7 +100,9 @@ def search(ctx, resource_type, query_filter,fields):
         vcd search vm --fields 'name,vdcName,status'
           Search for virtual machines and show only some fields.
     """
+    return _search(ctx, resource_type, query_filter, fields, show_id)
 
+def _search(ctx, resource_type, query_filter, fields, show_id):
     try:
         if resource_type is None:
             click.secho(ctx.get_help())
@@ -114,6 +124,6 @@ def search(ctx, resource_type, query_filter,fields):
         else:
             for r in records:
                 result.append(to_dict(r, resource_type=resource_type_cc))
-        stdout(result, ctx, show_id=True)
+        stdout(result, ctx, show_id=show_id)
     except Exception as e:
         stderr(e, ctx)

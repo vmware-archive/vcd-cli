@@ -361,11 +361,15 @@ def vm(ctx):
 def list_vms(ctx):
     try:
         restore_session(ctx, vdc_required=True)
+        client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         filter = 'isVAppTemplate==false;vdc==%s' \
             % (vdc_href)
         fields='name,containerName,status'
-        _search(ctx, ResourceType.VM.value, query_filter=filter,fields=fields, show_id=False)
+        resource=ResourceType.VM
+        if client.is_sysadmin():
+            resource=ResourceType.ADMIN_VM
+        _search(ctx, resource.value, query_filter=filter,fields=fields, show_id=False)
     except Exception as e:
         stderr(e, ctx)
 

@@ -12,8 +12,6 @@
 # conditions of the subcomponent's license, as noted in the LICENSE file.
 #
 
-from multiprocessing.dummy.connection import Client
-import profile
 import click
 import requests
 

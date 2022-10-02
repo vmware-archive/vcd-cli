@@ -352,6 +352,12 @@ def vm(ctx):
 \b
         vcd vm enable-nested-hypervisor vapp1 vm1
             Enable nested hypervisor of VM.
+
+\b
+        vcd vm update-compute-policies vapp1 vm1
+                --sizing 'System Default'
+                --placement 'ESXi in Rack1'
+            Update compute policies of VM.
     """
     pass
 
@@ -1936,5 +1942,75 @@ def enable_nested_hypervisor(ctx, vapp_name, vm_name):
         vm = _get_vm(ctx, vapp_name, vm_name)
         result = vm.enable_nested_hypervisor()
         stdout(result, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+@vm.command('update-compute-policies', short_help='Update the VM placement and sizing policy')
+@click.pass_context
+@click.argument('vapp-name', metavar='<vapp-name>', required=True)
+@click.argument('vm-name', metavar='<vm-name>', required=True)
+@click.option(
+    '--placement',
+    'placement',
+    required=False,
+    default=None,
+    metavar='<placement-policy>',
+    help='Placement policy to configure the VM.')
+@click.option(
+    '--sizing',
+    'sizing',
+    required=False,
+    default=None,
+    metavar='<sizing-policy>',
+    help='Sizing policy to configure the VM.')
+@click.option(
+    '--no-placement',
+    'no_placement',
+    required=False,
+    is_flag=True,
+    show_default=True,
+    default=False,
+    metavar='<no-placement-policy>',
+    help='Configure the VM without placement policy.')
+def update_compute_policies(ctx, vapp_name, vm_name, placement, sizing, no_placement):
+    try:
+        restore_session(ctx, vdc_required=True)
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        client = ctx.obj['client']
+        vdc = VDC(client, href=vdc_href)
+        policies_list = vdc.list_compute_policies()
+
+        placement_href = None
+        sizing_href = None
+        if placement or sizing:
+            for policy_ref in policies_list:
+                if policy_ref.get('name') == placement:
+                    placement_href=policy_ref.get('href')
+                if policy_ref.get('name') == sizing:
+                    sizing_href=policy_ref.get('href')
+
+        vm = _get_vm(ctx, vapp_name, vm_name)
+        vm_resource = vm.get_resource()
+        if no_placement:
+            placement_href = None
+            if hasattr(vm_resource, 'ComputePolicy'):
+                if hasattr(vm_resource.ComputePolicy, 'VmPlacementPolicy'):
+                    task_no_placement_update = vm.remove_placement_policy()
+                    stdout("Removing placement policy on the VM.")
+                    stdout(task_no_placement_update, ctx)
+        task_update = None
+        if placement_href and not sizing_href:
+            task_update = vm.update_compute_policy(placement_policy_href=placement_href)
+            stdout("Updating placement policy of the VM.")
+        elif sizing_href and not placement_href:
+            task_update = vm.update_compute_policy(compute_policy_href=sizing_href)
+            stdout("Updating sizing policy of the VM.")
+        elif sizing_href and placement_href:
+            task_update = vm.update_compute_policy(
+                compute_policy_href=sizing_href,
+                placement_policy_href=placement_href)
+            stdout("Updating sizing and placement policy of the VM.")
+        if task_update is not None:
+            stdout(task_update, ctx)
     except Exception as e:
         stderr(e, ctx)

@@ -44,7 +44,7 @@ from vcd_cli.vcd import vcd
     metavar='[fields]',
     help='fields to show')
 @click.option(
-    '--show-id/--do-not-show-id',
+    '--show-id/--hide-id',
     'show_id',
     required=False,
     is_flag=True,

@@ -51,7 +51,19 @@ from vcd_cli.vcd import vcd
     show_default=True,
     default=True,
     help='show id')
-def search(ctx, resource_type, query_filter, fields, show_id):
+@click.option(
+    '--sort-asc',
+    'sort_asc',
+    required=False,
+    metavar='[field]',
+    help='sort in ascending order on a field')
+@click.option(
+    '--sort-desc',
+    'sort_desc',
+    required=False,
+    metavar='[field]',
+    help='sort in descending order on a field')
+def search(ctx, resource_type, query_filter, fields, show_id, sort_asc, sort_desc):
     """Search for resources in vCloud Director.
 
 \b
@@ -59,7 +71,7 @@ def search(ctx, resource_type, query_filter, fields, show_id):
         Search for resources of the provided type. Resource type is not case
         sensitive. When invoked without a resource type, list the available
         types to search for. Admin types are only allowed when the user is
-        the system administrator.
+        the system administrator. By default result is order by id.
 \b
         Filters can be applied to the search.
 \b
@@ -99,10 +111,16 @@ def search(ctx, resource_type, query_filter, fields, show_id):
 \b
         vcd search vm --fields 'name,vdcName,status'
           Search for virtual machines and show only some fields.
+\b
+        vcd search vm --fields 'name,vdcName,status' --hide-id --sort-asc vdcName
+          Search for virtual machines and show only some fields order y vdcName.
+\b
+        vcd search adminOrgVdc --fields 'name,orgName,providerVdcName' --hide-id --sort-asc name
+          Search all vdc and show only some fields order y name.
     """
-    return _search(ctx, resource_type, query_filter, fields, show_id)
+    return _search(ctx, resource_type, query_filter, fields, show_id, sort_asc, sort_desc)
 
-def _search(ctx, resource_type, query_filter, fields, show_id):
+def _search(ctx, resource_type, query_filter, fields, show_id, sort_asc, sort_desc):
     try:
         if resource_type is None:
             click.secho(ctx.get_help())
@@ -117,7 +135,9 @@ def _search(ctx, resource_type, query_filter, fields, show_id):
             resource_type_cc,
             query_result_format=QueryResultFormat.ID_RECORDS,
             qfilter=query_filter,
-            fields=fields)
+            fields=fields,
+            sort_asc=sort_asc,
+            sort_desc=sort_desc)
         records = list(q.execute())
         if len(records) == 0:
             result = 'not found'

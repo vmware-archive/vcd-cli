@@ -7,7 +7,7 @@ Usage: vcd search [OPTIONS] [resource-type]
           Search for resources of the provided type. Resource type is not case
           sensitive. When invoked without a resource type, list the available
           types to search for. Admin types are only allowed when the user is
-          the system administrator.
+          the system administrator. By default result is order by id.
   
           Filters can be applied to the search.
   
@@ -47,6 +47,12 @@ Usage: vcd search [OPTIONS] [resource-type]
   
           vcd search vm --fields 'name,vdcName,status'
               Search for virtual machines and show only some fields.
+  
+          vcd search vm --fields 'name,vdcName,status' --hide-id --sort-asc vdcName
+              Search for virtual machines and show only some fields order y vdcName.
+  
+          vcd search adminOrgVdc --fields 'name,orgName,providerVdcName' --hide-id --sort-asc name
+              Search all vdc and show only some fields order y name.
       
 
 Options:

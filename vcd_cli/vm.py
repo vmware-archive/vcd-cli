@@ -1977,7 +1977,10 @@ def update_compute_policies(ctx, vapp_name, vm_name, placement, sizing, no_place
                     placement_href=policy_ref.get('href')
                 if policy_ref.get('name') == sizing:
                     sizing_href=policy_ref.get('href')
-
+        if placement and not placement_href:
+            raise Exception('policy "%s" not found in this vdc' % placement)
+        if sizing and not sizing_href:
+            raise Exception('policy "%s" not found in this vdc' % sizing)
         vm = _get_vm(ctx, vapp_name, vm_name)
         vm_resource = vm.get_resource()
         if no_placement:

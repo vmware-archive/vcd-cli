@@ -120,6 +120,10 @@ Usage: vcd vm [OPTIONS] COMMAND [ARGS]...
           vcd vm customize-on-next-poweron vapp1 vm1
               Customize on next power on of VM.
 
+          vcd vm update-compute-policies vapp1 vm1
+                 --sizing 'System Default'
+                 --placement 'ESXi in Rack1'
+              Update compute policies of VM.
 
 
 Options:
@@ -157,6 +161,7 @@ Commands:
   suspend                    suspend a VM
   undeploy                   undeploy a VM
   update                     Update the VM properties and configurations
+  update-compute-policies        Update the VM placement and sizing policy
   upgrade-virtual-hardware   upgrade virtual hardware of VM
 
 ```

@@ -118,9 +118,9 @@ def search(ctx, resource_type, query_filter, fields, show_id, sort_asc, sort_des
         vcd search adminOrgVdc --fields 'name,orgName,providerVdcName' --hide-id --sort-asc name
           Search all vdc and show only some fields order y name.
     """
-    return _search(ctx, resource_type, query_filter, fields, show_id, sort_asc, sort_desc)
+    return query(ctx, resource_type, query_filter, fields, show_id, sort_asc, sort_desc)
 
-def _search(ctx, resource_type, query_filter, fields, show_id, sort_asc, sort_desc):
+def query(ctx, resource_type=None, query_filter=None, fields=None, show_id=True, sort_asc=None, sort_desc=None):
     try:
         if resource_type is None:
             click.secho(ctx.get_help())

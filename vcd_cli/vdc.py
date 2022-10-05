@@ -13,6 +13,9 @@
 #
 
 import click
+import requests
+
+from pyvcloud.vcd.api_helper import ApiHelper
 from pyvcloud.vcd.client import ApiVersion
 from pyvcloud.vcd.client import EntityType
 from pyvcloud.vcd.client import get_links
@@ -20,6 +23,7 @@ from pyvcloud.vcd.exceptions import OperationNotSupportedException
 from pyvcloud.vcd.org import Org
 from pyvcloud.vcd.utils import access_settings_to_dict
 from pyvcloud.vcd.utils import vdc_to_dict
+from pyvcloud.vcd.utils import extract_id
 from pyvcloud.vcd.vdc import VDC
 
 from vcd_cli.utils import access_settings_to_list
@@ -538,5 +542,52 @@ def list_disk(ctx, vdc_name):
 
         disk_list = vdc.list_idisk()
         stdout(disk_list, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vdc.command('list-compute-policies', short_help='list compute policies available in a VDC')
+@click.pass_context
+@click.argument('vdc-name', metavar='<vdc-name>')
+@click.option(
+    '--show-id',
+    'show_id',
+    required=False,
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help='show id')
+def list_compute_policies(ctx, vdc_name, show_id):
+    try:
+        api_helper=ApiHelper()
+        restore_session(ctx)
+        client = ctx.obj['client']
+        in_use_org_href = ctx.obj['profiles'].get('org_href')
+        org = Org(client, in_use_org_href)
+        vdc_resource = org.get_vdc(vdc_name)
+        vdc = VDC(client, resource=vdc_resource)
+        defaut_policy=vdc.resource.DefaultComputePolicy.get('id')
+
+        policies_list = vdc.list_compute_policies()
+        result = []
+        for policy_ref in policies_list:
+            response=client._do_request_prim(
+                method='GET',
+                uri=policy_ref.get('href'),
+                session=client._session,
+                accept_type='application/json')
+            sc = response.status_code
+            if sc is requests.codes.ok:
+                policy=api_helper.deserialize(response, response_type='object')
+                result.append({
+                    'id': extract_id(policy.get('id')),
+                    'name': policy.get('name'),
+                    'is_sizing': policy.get('isSizingOnly'),
+                    'is_vm_placement': not policy.get('isSizingOnly'),
+                    'is_default': defaut_policy == policy.get('id')
+                })
+            else:
+                raise Exception('invalid http response status code %s' % sc )
+        stdout(result, ctx,show_id=show_id)
     except Exception as e:
         stderr(e, ctx)

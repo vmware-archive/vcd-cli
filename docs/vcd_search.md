@@ -53,7 +53,10 @@ Usage: vcd search [OPTIONS] [resource-type]
   
           vcd search adminOrgVdc --fields 'name,orgName,providerVdcName' --hide-id --sort-asc name
               Search all vdc and show only some fields order y name.
-      
+  
+          vcd search vm --fields 'containerName as containerName(vapp),name,ownerName as owner,isAutoNature as standalone' \
+          --sort-asc containerName --filter 'isVAppTemplate==false' --hide-id
+              Search for virtual machines, show only some fields, use 'as' to customize field name
 
 Options:
   -f, --filter [query-filter]  query filter

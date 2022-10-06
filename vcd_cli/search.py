@@ -117,8 +117,13 @@ def search(ctx, resource_type, query_filter, fields, show_id, sort_asc, sort_des
 \b
         vcd search adminOrgVdc --fields 'name,orgName,providerVdcName' --hide-id --sort-asc name
           Search all vdc and show only some fields order y name.
+\b
+        vcd search vm --fields 'containerName as containerName(vapp),name,ownerName as owner,isAutoNature as standalone' \\
+            --sort-asc containerName --filter 'isVAppTemplate==false' --hide-id
+          Search for virtual machines, show only some fields, use 'as' to customize field name.
     """
     return query(ctx, resource_type, query_filter, fields, show_id, sort_asc, sort_desc)
+
 
 def query(ctx, resource_type=None, query_filter=None, fields=None, show_id=True, sort_asc=None, sort_desc=None):
     try:
@@ -131,6 +136,17 @@ def query(ctx, resource_type=None, query_filter=None, fields=None, show_id=True,
         client = ctx.obj['client']
         result = []
         resource_type_cc = to_camel_case(resource_type, RESOURCE_TYPES)
+        custom_fields = {}
+        if fields:
+            keys = []
+            for f in fields.split(','):
+                key, *label = f.split(' as ')
+                keys.append(key)
+                if label:
+                    label = label.pop()
+                    if key != label:
+                        custom_fields[key] = label
+            fields = ','.join(keys)
         q = client.get_typed_query(
             resource_type_cc,
             query_result_format=QueryResultFormat.ID_RECORDS,
@@ -143,7 +159,12 @@ def query(ctx, resource_type=None, query_filter=None, fields=None, show_id=True,
             result = 'not found'
         else:
             for r in records:
-                result.append(to_dict(r, resource_type=resource_type_cc))
+                d = to_dict(r, resource_type=resource_type_cc)
+                for field, label in custom_fields.items():
+                    if field in d:
+                        d[label] = d[field]
+                        d.pop(field)
+                result.append(d)
         stdout(result, ctx, show_id=show_id)
     except Exception as e:
         stderr(e, ctx)

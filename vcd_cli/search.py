@@ -136,17 +136,15 @@ def query(ctx, resource_type=None, query_filter=None, fields=None, show_id=True,
         client = ctx.obj['client']
         result = []
         resource_type_cc = to_camel_case(resource_type, RESOURCE_TYPES)
-        custom_fields = {}
+        headers={}
         if fields:
-            keys = []
             for f in fields.split(','):
-                key, *label = f.split(' as ')
-                keys.append(key)
+                field, *label = f.split(' as ')
+                headers[field] = field
                 if label:
                     label = label.pop()
-                    if key != label:
-                        custom_fields[key] = label
-            fields = ','.join(keys)
+                    headers[field] = label
+            fields = ','.join( headers.keys() )
         q = client.get_typed_query(
             resource_type_cc,
             query_result_format=QueryResultFormat.ID_RECORDS,
@@ -160,11 +158,12 @@ def query(ctx, resource_type=None, query_filter=None, fields=None, show_id=True,
         else:
             for r in records:
                 d = to_dict(r, resource_type=resource_type_cc)
-                for field, label in custom_fields.items():
-                    if field in d:
-                        d[label] = d[field]
-                        d.pop(field)
+                if headers:
+                    d_with_custom_header = { 'id': d.pop('id') }
+                    for field, label in headers.items():
+                        d_with_custom_header[label] = d.pop(field)
+                    d = d_with_custom_header
                 result.append(d)
-        stdout(result, ctx, show_id=show_id)
+        stdout(result, ctx, show_id=show_id, sort_headers=False)
     except Exception as e:
         stderr(e, ctx)

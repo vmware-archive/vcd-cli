@@ -131,10 +131,11 @@ def search(ctx, resource_type, query_filter, fields, show_id, sort_asc, sort_des
         vcd search vm --fields 'containerName as vapp,name' --sort-asc containerName --sort-next name --hide-id
           Search for virtual machines and show only some fields.
     """
-    return query(ctx, resource_type, query_filter, fields, show_id, sort_asc, sort_desc, sort_next)
+    result = query(ctx, resource_type, query_filter, fields, sort_asc, sort_desc, sort_next)
+    stdout(result, ctx, show_id=show_id, sort_headers=False)
 
 
-def query(ctx, resource_type=None, query_filter=None, fields=None, show_id=True, sort_asc=None, sort_desc=None, sort_next=None):
+def query(ctx, resource_type=None, query_filter=None, fields=None, sort_asc=None, sort_desc=None, sort_next=None):
     try:
         if resource_type is None:
             click.secho(ctx.get_help())
@@ -195,6 +196,6 @@ def query(ctx, resource_type=None, query_filter=None, fields=None, show_id=True,
             result=sorted(result, key=lambda d: (d[sort_key1], d[sort_key2]), reverse=reverse)
         elif sort_next:
                 raise Exception('sort_next must be used with sort_asc or sort_desc')
-        stdout(result, ctx, show_id=show_id, sort_headers=False)
+        return result
     except Exception as e:
         stderr(e, ctx)

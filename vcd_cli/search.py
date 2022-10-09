@@ -161,7 +161,9 @@ def query(ctx, resource_type=None, query_filter=None, fields=None, show_id=True,
                 if headers:
                     d_with_custom_header = { 'id': d.pop('id') }
                     for field, label in headers.items():
-                        d_with_custom_header[label] = d.pop(field)
+                        d_with_custom_header[label] = None
+                        if field in d:
+                            d_with_custom_header[label] = d.pop(field)
                     d = d_with_custom_header
                 result.append(d)
         stdout(result, ctx, show_id=show_id, sort_headers=False)

@@ -138,6 +138,8 @@ def search(ctx, resource_type, query_filter, fields, show_id, sort_asc, sort_des
             click.echo(tabulate(tabulate_names(RESOURCE_TYPES, 4)))
             return
         result = query(ctx, resource_type, query_filter, fields, sort_asc, sort_desc, sort_next)
+        if not result:
+            result = 'not found'
         stdout(result, ctx, show_id=show_id, sort_headers=False)
     except Exception as e:
         stderr(e, ctx)
@@ -168,38 +170,37 @@ def query(ctx, resource_type=None, query_filter=None, fields=None, sort_asc=None
             sort_desc=sort_desc)
         records = list(q.execute())
         if len(records) == 0:
-            result = 'not found'
-        else:
-            for r in records:
-                d = to_dict(r, resource_type=resource_type_cc)
-                if headers:
-                    d_with_custom_header = { 'id': d.pop('id') }
-                    for field, label in headers.items():
-                        d_with_custom_header[label] = None
-                        if field in d:
-                            d_with_custom_header[label] = d.pop(field)
-                    d = d_with_custom_header
-                result.append(d)
-            if sort_next and (sort_asc or sort_desc):
-                if sort_asc:
-                    reverse=False
-                    sort_key1 = sort_asc
-                if sort_desc:
-                    reverse=True
-                    sort_key1 = sort_desc
-                sort_key2=sort_next
-                if sort_key1 in headers:
-                    sort_key1 = headers[sort_key1]
-                if sort_key2 in headers:
-                    sort_key2 = headers[sort_key2]
-                keys = list(result[0].keys())
-                if sort_key1 not in keys:
-                    raise Exception('sort key \'%s\' not in %s' % (sort_key1, keys))
-                if sort_key2 not in keys:
-                    raise Exception('sort_next \'%s\' not in %s' % (sort_key2, keys))
-                result=sorted(result, key=lambda d: (d[sort_key1], d[sort_key2]), reverse=reverse)
-            elif sort_next:
-                    raise Exception('sort_next must be used with sort_asc or sort_desc')
+            return []
+        for r in records:
+            d = to_dict(r, resource_type=resource_type_cc)
+            if headers:
+                d_with_custom_header = { 'id': d.pop('id') }
+                for field, label in headers.items():
+                    d_with_custom_header[label] = None
+                    if field in d:
+                        d_with_custom_header[label] = d.pop(field)
+                d = d_with_custom_header
+            result.append(d)
+        if sort_next and (sort_asc or sort_desc):
+            if sort_asc:
+                reverse=False
+                sort_key1 = sort_asc
+            if sort_desc:
+                reverse=True
+                sort_key1 = sort_desc
+            sort_key2=sort_next
+            if sort_key1 in headers:
+                sort_key1 = headers[sort_key1]
+            if sort_key2 in headers:
+                sort_key2 = headers[sort_key2]
+            keys = list(result[0].keys())
+            if sort_key1 not in keys:
+                raise Exception('sort key \'%s\' not in %s' % (sort_key1, keys))
+            if sort_key2 not in keys:
+                raise Exception('sort_next \'%s\' not in %s' % (sort_key2, keys))
+            result=sorted(result, key=lambda d: (d[sort_key1], d[sort_key2]), reverse=reverse)
+        elif sort_next:
+                raise Exception('sort_next must be used with sort_asc or sort_desc')
         return result
     except Exception as e:
         stderr(e, ctx)

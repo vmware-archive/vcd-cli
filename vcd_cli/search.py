@@ -131,17 +131,21 @@ def search(ctx, resource_type, query_filter, fields, show_id, sort_asc, sort_des
         vcd search vm --fields 'containerName as vapp,name' --sort-asc containerName --sort-next name --hide-id
           Search for virtual machines and show only some fields.
     """
-    result = query(ctx, resource_type, query_filter, fields, sort_asc, sort_desc, sort_next)
-    stdout(result, ctx, show_id=show_id, sort_headers=False)
-
-
-def query(ctx, resource_type=None, query_filter=None, fields=None, sort_asc=None, sort_desc=None, sort_next=None):
     try:
         if resource_type is None:
             click.secho(ctx.get_help())
             click.echo('\nAvailable resource types:')
             click.echo(tabulate(tabulate_names(RESOURCE_TYPES, 4)))
             return
+        result = query(ctx, resource_type, query_filter, fields, sort_asc, sort_desc, sort_next)
+        stdout(result, ctx, show_id=show_id, sort_headers=False)
+    except Exception as e:
+        stderr(e, ctx)
+
+def query(ctx, resource_type=None, query_filter=None, fields=None, sort_asc=None, sort_desc=None, sort_next=None):
+    try:
+        if resource_type is None:
+            raise Exception('resource_type can\'t be None')
         restore_session(ctx)
         client = ctx.obj['client']
         result = []

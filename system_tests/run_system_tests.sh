@@ -74,7 +74,7 @@ fi
 auto_base_config=$SRCROOT/auto.base_config.yaml
 sed -e "s/<vcd ip>/${VCD_HOST}/" \
 -e "s/30.0/${VCD_API_VERSION}/" \
--e "s/\(sys_admin_username: \'\)administrator/\1${VCD_USER}/" \
+-e "s/\(sys_admin_username: '\)administrator/\1${VCD_USER}/" \
 -e "s/<root-password>/${VCD_PASSWORD}/" \
 -e "s/<vc ip>/${VC_IP}/" \
 -e "s/<vc root password>/${VC_PASSWORD}/" \

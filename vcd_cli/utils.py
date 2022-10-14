@@ -59,7 +59,7 @@ def as_table(obj_list,
         if sort_headers:
             headers = sorted(obj_list[0].keys())
         else:
-            headers = obj_list[0].keys()
+            headers = list(obj_list[0].keys())
         if not show_id and 'id' in headers:
             headers.remove('id')
         for field in hide_fields:

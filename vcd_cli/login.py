@@ -99,6 +99,11 @@ def login(ctx, user, host, password, api_version, org, verify_ssl_certs,
             --session-id ee968665bf3412d581bbc6192508eec4
             Login using active session id.
 \b
+        vcd login mysp.com org1 api_token \\
+            --session-id ee968665bf3412d581bbc6192508eec4
+            Login using API Access Token (external identity provider - oAuth
+            2.0).
+\b
     Environment Variables
         VCD_PASSWORD
             If this environment variable is set, the command will use its value
@@ -140,6 +145,15 @@ def login(ctx, user, host, password, api_version, org, verify_ssl_certs,
         log_bodies=True)
     try:
         if session_id is not None or use_browser_session:
+            is_jwt_token = False
+            if user == 'api_token':
+                oAuthResponse = requests.post(
+                    'https://{}/oauth/tenant/{}/token'.format(host, org),
+                    data={'grant_type': 'refresh_token',
+                          'refresh_token': session_id},
+                ).json()
+                session_id = oAuthResponse['access_token']
+                is_jwt_token = True
             if use_browser_session:
                 browser_session_id = None
                 cookies = browsercookie.chrome()
@@ -151,7 +165,7 @@ def login(ctx, user, host, password, api_version, org, verify_ssl_certs,
                 if browser_session_id is None:
                     raise Exception('Session not found in browser.')
                 session_id = browser_session_id
-            client.rehydrate_from_token(session_id)
+            client.rehydrate_from_token(session_id, is_jwt_token)
         else:
             if password is None:
                 password = click.prompt('Password', hide_input=True, type=str)

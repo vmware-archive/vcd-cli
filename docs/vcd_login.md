@@ -22,6 +22,11 @@ Usage: vcd login [OPTIONS] host organization user
               --session-id ee968665bf3412d581bbc6192508eec4
               Login using active session id.
   
+          vcd login mysp.com org1 api_token \
+              --session-id ee968665bf3412d581bbc6192508eec4
+              Login using API Access Token (external identity provider - oAuth
+              2.0).
+  
       Environment Variables
           VCD_PASSWORD
               If this environment variable is set, the command will use its value
